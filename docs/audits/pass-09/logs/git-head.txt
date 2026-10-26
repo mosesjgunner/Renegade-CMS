@@ -1,0 +1,139 @@
+commit 05f58a570ee51b0a6154d71db9d9322340c2f59f
+Author: MosesGunner <mosesgunner@renegadeparty.org>
+Date:   Wed Oct 21 04:05:57 2026 -0500
+
+    feat(social,audience): implement social dispatch recovery (08C) and campaign delivery (09B)
+    
+    - Implement worker dispatch, provider rate limits, retry backoff with jitter, outbox status transitions, and delivery reconciliation in `src/modules/social/dispatch-boundary.ts`, `provider-runtime.ts`, and `tasks.ts`.
+    - Add migration `20261020_080000_rc1_social_dispatch_recovery.ts` and update `Social.ts` collection schema and `payload-types.ts`.
+    - Update Bluesky and Mastodon adapters with resilient error classification, token refresh, and dispatch rate limiting.
+    - Wire social worker route `/api/admin/social/worker` and background execution scripts in `run-jobs-worker.ts`.
+    - Add audience campaign endpoints `/api/admin/audience/campaign` and enhance `EmailComposer.tsx` and `audience/service.ts` for template-driven campaign management.
+    - Add and pass unit test suites and isolated operator verification journeys for Subpasses 08C and 09B.
+    - Update cumulative ledger rows and record acceptance evidence in `docs/rc/evidence/rc1/18-pass/08C/` and `docs/rc/evidence/rc1/18-pass/09B/`.
+
+ docs/rc/RC1-70-SUBPASS-LEDGER.md                   |    3 +
+ .../rc1/18-pass/08C/01-draft-scheduled.png         |  Bin 187208 -> 187235 bytes
+ .../evidence/rc1/18-pass/08C/02-after-dispatch.png |  Bin 174722 -> 177533 bytes
+ docs/rc/evidence/rc1/18-pass/08C/NEXT.md           |   15 +
+ .../rc1/18-pass/08C/PRIOR-NEXT-20261020.md         |   21 +
+ .../rc1/18-pass/08C/PRIOR-RESULT-20261020.md       |   97 ++
+ docs/rc/evidence/rc1/18-pass/08C/RESULT.md         |   74 +
+ .../rc1/18-pass/08C/current/attempt-01-failure.png |  Bin 0 -> 171260 bytes
+ .../08C/current/attempt-01-journey-trace.json      |   60 +
+ .../rc1/18-pass/08C/current/attempt-01-journey.txt |  Bin 0 -> 2462 bytes
+ .../08C/current/attempt-01-provider-state.json     |   11 +
+ .../rc1/18-pass/08C/current/attempt-01-server.txt  |   72 +
+ .../rc1/18-pass/08C/current/attempt-02-failure.png |  Bin 0 -> 177407 bytes
+ .../08C/current/attempt-02-journey-trace.json      |  186 +++
+ .../rc1/18-pass/08C/current/attempt-02-journey.txt |  Bin 0 -> 4278 bytes
+ .../08C/current/attempt-02-partial-destination.png |  Bin 0 -> 182092 bytes
+ .../08C/current/attempt-02-provider-state.json     |   54 +
+ .../rc1/18-pass/08C/current/attempt-02-server.txt  |  104 ++
+ .../08C/current/attempt-02-tested-source.json      |  136 ++
+ .../rc1/18-pass/08C/current/attempt-03-failure.png |  Bin 0 -> 113043 bytes
+ .../08C/current/attempt-03-journey-trace.json      |  416 +++++
+ .../rc1/18-pass/08C/current/attempt-03-journey.txt |  Bin 0 -> 6482 bytes
+ .../18-pass/08C/current/attempt-03-migrations.txt  |  Bin 0 -> 46944 bytes
+ .../08C/current/attempt-03-partial-destination.png |  Bin 0 -> 182169 bytes
+ .../08C/current/attempt-03-provider-state.json     |  114 ++
+ .../rc1/18-pass/08C/current/attempt-03-server.txt  |  252 ++++
+ .../18-pass/08C/current/attempt-03-types-full.txt  |  Bin 0 -> 106 bytes
+ .../rc1/18-pass/08C/current/attempt-03-units.txt   |  Bin 0 -> 9640 bytes
+ .../rc1/18-pass/08C/current/attempt-03-worker.txt  |   35 +
+ .../08C/current/attempt-04-journey-trace.json      |  487 ++++++
+ .../rc1/18-pass/08C/current/attempt-04-journey.txt |  Bin 0 -> 6450 bytes
+ .../18-pass/08C/current/attempt-04-migrations.txt  |  Bin 0 -> 46908 bytes
+ .../08C/current/attempt-04-partial-destination.png |  Bin 0 -> 182284 bytes
+ .../08C/current/attempt-04-persistence.json        |  628 ++++++++
+ .../08C/current/attempt-04-provider-state.json     |  114 ++
+ .../current/attempt-04-recovered-publication.png   |  Bin 0 -> 183797 bytes
+ .../rc1/18-pass/08C/current/attempt-04-server.txt  |  281 ++++
+ .../rc1/18-pass/08C/current/attempt-04-state.json  |  169 +++
+ .../08C/current/attempt-04-tested-source.json      |  138 ++
+ .../rc1/18-pass/08C/current/attempt-04-worker.txt  |   31 +
+ .../evidence/rc1/18-pass/08C/current/closure.json  |   32 +
+ .../rc1/18-pass/08C/current/dependency.txt         |  Bin 0 -> 716 bytes
+ .../rc1/18-pass/08C/current/format-complete.txt    |  Bin 0 -> 328 bytes
+ .../rc1/18-pass/08C/current/format-current.txt     |  Bin 0 -> 414 bytes
+ .../rc1/18-pass/08C/current/format-final.txt       |  Bin 0 -> 602 bytes
+ .../rc1/18-pass/08C/current/format-harness.txt     |  Bin 0 -> 80 bytes
+ .../rc1/18-pass/08C/current/format-mode.txt        |  Bin 0 -> 176 bytes
+ .../rc1/18-pass/08C/current/format-rate.txt        |  Bin 0 -> 406 bytes
+ .../rc1/18-pass/08C/current/format-security.txt    |  Bin 0 -> 146 bytes
+ .../rc/evidence/rc1/18-pass/08C/current/format.txt |  Bin 0 -> 1528 bytes
+ .../rc1/18-pass/08C/current/generate-types.txt     |  Bin 0 -> 912 bytes
+ .../rc1/18-pass/08C/current/journey-trace.json     |  487 ++++++
+ .../evidence/rc1/18-pass/08C/current/journey.txt   |  Bin 0 -> 6450 bytes
+ .../rc1/18-pass/08C/current/lint-additional.txt    |    0
+ docs/rc/evidence/rc1/18-pass/08C/current/lint.txt  |    0
+ .../rc1/18-pass/08C/current/main-containment.json  |  174 +++
+ .../rc1/18-pass/08C/current/migrations.txt         |  Bin 0 -> 46914 bytes
+ .../18-pass/08C/current/partial-destination.png    |  Bin 0 -> 182273 bytes
+ .../rc1/18-pass/08C/current/persistence.json       |  628 ++++++++
+ .../18-pass/08C/current/pre-final-containment.json |   27 +
+ .../08C/current/preserved-prior-evidence.json      |   37 +
+ .../rc1/18-pass/08C/current/prior-ledger-row.txt   |    1 +
+ .../rc1/18-pass/08C/current/provider-state.json    |  114 ++
+ .../18-pass/08C/current/recovered-publication.png  |  Bin 0 -> 183019 bytes
+ .../rc1/18-pass/08C/current/resources.json         |   29 +
+ .../rc1/18-pass/08C/current/restart-trace.json     |   69 +
+ .../evidence/rc1/18-pass/08C/current/restart.txt   |  Bin 0 -> 2766 bytes
+ .../18-pass/08C/current/runtime-dependencies.txt   |  Bin 0 -> 290 bytes
+ .../rc/evidence/rc1/18-pass/08C/current/server.txt |  150 ++
+ .../rc1/18-pass/08C/current/start-status.txt       |   14 +
+ .../rc/evidence/rc1/18-pass/08C/current/state.json |  169 +++
+ .../rc1/18-pass/08C/current/tested-source-v1.json  |  137 ++
+ .../rc1/18-pass/08C/current/tested-source.json     |  138 ++
+ .../evidence/rc1/18-pass/08C/current/typecheck.txt |  Bin 0 -> 106 bytes
+ .../rc1/18-pass/08C/current/types-initial.txt      |  Bin 0 -> 4126 bytes
+ docs/rc/evidence/rc1/18-pass/08C/current/types.txt |    0
+ docs/rc/evidence/rc1/18-pass/08C/current/unit.txt  |  Bin 0 -> 1378 bytes
+ .../rc1/18-pass/08C/current/units-initial.txt      |  Bin 0 -> 12826 bytes
+ .../rc1/18-pass/08C/current/units-regression.txt   |  Bin 0 -> 9618 bytes
+ docs/rc/evidence/rc1/18-pass/08C/current/units.txt |  Bin 0 -> 840 bytes
+ .../rc/evidence/rc1/18-pass/08C/current/worker.txt |   22 +
+ .../rc/evidence/rc1/18-pass/08C/journey-trace.json |   10 +-
+ docs/rc/evidence/rc1/18-pass/08C/state.json        |   22 +-
+ docs/rc/evidence/rc1/18-pass/08C/tested-tree.txt   |   35 +
+ docs/rc/evidence/rc1/18-pass/09B/NEXT.md           |   13 +
+ docs/rc/evidence/rc1/18-pass/09B/RESULT.md         |   92 ++
+ .../rc/evidence/rc1/18-pass/09B/journey-trace.json |  174 +++
+ .../rc/evidence/rc1/18-pass/09B/restart-trace.json |   42 +
+ docs/rc/evidence/rc1/18-pass/09B/state.json        |    8 +
+ docs/rc/evidence/rc1/18-pass/09B/tested-tree.txt   |   44 +
+ next-env.d.ts                                      |    4 +-
+ package-lock.json                                  |   13 +
+ package.json                                       |    1 +
+ .../api/admin/audience/campaign/route.ts           |  416 +++++
+ .../(frontend)/api/admin/social/drafts/route.ts    |   30 +-
+ .../(frontend)/api/admin/social/worker/route.ts    |  436 +++---
+ src/collections/Social.ts                          |   59 +-
+ ...20261020_080000_rc1_social_dispatch_recovery.ts |   16 +
+ src/migrations/index.ts                            |    6 +
+ src/modules/admin/EmailComposer.tsx                | 1589 +++++++++++++++++++-
+ src/modules/admin/SocialCommandCenter.tsx          |  117 +-
+ src/modules/audience/service.ts                    |  242 ++-
+ src/modules/social/adapters/bluesky.ts             |  401 ++---
+ src/modules/social/adapters/mastodon.ts            |   42 +-
+ src/modules/social/contracts.ts                    |    9 +-
+ src/modules/social/dispatch-boundary.ts            |   59 +
+ src/modules/social/models.ts                       |    5 +-
+ src/modules/social/provider-runtime.ts             |   11 +-
+ src/modules/social/tasks.ts                        |  735 +++++----
+ src/payload-types.ts                               |    5 +
+ src/scripts/run-jobs-worker.ts                     |    4 +
+ tests/rc1-08c/run-current.ps1                      |   68 +
+ tests/rc1-08c/run-isolated.ps1                     |    1 +
+ tests/rc1-08c/tsconfig.current.json                |   12 +
+ tests/rc1-08c/verify-current.ts                    |  949 ++++++++++++
+ tests/rc1-08c/verify.ts                            |   40 +-
+ tests/rc1-09b/run-isolated.ps1                     |  106 ++
+ tests/rc1-09b/tsconfig.json                        |   14 +
+ tests/rc1-09b/verify.ts                            |  610 ++++++++
+ tests/unit/rc1-08c-current.test.ts                 |  387 +++++
+ tests/unit/rc1-08c-social-dispatch.test.ts         |    6 +-
+ tests/unit/rc1-09b-campaigns-templates.test.ts     |  488 ++++++
+ tests/unit/social-contracts.test.ts                |   12 +-
+ tsconfig.json                                      |    4 +-
+ 124 files changed, 12163 insertions(+), 900 deletions(-)

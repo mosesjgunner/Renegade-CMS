@@ -53,7 +53,7 @@ export async function publicSiteForHost(payload: Payload, hostValue: string | nu
     if (sites.docs[0]) return String(sites.docs[0].id)
   }
   if (sites.docs.length === 1 && (local || canonical)) return String(sites.docs[0].id)
-  if (matches.length === 0 && canonical) {
+  if (matches.length === 0 && (canonical || local)) {
     const otherSitesOrigins = Object.values(settings.canonicalOriginsBySite).flatMap((o) => {
       try {
         const u = new URL(o)

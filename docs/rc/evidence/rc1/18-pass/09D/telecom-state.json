@@ -1,0 +1,89 @@
+{
+  "profile": "3beadd7f-ed0f-4795-9943-8a31ac9373d4",
+  "quietZone": "Etc/GMT-2",
+  "rows": [
+    {
+      "id": "b6623bcc-ae74-4635-8d43-f8db6870ec85",
+      "status": "queued",
+      "attempts": 0,
+      "scheduledFor": null,
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": null
+    },
+    {
+      "id": "197f8d63-d669-46b2-ac50-fabb5e3dab84",
+      "status": "cancelled",
+      "attempts": 0,
+      "scheduledFor": "2026-10-26T00:56:01.402Z",
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": {
+        "code": "suppressed-before-send",
+        "reason": "inbound-stop",
+        "keyword": "STOP"
+      }
+    },
+    {
+      "id": "db2bfa77-ba26-4a9c-bd52-cf4031743a0e",
+      "status": "accepted",
+      "attempts": 1,
+      "scheduledFor": "2026-10-26T00:56:01.117Z",
+      "quietHoursDelayedUntil": null,
+      "provider": "telecom-emulator",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-10-26T00:56:02.368Z"
+      }
+    },
+    {
+      "id": "aa976c63-1cce-430f-9c66-d624e574b9fc",
+      "status": "cancelled",
+      "attempts": 0,
+      "scheduledFor": "2026-10-26T00:56:01.006Z",
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": {
+        "code": "event-preference-disabled"
+      }
+    },
+    {
+      "id": "e554e3ba-715d-4eea-8e82-c8a8d30cda61",
+      "status": "cancelled",
+      "attempts": 0,
+      "scheduledFor": "2026-10-26T06:00:00.000Z",
+      "quietHoursDelayedUntil": "2026-10-26T06:00:00.000Z",
+      "provider": null,
+      "outcome": {
+        "code": "suppressed-before-send",
+        "reason": "inbound-stop",
+        "keyword": "STOP"
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "providerMessageId": "emul-msg-335ff39ec09f57bf326adb73",
+      "idempotencyKey": "telecom:73b624f9-66b8-4d02-a666-0e746cfe852c:2da8f7e7-c908-4536-be41-a306dac7545b",
+      "from": "Renegade",
+      "to": "+14155550199",
+      "channel": "sms",
+      "deliveryPath": "sms-direct",
+      "text": "09C controlled telecom body",
+      "rcs": null,
+      "segments": 1,
+      "costEstimate": {
+        "channel": "sms",
+        "unitsPerRecipient": 1,
+        "totalUnits": 1,
+        "estimatedCostPerUnitMinor": 0.79,
+        "estimatedTotalCostMinor": 0.79,
+        "currency": "USD",
+        "formattedCost": "$0.0079 USD",
+        "isEstimate": true,
+        "disclaimer": "Estimated units and cost are projections only. Actual provider charges may vary by carrier surcharges, destination routing, and local telecom regulations."
+      },
+      "receivedAt": "2026-10-26T00:56:02.368Z"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+BASE_COMMIT: 05f58a570ee51b0a6154d71db9d9322340c2f59f
+TIMESTAMP: 2026-10-21T09:58:00Z
+SUBPASS: 09D/70
+
+DIRTY TREE STATUS:
+ M docs/rc/RC1-70-SUBPASS-LEDGER.md
+ M src/app/(frontend)/api/admin/audience/command-center/route.ts
+ M src/app/(frontend)/api/admin/audience/retry/route.ts
+ M src/migrations/index.ts
+ M src/modules/admin/AudienceCommandCenter.tsx
+ M src/modules/audience/payload-domain.ts
+ M src/modules/audience/service.ts
+ M src/modules/audience/tasks.ts
+ M src/modules/email/delivery.ts
+ M src/modules/module-registry.ts
+ M src/modules/telecom/service.ts
+ M src/modules/telecom/tasks.ts
+ M src/payload-types.ts
+ M src/scripts/run-jobs-worker.ts
+ M tests/unit/email-delivery.test.ts
+ M tests/unit/payload-domains.test.ts
+?? docs/rc/evidence/rc1/18-pass/09C/
+?? docs/rc/evidence/rc1/18-pass/09D/
+?? src/app/(frontend)/api/admin/audience/crm/
+?? src/migrations/20261021_090000_rc1_delivery_suppressions.ts
+?? tests/rc1-09c/
+?? tests/rc1-09d/
+?? tests/unit/rc1-09c-delivery.test.ts
+?? tests/unit/rc1-09c-telecom.test.ts
+?? tests/unit/rc1-09d-crm-metrics.test.ts

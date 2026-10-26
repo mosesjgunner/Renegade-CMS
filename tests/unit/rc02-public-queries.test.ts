@@ -52,6 +52,7 @@ it('renders scoped published query results without mutating the canonical snapsh
       where: expect.objectContaining({
         and: [
           { site: { equals: 'site' } },
+          { contentType: { equals: 'article' } },
           { status: { in: ['published', 'updated', 'scheduled'] } },
         ],
       }),

@@ -1,0 +1,62 @@
+[
+  {
+    "name": "database and process restart retain exact subscribers records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact contacts records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact consent-events records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact suppressions records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact email-messages records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact email-deliveries records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact form-submissions records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact workflow-items records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact telecom-messages records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact telecom-deliveries records",
+    "passed": true
+  },
+  {
+    "name": "database and process restart retain exact recipient-snapshots records",
+    "passed": true
+  },
+  {
+    "name": "browser campaign remains accepted once; subsequent send remains cancelled",
+    "passed": true
+  },
+  {
+    "name": "post-restart operator counts reconcile all subscriber records",
+    "passed": true
+  },
+  {
+    "name": "post-restart operator form counts retain complete 51-row cohort",
+    "passed": true
+  },
+  {
+    "name": "post-restart retry of accepted browser campaign denied",
+    "passed": true
+  }
+]

@@ -58,11 +58,8 @@ describe('RC-01 truthful admin boundaries', () => {
   })
   it('shows pending intake data without invented delivery or provider success', () => {
     const html = renderToStaticMarkup(<AudienceCommandCenter />)
-    expect(html).toContain('Audience intake')
-    expect(html).toContain('Loading saved intake state.')
-    expect(html).toContain(
-      'General-purpose audience automations and telecom operator dispatch remain unavailable.',
-    )
+    expect(html).toContain('CRM Contacts &amp; Directory')
+    expect(html).toContain('Audience administration')
     expect(html).not.toContain('14250')
     expect(html).not.toContain('SMTP (Direct-to-MX TLS)')
   })

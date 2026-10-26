@@ -123,6 +123,10 @@ describe('02A: Sites and Persistent Settings', () => {
       // Security invariant: unknown domain on multi-site installation must return ''
       const fallback = await publicSiteForHost(mockPayload, 'unrecognized-domain.net')
       expect(fallback).toBe('')
+
+      // Localhost fallback on multi-site resolves primary site
+      const siteLocal = await publicSiteForHost(mockPayload, 'localhost:3000')
+      expect(siteLocal).toBe('site-default')
     })
   })
 })

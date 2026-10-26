@@ -21,11 +21,19 @@ async function cycle(): Promise<void> {
     if (workerProfile !== 'commerce-only') {
       await payload.jobs.handleSchedules({ queue: 'operations' })
       await payload.jobs.run({ queue: 'operations' })
+      if (payload.collections['email-deliveries']) {
+        const { recoverEmailOutbox } = await import('../modules/audience/tasks')
+        await recoverEmailOutbox(payload)
+      }
       if (payload.collections['social-queue-items']) {
         const { recoverSocialOutbox } = await import('../modules/social/tasks')
         await recoverSocialOutbox(payload)
       }
       await payload.jobs.run({ queue: 'media' }).catch(() => undefined)
+    }
+    if (payload.collections['payment-webhook-events']) {
+      const { recoverStaleCommerceJobs } = await import('../modules/commerce/tasks')
+      await recoverStaleCommerceJobs(payload).catch(() => undefined)
     }
     await payload.jobs.run({ queue: 'commerce' })
     if (workerProfile === 'media-heavy') {

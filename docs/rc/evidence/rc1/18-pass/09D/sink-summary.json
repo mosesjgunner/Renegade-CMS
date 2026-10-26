@@ -1,0 +1,50 @@
+[
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:43.971Z",
+    "bytes": 594,
+    "subject": "Confirm your subscription"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:45.403Z",
+    "bytes": 1232,
+    "subject": "Welcome to Alpha"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.649Z",
+    "bytes": 467,
+    "subject": "Foreign 0"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.652Z",
+    "bytes": 467,
+    "subject": "Foreign 1"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.652Z",
+    "bytes": 467,
+    "subject": "Foreign 4"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.669Z",
+    "bytes": 467,
+    "subject": "Foreign 3"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.672Z",
+    "bytes": 467,
+    "subject": "Foreign 2"
+  },
+  {
+    "to": "visitor.jane@example.test",
+    "at": "2026-10-26T00:43:46.690Z",
+    "bytes": 467,
+    "subject": "Foreign 5"
+  }
+]

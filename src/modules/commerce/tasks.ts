@@ -923,3 +923,58 @@ export const commerceTasks = [
   reconcilePaymentsTask,
   reconcileSubscriptionsTask,
 ]
+
+/**
+ * Recovers stale payment webhook events that were interrupted
+ * (e.g. ungraceful worker termination or restored backup).
+ */
+export async function recoverStaleCommerceJobs(
+  payload: any,
+  maxAgeMs = 10 * 60 * 1000,
+): Promise<number> {
+  const threshold = new Date(Date.now() - maxAgeMs).toISOString()
+  let recoveredCount = 0
+
+  if (payload.collections?.['payment-webhook-events']) {
+    const staleEvents = await payload
+      .find({
+        collection: 'payment-webhook-events',
+        where: {
+          and: [
+            { processingState: { equals: 'processing' } },
+            { updatedAt: { less_than_equal: threshold } },
+          ],
+        },
+        limit: 100,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+
+    if (staleEvents && staleEvents.docs.length > 0) {
+      for (const event of staleEvents.docs) {
+        await payload
+          .update({
+            collection: 'payment-webhook-events',
+            id: event.id,
+            data: { processingState: 'received' },
+            overrideAccess: true,
+          })
+          .catch(() => undefined)
+
+        if (payload.jobs?.queue) {
+          await payload.jobs
+            .queue({
+              task: 'commerce-process-payment-event',
+              input: { webhookEventId: String(event.id) },
+              queue: 'commerce',
+            })
+            .catch(() => undefined)
+        }
+
+        recoveredCount++
+      }
+    }
+  }
+
+  return recoveredCount
+}

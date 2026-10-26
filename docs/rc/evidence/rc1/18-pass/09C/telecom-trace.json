@@ -1,0 +1,50 @@
+[
+  {
+    "name": "foreign-site staff cannot retry another tenant delivery",
+    "passed": true
+  },
+  {
+    "name": "native staff delivery status mutation denied",
+    "passed": true
+  },
+  {
+    "name": "anonymous native delivery creation denied",
+    "passed": true
+  },
+  {
+    "name": "emulation explicitly selected; live carrier disabled",
+    "passed": true
+  },
+  {
+    "name": "canonical contact phone and profile timezone produce durable quiet-hour scheduling",
+    "passed": true
+  },
+  {
+    "name": "early quiet-hours replay emits no telecom message",
+    "passed": true
+  },
+  {
+    "name": "per-event follow preference cancels telecom emulation",
+    "passed": true
+  },
+  {
+    "name": "allowed event accepted once with exact emulated body and persistent attempt",
+    "passed": true
+  },
+  {
+    "name": "site-scoped STOP cannot cancel a foreign tenant using the same phone",
+    "passed": true
+  },
+  {
+    "name": "STOP after queue prevents another send",
+    "passed": true
+  },
+  {
+    "name": "STOP suppression persisted using canonical phone hash",
+    "passed": true
+  },
+  {
+    "name": "campaign replay does not add deliveries",
+    "passed": true
+  }
+]

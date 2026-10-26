@@ -1,0 +1,217 @@
+{
+  "base": "05f58a570ee51b0a6154d71db9d9322340c2f59f",
+  "files": [
+    {
+      "path": "docs/audits/pass-09/08-feature-matrix.md",
+      "sha256": "a9654518eacac87333be5b11c10b39e0a751378d5e377f1dd0009a375a7e4a8a"
+    },
+    {
+      "path": "docs/audits/pass-09/08-master-findings.md",
+      "sha256": "8b4c0b9580dca1ab8bf8357bae05ebf7e442c6553a27600a135e104ef9f086c8"
+    },
+    {
+      "path": "docs/audits/pass-09/08-repair-order.md",
+      "sha256": "de301983cf7960f3ab7024080fdf18751bf27f755e026ade44db291e048a6cad"
+    },
+    {
+      "path": "docs/audits/pass-09/08-work-orders.md",
+      "sha256": "58835a88d6891d69889e6bde0fb26901e2a0b849fe5873f20a777738e82771e7"
+    },
+    {
+      "path": "docs/audits/pass-09/AUDIT_REPORT.md",
+      "sha256": "180ce37093a2a285369beb262a608c6bcae11033c8020b5be10f80b7f33658d6"
+    },
+    {
+      "path": "docs/audits/pass-09/logs/git-head.txt",
+      "sha256": "9fee902f6c008cb7ab43f414abd7dd77d7d731f2408bfef5a19c11e1aa907236"
+    },
+    {
+      "path": "docs/audits/pass-09/logs/git-status.txt",
+      "sha256": "cd7c3ff732d958c0a5f253a7188178dedf8e3e8cd6891f823b6d22efbd85e651"
+    },
+    {
+      "path": "docs/audits/pass-09/logs/npm-audit.json",
+      "sha256": "8ae2a092e4c6bb3759156ea7deb9610dc062fd02dbc650b56560ff2e5a5ed7e5"
+    },
+    {
+      "path": "docs/audits/pass-09/logs/runtime.txt",
+      "sha256": "f3b50e2734b4384bf09fc2f27c186cb082ff3d1d04422f13480698ea26542ac7"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/NEXT.md",
+      "sha256": "3b72b74bc43b2a874a0f10026c1c114059bca5a0ff851aaa5f1b87bdb0caa832"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/RESULT.md",
+      "sha256": "9f5d680d08b95d62e83b172191e532d958589047311f4c0e54e7f4ca63385123"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/controlled-message.eml",
+      "sha256": "e8e894eff69a446f1f5478118f0b9f3ca0e1690180a2adc07fcb0de55edd27a3"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/journey-trace.json",
+      "sha256": "ebdd35d0aa4b12599712e8592e8a969df39273a6daa6a74dcd09b3e06ec86e81"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/restart-trace.json",
+      "sha256": "05e1728d9a0b7e936a1cce5f29aef0d76e035f7086077b8d2df0722f1a15c361"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/smtp-trace.json",
+      "sha256": "6eb8e9d5760e8a793c238c553d85c9ca80751c213ce36b8c8f0b39170dc0066a"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/state.json",
+      "sha256": "96fdcc84ccd2225f48f6f1c9c5f70f2b971173bb3e3bd2e16abbf64d9548e8f9"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/telecom-restart-trace.json",
+      "sha256": "17e4a520477234224f13f91b2219d694933180de3622fd45cd2c1633dfd8bb33"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/telecom-state.json",
+      "sha256": "9f8b671a07fe32cfef337a42a301ba3dbc3926687d2f8e7d3c51ba9cf64e886e"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/telecom-trace.json",
+      "sha256": "3c97e6d2972f5753db9ec987e882d47f0c50296883978a98c8c0a93be9e770c0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09C/tested-tree.json",
+      "sha256": "65c30d18e04dbd3b2ab1a7406e959fe96fef0eab4f9e449ea2d0e0524244861d"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/NEXT.md",
+      "sha256": "fd5c13912e5a9abcc6bf2cdb8366c0248827d6d0894637bcbe54a8a46c7b1c47"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/RESULT.md",
+      "sha256": "3af264cc6d3969430fbe876557468395aa8bda56237ad076661ad20bb7d8fa35"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/journey-trace.json",
+      "sha256": "6da9b1613736a3598c23e50198af77bb494e804b8a02d447c84c476c3d3297cd"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/restart-trace.json",
+      "sha256": "e8762a42e6da88ce60e573787c28677032ff0cb6652453d809ec54973eebbda7"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/state.json",
+      "sha256": "17edb3060f68bd4e796e173fd7f9e7bc606a2e0c013e6cba90b1c6a2c4c7a447"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/09D/tested-tree.txt",
+      "sha256": "12b809b92f762794be90cc36a6cc8c718ab25211ca3fb2e36c2bfe5e1c9a41c0"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/crm/route.ts",
+      "sha256": "fbeb05f6871b88f35a4123be23d728911b867de10518db77b8846b717328a0c6"
+    },
+    {
+      "path": "src/migrations/20261021_090000_rc1_delivery_suppressions.ts",
+      "sha256": "a4524b98ffbd396ec120a64e322aded2fec33bb25324f9db268d048ae985d9b9"
+    },
+    {
+      "path": "tests/rc1-09c/run-isolated.ps1",
+      "sha256": "4435ebc83d92a51d79206d7cb847714ac8c739641f95e0b2533d8cbc83f7585d"
+    },
+    {
+      "path": "tests/rc1-09c/telecom.ts",
+      "sha256": "68ab574af71dde85c5e1d564dc110ad6bcd4e92962a3216cd3b1240f3320a767"
+    },
+    {
+      "path": "tests/rc1-09c/verify.ts",
+      "sha256": "e87461f6fb56403c7f9fd1b1dc70ed89956fbb62e063a90b5111a17c1cbf8039"
+    },
+    {
+      "path": "tests/rc1-09d/run-isolated.ps1",
+      "sha256": "4417ad80896d3f2aa0e66cfc6613269f4e9bffc0b8af6260fb2b570c6c7bfa9e"
+    },
+    {
+      "path": "tests/rc1-09d/verify.ts",
+      "sha256": "19e5416461ac10336d1412747ca471f6880b8af3342f314936750c3158fe288d"
+    },
+    {
+      "path": "tests/unit/rc1-09c-delivery.test.ts",
+      "sha256": "ab2b5e27d43684e0a75298798262a6524729df20ee00c8e87eca1b2bdb1c5f0a"
+    },
+    {
+      "path": "tests/unit/rc1-09c-telecom.test.ts",
+      "sha256": "763c42756abfcedf14582bf19d04e3744646e64603863811155d143ece47c1a5"
+    },
+    {
+      "path": "tests/unit/rc1-09d-crm-metrics.test.ts",
+      "sha256": "d99d206493fbfcfb3ff81f9b9c2b89b379807ede943992765be9d24c90bb4601"
+    },
+    {
+      "path": "docs/rc/RC1-70-SUBPASS-LEDGER.md",
+      "sha256": "dfaad6b87ac27b257ab90b83e897a7eaed51abd3a3dc19a383ec81258004d9ef"
+    },
+    {
+      "path": "next-env.d.ts",
+      "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+      "sha256": "458d60407f259fb56bcb619fe9b33ffeb7baffa751cda9f6c5947b9c392a3ac5"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/retry/route.ts",
+      "sha256": "1e58fa5f25b4cd9c60b2bce1ef9a763d5e33357318e587d9bf59542a7706e244"
+    },
+    {
+      "path": "src/migrations/index.ts",
+      "sha256": "ba9a8f7c503cebc8dcc5bd0536d5e6156b9786a60f53cb54d3f2d3b9acd82dc9"
+    },
+    {
+      "path": "src/modules/admin/AudienceCommandCenter.tsx",
+      "sha256": "7daa8f2f86b6e0b6d755fd049dc1f62223c68c4291277167e41e827bc66e4ce3"
+    },
+    {
+      "path": "src/modules/audience/payload-domain.ts",
+      "sha256": "0e15bde3807b77ed067fe4e5a6f49a114725924f2f6a25c923cf11bba8bbea3d"
+    },
+    {
+      "path": "src/modules/audience/service.ts",
+      "sha256": "bf043e35988e81789ef1c587f3ddfea0d8518294621cb63dacc0641d1ae50c71"
+    },
+    {
+      "path": "src/modules/audience/tasks.ts",
+      "sha256": "9c2117c5f3874f3300038f028b83067d61cd3257d36852271991377dcb7966c6"
+    },
+    {
+      "path": "src/modules/email/delivery.ts",
+      "sha256": "3fe3216b9b64c1565933857627d63b4d40adf498bad978d0e82255a5ac57368a"
+    },
+    {
+      "path": "src/modules/module-registry.ts",
+      "sha256": "2f2a2e0f1ad112aaa1d7c1bad937b074d6a5b260db3f23650c4c123dfb9675bb"
+    },
+    {
+      "path": "src/modules/telecom/service.ts",
+      "sha256": "e7902067273a6b4f0ac713ee2f686431ae5361804e31b768cfef276032b0b82e"
+    },
+    {
+      "path": "src/modules/telecom/tasks.ts",
+      "sha256": "edb88647d1af2e560946c58ca6c62e2cff0d8a55dde51c380c042992ed8a7a23"
+    },
+    {
+      "path": "src/payload-types.ts",
+      "sha256": "1a6f4b9022efe41553226dcb6a3dbab9c9557d0bd1774c466655c9eeddbca1ef"
+    },
+    {
+      "path": "src/scripts/run-jobs-worker.ts",
+      "sha256": "236baf9657b7b9e17b88c4d6776edd9a301062066945c61d0b47d970ae762f5c"
+    },
+    {
+      "path": "tests/unit/email-delivery.test.ts",
+      "sha256": "55e7f595ba4df769e628bfaf8e667fd5aa7f3fd3f05d36da60f60388388af574"
+    },
+    {
+      "path": "tests/unit/payload-domains.test.ts",
+      "sha256": "b539f7d0faf98092cf5613058d4dc50b62beb1d0d8850cbecc99f4d32f0f0d16"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import * as rc1DeliverySuppressions from './20261021_090000_rc1_delivery_suppressions'
 import * as rc1SocialDispatchRecovery from './20261020_080000_rc1_social_dispatch_recovery'
 import * as rc1PublicModified from './20261018_062000_rc1_public_modified'
 import * as rc1ContentEntitlement from './20261018_061000_rc1_content_entitlement'
@@ -725,6 +726,11 @@ export const migrations = [
     up: rc1SocialDispatchRecovery.up,
     down: rc1SocialDispatchRecovery.down,
     name: '20261020_080000_rc1_social_dispatch_recovery',
+  },
+  {
+    up: rc1DeliverySuppressions.up,
+    down: rc1DeliverySuppressions.down,
+    name: '20261021_090000_rc1_delivery_suppressions',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

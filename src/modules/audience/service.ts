@@ -396,19 +396,26 @@ export async function suppressSubscriber(
       overrideAccess: true,
     })
   // A provider retry must not create duplicate consent-history evidence.
-  if (subscriber && created)
+  if (subscriber && created) {
+    const consentEvent =
+      input.reason === 'bounce' || input.reason === 'complaint' || input.reason === 'unsubscribe'
+        ? input.reason
+        : input.reason === 'legal'
+          ? 'erased'
+          : 'operator-correction'
     await payload.create({
       collection: 'consent-events',
       data: {
         site: input.siteId,
         subscriber: subscriber.id,
-        event: input.reason,
+        event: consentEvent,
         basis: 'suppression',
         occurredAt: now(),
-        evidence: { provider: input.provider },
+        evidence: { provider: input.provider, suppressionReason: input.reason },
       },
       overrideAccess: true,
     })
+  }
   return { created, subscriber }
 }
 
@@ -447,7 +454,12 @@ export async function canDeliverToSubscriber(
   input: { siteId: string; subscriberId?: string; recipientEmail: string },
 ) {
   // Transactional deliveries can omit a Subscriber. Bulk newsletter snapshots cannot.
-  if (!input.subscriberId) return true
+  if (!input.subscriberId)
+    return !(await isSubscriberSuppressed(
+      payload,
+      input.siteId,
+      audienceDigest(normalizeEmailAddress(input.recipientEmail)),
+    ))
   const subscriber = (await payload.findByID({
     collection: 'subscribers',
     id: input.subscriberId,
@@ -517,8 +529,9 @@ export async function evaluateSegmentRecipients(
   const subscribersRes = await payload.find({
     collection: 'subscribers',
     where: { site: { equals: input.siteId } },
-    limit: 2000,
-    depth: 1,
+    limit: 0,
+    pagination: false,
+    depth: 0,
     overrideAccess: true,
   })
 
@@ -533,8 +546,14 @@ export async function evaluateSegmentRecipients(
   // Fetch active memberships
   const membershipsRes = await payload.find({
     collection: 'audience-memberships',
-    where: { status: { equals: 'active' } },
-    limit: 5000,
+    where: {
+      and: [
+        { status: { equals: 'active' } },
+        { subscriber: { in: subscribersRes.docs.map((sub: Doc) => String(sub.id)) } },
+      ],
+    },
+    limit: 0,
+    pagination: false,
     depth: 0,
     overrideAccess: true,
   })
@@ -763,14 +782,7 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
         const subscriber = membership.subscriber as Doc
         if (!subscriber?.email || subscriber.status !== 'active') continue
         if (relationId(subscriber.site) !== siteId) continue
-        if (
-          await isSubscriberSuppressed(
-            payload,
-            siteId,
-            subscriber.emailHash,
-          )
-        )
-          continue
+        if (await isSubscriberSuppressed(payload, siteId, subscriber.emailHash)) continue
         const key = deliveryIdempotencyKey(messageId, subscriber.id)
         const exists = await payload.find({
           collection: 'email-deliveries',
@@ -848,7 +860,8 @@ export async function processProviderSuppressionEvent(
   if (
     !delivery ||
     !message ||
-    String(message.site) !== input.siteId ||
+    relationId(message.site) !== input.siteId ||
+    (input.provider && delivery.provider !== input.provider) ||
     String(delivery.recipientEmail).trim().toLowerCase() !== input.email.trim().toLowerCase()
   )
     throw new Error('Provider event does not match a delivery in this site.')
@@ -1540,20 +1553,28 @@ export async function exportAudienceSubject(
     }),
     payload.find({
       collection: 'consent-events',
-      where: { subscriber: { equals: input.subscriberId } },
-      limit: 1000,
+      where: {
+        and: [{ site: { equals: input.siteId } }, { subscriber: { equals: input.subscriberId } }],
+      },
+      depth: 0,
+      limit: 0,
+      pagination: false,
       overrideAccess: true,
     }),
     payload.find({
       collection: 'suppressions',
       where: { site: { equals: input.siteId } },
-      limit: 1000,
+      depth: 0,
+      limit: 0,
+      pagination: false,
       overrideAccess: true,
     }),
   ])
   return {
     subscriber,
     eligibility,
+    policy:
+      'Audience subscriber and consent export only; CRM, forms, deliveries and member data are separate retained records. Account deletion is not supported.',
     consentEvents: consent.docs,
     suppressions: (suppressions.docs as Doc[]).filter(
       (s) => s.emailHash === (subscriber as Doc).emailHash,
@@ -1573,6 +1594,7 @@ export async function eraseAudienceSubject(
   })) as Doc
   if (!subscriber || String(subscriber.site) !== input.siteId)
     throw new Error('Cross-site erasure denied.')
+  if (subscriber.erasedAt) return
   const digest = subscriber.emailHash
   await suppressSubscriber(payload, {
     siteId: input.siteId,
@@ -1586,8 +1608,8 @@ export async function eraseAudienceSubject(
       email: `erased+${digest.slice(0, 18)}@invalid.local`,
       status: 'suppressed',
       erasedAt: now(),
-      contact: undefined,
-      member: undefined,
+      contact: null,
+      member: null,
     },
     overrideAccess: true,
   })
@@ -1595,6 +1617,7 @@ export async function eraseAudienceSubject(
     collection: 'consent-events',
     data: {
       site: input.siteId,
+      subscriber: subscriber.id,
       event: 'erased',
       basis: 'erasure',
       policyVersion: input.policyVersion,

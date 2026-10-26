@@ -9,13 +9,14 @@ import { deterministicTelecomEmulator } from './emulator'
 import { disabledTelecomAdapter, type MessagingProviderAdapter } from './delivery'
 import { createTwilioTelecomAdapter } from './real-provider'
 import { withExecutionLock } from '../operations/execution-lock'
+import { eventNotificationEnabled } from '../community/event-notification-preferences'
 
 type DeliveryInput = { deliveryId: string }
 type Doc = Record<string, any>
 
 export function selectTelecomAdapter(): MessagingProviderAdapter {
   const env = process.env
-  const mode = env.TELECOM_MODE || (process.env.NODE_ENV === 'production' ? 'real' : 'development')
+  const mode = env.TELECOM_MODE || 'disabled'
 
   if (mode === 'development' || mode === 'emulator') {
     return deterministicTelecomEmulator
@@ -76,6 +77,8 @@ export const telecomDeliveryTask = {
         })
         return { output: {} }
       }
+      if (delivery.scheduledFor && Date.parse(delivery.scheduledFor) > Date.now())
+        return { output: {} }
       const message = delivery.message as Doc
       const snapshot = (delivery.messageSnapshot as Doc | undefined) ?? message
       const purpose = String(snapshot.purpose || 'marketing')
@@ -148,12 +151,38 @@ export const telecomDeliveryTask = {
 
       // 3. Send-Time Quiet Hours Re-check
       const subscriber = delivery.subscriber as Doc | undefined
+      const memberId = subscriber?.member
+        ? String(subscriber.member.id ?? subscriber.member)
+        : undefined
+      if (
+        snapshot.notificationKind &&
+        (!memberId ||
+          !(await eventNotificationEnabled(
+            req.payload,
+            memberId,
+            String(snapshot.notificationKind),
+          )))
+      ) {
+        await req.payload.update({
+          collection: 'telecom-deliveries',
+          id: delivery.id,
+          data: { status: 'cancelled', outcome: { code: 'event-preference-disabled' } },
+          overrideAccess: true,
+        })
+        return { output: {} }
+      }
+      const profiles = memberId
+        ? await req.payload.find({
+            collection: 'profiles',
+            where: { member: { equals: memberId } },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          })
+        : null
       const quietEval = checkRecipientQuietHours({
-        currentTime:
-          (process.env.VITEST || process.env.NODE_ENV === 'test') && !delivery.enforceQuietHours
-            ? new Date('2026-09-20T18:00:00Z')
-            : new Date(),
-        recipientTimezone: subscriber?.timezone,
+        currentTime: new Date(),
+        recipientTimezone: profiles?.docs[0]?.timeZone ?? subscriber?.timezone,
         siteTimezone: 'UTC',
         isExemptPurpose: purpose === 'transactional' || purpose === 'alerts',
       })
@@ -174,6 +203,12 @@ export const telecomDeliveryTask = {
           },
           overrideAccess: true,
         })
+        await req.payload.jobs.queue({
+          task: 'audience-telecom-delivery',
+          input: { deliveryId: String(delivery.id) },
+          queue: 'operations',
+          waitUntil: quietEval.delayedUntil,
+        })
         return { output: {} }
       }
 
@@ -182,6 +217,7 @@ export const telecomDeliveryTask = {
 
       // 5. Unknown outcome reconciliation: Do not blindly retry across transports
       if (delivery.status === 'unknown') {
+        if (!delivery.provider || delivery.provider !== adapter.id) return { output: {} }
         const reconciled = await adapter.reconcile?.({
           idempotencyKey: delivery.idempotencyKey,
           providerMessageId: delivery.providerMessageId,
@@ -207,7 +243,11 @@ export const telecomDeliveryTask = {
       await req.payload.update({
         collection: 'telecom-deliveries',
         id: delivery.id,
-        data: { status: 'sending', attempts: Number(delivery.attempts || 0) + 1 },
+        data: {
+          status: 'sending',
+          provider: adapter.id,
+          attempts: Number(delivery.attempts || 0) + 1,
+        },
         overrideAccess: true,
       })
 

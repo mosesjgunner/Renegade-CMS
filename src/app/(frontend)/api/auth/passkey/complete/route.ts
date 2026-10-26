@@ -24,12 +24,12 @@ export async function POST(request: Request) {
 
     if (body.enrollmentToken) {
       const regCredential = (body.credential ?? body) as RegistrationResponseJSON
-      await completeStaffPasskeyEnrollment(payload, runtimeConfig, {
+      const result = await completeStaffPasskeyEnrollment(payload, runtimeConfig, {
         enrollmentToken: body.enrollmentToken,
         credential: regCredential,
         siteId: body.siteId,
       })
-      return Response.json({ status: 'ok', enrolled: true })
+      return Response.json({ status: 'ok', enrolled: true, recoveryCodes: result.recoveryCodes })
     }
 
     const credential = body as unknown as Parameters<typeof completePasskeyAuthentication>[2]

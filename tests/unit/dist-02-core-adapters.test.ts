@@ -265,11 +265,14 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
             { status: 200 },
           )
         }
+        if (urlStr.includes('/xrpc/com.atproto.repo.getRecord')) {
+          return new Response(JSON.stringify({ error: 'RecordNotFound' }), { status: 404 })
+        }
         if (urlStr.includes('/xrpc/com.atproto.repo.createRecord')) {
           recordCreatedPayload = JSON.parse(init.body)
           return new Response(
             JSON.stringify({
-              uri: 'at://did:plc:renegade123/app.bsky.feed.post/3k6abc123xyz',
+              uri: `at://did:plc:renegade123/app.bsky.feed.post/${recordCreatedPayload.rkey}`,
               cid: 'bafyreicidxyz',
             }),
             { status: 200 },
@@ -302,9 +305,11 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
       const result = await blueskyAdapter.publish(variant, authContext)
       expect(result.status).toBe('published')
       if (result.status === 'published') {
-        expect(result.remoteId).toBe('at://did:plc:renegade123/app.bsky.feed.post/3k6abc123xyz')
+        expect(result.remoteId).toBe(
+          `at://did:plc:renegade123/app.bsky.feed.post/${recordCreatedPayload.rkey}`,
+        )
         expect(result.remoteUrl).toBe(
-          'https://bsky.app/profile/renegade.bsky.social/post/3k6abc123xyz',
+          `https://bsky.app/profile/renegade.bsky.social/post/${recordCreatedPayload.rkey}`,
         )
       }
 

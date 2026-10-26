@@ -231,8 +231,16 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'delivery-identities',
       'email-deliveries',
       'delivery-receipts',
+      'telecom-messages',
+      'telecom-deliveries',
+      'telecom-delivery-events',
     ],
-    tasks: ['audience-email-delivery', 'audience-newsletter-dispatch'],
+    tasks: [
+      'audience-email-delivery',
+      'audience-newsletter-dispatch',
+      'audience-telecom-delivery',
+      'audience-telecom-dispatch',
+    ],
   },
   {
     id: 'notifications',

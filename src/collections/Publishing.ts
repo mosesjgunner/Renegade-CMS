@@ -66,6 +66,7 @@ import {
   visibilityOptions,
 } from './canonical-shared'
 import {
+  checkOperatorSiteAccess,
   operatorSiteCreateAccess,
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
@@ -988,6 +989,12 @@ export const Content: CollectionConfig = {
                   ?.slice('renegade-active-site='.length)
               : undefined
           if (cookieSite) {
+            if (req?.payload && req?.user) {
+              const hasAccess = await checkOperatorSiteAccess(req.payload, req.user, cookieSite)
+              if (!hasAccess) {
+                throw new APIError('You do not have operator permission on the requested active site.', 403)
+              }
+            }
             incoming.site = cookieSite
           } else if (req?.payload && req?.user) {
             const grant = await resolveOperatorGrantContext(req.payload, req.user)

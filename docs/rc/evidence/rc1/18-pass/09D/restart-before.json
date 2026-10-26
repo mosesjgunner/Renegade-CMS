@@ -1,0 +1,68 @@
+{
+  "subscribers": {
+    "total": 11,
+    "siteTotal": 6,
+    "siteTriaged": 0,
+    "sha256": "386378e84182ed5e51016ba4e126aa758776861e442f621b58c5798ceab7d7ea"
+  },
+  "contacts": {
+    "total": 12,
+    "siteTotal": 5,
+    "siteTriaged": 0,
+    "sha256": "685e51cee7df5da31f6887340a2f8ec1b6c7fa9a83d3ba633583b4bcdb5b9ff9"
+  },
+  "consent-events": {
+    "total": 38,
+    "siteTotal": 21,
+    "siteTriaged": 0,
+    "sha256": "fa860f5a7a9e1818487c8a7969b583678773a4d72bd28cef9cc9d84dece81b4b"
+  },
+  "suppressions": {
+    "total": 9,
+    "siteTotal": 5,
+    "siteTriaged": 0,
+    "sha256": "75fefcdbdc1bb9f542539ea76a45d047233f28985f925b0c028af33b6aa71bfd"
+  },
+  "email-messages": {
+    "total": 36,
+    "siteTotal": 10,
+    "siteTriaged": 0,
+    "sha256": "7d0b04926db9a0138674f29ffb5c7bfd9cccaa69bbcf569d31539bc31a5a5eaa"
+  },
+  "email-deliveries": {
+    "total": 36,
+    "siteTotal": 0,
+    "siteTriaged": 0,
+    "sha256": "fa1b4f071bdfc750d739e76295f90e93025e02fbf8e86a3ddb5250fc30a57afb"
+  },
+  "form-submissions": {
+    "total": 204,
+    "siteTotal": 51,
+    "siteTriaged": 51,
+    "sha256": "33fbdf9da57038b3a15da7be66cc59b1876e04d295e9e67152938915e2d1af78"
+  },
+  "workflow-items": {
+    "total": 204,
+    "siteTotal": 51,
+    "siteTriaged": 0,
+    "sha256": "b23c94df04f708b7e709e4aa7a3cff4538384905d08aefddeb04dce94f086f91"
+  },
+  "telecom-messages": {
+    "total": 5,
+    "siteTotal": 4,
+    "siteTriaged": 0,
+    "sha256": "2efcd6f0888788a6993324e5ed5a2d6d6109c98ec2ea40b15fcbc3084fa29f54"
+  },
+  "telecom-deliveries": {
+    "total": 5,
+    "siteTotal": 4,
+    "siteTriaged": 0,
+    "sha256": "b231a8d1c7c6ffb92e0553a5ab649119beec9967b7fb09d512747b48b6fe90de"
+  },
+  "recipient-snapshots": {
+    "total": 2,
+    "siteTotal": 2,
+    "siteTriaged": 0,
+    "sha256": "b4b3e0e87e71a403dd02515c7800ba98aceee2211c0d2e672ef47c604bf6b341"
+  }
+}

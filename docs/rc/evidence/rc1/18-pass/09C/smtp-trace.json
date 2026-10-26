@@ -1,0 +1,40 @@
+{
+  "messages": [
+    {
+      "to": "accepted@example.test",
+      "at": "2026-10-21T09:23:35.580Z",
+      "bytes": 1221
+    },
+    {
+      "to": "temporary@example.test",
+      "at": "2026-10-21T09:23:40.297Z",
+      "bytes": 1222
+    },
+    {
+      "to": "recover@example.test",
+      "at": "2026-10-21T09:23:50.424Z",
+      "bytes": 1220
+    },
+    {
+      "to": "unknown@example.test",
+      "at": "2026-10-21T09:24:15.290Z",
+      "bytes": 1220
+    },
+    {
+      "to": "hold@example.test",
+      "at": "2026-10-21T09:24:17.594Z",
+      "bytes": 1217
+    },
+    {
+      "to": "dedup@example.test",
+      "at": "2026-10-21T09:25:25.792Z",
+      "bytes": 449
+    }
+  ],
+  "rejections": {
+    "temporary@example.test": 1,
+    "recover@example.test": 4,
+    "exhaust@example.test": 4
+  },
+  "boundary": "Loopback only; no remote SMTP/carrier activity"
+}

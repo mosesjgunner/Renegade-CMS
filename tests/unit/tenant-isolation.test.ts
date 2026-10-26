@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { Brands, MemberSiteRoles, Publications, Spaces } from '../../src/collections/Identity'
-import { Categories, Sections, Topics } from '../../src/collections/Publishing'
+import { Categories, Content, Sections, Topics } from '../../src/collections/Publishing'
 import { enforceSiteTenantBoundary } from '../../src/collections/canonical-shared'
 
 describe('PUB-01 tenant isolation', () => {
@@ -33,7 +33,34 @@ describe('PUB-01 tenant isolation', () => {
     expect(siteField(Categories)).toMatchObject({ required: true, relationTo: 'sites' })
     expect(siteField(Topics)).toMatchObject({ required: true, relationTo: 'sites' })
     expect(Publications.hooks?.beforeChange).toHaveLength(1)
-    expect(Categories.hooks?.beforeChange).toHaveLength(2)
+    expect(Categories.hooks?.beforeChange).toHaveLength(3)
+  })
+
+  it('rejects cross-tenant content creation when active-site cookie specifies foreign site', async () => {
+    const beforeValidate = Content.hooks?.beforeValidate?.[0]
+    expect(beforeValidate).toBeDefined()
+    const req = {
+      user: { id: 'staff', role: 'staff', member: 'staff-member' },
+      headers: {
+        get: (k: string) => (k.toLowerCase() === 'cookie' ? 'renegade-active-site=site-b' : null),
+        cookie: 'renegade-active-site=site-b',
+      },
+      payload: {
+        find: async ({ collection }: { collection: string }) => ({
+          docs:
+            collection === 'member-site-roles'
+              ? [{ site: 'site-a', member: 'staff-member', role: 'contributor' }]
+              : [{ id: 'site-a' }, { id: 'site-b' }],
+        }),
+      },
+    }
+
+    await expect(
+      (beforeValidate as any)({
+        data: { title: 'Unauthorized Post' },
+        req,
+      }),
+    ).rejects.toThrow('You do not have operator permission on the requested active site.')
   })
 })
 

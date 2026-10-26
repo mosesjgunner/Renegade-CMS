@@ -62,6 +62,8 @@ describe('Payload domain registration', () => {
         'audience-form-intake',
         'community-email-dispatch',
         'audience-newsletter-dispatch',
+        'audience-telecom-delivery',
+        'audience-telecom-dispatch',
         'commerce-abandon-checkouts',
         'commerce-process-payment-event',
         'commerce-reconcile-payments',

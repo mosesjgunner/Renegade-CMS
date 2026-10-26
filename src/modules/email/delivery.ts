@@ -194,6 +194,12 @@ export const developmentCaptureEmailAdapter: EmailDeliveryAdapter = {
     }
   },
   async reconcile({ idempotencyKey }) {
+    // A captured envelope is not proof of acceptance when the harness rejected it.
+    if (
+      localMailSinkSimulations.has(idempotencyKey) &&
+      localMailSinkSimulations.get(idempotencyKey) !== 'accept'
+    )
+      return null
     const receipt = localMailSink.get(idempotencyKey)
     return receipt
       ? { ok: true, provider: 'development-capture', providerMessageId: receipt.providerMessageId }
@@ -344,13 +350,13 @@ export function normalizeEmailError(error: unknown): EmailDeliveryFailure {
   if (code === 'EAUTH' || [534, 535].includes(responseCode))
     return failure('permanent', 'authentication_failed', 'SMTP authentication failed.')
   if (
-    ['ETLS', 'ESOCKET', 'ERR_TLS_CERT_ALTNAME_INVALID', 'DEPTH_ZERO_SELF_SIGNED_CERT'].includes(
-      code,
-    ) ||
+    ['ETLS', 'ERR_TLS_CERT_ALTNAME_INVALID', 'DEPTH_ZERO_SELF_SIGNED_CERT'].includes(code) ||
     /certificate|tls/i.test(String(value?.message))
   )
     return failure('permanent', 'tls_failed', 'SMTP TLS validation failed.')
-  if (['ETIMEDOUT', 'ESOCKETTIMEDOUT'].includes(code))
+  if (
+    ['ETIMEDOUT', 'ESOCKETTIMEDOUT', 'ESOCKET', 'ECONNRESET', 'EPIPE', 'ECONNECTION'].includes(code)
+  )
     return failure(
       'unknown',
       'unknown_outcome',
@@ -364,7 +370,7 @@ export function normalizeEmailError(error: unknown): EmailDeliveryFailure {
     )
   if (
     (responseCode >= 400 && responseCode < 500) ||
-    ['ECONNECTION', 'ECONNREFUSED', 'EHOSTUNREACH', 'ENETUNREACH'].includes(code)
+    ['ECONNREFUSED', 'EHOSTUNREACH', 'ENETUNREACH'].includes(code)
   )
     return failure(
       'retryable',

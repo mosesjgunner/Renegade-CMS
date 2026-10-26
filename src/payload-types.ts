@@ -530,6 +530,8 @@ export interface Config {
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
       'audience-form-intake': TaskAudienceFormIntake;
       'community-email-dispatch': TaskCommunityEmailDispatch;
+      'audience-telecom-delivery': TaskAudienceTelecomDelivery;
+      'audience-telecom-dispatch': TaskAudienceTelecomDispatch;
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
@@ -3500,6 +3502,8 @@ export interface PayloadJob {
           | 'audience-newsletter-dispatch'
           | 'audience-form-intake'
           | 'community-email-dispatch'
+          | 'audience-telecom-delivery'
+          | 'audience-telecom-dispatch'
           | 'analytics-retention-cleanup'
           | 'quality-scan'
           | 'commerce-abandon-checkouts'
@@ -3565,6 +3569,8 @@ export interface PayloadJob {
         | 'audience-newsletter-dispatch'
         | 'audience-form-intake'
         | 'community-email-dispatch'
+        | 'audience-telecom-delivery'
+        | 'audience-telecom-dispatch'
         | 'analytics-retention-cleanup'
         | 'quality-scan'
         | 'commerce-abandon-checkouts'
@@ -10028,18 +10034,6 @@ export interface PayloadLockedDocument {
         value: string | EmailDeliveryEvent;
       } | null)
     | ({
-        relationTo: 'telecom-messages';
-        value: string | TelecomMessage;
-      } | null)
-    | ({
-        relationTo: 'telecom-deliveries';
-        value: string | TelecomDelivery;
-      } | null)
-    | ({
-        relationTo: 'telecom-delivery-events';
-        value: string | TelecomDeliveryEvent;
-      } | null)
-    | ({
         relationTo: 'recipient-snapshots';
         value: string | RecipientSnapshot;
       } | null)
@@ -15610,6 +15604,24 @@ export interface TaskAudienceFormIntake {
  * via the `definition` "TaskCommunity-email-dispatch".
  */
 export interface TaskCommunityEmailDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-delivery".
+ */
+export interface TaskAudienceTelecomDelivery {
+  input: {
+    deliveryId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-dispatch".
+ */
+export interface TaskAudienceTelecomDispatch {
   input?: unknown;
   output?: unknown;
 }

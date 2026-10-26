@@ -7,6 +7,7 @@ import {
   localMailSinkReceipts,
   normalizeEmailError,
   resetLocalMailSink,
+  simulateLocalMailSinkOutcome,
   selectEmailDeliveryAdapter,
 } from '../../src/modules/email/delivery'
 
@@ -30,6 +31,27 @@ const request = {
 }
 
 describe('email delivery adapters', () => {
+  it.each(['ECONNECTION', 'ECONNRESET', 'ESOCKET', 'EPIPE'])(
+    'quarantines ambiguous %s rather than replaying SMTP DATA',
+    (code) => {
+      expect(
+        normalizeEmailError({ code, message: 'Connection closed unexpectedly' }),
+      ).toMatchObject({ kind: 'unknown', code: 'unknown_outcome' })
+    },
+  )
+  it.each(['delay', 'bounce', 'complaint'] as const)(
+    'does not reconcile a simulated %s as acceptance',
+    async (outcome) => {
+      resetLocalMailSink()
+      simulateLocalMailSinkOutcome(request.idempotencyKey, outcome)
+      expect((await developmentCaptureEmailAdapter.send(request)).ok).toBe(false)
+      expect(
+        await developmentCaptureEmailAdapter.reconcile?.({
+          idempotencyKey: request.idempotencyKey,
+        }),
+      ).toBeNull()
+    },
+  )
   it('classifies actual SMTP recipient envelope rejections by their status rather than as authentication failures', () => {
     expect(normalizeEmailError({ code: 'EENVELOPE', responseCode: 451 })).toMatchObject({
       kind: 'retryable',

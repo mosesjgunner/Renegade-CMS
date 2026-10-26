@@ -1,0 +1,146 @@
+﻿{
+    "baseCommit":  "05f58a570ee51b0a6154d71db9d9322340c2f59f",
+    "capturedAt":  "2026-10-21T04:28:14.5113676-05:00",
+    "identity":  "Base commit plus all dirty source overlay hashes. Own generated 09C evidence and cumulative ledger excluded to avoid circular identity.",
+    "changedPaths":  [
+                         {
+                             "path":  "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+                             "sha256":  "458d60407f259fb56bcb619fe9b33ffeb7baffa751cda9f6c5947b9c392a3ac5",
+                             "scope09c":  false
+                         },
+                         {
+                             "path":  "src/app/(frontend)/api/admin/audience/crm/route.ts",
+                             "sha256":  "1155099842f6e5151c7b7ba24ded9b037e6850b995f79d36cb9de8ae639d09e3",
+                             "scope09c":  false
+                         },
+                         {
+                             "path":  "src/app/(frontend)/api/admin/audience/retry/route.ts",
+                             "sha256":  "1e58fa5f25b4cd9c60b2bce1ef9a763d5e33357318e587d9bf59542a7706e244",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/migrations/20261021_090000_rc1_delivery_suppressions.ts",
+                             "sha256":  "a4524b98ffbd396ec120a64e322aded2fec33bb25324f9db268d048ae985d9b9",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/migrations/index.ts",
+                             "sha256":  "ba9a8f7c503cebc8dcc5bd0536d5e6156b9786a60f53cb54d3f2d3b9acd82dc9",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/admin/AudienceCommandCenter.tsx",
+                             "sha256":  "a18e17c422548eb8346988bf06436630bfc3b9d21780d27d40701177a07cb327",
+                             "scope09c":  false
+                         },
+                         {
+                             "path":  "src/modules/audience/payload-domain.ts",
+                             "sha256":  "0e15bde3807b77ed067fe4e5a6f49a114725924f2f6a25c923cf11bba8bbea3d",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/audience/service.ts",
+                             "sha256":  "cc0c0c08e784ac48e4c99774683367e37fbf951e728c3b66933216ca9386aea9",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/audience/tasks.ts",
+                             "sha256":  "9c2117c5f3874f3300038f028b83067d61cd3257d36852271991377dcb7966c6",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/email/delivery.ts",
+                             "sha256":  "3fe3216b9b64c1565933857627d63b4d40adf498bad978d0e82255a5ac57368a",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/module-registry.ts",
+                             "sha256":  "2f2a2e0f1ad112aaa1d7c1bad937b074d6a5b260db3f23650c4c123dfb9675bb",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/telecom/service.ts",
+                             "sha256":  "e7902067273a6b4f0ac713ee2f686431ae5361804e31b768cfef276032b0b82e",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/modules/telecom/tasks.ts",
+                             "sha256":  "edb88647d1af2e560946c58ca6c62e2cff0d8a55dde51c380c042992ed8a7a23",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/payload-types.ts",
+                             "sha256":  "1a6f4b9022efe41553226dcb6a3dbab9c9557d0bd1774c466655c9eeddbca1ef",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "src/scripts/run-jobs-worker.ts",
+                             "sha256":  "236baf9657b7b9e17b88c4d6776edd9a301062066945c61d0b47d970ae762f5c",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/rc1-09c/run-isolated.ps1",
+                             "sha256":  "4435ebc83d92a51d79206d7cb847714ac8c739641f95e0b2533d8cbc83f7585d",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/rc1-09c/telecom.ts",
+                             "sha256":  "68ab574af71dde85c5e1d564dc110ad6bcd4e92962a3216cd3b1240f3320a767",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/rc1-09c/verify.ts",
+                             "sha256":  "e87461f6fb56403c7f9fd1b1dc70ed89956fbb62e063a90b5111a17c1cbf8039",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/unit/email-delivery.test.ts",
+                             "sha256":  "55e7f595ba4df769e628bfaf8e667fd5aa7f3fd3f05d36da60f60388388af574",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/unit/payload-domains.test.ts",
+                             "sha256":  "b539f7d0faf98092cf5613058d4dc50b62beb1d0d8850cbecc99f4d32f0f0d16",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/unit/rc1-09c-delivery.test.ts",
+                             "sha256":  "ab2b5e27d43684e0a75298798262a6524729df20ee00c8e87eca1b2bdb1c5f0a",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/unit/rc1-09c-telecom.test.ts",
+                             "sha256":  "763c42756abfcedf14582bf19d04e3744646e64603863811155d143ece47c1a5",
+                             "scope09c":  true
+                         },
+                         {
+                             "path":  "tests/unit/rc1-09d-crm-metrics.test.ts",
+                             "sha256":  "46a0bb5c990894a55306308217a9980fb6bc41cf0bc204b3722e54ef765de537",
+                             "scope09c":  false
+                         }
+                     ],
+    "scopePaths":  [
+                       "src/app/(frontend)/api/admin/audience/retry/route.ts",
+                       "src/migrations/index.ts",
+                       "src/migrations/20261021_090000_rc1_delivery_suppressions.ts",
+                       "src/modules/audience/payload-domain.ts",
+                       "src/modules/audience/service.ts",
+                       "src/modules/audience/tasks.ts",
+                       "src/modules/email/delivery.ts",
+                       "src/modules/module-registry.ts",
+                       "src/modules/telecom/service.ts",
+                       "src/modules/telecom/tasks.ts",
+                       "src/payload-types.ts",
+                       "src/scripts/run-jobs-worker.ts",
+                       "tests/unit/email-delivery.test.ts",
+                       "tests/unit/payload-domains.test.ts",
+                       "tests/unit/rc1-09c-delivery.test.ts",
+                       "tests/unit/rc1-09c-telecom.test.ts",
+                       "tests/rc1-09c/run-isolated.ps1",
+                       "tests/rc1-09c/verify.ts",
+                       "tests/rc1-09c/telecom.ts"
+                   ],
+    "concurrentWork":  "AudienceCommandCenter, command-center and CRM/09D files are preserved concurrent work, not accepted by this subpass.",
+    "runtime":  "Host Node.js v24.19.0; no production application image claimed",
+    "postgresImage":  "postgres@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929"
+}

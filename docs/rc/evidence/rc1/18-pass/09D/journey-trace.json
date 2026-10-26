@@ -1,0 +1,238 @@
+[
+  {
+    "name": "created primary test site alpha",
+    "passed": true
+  },
+  {
+    "name": "created foreign test site beta",
+    "passed": true
+  },
+  {
+    "name": "created alpha administrator with site grant",
+    "passed": true
+  },
+  {
+    "name": "fixture administrator session created (no WebAuthn claim)",
+    "passed": true
+  },
+  {
+    "name": "fixture foreign staff session created (no WebAuthn claim)",
+    "passed": true
+  },
+  {
+    "name": "created audience list for alpha site",
+    "passed": true
+  },
+  {
+    "name": "public visitor signup accepted",
+    "passed": true
+  },
+  {
+    "name": "confirmation token observed in actual local SMTP MIME",
+    "passed": true
+  },
+  {
+    "name": "public confirmation succeeds",
+    "passed": true
+  },
+  {
+    "name": "confirmation replay denied",
+    "passed": true
+  },
+  {
+    "name": "active subscriber and verified timestamp persisted",
+    "passed": true
+  },
+  {
+    "name": "double-opt-in-confirmed consent event persisted",
+    "passed": true
+  },
+  {
+    "name": "created CRM directory contact linked to email",
+    "passed": true
+  },
+  {
+    "name": "campaign test-send returns HTTP 200",
+    "passed": true
+  },
+  {
+    "name": "campaign delivery queued",
+    "passed": true
+  },
+  {
+    "name": "actual worker sends exact campaign MIME once",
+    "passed": true
+  },
+  {
+    "name": "foreign site same-address sends are genuinely accepted",
+    "passed": true
+  },
+  {
+    "name": "public preference withdrawal succeeds",
+    "passed": true
+  },
+  {
+    "name": "suppressed queued dispatch is cancelled with no sink DATA",
+    "passed": true
+  },
+  {
+    "name": "subscriber suppressed after preference change",
+    "passed": true
+  },
+  {
+    "name": "canDeliverToSubscriber returns false after suppression",
+    "passed": true
+  },
+  {
+    "name": "command center returns HTTP 200 for authorized administrator",
+    "passed": true
+  },
+  {
+    "name": "reconciled subscribers count with canonical database",
+    "passed": true
+  },
+  {
+    "name": "reconciled contacts count with canonical database",
+    "passed": true
+  },
+  {
+    "name": "reconciled suppressions count with canonical database",
+    "passed": true
+  },
+  {
+    "name": "command center delivers structured deliverability health",
+    "passed": true
+  },
+  {
+    "name": "command center includes full metric dictionary (>= 14 terms)",
+    "passed": true
+  },
+  {
+    "name": "metric dictionary labels transport handoff vs carrier DLR",
+    "passed": true
+  },
+  {
+    "name": "crm search by name returns HTTP 200",
+    "passed": true
+  },
+  {
+    "name": "crm search found Jane Doe",
+    "passed": true
+  },
+  {
+    "name": "crm search found Jane by E.164 phone substring",
+    "passed": true
+  },
+  {
+    "name": "crm filter by status \"lead\" returned matches",
+    "passed": true
+  },
+  {
+    "name": "contact detail inspection returns HTTP 200",
+    "passed": true
+  },
+  {
+    "name": "detail indicates recipient is suppressed",
+    "passed": true
+  },
+  {
+    "name": "detail indicates suppression reason is unsubscribe",
+    "passed": true
+  },
+  {
+    "name": "detail contains consent history with double-opt-in and withdrawal",
+    "passed": true
+  },
+  {
+    "name": "detail observed metrics only report observed events without phantom inferences",
+    "passed": true
+  },
+  {
+    "name": "export report returns HTTP 200",
+    "passed": true
+  },
+  {
+    "name": "export header is text/csv",
+    "passed": true
+  },
+  {
+    "name": "export asserts k-anonymity policy in header comments",
+    "passed": true
+  },
+  {
+    "name": "export masks small cohorts (< 5)",
+    "passed": true
+  },
+  {
+    "name": "export excludes six foreign-site accepted deliveries",
+    "passed": true
+  },
+  {
+    "name": "DNS and TLS verification not inferred from SMTP configuration",
+    "passed": true
+  },
+  {
+    "name": "unmeasured health limits are explicit",
+    "passed": true
+  },
+  {
+    "name": "create contact returns HTTP 201",
+    "passed": true
+  },
+  {
+    "name": "created contact normalized email",
+    "passed": true
+  },
+  {
+    "name": "created contact normalized E.164 phone",
+    "passed": true
+  },
+  {
+    "name": "gdpr subject erasure returns HTTP 200",
+    "passed": true
+  },
+  {
+    "name": "erased subscriber email was anonymized with erased+ prefix",
+    "passed": true
+  },
+  {
+    "name": "erased subscriber status is suppressed",
+    "passed": true
+  },
+  {
+    "name": "erasedAt timestamp recorded",
+    "passed": true
+  },
+  {
+    "name": "erased consent audit record logged",
+    "passed": true
+  },
+  {
+    "name": "anonymous access to command center denied HTTP 403",
+    "passed": true
+  },
+  {
+    "name": "anonymous access to crm denied HTTP 403",
+    "passed": true
+  },
+  {
+    "name": "cross-site foreign operator command center access denied HTTP 403",
+    "passed": true
+  },
+  {
+    "name": "cross-site foreign operator crm access denied HTTP 403",
+    "passed": true
+  },
+  {
+    "name": "non-existent contact inspection returns clean HTTP 404",
+    "passed": true
+  },
+  {
+    "name": "CRM empty search returns zero canonical matches",
+    "passed": true
+  },
+  {
+    "name": "CRM foreign-origin write denied",
+    "passed": true
+  }
+]

@@ -1,0 +1,164 @@
+{
+  "baseCommit": "05f58a570ee51b0a6154d71db9d9322340c2f59f",
+  "identity": "dirty source overlay; application source remained unchanged during final accepted runtime checks",
+  "files": [
+    {
+      "path": "next-env.d.ts",
+      "sha256": "dde7a17d9ae7b80bc0d292687c11c6d4345c1d74e68ecd07c13858f897019378"
+    },
+    {
+      "path": "src/app/(frontend)/admin/email-composer/page.tsx",
+      "sha256": "efe52b38de8948a62bf2469f6aa2a5c7df1d9bb18fe823578de551bf45a83d29"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+      "sha256": "ffc1c4f1ff705cb1868c312b8dc558f9b339f9fe2fce41630742b5ee0da37e0a"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/crm/route.ts",
+      "sha256": "614049c3044e10228479873d6b0ee2713901653639ebd8e95978e9d8803404c5"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/audience/retry/route.ts",
+      "sha256": "1e58fa5f25b4cd9c60b2bce1ef9a763d5e33357318e587d9bf59542a7706e244"
+    },
+    {
+      "path": "src/migrations/20261021_090000_rc1_delivery_suppressions.ts",
+      "sha256": "a4524b98ffbd396ec120a64e322aded2fec33bb25324f9db268d048ae985d9b9"
+    },
+    {
+      "path": "src/migrations/index.ts",
+      "sha256": "ba9a8f7c503cebc8dcc5bd0536d5e6156b9786a60f53cb54d3f2d3b9acd82dc9"
+    },
+    {
+      "path": "src/modules/admin/AudienceCommandCenter.tsx",
+      "sha256": "9b1361097982fa3644a097d90617e97d082e899f24ae1e23d19cd077f8bb02db"
+    },
+    {
+      "path": "src/modules/audience/payload-domain.ts",
+      "sha256": "0e15bde3807b77ed067fe4e5a6f49a114725924f2f6a25c923cf11bba8bbea3d"
+    },
+    {
+      "path": "src/modules/audience/service.ts",
+      "sha256": "ab2d06a40f5eb751e323b68f4ba002e2c72c34859abbd10df16bcd3e8c7f99b1"
+    },
+    {
+      "path": "src/modules/audience/tasks.ts",
+      "sha256": "9c2117c5f3874f3300038f028b83067d61cd3257d36852271991377dcb7966c6"
+    },
+    {
+      "path": "src/modules/email/delivery.ts",
+      "sha256": "3fe3216b9b64c1565933857627d63b4d40adf498bad978d0e82255a5ac57368a"
+    },
+    {
+      "path": "src/modules/module-registry.ts",
+      "sha256": "2f2a2e0f1ad112aaa1d7c1bad937b074d6a5b260db3f23650c4c123dfb9675bb"
+    },
+    {
+      "path": "src/modules/telecom/service.ts",
+      "sha256": "e7902067273a6b4f0ac713ee2f686431ae5361804e31b768cfef276032b0b82e"
+    },
+    {
+      "path": "src/modules/telecom/tasks.ts",
+      "sha256": "edb88647d1af2e560946c58ca6c62e2cff0d8a55dde51c380c042992ed8a7a23"
+    },
+    {
+      "path": "src/payload-types.ts",
+      "sha256": "1a6f4b9022efe41553226dcb6a3dbab9c9557d0bd1774c466655c9eeddbca1ef"
+    },
+    {
+      "path": "src/scripts/run-jobs-worker.ts",
+      "sha256": "236baf9657b7b9e17b88c4d6776edd9a301062066945c61d0b47d970ae762f5c"
+    },
+    {
+      "path": "tests/rc1-09c/run-isolated.ps1",
+      "sha256": "4435ebc83d92a51d79206d7cb847714ac8c739641f95e0b2533d8cbc83f7585d"
+    },
+    {
+      "path": "tests/rc1-09c/telecom.ts",
+      "sha256": "68ab574af71dde85c5e1d564dc110ad6bcd4e92962a3216cd3b1240f3320a767"
+    },
+    {
+      "path": "tests/rc1-09c/verify.ts",
+      "sha256": "e87461f6fb56403c7f9fd1b1dc70ed89956fbb62e063a90b5111a17c1cbf8039"
+    },
+    {
+      "path": "tests/rc1-09d/browser-current.ts",
+      "sha256": "4cfb2dcff627f61d3377a39846fbef5fef6ecdcda780b7d39e9737a9f1bad39e"
+    },
+    {
+      "path": "tests/rc1-09d/intake-current.ts",
+      "sha256": "991877102f80a11f4bb1f221e1387be56a7a91c43b1f1005d53dde21f14de9e2"
+    },
+    {
+      "path": "tests/rc1-09d/restart-current.ts",
+      "sha256": "d021c9741afd60a9de83e0f3062c25d10c887f06b36c0677b767d1f53192fe22"
+    },
+    {
+      "path": "tests/rc1-09d/run-current.ps1",
+      "sha256": "939f9565e6e0d5ae016d5b7d03735bc9fcb6ff70869ccba6bd1327ef8c71c4f0"
+    },
+    {
+      "path": "tests/rc1-09d/run-isolated.ps1",
+      "sha256": "4417ad80896d3f2aa0e66cfc6613269f4e9bffc0b8af6260fb2b570c6c7bfa9e"
+    },
+    {
+      "path": "tests/rc1-09d/segment-current.ts",
+      "sha256": "f7c1875a6a9dc2a1bdb733d6803a211d7c79bc6f815fc3df1f464c9bd9c98667"
+    },
+    {
+      "path": "tests/rc1-09d/smtp-sink.ts",
+      "sha256": "7b98c96ad5b51d5339ea04d8c4fb8cc419aee838d054b2986a0d9386308a089b"
+    },
+    {
+      "path": "tests/rc1-09d/telecom-current.ts",
+      "sha256": "1fa411748cdb9162216c7fad7b4237a9346932fe67754e78ca12e8b67fdb8ac9"
+    },
+    {
+      "path": "tests/rc1-09d/verify-current.ts",
+      "sha256": "f3c0a2f4242c5c7e01e0ac42b96026d753540cb68245f004350ddf66f5b33d44"
+    },
+    {
+      "path": "tests/rc1-09d/verify.ts",
+      "sha256": "19e5416461ac10336d1412747ca471f6880b8af3342f314936750c3158fe288d"
+    },
+    {
+      "path": "tests/unit/email-delivery.test.ts",
+      "sha256": "55e7f595ba4df769e628bfaf8e667fd5aa7f3fd3f05d36da60f60388388af574"
+    },
+    {
+      "path": "tests/unit/payload-domains.test.ts",
+      "sha256": "b539f7d0faf98092cf5613058d4dc50b62beb1d0d8850cbecc99f4d32f0f0d16"
+    },
+    {
+      "path": "tests/unit/rc1-09c-delivery.test.ts",
+      "sha256": "ab2b5e27d43684e0a75298798262a6524729df20ee00c8e87eca1b2bdb1c5f0a"
+    },
+    {
+      "path": "tests/unit/rc1-09c-telecom.test.ts",
+      "sha256": "763c42756abfcedf14582bf19d04e3744646e64603863811155d143ece47c1a5"
+    },
+    {
+      "path": "tests/unit/rc1-09d-crm-metrics.test.ts",
+      "sha256": "d99d206493fbfcfb3ff81f9b9c2b89b379807ede943992765be9d24c90bb4601"
+    },
+    {
+      "path": "tests/unit/rc1-09d-reporting.test.ts",
+      "sha256": "dc748395407a98852e74894ceebeb61fd80b80605cad255f3ee7911a67e7450e"
+    },
+    {
+      "path": "tests/unit/rc1-09d-segments.test.ts",
+      "sha256": "2f2df7ad93cdd67f511e6b06b0197979fceaf2bf88129794f1dd16046f1b45f0"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "a93f9ad62678008b88e69d93fee968125d09e34eddfa54d6b3bae90e9287bdb2"
+    }
+  ],
+  "unrelatedInitialPathsChanged": [],
+  "generatedByNext": [
+    "next-env.d.ts",
+    "tsconfig.json"
+  ],
+  "harnessNote": "Final whitespace formatting of harness scripts followed runtime execution; application source did not change."
+}

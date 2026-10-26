@@ -55,6 +55,15 @@ export const emailDeliveryTask = {
         ['accepted', 'failed', 'dead-letter'].includes(delivery.status)
       )
         return { output: {} }
+      if (
+        (delivery.status === 'sending' &&
+          delivery.leaseUntil &&
+          Date.parse(delivery.leaseUntil) > Date.now()) ||
+        (delivery.status === 'queued' &&
+          delivery.nextAttemptAt &&
+          Date.parse(delivery.nextAttemptAt) > Date.now())
+      )
+        return { output: {} }
       const message = delivery.message as Doc
       // A queued recipient renders the reviewed revision captured at queue time;
       // later edits to the message cannot alter an approved send.
@@ -113,6 +122,7 @@ export const emailDeliveryTask = {
           id: delivery.id,
           data: {
             status: 'unknown',
+            leaseUntil: null,
             outcome: {
               code: 'interrupted_send',
               message: 'Interrupted send; provider acceptance requires reconciliation.',
@@ -142,6 +152,22 @@ export const emailDeliveryTask = {
         })
         return { output: {} }
       }
+      const retryAttemptBase = Number(delivery.outcome?.retryAttemptBase || 0)
+      const cycleAttempts = Number(delivery.attempts || 0) - retryAttemptBase
+      if (cycleAttempts >= 4) {
+        await req.payload.update({
+          collection: 'email-deliveries',
+          id: delivery.id,
+          data: {
+            status: 'dead-letter',
+            leaseUntil: null,
+            nextAttemptAt: null,
+            outcome: { ...(delivery.outcome ?? {}), code: 'retry_exhausted', retryable: true },
+          },
+          overrideAccess: true,
+        })
+        return { output: {} }
+      }
       await req.payload.update({
         collection: 'email-deliveries',
         id: delivery.id,
@@ -149,6 +175,10 @@ export const emailDeliveryTask = {
           status: 'sending',
           provider: adapter.id,
           attempts: Number(delivery.attempts || 0) + 1,
+          leaseUntil: new Date(
+            Date.now() + Math.max(60_000, loadConfig().email.sendTimeoutMs + 10_000),
+          ).toISOString(),
+          nextAttemptAt: null,
         },
         overrideAccess: true,
       })
@@ -247,6 +277,8 @@ export const emailDeliveryTask = {
           id: delivery.id,
           data: {
             status: 'accepted',
+            leaseUntil: null,
+            nextAttemptAt: null,
             provider: result.provider,
             providerMessageId: result.providerMessageId,
             acceptedAt: new Date().toISOString(),
@@ -256,7 +288,11 @@ export const emailDeliveryTask = {
                 `${rendered.text + footerText}\n${rendered.html ? rendered.html + footerHtml : ''}`,
               )
               .digest('base64url'),
-            outcome: { acceptedAt: new Date().toISOString(), delivery: 'not-observed' },
+            outcome: {
+              retryAttemptBase,
+              acceptedAt: new Date().toISOString(),
+              delivery: 'not-observed',
+            },
           },
           overrideAccess: true,
         })
@@ -271,10 +307,20 @@ export const emailDeliveryTask = {
               ? 'unknown'
               : result.failure.kind === 'permanent'
                 ? 'failed'
-                : 'queued',
+                : cycleAttempts >= 3
+                  ? 'dead-letter'
+                  : 'queued',
+          leaseUntil: null,
+          nextAttemptAt:
+            result.failure.kind === 'retryable'
+              ? new Date(
+                  Date.now() + Math.min(3_600_000, 1_000 * 2 ** Number(delivery.attempts || 0)),
+                ).toISOString()
+              : null,
           provider: result.provider,
           outcome: {
             code: result.failure.code,
+            retryAttemptBase,
             message: result.failure.message,
             retryable: result.failure.kind === 'retryable',
             ...(result.failure.kind === 'retryable'
@@ -321,3 +367,51 @@ export const audienceTasks = [
   formIntakeTask,
   communityEmailTask,
 ]
+
+/** Delivery state is the durable outbox, including jobs interrupted while processing.
+ * The task rechecks due time and serializes on the same PostgreSQL execution lock.
+ */
+export async function recoverEmailOutbox(payload: any) {
+  const now = new Date().toISOString()
+  const due = await payload.find({
+    collection: 'email-deliveries',
+    depth: 0,
+    limit: 100,
+    overrideAccess: true,
+    where: {
+      or: [
+        {
+          and: [
+            { status: { equals: 'queued' } },
+            {
+              or: [
+                { nextAttemptAt: { exists: false } },
+                { nextAttemptAt: { less_than_equal: now } },
+              ],
+            },
+          ],
+        },
+        {
+          and: [
+            { status: { equals: 'sending' } },
+            { or: [{ leaseUntil: { exists: false } }, { leaseUntil: { less_than_equal: now } }] },
+          ],
+        },
+      ],
+    },
+  })
+  for (const delivery of due.docs) {
+    try {
+      await (emailDeliveryTask.handler as any)({
+        input: { deliveryId: String(delivery.id) },
+        req: { payload },
+      })
+    } catch (error) {
+      payload.logger.error({
+        err: error,
+        event: 'audience.email.recovery_deferred',
+        deliveryId: delivery.id,
+      })
+    }
+  }
+}

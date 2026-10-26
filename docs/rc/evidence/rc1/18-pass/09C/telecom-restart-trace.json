@@ -1,0 +1,22 @@
+[
+  {
+    "name": "restart telecom 674115d8-730b-494b-b3ce-1a8ec7acac98: state and attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart telecom 124571b8-ca3b-46d7-b645-67dd602dba21: state and attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart telecom 0969fd7f-43cd-4fab-bad0-b8670e9f9016: state and attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart telecom c8cb7270-a8e0-455f-a40d-9d63972992ca: state and attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart telecom 4de3f1ec-735d-491a-bbdb-e60d69f2a213: state and attempts retained",
+    "passed": true
+  }
+]

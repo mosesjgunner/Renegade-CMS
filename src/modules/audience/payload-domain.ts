@@ -46,6 +46,7 @@ import {
 } from '../../collections/Audience'
 import type { DomainDefinition } from '../core/payload-domains'
 import { audienceTasks } from './tasks'
+import { telecomTasks } from '../telecom/tasks'
 
 export const audienceDomain: DomainDefinition = {
   id: 'audience',
@@ -95,6 +96,6 @@ export const audienceDomain: DomainDefinition = {
     AudienceFrequencyPolicies,
     AudienceExperiments,
   ],
-  // Telecom remains a contract-tested deferred capability; no shipping dispatcher may send it.
-  tasks: audienceTasks,
+  // Telecom is opt-in at transport selection; unconfigured workers cannot send.
+  tasks: [...audienceTasks, ...telecomTasks],
 }

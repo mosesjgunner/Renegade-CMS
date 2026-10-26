@@ -1,0 +1,29 @@
+{
+  "restartedAt": "2026-10-21T09:56:50.067Z",
+  "trace": [
+    {
+      "name": "site alpha persisted across postgres restart",
+      "passed": true
+    },
+    {
+      "name": "erased subscriber persisted with anonymized email",
+      "passed": true
+    },
+    {
+      "name": "erased subscriber status is suppressed",
+      "passed": true
+    },
+    {
+      "name": "suppression records intact across restart",
+      "passed": true
+    },
+    {
+      "name": "crm contacts intact across restart",
+      "passed": true
+    },
+    {
+      "name": "consent audit history intact across restart",
+      "passed": true
+    }
+  ]
+}

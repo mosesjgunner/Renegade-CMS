@@ -1,0 +1,62 @@
+[
+  {
+    "name": "public saved-schema form receives submission",
+    "passed": true
+  },
+  {
+    "name": "public intake idempotency replay returns same persisted ID",
+    "passed": true
+  },
+  {
+    "name": "invalid form answers rejected without success",
+    "passed": true
+  },
+  {
+    "name": "foreign host cannot submit Alpha form",
+    "passed": true
+  },
+  {
+    "name": "51 real form submissions persisted through public intake",
+    "passed": true
+  },
+  {
+    "name": "supported intake worker triages all 51 submissions and records completed actions",
+    "passed": true
+  },
+  {
+    "name": "intake contacts deduplicate by canonical site and address",
+    "passed": true
+  },
+  {
+    "name": "51 source-linked tasks persisted",
+    "passed": true
+  },
+  {
+    "name": "worker replay does not duplicate completed intake tasks",
+    "passed": true
+  },
+  {
+    "name": "supported community dispatcher persists in-app notification with external channel off",
+    "passed": true
+  },
+  {
+    "name": "command center returns canonical form counts above page boundary",
+    "passed": true
+  },
+  {
+    "name": "notification reporting labels canonical saved records",
+    "passed": true
+  },
+  {
+    "name": "CRM supports persisted pagination",
+    "passed": true
+  },
+  {
+    "name": "foreign-site subject export denied before returning private data",
+    "passed": true
+  },
+  {
+    "name": "subject export retains unpopulated relationships and explicit retention boundary",
+    "passed": true
+  }
+]

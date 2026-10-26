@@ -1,0 +1,46 @@
+[
+  {
+    "name": "ordinary anonymous visitor signup UI accepted",
+    "passed": true
+  },
+  {
+    "name": "confirmation UI persisted active status and verified timestamp",
+    "passed": true
+  },
+  {
+    "name": "rendered operator command center using labelled fixture session",
+    "passed": true
+  },
+  {
+    "name": "UI segment counts reconcile exactly one consented unsuppressed visitor",
+    "passed": true
+  },
+  {
+    "name": "UI campaign scheduled through supported API",
+    "passed": true
+  },
+  {
+    "name": "scheduled campaign worker persists actual SMTP acceptance",
+    "passed": true
+  },
+  {
+    "name": "ordinary preference UI persists suppression",
+    "passed": true
+  },
+  {
+    "name": "UI queued send suppressed with no additional MIME",
+    "passed": true
+  },
+  {
+    "name": "CRM rendered empty state",
+    "passed": true
+  },
+  {
+    "name": "automation UI explicitly bounds unavailable general execution",
+    "passed": true
+  },
+  {
+    "name": "telecom UI labels local emulator",
+    "passed": true
+  }
+]

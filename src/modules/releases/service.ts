@@ -514,6 +514,21 @@ async function scheduleReleaseUnlocked(
     return release as unknown as CoordinatedRelease
   }
 
+  // Preflight validation
+  let snapshot = release.gateSnapshot as ReleaseGateSnapshot | null
+  const validity = isGateSnapshotValid(release as CoordinatedRelease, snapshot)
+  if (!validity.valid || !snapshot) {
+    snapshot = await evaluateReleaseGates(payload, release as CoordinatedRelease, {
+      actor: { id: input.actorId, role: 'publisher' },
+    })
+  }
+
+  if (snapshot.blockerCount > 0) {
+    throw new Error(
+      `ContentRelease is blocked by unresolved publication-blocking quality or preflight gate issues (${snapshot.blockerCount} blocker(s)).`,
+    )
+  }
+
   const legacySelection = !(release.artifacts?.length || release.executionItems?.length)
   if (!legacySelection && !['approved', 'scheduled'].includes(release.status))
     throw new Error('Only an approved release can be scheduled.')
@@ -548,21 +563,6 @@ async function scheduleReleaseUnlocked(
     new Date(input.scheduledFor).getTime()
   ) {
     throw new Error('Schedule time changed. Update and reapprove the release before scheduling.')
-  }
-
-  // Preflight validation
-  let snapshot = release.gateSnapshot as ReleaseGateSnapshot | null
-  const validity = isGateSnapshotValid(release as CoordinatedRelease, snapshot)
-  if (!validity.valid || !snapshot) {
-    snapshot = await evaluateReleaseGates(payload, release as CoordinatedRelease, {
-      actor: { id: input.actorId, role: 'publisher' },
-    })
-  }
-
-  if (snapshot.blockerCount > 0) {
-    throw new Error(
-      `ContentRelease is blocked by unresolved publication-blocking quality or preflight gate issues (${snapshot.blockerCount} blocker(s)).`,
-    )
   }
 
   if (legacySelection) {

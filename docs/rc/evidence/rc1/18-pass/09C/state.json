@@ -1,0 +1,114 @@
+{
+  "siteId": "eea31c26-3a07-4166-a354-8ff8d4454fcc",
+  "deliveries": [
+    {
+      "id": "d7747e25-a12e-43e2-a217-0814b0bdd0f2",
+      "recipientEmail": "dedup@example.test",
+      "status": "accepted",
+      "attempts": 1,
+      "provider": "smtp",
+      "providerMessageId": "<b9463eddd14b14b23758a392aadf8334@renegade.local>",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-10-21T09:25:25.792Z",
+        "retryAttemptBase": 0
+      }
+    },
+    {
+      "id": "0c3d33c2-5bc5-4123-bf30-09524983c9e1",
+      "recipientEmail": "hold@example.test",
+      "status": "unknown",
+      "attempts": 1,
+      "provider": "smtp",
+      "providerMessageId": null,
+      "outcome": {
+        "code": "interrupted_send",
+        "message": "Interrupted send; provider acceptance requires reconciliation.",
+        "retryable": false
+      }
+    },
+    {
+      "id": "eb9e954b-3e0e-492d-9cd4-b38aeff2a96c",
+      "recipientEmail": "unknown@example.test",
+      "status": "unknown",
+      "attempts": 1,
+      "provider": "smtp",
+      "providerMessageId": null,
+      "outcome": {
+        "code": "unknown_outcome",
+        "message": "SMTP delivery timed out; reconcile before any retry.",
+        "retryable": false,
+        "retryAttemptBase": 0
+      }
+    },
+    {
+      "id": "7ea916d0-2077-4dee-a6a9-0c984fb144fe",
+      "recipientEmail": "exhaust@example.test",
+      "status": "cancelled",
+      "attempts": 4,
+      "provider": "smtp",
+      "providerMessageId": null,
+      "outcome": {
+        "code": "suppressed-before-send",
+        "governingSuppression": {
+          "reason": "ineligible-recipient",
+          "source": "audience-state"
+        }
+      }
+    },
+    {
+      "id": "02ae293f-e21c-4eea-883c-c83c94fbdb13",
+      "recipientEmail": "permanent@example.test",
+      "status": "failed",
+      "attempts": 1,
+      "provider": "smtp",
+      "providerMessageId": null,
+      "outcome": {
+        "code": "permanent_recipient_error",
+        "message": "SMTP rejected the recipient or message.",
+        "retryable": false,
+        "retryAttemptBase": 0
+      }
+    },
+    {
+      "id": "0bd73cff-52f9-4794-8478-70285763c67f",
+      "recipientEmail": "recover@example.test",
+      "status": "accepted",
+      "attempts": 5,
+      "provider": "smtp",
+      "providerMessageId": "<568e531a24dd06097e3048c172e614ee@renegade.local>",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-10-21T09:23:50.424Z",
+        "retryAttemptBase": 4
+      }
+    },
+    {
+      "id": "7ff96506-2036-45af-94cf-3049f091cf14",
+      "recipientEmail": "temporary@example.test",
+      "status": "accepted",
+      "attempts": 2,
+      "provider": "smtp",
+      "providerMessageId": "<af930e527338f724cff879a8dae2f37f@renegade.local>",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-10-21T09:23:40.298Z",
+        "retryAttemptBase": 0
+      }
+    },
+    {
+      "id": "987c7d41-83b5-4395-b356-b351bfd0e759",
+      "recipientEmail": "accepted@example.test",
+      "status": "bounced",
+      "attempts": 1,
+      "provider": "smtp",
+      "providerMessageId": "<c44261a38fa9ee2932486bd0f7c5bf5d@renegade.local>",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-10-21T09:23:35.581Z",
+        "providerEvent": "bounce",
+        "retryAttemptBase": 0
+      }
+    }
+  ]
+}

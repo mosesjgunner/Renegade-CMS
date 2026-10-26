@@ -1,0 +1,18 @@
+[
+  {
+    "name": "canonical double-opt-in service persists active subscriber",
+    "passed": true
+  },
+  {
+    "name": "authorized native operator persists linked contact and tag",
+    "passed": true
+  },
+  {
+    "name": "authorized operator API evaluates saved segment",
+    "passed": true
+  },
+  {
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: tagged confirmed subscriber reconciles to exactly one eligible recipient"
+  }
+]

@@ -241,6 +241,7 @@ export async function processInboundTelecomMessage(
     const queuedSends = await payload.find({
       collection: 'telecom-deliveries',
       where: {
+        site: { equals: input.siteId },
         recipientPhoneHash: { equals: phoneHash },
         status: { in: ['queued', 'sending'] },
       },
@@ -448,7 +449,32 @@ export async function queueTelecomCampaignDeliveries(
         }
 
         // Must have phone number
-        const phoneRaw = subscriber.phoneE164 || subscriber.phone
+        const contact =
+          subscriber.contact && typeof subscriber.contact === 'object'
+            ? subscriber.contact
+            : subscriber.contact
+              ? await payload.findByID({
+                  collection: 'contacts',
+                  id: subscriber.contact,
+                  depth: 0,
+                  overrideAccess: true,
+                })
+              : null
+        if (
+          String(subscriber.site?.id ?? subscriber.site) !==
+          String(message.site?.id ?? message.site)
+        ) {
+          skippedCount++
+          continue
+        }
+        if (
+          contact &&
+          String(contact.site?.id ?? contact.site) !== String(message.site?.id ?? message.site)
+        ) {
+          skippedCount++
+          continue
+        }
+        const phoneRaw = contact?.phoneE164 || subscriber.phoneE164 || subscriber.phone
         if (!phoneRaw) {
           skippedCount++
           continue
@@ -491,9 +517,21 @@ export async function queueTelecomCampaignDeliveries(
         }
 
         // Quiet hours check
+        const memberId = subscriber.member
+          ? String(subscriber.member.id ?? subscriber.member)
+          : undefined
+        const profiles = memberId
+          ? await payload.find({
+              collection: 'profiles',
+              where: { member: { equals: memberId } },
+              limit: 1,
+              depth: 0,
+              overrideAccess: true,
+            })
+          : null
         const quietEvaluation = checkRecipientQuietHours({
           currentTime: new Date(),
-          recipientTimezone: subscriber.timezone,
+          recipientTimezone: profiles?.docs[0]?.timeZone ?? subscriber.timezone,
           siteTimezone: 'UTC',
           isExemptPurpose: purpose === 'transactional' || purpose === 'alerts',
         })
@@ -519,6 +557,7 @@ export async function queueTelecomCampaignDeliveries(
               rcsContent: message.rcsContent,
               fallbackPolicy: message.fallbackPolicy,
               fallbackSmsBody: message.fallbackSmsBody,
+              notificationKind: message.audience?.notificationKind,
             },
           },
           overrideAccess: true,
@@ -528,6 +567,7 @@ export async function queueTelecomCampaignDeliveries(
           task: 'audience-telecom-delivery',
           input: { deliveryId: delivery.id },
           queue: 'operations',
+          waitUntil: quietEvaluation.delayedUntil,
         })
 
         queuedCount++

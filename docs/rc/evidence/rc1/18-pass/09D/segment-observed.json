@@ -1,0 +1,27 @@
+{
+  "siteId": "0bcc8b67-eccd-4e97-931c-55892170620f",
+  "subscriberId": "6f547b15-5dc9-4f3a-9757-e198ce24e8dc",
+  "contactId": "d36c71c3-5666-496e-876e-a49903a2a890",
+  "tagId": "8abbe2fb-40b0-4c05-98a0-c39d777f88d0",
+  "taggingId": "6428f090-1670-4dbf-8453-5b5550589bd6",
+  "segmentId": "c64c8b98-dfd0-4d8d-8b81-f3d06dfae2ab",
+  "expectedEligible": 1,
+  "responseStatus": 200,
+  "response": {
+    "ok": true,
+    "segmentId": "c64c8b98-dfd0-4d8d-8b81-f3d06dfae2ab",
+    "segmentName": "09D tagged newsletter supporters",
+    "segmentVersion": "09d-selector-v1",
+    "counts": {
+      "totalSubscribers": 6,
+      "matchedSubscribers": 0,
+      "eligibleConsented": 0,
+      "unconsentedOrPending": 0,
+      "suppressed": 0,
+      "duplicates": 0,
+      "isEmpty": true
+    },
+    "eligibleRecipientsSample": [],
+    "isEmpty": true
+  }
+}
