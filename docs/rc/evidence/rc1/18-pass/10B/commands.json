@@ -1,0 +1,173 @@
+[
+  {
+    "command": [
+      "npm.cmd",
+      "test",
+      "--",
+      "--maxWorkers=4"
+    ],
+    "exit": 0,
+    "passed": 1726,
+    "failed": 0,
+    "skipped": 0,
+    "filesPassed": 247,
+    "log": "unit.log"
+  },
+  {
+    "command": [
+      "npx.cmd",
+      "eslint",
+      "src/app/(frontend)/[...path]/page.tsx",
+      "src/app/(frontend)/api/community/comments/route.ts",
+      "src/app/(frontend)/api/community/posts/route.ts",
+      "src/app/(frontend)/api/community/threads/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/spaces/[space_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/topics/[topic_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/topics/route.ts",
+      "src/app/(frontend)/forums/[forumSlug]/[topicSlug]/page.tsx",
+      "src/app/(frontend)/forums/[forumSlug]/page.tsx",
+      "src/app/(frontend)/forums/page.tsx",
+      "src/collections/Community.ts",
+      "src/migrations/20261026_100000_rc1_discussion_pins.ts",
+      "src/migrations/20261026_101000_rc1_discussion_event_ids.ts",
+      "src/migrations/index.ts",
+      "src/modules/community/ForumThreadComposer.tsx",
+      "src/modules/community/ForumThreadView.tsx",
+      "src/modules/community/comment-composer.ts",
+      "src/modules/community/components/CommentSection.tsx",
+      "src/modules/community/discussion-operations.ts",
+      "src/modules/community/discussion-tree.ts",
+      "src/modules/community/policy.ts",
+      "src/modules/community/realtime.ts",
+      "src/modules/community/service.ts",
+      "src/modules/public/discovery.ts",
+      "src/modules/public/search-projection.ts",
+      "tests/rc1-10b/browser.ts",
+      "tests/rc1-10b/probe.ts",
+      "tests/rc1-10b/provenance.ts",
+      "tests/unit/comm-03-comments-lifecycle.test.ts",
+      "tests/unit/comm-03b-comment-composer.test.ts",
+      "tests/unit/rc1-10b-discussion-boundaries.test.ts",
+      "tests/unit/rc1-10b-discussion-operations.test.ts",
+      "tests/unit/rc1-10b-routes.test.ts",
+      "--max-warnings=0"
+    ],
+    "exit": 0,
+    "log": "lint.log"
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "typecheck"
+    ],
+    "exit": 0,
+    "log": "typecheck.log"
+  },
+  {
+    "command": [
+      "powershell",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "tests/rc1-10b/run.ps1",
+      "browser"
+    ],
+    "exit": 0,
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0,
+    "log": "browser.log"
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "test:migrations:fresh"
+    ],
+    "target": "newly created rc110b_final_release_acceptance in owned container; process configuration described in RESULT.md",
+    "exit": 0,
+    "migrations": 127,
+    "log": "migrations.log"
+  },
+  {
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "tests/rc1-10b/provenance.ts",
+      "--check"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "npx.cmd",
+      "prettier",
+      "--check",
+      "src/app/(frontend)/[...path]/page.tsx",
+      "src/app/(frontend)/api/community/comments/route.ts",
+      "src/app/(frontend)/api/community/posts/route.ts",
+      "src/app/(frontend)/api/community/threads/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/spaces/[space_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/topics/[topic_id]/route.ts",
+      "src/app/(frontend)/api/v1/sites/[site_id]/topics/route.ts",
+      "src/app/(frontend)/forums/[forumSlug]/[topicSlug]/page.tsx",
+      "src/app/(frontend)/forums/[forumSlug]/page.tsx",
+      "src/app/(frontend)/forums/page.tsx",
+      "src/collections/Community.ts",
+      "src/migrations/20261026_100000_rc1_discussion_pins.ts",
+      "src/migrations/20261026_101000_rc1_discussion_event_ids.ts",
+      "src/migrations/index.ts",
+      "src/modules/community/ForumThreadComposer.tsx",
+      "src/modules/community/ForumThreadView.tsx",
+      "src/modules/community/comment-composer.ts",
+      "src/modules/community/components/CommentSection.tsx",
+      "src/modules/community/discussion-operations.ts",
+      "src/modules/community/discussion-tree.ts",
+      "src/modules/community/policy.ts",
+      "src/modules/community/realtime.ts",
+      "src/modules/community/service.ts",
+      "src/modules/public/discovery.ts",
+      "src/modules/public/search-projection.ts",
+      "tests/rc1-10b/browser.ts",
+      "tests/rc1-10b/probe.ts",
+      "tests/rc1-10b/provenance.ts",
+      "tests/unit/comm-03-comments-lifecycle.test.ts",
+      "tests/unit/comm-03b-comment-composer.test.ts",
+      "tests/unit/rc1-10b-discussion-boundaries.test.ts",
+      "tests/unit/rc1-10b-discussion-operations.test.ts",
+      "tests/unit/rc1-10b-routes.test.ts"
+    ],
+    "exit": 0,
+    "log": "format.log"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "powershell",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "tests/rc1-10b/run.ps1",
+      "stop-db"
+    ],
+    "exit": 0,
+    "log": "cleanup.log"
+  }
+]

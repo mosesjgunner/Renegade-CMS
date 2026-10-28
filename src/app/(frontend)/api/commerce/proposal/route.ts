@@ -2,6 +2,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import {
   commerceTransactionPayload,
@@ -13,6 +14,8 @@ import { canAccessCommerceCart, commerceRelationId } from '@/modules/commerce/ca
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import {
   guestCartCookieName,
+  activeCartLifetimeWhere,
+  cartExpiry,
   hashGuestToken,
   reResolveCart,
   type VersionedCart,
@@ -28,7 +31,7 @@ import {
   PROPOSAL_TTL_MS,
 } from '@/modules/commerce/proposal'
 
-export async function POST(request: Request) {
+async function createProposal(request: Request) {
   const payload = await getPayload({ config })
   try {
     const host = request.headers.get('host')
@@ -51,6 +54,7 @@ export async function POST(request: Request) {
             { site: { equals: siteId } },
             { member: { equals: memberId } },
             { state: { equals: 'active' } },
+            activeCartLifetimeWhere(),
           ],
         },
         limit: 1,
@@ -58,7 +62,7 @@ export async function POST(request: Request) {
       })
       if (found.docs.length) cartDoc = found.docs[0]
     }
-    if (!cartDoc && guestTokenMatch) {
+    if (!cartDoc && !memberId && guestTokenMatch) {
       const guestHash = hashGuestToken(guestTokenMatch)
       const found = await (payload as any).find({
         collection: 'carts',
@@ -66,7 +70,9 @@ export async function POST(request: Request) {
           and: [
             { site: { equals: siteId } },
             { guestTokenHash: { equals: guestHash } },
+            { member: { exists: false } },
             { state: { equals: 'active' } },
+            activeCartLifetimeWhere(),
           ],
         },
         limit: 1,
@@ -80,6 +86,21 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    if (
+      !body ||
+      typeof body !== 'object' ||
+      Object.keys(body).some(
+        (key) =>
+          ![
+            'customer',
+            'shippingAddress',
+            'billingAddress',
+            'selectedShippingRateId',
+            'consents',
+          ].includes(key),
+      )
+    )
+      return NextResponse.json({ error: 'Unsupported quote field.' }, { status: 400 })
     const { customer, shippingAddress, billingAddress, selectedShippingRateId, consents } = body
 
     if (!customer?.email) {
@@ -101,7 +122,7 @@ export async function POST(request: Request) {
     const productsResult = await (payload as any).find({
       collection: 'products',
       where: { and: [{ site: { equals: siteId } }, { state: { equals: 'published' } }] },
-      limit: 100,
+      pagination: false,
       depth: 1,
       overrideAccess: true,
     })
@@ -109,7 +130,7 @@ export async function POST(request: Request) {
     const promotionsResult = await (payload as any).find({
       collection: 'promotions',
       where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
-      limit: 50,
+      pagination: false,
       overrideAccess: true,
     })
 
@@ -119,6 +140,7 @@ export async function POST(request: Request) {
       state: String(d.state),
       kind: String(d.kind),
       productCapabilities: Array.isArray(d.productCapabilities) ? d.productCapabilities : [],
+      merchantConnectionId: String(d.merchantConnection?.id ?? d.merchantConnection ?? ''),
       variants: Array.isArray(d.variants) ? d.variants : [],
       offers: Array.isArray(d.offers) ? d.offers : [],
     }))
@@ -137,18 +159,22 @@ export async function POST(request: Request) {
       status: p.status,
       stackingRule: p.stackingRule,
       stackingPriority: Number(p.stackingPriority ?? 0),
-      usageLimitTotal: p.usageLimitTotal ? Number(p.usageLimitTotal) : undefined,
+      usageLimitTotal: p.usageLimitTotal != null ? Number(p.usageLimitTotal) : undefined,
       usageCount: Number(p.usageCount ?? 0),
-      usageLimitPerCustomer: p.usageLimitPerCustomer ? Number(p.usageLimitPerCustomer) : undefined,
+      startsAt: p.startsAt,
+      endsAt: p.endsAt,
+      usageLimitPerCustomer:
+        p.usageLimitPerCustomer != null ? Number(p.usageLimitPerCustomer) : undefined,
       eligibility: p.eligibility ?? {},
     }))
 
-    const rawCart: VersionedCart = {
+    let rawCart: VersionedCart = {
       id: String(cartDoc.id),
       siteId: String(cartDoc.site?.id ?? cartDoc.site),
       merchantConnectionId: String(
         cartDoc.merchantConnection?.id ?? cartDoc.merchantConnection ?? '',
       ),
+      customerId: String(cartDoc.member?.id ?? cartDoc.member ?? '') || undefined,
       version: Number(cartDoc.version ?? 1),
       currency: String(cartDoc.currency ?? 'USD'),
       items: Array.isArray(cartDoc.items) ? cartDoc.items : [],
@@ -161,10 +187,13 @@ export async function POST(request: Request) {
       reconciliationNotes: Array.isArray(cartDoc.reconciliationNotes)
         ? cartDoc.reconciliationNotes
         : [],
-      expiresAt: String(cartDoc.expiresAt ?? new Date().toISOString()),
+      expiresAt: cartExpiry(cartDoc),
       createdAt: String(cartDoc.createdAt),
       updatedAt: String(cartDoc.updatedAt),
     }
+
+    const preliminary = reResolveCart({ cart: rawCart, products, promotions })
+    rawCart = preliminary.cart
 
     // Shipping & Tax setup
     let validatedShippingAddress = undefined
@@ -201,7 +230,7 @@ export async function POST(request: Request) {
       const availableRates = await shippingAdapter.getRates({
         siteId,
         currency: rawCart.currency,
-        itemsSubtotalMinor: '0',
+        itemsSubtotalMinor: preliminary.pricingSnapshot.subtotalMinor,
         destination: validatedShippingAddress,
         items: rawCart.items.map((i) => ({
           productId: i.productId,
@@ -211,6 +240,11 @@ export async function POST(request: Request) {
         })),
       })
 
+      if (
+        selectedShippingRateId &&
+        !availableRates.some((rate) => rate.id === selectedShippingRateId)
+      )
+        return NextResponse.json({ error: 'Unknown shipping rate.' }, { status: 400 })
       selectedRate =
         availableRates.find((r) => r.id === selectedShippingRateId) ?? availableRates[0]
       if (selectedRate) {
@@ -224,12 +258,14 @@ export async function POST(request: Request) {
           siteId,
           currency: rawCart.currency,
           destination: validatedShippingAddress,
-          lines: rawCart.items.map((i) => ({
-            lineId: i.lineId,
-            productId: i.productId,
-            variantSku: i.variantSku,
-            quantity: i.quantity,
-            unitPriceMinor: i.displaySnapshot.unitPriceMinor,
+          lines: preliminary.pricingSnapshot.lines.map((line) => ({
+            lineId: line.lineId,
+            productId: line.productId,
+            variantSku: line.variantSku,
+            quantity: 1,
+            taxDisplay: rawCart.items.find((item) => item.lineId === line.lineId)?.displaySnapshot
+              .taxDisplay,
+            unitPriceMinor: line.netAmountMinor,
             currency: rawCart.currency,
           })),
           shippingAmountMinor,
@@ -252,6 +288,7 @@ export async function POST(request: Request) {
       promotions,
       shippingAmountMinor,
       taxTotalMinor: taxSnapshot?.taxAmountMinor,
+      lineTaxAmountsMinor: taxSnapshot?.lineTaxAmountsMinor,
     })
 
     if (resolvedCart.items.length === 0) {
@@ -462,6 +499,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Proposal not found.' }, { status: 404 })
     }
 
+    if (found.state !== 'active' || Date.parse(found.expiresAt) <= Date.now())
+      return NextResponse.json({ error: 'Proposal is expired or inactive.' }, { status: 409 })
     const cart =
       typeof found.cart === 'object'
         ? found.cart
@@ -482,5 +521,22 @@ export async function GET(request: Request) {
       { error: error instanceof Error ? error.message : 'Failed to retrieve proposal.' },
       { status: 500 },
     )
+  }
+}
+
+export async function POST(request: Request) {
+  if (
+    request.headers.get('origin') &&
+    request.headers.get('origin') !== new URL(request.url).origin
+  )
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
+  const payload = await getPayload({ config })
+  try {
+    const siteId = await catalogSiteForHost(payload, request.headers.get('host'))
+    return await withExecutionLock(payload, `commerce.cart.site:${siteId}`, () =>
+      createProposal(request),
+    )
+  } catch {
+    return NextResponse.json({ error: 'Quote service unavailable.' }, { status: 503 })
   }
 }

@@ -1,5 +1,12 @@
+import {
+  browseDiscussions,
+  discussionPage,
+  updateDiscussion,
+} from '@/modules/community/discussion-operations'
+import { discussionRequestSite } from '@/modules/community/discussion-operations'
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 
 import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import {
@@ -10,9 +17,18 @@ import {
 import { evaluateCommunityPolicy } from '@/modules/community/policy'
 
 export async function POST(request: Request) {
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'forums')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  if (
+    !isRegisteredCollection(payload, 'discussions') ||
+    !isRegisteredCollection(payload, 'forums')
+  ) {
+    return Response.json(
+      { error: 'Community discussions service is unavailable.' },
+      { status: 503 },
+    )
   }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -27,6 +43,8 @@ export async function POST(request: Request) {
     )
   }
 
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Sign-in required to create a thread' }, { status: 401 })
@@ -58,88 +76,84 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
-  }
+  if (!isRegisteredCollection(payload, 'discussions'))
+    return Response.json({ error: 'Community unavailable' }, { status: 503 })
   const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? ''
-  if (!siteId) return Response.json({ error: 'siteId is required' }, { status: 400 })
+  const siteId = url.searchParams.get('siteId') ?? ''
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
-  const visibleThread = (thread: Record<string, unknown>) => {
+  const threadId = url.searchParams.get('threadId')
+  if (threadId) {
+    const discussion = await payload
+      .findByID({ collection: 'discussions', id: threadId, depth: 0, overrideAccess: true })
+      .catch(() => null)
     if (
-      String(thread.site) !== siteId ||
+      !discussion ||
+      discussion.kind !== 'thread' ||
+      String(discussion.site) !== siteId ||
       !evaluateCommunityPolicy(
         { siteId, actor },
         {
-          siteId: String(thread.site),
-          visibility: String(thread.visibility),
-          moderationState: String(thread.moderationState),
-          status: String(thread.status),
-          ownerId: String(thread.owner ?? ''),
+          siteId,
+          ownerId: String(discussion.owner ?? ''),
+          visibility: discussion.visibility,
+          moderationState: discussion.moderationState,
+          status: discussion.status,
         },
         'read',
       ).allowed
     )
-      return null
-    return {
-      id: thread.id,
-      title: thread.title,
-      canonicalPath: thread.canonicalPath,
-      status: thread.status,
-      commentsPolicy: thread.commentsPolicy,
-      visibility: thread.visibility,
-      forum: thread.forum,
-    }
+      return Response.json({ error: 'Thread not found' }, { status: 404 })
+    return Response.json(
+      { thread: discussion },
+      { headers: { 'cache-control': 'private, no-store' } },
+    )
   }
   let forumId = url.searchParams.get('forumId') ?? ''
-  const forumSlug = url.searchParams.get('forumSlug') ?? ''
-  const threadId = url.searchParams.get('threadId') ?? ''
-
-  if (threadId) {
-    try {
-      const discussion = await payload.findByID({
-        collection: 'discussions',
-        id: threadId,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const thread = visibleThread(discussion as unknown as Record<string, unknown>)
-      if (!thread) return Response.json({ error: 'Thread not found' }, { status: 404 })
-      return Response.json({ thread })
-    } catch {
-      return Response.json({ error: 'Thread not found' }, { status: 404 })
-    }
-  }
-
-  if (!forumId && forumSlug) {
-    const forums = await payload.find({
+  const slug = url.searchParams.get('forumSlug')
+  if (slug && !forumId) {
+    const result = await payload.find({
       collection: 'forums',
-      where: { and: [{ site: { equals: siteId } }, { slug: { equals: forumSlug } }] },
+      where: { and: [{ site: { equals: siteId } }, { slug: { equals: slug } }] },
       limit: 1,
-      depth: 0,
       overrideAccess: true,
     })
-    if (forums.docs.length > 0) {
-      forumId = String(forums.docs[0].id)
-    }
+    if (!result.docs[0]) return Response.json({ error: 'Forum not found' }, { status: 404 })
+    forumId = String(result.docs[0].id)
   }
-
-  const whereConditions: any[] = [{ kind: { equals: 'thread' } }]
-  if (siteId) whereConditions.push({ site: { equals: siteId } })
-  if (forumId) whereConditions.push({ forum: { equals: forumId } })
-
-  const threads = await payload.find({
-    collection: 'discussions',
-    where: { and: whereConditions },
-    sort: '-createdAt',
-    limit: 50,
-    depth: 0,
-    overrideAccess: true,
+  const result = await browseDiscussions(payload, {
+    siteId,
+    forumId,
+    page: discussionPage(url.searchParams.get('page')),
+    query: url.searchParams.get('q') ?? '',
   })
+  return Response.json(
+    { threads: result.docs, page: result.page, hasNextPage: result.hasNextPage },
+    { headers: { 'cache-control': 'private, no-store' } },
+  )
+}
 
-  return Response.json({
-    threads: threads.docs
-      .map((doc) => visibleThread(doc as unknown as Record<string, unknown>))
-      .filter(Boolean),
-  })
+export async function PATCH(request: Request) {
+  if (!verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions'))
+    return Response.json({ error: 'Community unavailable' }, { status: 503 })
+  const body = await request.json().catch(() => ({}))
+  const siteId = String(body.siteId ?? '')
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
+  const actor = await resolveCommunityActor(payload, request.headers, siteId)
+  try {
+    const thread = await updateDiscussion(payload, String(body.discussionId ?? ''), body, {
+      siteId,
+      actor,
+    })
+    return Response.json({ thread })
+  } catch (error) {
+    if (error instanceof CommunityError)
+      return Response.json({ error: error.message, code: error.code }, { status: error.status })
+    return Response.json({ error: 'Discussion update failed' }, { status: 500 })
+  }
 }

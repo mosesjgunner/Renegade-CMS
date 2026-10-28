@@ -124,6 +124,47 @@ export async function GET(request: Request) {
             amountMinor: order.amountMinor,
             currency: order.currency,
             receiptNumber: order.receipt?.receiptNumber ?? null,
+            history: (order.transitionLog ?? []).map((entry: any) => ({
+              kind: String(entry.kind ?? entry.to ?? 'updated'),
+              at: String(entry.at ?? ''),
+              amountMinor: entry.amountMinor == null ? null : String(entry.amountMinor),
+            })),
+            refund: order.refundExtension ? {
+              state: String(order.refundExtension.state),
+              amountMinor: String(order.refundExtension.refundedAmountMinor ?? '0'),
+            } : null,
+            items: Array.isArray(order.items)
+              ? order.items.map((item: any) => ({
+                  productId: String(item.productId ?? ''),
+                  variantSku: String(item.variantSku ?? ''),
+                  title: String(
+                    item.title ?? item.displaySnapshot?.title ?? item.variantSku ?? 'Item',
+                  ),
+                  quantity: Number(item.quantity ?? 1),
+                  unitAmountMinor: String(
+                    item.unitAmountMinor ??
+                      item.unitPriceMinor ??
+                      item.displaySnapshot?.unitPriceMinor ??
+                      '0',
+                  ),
+                  lineAmountMinor: String(
+                    item.lineAmountMinor ?? item.totalAmountMinor ?? item.amountMinor ?? '0',
+                  ),
+                  currency: String(item.currency ?? order.currency),
+                }))
+              : [],
+            totalsSnapshot: order.totalsSnapshot
+              ? {
+                  subtotalMinor: String(order.totalsSnapshot.subtotalMinor ?? order.amountMinor),
+                  adjustmentsTotalMinor: String(order.totalsSnapshot.adjustmentsTotalMinor ?? '0'),
+                  netShippingMinor: String(order.totalsSnapshot.netShippingMinor ?? '0'),
+                  taxTotalMinor: String(order.totalsSnapshot.taxTotalMinor ?? '0'),
+                  grandTotalMinor: String(
+                    order.totalsSnapshot.grandTotalMinor ?? order.amountMinor,
+                  ),
+                  currency: String(order.totalsSnapshot.currency ?? order.currency),
+                }
+              : null,
           }
         : null,
     },

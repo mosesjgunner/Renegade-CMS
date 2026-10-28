@@ -1,0 +1,36 @@
+{
+  "succeeded": false,
+  "passed": 6,
+  "failed": 1,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "fixture operator native API creates site-scoped forum hierarchy and rejects foreign parent/cycle",
+      "passed": true
+    },
+    {
+      "name": "Alice 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Bob 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Foreign moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "operator grants moderation to the ordinary members only in their assigned sites",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "TypeError: Cannot read properties of undefined (reading 'id')\n    at <anonymous> (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:402:56)"
+    }
+  ]
+}

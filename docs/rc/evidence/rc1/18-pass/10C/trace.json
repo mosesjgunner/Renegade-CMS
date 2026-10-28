@@ -1,0 +1,183 @@
+{
+  "succeeded": true,
+  "totalChecks": 35,
+  "passedChecks": 35,
+  "failedChecks": 0,
+  "trace": [
+    {
+      "name": "Site Alpha and Beta created in disposable database",
+      "passed": true,
+      "timestamp": "2026-10-26T23:27:54.587Z"
+    },
+    {
+      "name": "SiteSettings configured with canonical origins for Alpha and Beta",
+      "passed": true,
+      "timestamp": "2026-10-26T23:27:54.624Z"
+    },
+    {
+      "name": "Local SMTP sink listening on 127.0.0.1:3144",
+      "passed": true,
+      "timestamp": "2026-10-26T23:27:54.629Z"
+    },
+    {
+      "name": "Next.js dev server responding on localhost:39013",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:00.882Z"
+    },
+    {
+      "name": "Alice: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:19.784Z"
+    },
+    {
+      "name": "Bob: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:23.356Z"
+    },
+    {
+      "name": "Charlie: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:26.639Z"
+    },
+    {
+      "name": "UI renders truthful notice: private attachments deferred and no E2EE promised",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:29.505Z"
+    },
+    {
+      "name": "Alice starts direct conversation with Bob via supported API",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:29.584Z"
+    },
+    {
+      "name": "Alice sends message 1 with sequence 1 and idempotency key",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:30.132Z"
+    },
+    {
+      "name": "Idempotent retry returns existing message without sequence increment",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:30.210Z"
+    },
+    {
+      "name": "Bob loads /messages UI and views Alice message 1",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:31.613Z"
+    },
+    {
+      "name": "Bob accepts message request (requestState: active)",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:32.211Z"
+    },
+    {
+      "name": "Bob sends message 2 with sequence 2",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:32.392Z"
+    },
+    {
+      "name": "Alice views Bob message 2 in /messages UI (saved messages.png)",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:33.877Z"
+    },
+    {
+      "name": "Bob observes unread notification for message 1",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:34.350Z"
+    },
+    {
+      "name": "Bob navigates to /notifications UI (saved notifications.png)",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:42.264Z"
+    },
+    {
+      "name": "Bob blocks Alice via POST /api/community/blocks",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:43.093Z"
+    },
+    {
+      "name": "Relationship API confirms Bob blocked Alice (blocked: true)",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:43.670Z"
+    },
+    {
+      "name": "Subsequent message from Alice to Bob rejected with 403 BLOCKED_COMMUNICATION",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:43.783Z"
+    },
+    {
+      "name": "Subsequent message from Bob to Alice rejected with 403 BLOCKED_COMMUNICATION",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:43.871Z"
+    },
+    {
+      "name": "New direct conversation attempt between blocked members rejected with 403 BLOCKED_COMMUNICATION",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:43.953Z"
+    },
+    {
+      "name": "Alice creates group conversation \"Alpha Crew\" with Bob and Charlie",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:44.041Z"
+    },
+    {
+      "name": "POST /api/v1/attachments/presign returns HTTP 410 deferred",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:44.166Z"
+    },
+    {
+      "name": "Anonymous access to private messages, conversations, and notifications rejected with 401",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:44.722Z"
+    },
+    {
+      "name": "Cross-site messages request rejected with 404 Site access denied",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:44.767Z"
+    },
+    {
+      "name": "Non-member read attempt rejected with 403 NOT_CONVERSATION_MEMBER",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:44.936Z"
+    },
+    {
+      "name": "Public /search projection does not leak private messages or group titles",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:49.415Z"
+    },
+    {
+      "name": "Web process cleanly stopped for restart verification",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:49.664Z"
+    },
+    {
+      "name": "PostgreSQL snapshot while web is stopped confirms 2 persisted messages and 1 active block",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:49.691Z"
+    },
+    {
+      "name": "Web process successfully restarted on localhost:39013",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:55.667Z"
+    },
+    {
+      "name": "Bob reads 2 persisted conversation messages after web process restart",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:57.436Z"
+    },
+    {
+      "name": "Block relationship persists across restart: Alice message rejected with 403",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:57.530Z"
+    },
+    {
+      "name": "Bob marks notifications read after restart; unreadCount successfully set to 0",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:58.049Z"
+    },
+    {
+      "name": "Notification stream manager recovers missed hints sequentially upon reconnect with Last-Event-ID",
+      "passed": true,
+      "timestamp": "2026-10-26T23:28:58.049Z"
+    }
+  ]
+}

@@ -1,3 +1,6 @@
+import { versionedCommentTarget } from '@/modules/community/discussion-operations'
+import { discussionRequestSite } from '@/modules/community/discussion-operations'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -33,8 +36,23 @@ export async function GET(
   const maxDepthParam = url.searchParams.get('max_depth') ?? url.searchParams.get('depth')
   const maxDepth = maxDepthParam ? parseInt(maxDepthParam, 10) : 5
 
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
+  if (request.method !== 'GET' && (!actor.memberId || actor.status !== 'active'))
+    return Response.json({ error: 'Active member authentication required' }, { status: 401 })
+  const target = await versionedCommentTarget(payload, site_id, thread_id).catch(() => null)
+  if (!target)
+    return Response.json({ error: 'Published discussion target not found' }, { status: 404 })
+  if (
+    request.method !== 'GET' &&
+    !actor.isModerator &&
+    (target.thread.isClosed || target.thread.isFrozen || target.content.commentsPolicy === 'closed')
+  )
+    return Response.json({ error: 'Discussion is closed or locked' }, { status: 403 })
 
   const { getThreadCommentsTree } = await import('@/modules/community/thread-lifecycle')
 
@@ -44,7 +62,7 @@ export async function GET(
       siteId: site_id,
       sort,
       maxDepth,
-      includeNonPublic: actor.isStaff,
+      includeNonPublic: actor.isStaff || actor.isModerator,
     })
 
     return json({ data: comments }, 200)
@@ -68,18 +86,25 @@ export async function POST(
     )
   }
 
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
+  if (request.method !== 'GET' && (!actor.memberId || actor.status !== 'active'))
+    return Response.json({ error: 'Active member authentication required' }, { status: 401 })
+  const target = await versionedCommentTarget(payload, site_id, thread_id).catch(() => null)
+  if (!target)
+    return Response.json({ error: 'Published discussion target not found' }, { status: 404 })
+  if (
+    request.method !== 'GET' &&
+    !actor.isModerator &&
+    (target.thread.isClosed || target.thread.isFrozen || target.content.commentsPolicy === 'closed')
+  )
+    return Response.json({ error: 'Discussion is closed or locked' }, { status: 403 })
 
-  const memberId =
-    actor.memberId ??
-    request.headers.get('x-member-id') ??
-    request.headers.get('x-author-id') ??
-    (actor.isStaff ? actor.userId : undefined)
-
-  if (!memberId && actor.kind === 'anonymous') {
-    return problem(401, 'UNAUTHORIZED', 'Authentication required to post comments.')
-  }
+  const memberId = actor.memberId
 
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) {
@@ -97,7 +122,7 @@ export async function POST(
       threadId: thread_id,
       parentId: (body.parentId ?? body.parent_id) as string | undefined,
       authorId: String(memberId),
-      authorType: (body.authorType as 'member') ?? 'member',
+      authorType: 'member',
       body: commentContent,
       idempotencyKey,
       actor,
@@ -121,8 +146,23 @@ export async function PATCH(
   context: { params: Promise<{ site_id: string; thread_id: string }> },
 ) {
   const { site_id, thread_id } = await context.params
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
+  if (request.method !== 'GET' && (!actor.memberId || actor.status !== 'active'))
+    return Response.json({ error: 'Active member authentication required' }, { status: 401 })
+  const target = await versionedCommentTarget(payload, site_id, thread_id).catch(() => null)
+  if (!target)
+    return Response.json({ error: 'Published discussion target not found' }, { status: 404 })
+  if (
+    request.method !== 'GET' &&
+    !actor.isModerator &&
+    (target.thread.isClosed || target.thread.isFrozen || target.content.commentsPolicy === 'closed')
+  )
+    return Response.json({ error: 'Discussion is closed or locked' }, { status: 403 })
 
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) {
@@ -147,7 +187,8 @@ export async function PATCH(
       newBody,
       actor: {
         ...actor,
-        permissions: (body.permissions as string[]) ?? undefined,
+        isStaff: actor.isStaff || actor.isModerator,
+        permissions: actor.isModerator ? ['staff:community_moderate'] : [],
       },
       reason: body.reason ? String(body.reason) : undefined,
     })

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React, { useState, useEffect, useCallback } from 'react'
 
 import type { CommentNode } from '@/modules/community/thread-lifecycle'
+import { discussionRows } from '../discussion-tree'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -19,7 +20,8 @@ interface CommentItem {
   body: string
   createdAt: string
   parent?: string | null
-  authorMember?: string
+  paginationAnchor?: string
+  authorMember?: string | null
   authorProfile?: {
     displayName: string
     handle: string
@@ -56,8 +58,11 @@ export function CommentSection({
     body: String(c.bodyHtml ?? c.bodyRaw ?? c.body ?? ''),
     createdAt: String(c.createdAt ?? c.created_at ?? new Date().toISOString()),
     parent: c.parentId ?? c.parent_id ?? c.parent ?? null,
+    paginationAnchor: c.paginationAnchor,
     authorMember: c.authorId ?? c.author_id ?? c.authorMember,
     reactions: c.reactions ?? {},
+    authorProfile: c.authorProfile,
+    isTombstone: c.isTombstone,
   }))
   const [comments, setComments] = useState<CommentItem[]>(formattedInitial)
   const [loading, setLoading] = useState(initialComments === undefined)
@@ -72,6 +77,8 @@ export function CommentSection({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
   const [editingText, setEditingText] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
+  const [page, setPage] = useState(1)
+  const [hasNextPage, setHasNextPage] = useState(false)
 
   // Fetch current logged-in member
   useEffect(() => {
@@ -81,8 +88,8 @@ export function CommentSection({
         const res = await fetch('/api/member-auth/me')
         if (res.ok) {
           const data = await res.json()
-          if (isMounted && data.member?.id) {
-            setCurrentMemberId(data.member.id)
+          if (isMounted && data.memberId) {
+            setCurrentMemberId(data.memberId)
           }
         }
       } catch {
@@ -97,22 +104,35 @@ export function CommentSection({
     }
   }, [])
 
-  const fetchComments = useCallback(async () => {
-    try {
-      setLoading(true)
-      const res = await fetch(
-        `/api/community/comments?attachedToId=${encodeURIComponent(attachedToId)}&siteId=${encodeURIComponent(siteId)}`,
-      )
-      if (res.ok) {
-        const data = await res.json()
-        setComments(data.comments ?? [])
+  const fetchComments = useCallback(
+    async (nextPage = 1) => {
+      try {
+        setLoading(true)
+        const res = await fetch(
+          `/api/community/comments?attachedToId=${encodeURIComponent(attachedToId)}&attachedToCollection=${attachedToCollection}&siteId=${encodeURIComponent(siteId)}&page=${nextPage}`,
+        )
+        if (res.ok) {
+          const data = await res.json()
+          setComments((previous) =>
+            nextPage === 1
+              ? (data.comments ?? [])
+              : [...previous, ...(data.comments ?? [])].filter(
+                  (item, index, all) => all.findIndex((entry) => entry.id === item.id) === index,
+                ),
+          )
+          setPage(nextPage)
+          setHasNextPage(Boolean(data.hasNextPage))
+        } else {
+          setError('Discussion could not be loaded. Please retry.')
+        }
+      } catch {
+        setError('Discussion could not be loaded. Please retry.')
+      } finally {
+        setLoading(false)
       }
-    } catch {
-      // silently ignore network failure on initial load
-    } finally {
-      setLoading(false)
-    }
-  }, [attachedToId, siteId])
+    },
+    [attachedToId, siteId, attachedToCollection],
+  )
 
   useEffect(() => {
     fetchComments()
@@ -349,7 +369,7 @@ export function CommentSection({
         </div>
       ) : (
         <div className="space-y-4 divide-y divide-stone-100 dark:divide-stone-800">
-          {comments.map((comment) => {
+          {discussionRows(comments).map(({ post: comment, depth }) => {
             const isAuthor = Boolean(
               currentMemberId &&
                 comment.authorMember &&
@@ -362,8 +382,14 @@ export function CommentSection({
             return (
               <article
                 key={comment.id}
-                className={`pt-4 first:pt-0 space-y-2 ${comment.parent ? 'ml-6 pl-4 border-l-2 border-stone-200 dark:border-stone-800' : ''}`}
+                id={`comment-${comment.id}`}
+                data-depth={depth}
+                style={{ marginLeft: `${Math.min(depth, 4) * 16}px` }}
+                className={`pt-4 first:pt-0 space-y-2 ${depth ? 'pl-4 border-l-2 border-stone-200 dark:border-stone-800' : ''}`}
               >
+                {comment.paginationAnchor ? (
+                  <span id={comment.paginationAnchor} className="block scroll-mt-24" />
+                ) : null}
                 {comment.isTombstone ? (
                   <div className="py-2 text-sm italic text-stone-400 dark:text-stone-500 bg-stone-50/50 dark:bg-stone-900/30 px-3 rounded">
                     {comment.body}
@@ -548,6 +574,22 @@ export function CommentSection({
           })}
         </div>
       )}
+      {hasNextPage ? (
+        <button type="button" disabled={loading} onClick={() => void fetchComments(page + 1)}>
+          Load more comments
+        </button>
+      ) : null}
+      {error ? (
+        <button type="button" onClick={() => void fetchComments()}>
+          Retry discussion
+        </button>
+      ) : null}
+      {currentMemberId ? (
+        <p className="text-xs text-stone-500">
+          You can edit your comments for 15 minutes and delete your own comments. Moderators can
+          review or remove contributions.
+        </p>
+      ) : null}
     </section>
   )
 }

@@ -1,0 +1,15 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "authentication": "Fixture operator sessions; genuine public browser, no WebAuthn claim. No payment/provider outcome.",
+  "checks": [
+    "restart retains zero inventory and edited price",
+    "restart retains publication/archival states",
+    "restart public listing remains tenant scoped with live stock and price",
+    "restart browser shows persisted price",
+    "restart archived and foreign products remain inaccessible",
+    "restart workflow audit persisted",
+    "operator catalog UI exposes native product creation after restart"
+  ]
+}

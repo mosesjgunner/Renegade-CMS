@@ -118,6 +118,7 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
                 currency: firstCurrency,
               })
               const unavailable =
+                !offer ||
                 variant.status === 'unavailable' ||
                 (variant.inventory?.policy === 'tracked' && variant.inventory.quantity === 0)
               const displayedPrice = catalog.capabilities.includes('affiliate')
@@ -187,6 +188,7 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
                   priceMinor: off?.amountMinor ?? '0',
                   currency: off?.currency ?? firstCurrency,
                   unavailable:
+                    !off ||
                     v.status === 'unavailable' ||
                     (v.inventory?.policy === 'tracked' && v.inventory.quantity === 0),
                 }

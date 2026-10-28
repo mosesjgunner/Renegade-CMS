@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { assertMoney } from './contracts'
 
-export const PRICING_RULE_VERSION = '2026-09-23.1'
+export const PRICING_RULE_VERSION = '2026-10-27.1'
 
 export type PricedInputLine = Readonly<{
   lineId: string
@@ -179,6 +179,7 @@ export function computePricing(input: {
   shippingAmountMinor?: string
   shippingAdjustmentMinor?: string
   taxTotalMinor?: string
+  lineTaxAmountsMinor?: Readonly<Record<string, string>>
   now?: string
 }): PricingSnapshot {
   if (!input.lines || input.lines.length === 0) {
@@ -257,14 +258,26 @@ export function computePricing(input: {
   const rawTax = input.taxTotalMinor
     ? BigInt(assertMoney(input.taxTotalMinor, currency).amountMinor)
     : 0n
-  const taxAllocations = allocateTaxToLines(
+  let taxAllocations = allocateTaxToLines(
     linesWithNet.map((l) => ({ lineId: l.line.lineId, net: l.net, taxable: l.taxable })),
     rawTax,
   )
 
+  if (input.lineTaxAmountsMinor) {
+    taxAllocations = new Map(
+      linesWithNet.map((line) => [
+        line.line.lineId,
+        BigInt(
+          assertMoney(input.lineTaxAmountsMinor?.[line.line.lineId] ?? '0', currency).amountMinor,
+        ),
+      ]),
+    )
+    if ([...taxAllocations.values()].reduce((sum, value) => sum + value, 0n) !== rawTax)
+      throw new Error('Tax allocations do not match the authoritative tax total.')
+  }
   const lineSnapshots: PricedLineSnapshot[] = linesWithNet.map((l) => {
     const tax = taxAllocations.get(l.line.lineId) ?? 0n
-    const total = l.net + tax
+    const total = l.net + (l.line.taxDisplay === 'inclusive' ? 0n : tax)
     return {
       lineId: l.line.lineId,
       productId: l.line.productId,
@@ -295,10 +308,10 @@ export function computePricing(input: {
   const netShipping = rawShipping > rawShippingAdj ? rawShipping - rawShippingAdj : 0n
 
   const actualTaxTotal = lineSnapshots.reduce((sum, l) => sum + BigInt(l.taxAmountMinor), 0n)
-  const itemsNetTotal = lineSnapshots.reduce((sum, l) => sum + BigInt(l.netAmountMinor), 0n)
+  const itemsTotal = lineSnapshots.reduce((sum, l) => sum + BigInt(l.totalAmountMinor), 0n)
 
   // Grand Total = Net Items + Net Shipping + Tax
-  const grandTotal = itemsNetTotal + netShipping + actualTaxTotal
+  const grandTotal = itemsTotal + netShipping
 
   const calculatedAt = input.now ?? new Date().toISOString()
   const payloadToHash = `${PRICING_RULE_VERSION}|${currency}|${subtotal}|${totalAdjustments}|${netShipping}|${actualTaxTotal}|${grandTotal}|${lineSnapshots.map((l) => `${l.lineId}:${l.grossAmountMinor}:${l.allocatedAdjustmentMinor}:${l.taxAmountMinor}`).join(';')}`

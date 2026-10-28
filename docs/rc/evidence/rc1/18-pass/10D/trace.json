@@ -1,0 +1,183 @@
+{
+  "succeeded": true,
+  "totalChecks": 35,
+  "passedChecks": 35,
+  "failedChecks": 0,
+  "trace": [
+    {
+      "name": "Site Alpha and Beta created in disposable database",
+      "passed": true,
+      "timestamp": "2026-10-27T00:41:42.207Z"
+    },
+    {
+      "name": "SiteSettings configured with canonical origins for Alpha and Beta",
+      "passed": true,
+      "timestamp": "2026-10-27T00:41:42.242Z"
+    },
+    {
+      "name": "Published article created on Site Alpha for discussion comments",
+      "passed": true,
+      "timestamp": "2026-10-27T00:41:42.434Z"
+    },
+    {
+      "name": "Local SMTP sink listening on 127.0.0.1:3145",
+      "passed": true,
+      "timestamp": "2026-10-27T00:41:42.437Z"
+    },
+    {
+      "name": "Next.js dev server responding on localhost:39014",
+      "passed": true,
+      "timestamp": "2026-10-27T00:41:48.047Z"
+    },
+    {
+      "name": "Alice: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:03.400Z"
+    },
+    {
+      "name": "Bob: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:07.252Z"
+    },
+    {
+      "name": "Charlie: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:10.909Z"
+    },
+    {
+      "name": "Dan: ordinary email UI and local SMTP link establish member session",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.498Z"
+    },
+    {
+      "name": "Charlie granted moderator role for Site Alpha in member-site-roles",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.535Z"
+    },
+    {
+      "name": "Dan granted moderator role for Site Beta only in member-site-roles",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.563Z"
+    },
+    {
+      "name": "Alice posts comment in comment thread on Site Alpha",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.595Z"
+    },
+    {
+      "name": "Negative test: Regular member Bob denied moderation queue access with 403",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.889Z"
+    },
+    {
+      "name": "Negative test: Staff overreach prevented; Beta moderator Dan denied Site Alpha queue with 403",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:15.977Z"
+    },
+    {
+      "name": "Negative test: Cross-site report submission rejected with 404 site mismatch",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:16.122Z"
+    },
+    {
+      "name": "Negative test: Reporter impersonation rejected; DB binds report to authenticated member ID",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:16.232Z"
+    },
+    {
+      "name": "Abuse report creates parent case in moderation_cases with status open",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:16.234Z"
+    },
+    {
+      "name": "Charlie loads /moderation UI console",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:19.185Z"
+    },
+    {
+      "name": "Moderator Charlie observes pending community report card in UI",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:21.653Z"
+    },
+    {
+      "name": "Charlie inspects immutable target snapshot evidence in decision panel",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:21.737Z"
+    },
+    {
+      "name": "Screenshot captured: moderation-console.png",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:21.940Z"
+    },
+    {
+      "name": "Moderator Charlie executes Remove Content action with recorded justification",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.208Z"
+    },
+    {
+      "name": "Screenshot captured: audit-trail.png",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.472Z"
+    },
+    {
+      "name": "Actual persisted state: comment status updated to deleted (tombstone)",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.477Z"
+    },
+    {
+      "name": "Actual persisted state: parent case closed with Charlie member ID and remove disposition",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.482Z"
+    },
+    {
+      "name": "Actual persisted state: community report marked resolved",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.488Z"
+    },
+    {
+      "name": "Canonical audit records: trigger-verified cryptographic SHA-256 chain is valid",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.492Z"
+    },
+    {
+      "name": "Negative test: Deleted comment content is suppressed from member/public visibility",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.504Z"
+    },
+    {
+      "name": "Charlie executes reinstate action via supported operator API",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.917Z"
+    },
+    {
+      "name": "Actual persisted state: comment status restored to visible following reinstatement",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.920Z"
+    },
+    {
+      "name": "Audit chain integrity remains valid after recorded reinstatement",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:22.922Z"
+    },
+    {
+      "name": "Next.js dev server stopped cleanly",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:23.264Z"
+    },
+    {
+      "name": "Next.js dev server restarted on port 39014",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:32.417Z"
+    },
+    {
+      "name": "Charlie accesses moderation queue after restart; actions and audit valid",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:33.021Z"
+    },
+    {
+      "name": "Role boundaries persist across server restart: non-moderators strictly denied with 403",
+      "passed": true,
+      "timestamp": "2026-10-27T00:42:33.212Z"
+    }
+  ]
+}

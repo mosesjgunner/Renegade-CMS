@@ -1,0 +1,3 @@
+# Handoff: 10B remains NOT READY
+
+Continue 10B only. Read RESULT.md and source-tree.json, preserve this evidence, and reconcile the public discussion UI with canonical forum spaces/topics and article comments. Complete multilevel display, pagination, role-limited edit/delete and pin/lock/moderation, and hidden-content discovery as needed. Exercise ordinary authenticated multiple-member actions, persisted reload, closed/unpublished/cross-site/object-ID denials and actual application/database restart on new isolated resources; rerun all affected gates against a stable source manifest. Investigate the fixture integration's profile-image failure separately without weakening its assertion. Do not start 10C automatically.

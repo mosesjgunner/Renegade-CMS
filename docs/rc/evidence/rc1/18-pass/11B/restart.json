@@ -1,0 +1,14 @@
+{
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "restart retains browser ownership and exact total for e6ecb45a-8e8d-4e96-a6ec-19f6d6d7b424",
+    "restart retains persisted cart e6ecb45a-8e8d-4e96-a6ec-19f6d6d7b424",
+    "restart retains browser ownership and exact total for f100be74-5d49-4979-a753-8890941a19ad",
+    "restart retains persisted cart f100be74-5d49-4979-a753-8890941a19ad",
+    "restart retains retired guest state",
+    "restart retains immutable quote total"
+  ],
+  "authentication": "Genuine guest Chromium; member session through canonical magic-link service fixture, not passkey/login ceremony."
+}

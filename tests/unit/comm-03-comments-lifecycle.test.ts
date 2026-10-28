@@ -145,7 +145,18 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
         return { id: 'created-id', ...data }
       })
 
-      const payload = { find, create, update: vi.fn() } as any
+      const payload = {
+        find,
+        create,
+        update: vi.fn(),
+        findByID: vi.fn(async () => ({
+          site: siteId,
+          status: 'published',
+          commentsPolicy: 'open',
+          canonicalPath: '/articles/my-post',
+          title: 'Article Discussion',
+        })),
+      } as any
 
       // 1. Authenticated author posts comment
       const comment1 = await addComment(
@@ -198,6 +209,13 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
 
       const payload = {
         find: vi.fn(async () => ({ docs: [closedDiscussion] })),
+        findByID: vi.fn(async () => ({
+          site: siteId,
+          status: 'published',
+          commentsPolicy: 'closed',
+          canonicalPath: '/articles/closed',
+          title: 'Closed Article',
+        })),
         create: vi.fn(),
         update: vi.fn(),
       } as any
@@ -305,6 +323,13 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
       // Ensure zero sensitive fields leaked:
       expect((post.authorProfile as any)?.email).toBeUndefined()
       expect((post.authorProfile as any)?.passwordHash).toBeUndefined()
+      const profileQuery = find.mock.calls.find(
+        (call: any[]) => call[0].collection === 'profiles',
+      )?.[0]
+      expect(profileQuery.where).toEqual({ member: { in: ['member-alice'] } })
+      aliceProfile.visibility = 'private'
+      const privateResults = await listDiscussionComments(payload, 'disc-1', otherContext)
+      expect(privateResults[0].authorProfile).toBeUndefined()
 
       // Verified reaction aggregation:
       expect(post.reactions).toEqual({ '👍': 3, '🔥': 1 })
@@ -340,12 +365,13 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
 
   describe('4. Comment Editing by Author', () => {
     it('allows author to edit their own comment and updates body', async () => {
-      const discussionDoc = { id: 'disc-1', site: siteId }
+      const discussionDoc = { id: 'disc-1', site: siteId, status: 'open', commentsPolicy: 'open' }
       let postDoc = {
         id: 'post-1',
         discussion: 'disc-1',
         authorMember: 'member-alice',
         body: 'Original draft statement.',
+        createdAt: new Date().toISOString(),
         status: 'published',
         moderationState: 'clear',
       }
@@ -379,12 +405,13 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
     })
 
     it('rejects editing another member comment or setting an empty body', async () => {
-      const discussionDoc = { id: 'disc-1', site: siteId }
+      const discussionDoc = { id: 'disc-1', site: siteId, status: 'open', commentsPolicy: 'open' }
       const postDoc = {
         id: 'post-1',
         discussion: 'disc-1',
         authorMember: 'member-alice',
         body: 'Alice original comment.',
+        createdAt: new Date().toISOString(),
         status: 'published',
         moderationState: 'clear',
       }
@@ -513,7 +540,7 @@ describe('COMM-03: Comments & Discussions Lifecycle Vertical Slice', () => {
     })
 
     it('allows moderator to remove a comment with moderator tombstone label', async () => {
-      const discussionDoc = { id: 'disc-1', site: siteId }
+      const discussionDoc = { id: 'disc-1', site: siteId, status: 'open', commentsPolicy: 'open' }
       let postDoc: any = {
         id: 'post-2',
         discussion: 'disc-1',

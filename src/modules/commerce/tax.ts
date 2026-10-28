@@ -1,6 +1,6 @@
 import { assertMoney } from './contracts'
 import type { ValidatedAddress } from './shipping'
-import type { PricedInputLine } from './pricing'
+import { allocateTaxToLines, type PricedInputLine } from './pricing'
 
 export type TaxCalculationInput = Readonly<{
   siteId: string
@@ -16,6 +16,7 @@ export type TaxCalculationResult = Readonly<{
   jurisdiction: string
   effectiveRateBasisPoints: number
   taxAmountMinor: string
+  lineTaxAmountsMinor?: Readonly<Record<string, string>>
   taxableAmountMinor: string
   taxDisplay: 'inclusive' | 'exclusive'
   source: 'provider' | 'bounded-rule'
@@ -117,28 +118,45 @@ export class BoundedJurisdictionTaxAdapter implements TaxAdapter {
       )
     }
 
-    // Calculate taxable base
+    // Calculate each tax mode from the discounted server line amounts.
+    const eligible = input.lines.filter(
+      (line) => line.taxable !== false && line.taxDisplay !== 'not-applicable',
+    )
     let taxableBase = 0n
-    for (const line of input.lines) {
-      if (line.taxable !== false && line.taxDisplay !== 'not-applicable') {
-        const lineNet =
-          BigInt(assertMoney(line.unitPriceMinor, input.currency).amountMinor) *
-          BigInt(line.quantity)
-        taxableBase += lineNet
-      }
+    const lineTaxAmountsMinor: Record<string, string> = {}
+    for (const inclusive of [false, true]) {
+      const lines = eligible
+        .filter((line) => (line.taxDisplay === 'inclusive') === inclusive)
+        .map((line) => ({
+          lineId: line.lineId,
+          net:
+            BigInt(assertMoney(line.unitPriceMinor, input.currency).amountMinor) *
+            BigInt(line.quantity),
+          taxable: true,
+        }))
+      const base = lines.reduce((sum, line) => sum + line.net, 0n)
+      taxableBase += base
+      const tax =
+        (base * BigInt(rateBasisPoints)) / BigInt(inclusive ? 10000 + rateBasisPoints : 10000)
+      for (const [id, amount] of allocateTaxToLines(lines, tax))
+        lineTaxAmountsMinor[id] = amount.toString()
     }
-
-    if (input.taxShipping && input.shippingAmountMinor) {
-      taxableBase += BigInt(assertMoney(input.shippingAmountMinor, input.currency).amountMinor)
-    }
-
-    const taxAmount = (taxableBase * BigInt(rateBasisPoints)) / 10000n
+    const shippingBase = input.taxShipping
+      ? BigInt(assertMoney(input.shippingAmountMinor, input.currency).amountMinor)
+      : 0n
+    taxableBase += shippingBase
+    const shippingTax = (shippingBase * BigInt(rateBasisPoints)) / 10000n
+    const taxAmount = Object.values(lineTaxAmountsMinor).reduce(
+      (sum, value) => sum + BigInt(value),
+      shippingTax,
+    )
 
     return {
       reliable: true,
       jurisdiction,
       effectiveRateBasisPoints: rateBasisPoints,
       taxAmountMinor: taxAmount.toString(),
+      lineTaxAmountsMinor: input.taxShipping ? undefined : lineTaxAmountsMinor,
       taxableAmountMinor: taxableBase.toString(),
       taxDisplay:
         country === 'GB' || country === 'DE' || country === 'FR' ? 'inclusive' : 'exclusive',

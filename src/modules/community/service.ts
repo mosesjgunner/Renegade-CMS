@@ -1,4 +1,8 @@
-import type { Payload } from 'payload'
+import { createLocalReq, type Payload } from 'payload'
+import { transactionPayload } from '../core/transaction-payload'
+import { canRenderPublic, type PublicState } from '../public/contracts'
+import { withExecutionLock } from '../operations/execution-lock'
+import { EDIT_WINDOW_MS } from './comment-composer'
 
 import {
   changeMemberAccountState,
@@ -26,7 +30,7 @@ import {
   type RelationshipCheck,
 } from './policy'
 import { emitCommunityEvent } from './realtime'
-import { loadProfileProjection } from './profile-projection'
+import { loadProfileProjection, projectMemberProfile, relationshipView } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { getMemberNotificationPreference } from './notification-delivery'
 import { eventNotificationEnabled } from './event-notification-preferences'
@@ -58,8 +62,96 @@ export function enforceCommunityWriteRateLimit(context: CommunityPolicyContext, 
   const rate = consumeApiRateLimit(`community:${action}:${memberId}`, true)
   if (!rate.allowed) throw new CommunityError('Rate limit exceeded', 429, 'COMMUNITY_RATE_LIMITED')
 }
+
+async function requireDiscussionPost(payload: Payload, postId: string, discussionId: string) {
+  const post = (await payload
+    .findByID({
+      collection: 'discussion-posts',
+      id: postId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)) as unknown as Record<string, unknown> | null
+  const discussion = post?.discussion
+  const id =
+    typeof discussion === 'object' && discussion !== null
+      ? String((discussion as { id?: unknown }).id ?? '')
+      : String(discussion ?? '')
+  if (
+    !post ||
+    id !== discussionId ||
+    post.status !== 'published' ||
+    post.moderationState !== 'clear'
+  ) {
+    throw new CommunityError('Referenced post not found', 404, 'POST_NOT_FOUND')
+  }
+  return post
+}
 const hasSanctionReadBoundary = (payload: Payload) =>
   Boolean((payload as any).db?.pool || (payload as any).db?.drizzle)
+
+async function discussionTransaction<T>(
+  payload: Payload,
+  execute: (scoped: Payload) => Promise<T>,
+) {
+  if (!payload.db?.beginTransaction) return execute(payload)
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID)
+    throw new CommunityError('Transactional storage unavailable', 503, 'DISCUSSION_DB_UNAVAILABLE')
+  const req = await createLocalReq({}, payload)
+  req.transactionID = transactionID
+  try {
+    const result = await execute(transactionPayload(payload, req))
+    await payload.db.commitTransaction(transactionID)
+    return result
+  } catch (error) {
+    await payload.db.rollbackTransaction(transactionID)
+    throw error
+  }
+}
+
+export async function discussionTarget(
+  payload: Payload,
+  siteId: string,
+  collection: 'content' | 'media-assets' | 'albums',
+  id: string,
+) {
+  const target = (await payload
+    .findByID({ collection, id, depth: 0, overrideAccess: true })
+    .catch(() => null)) as unknown as Record<string, unknown> | null
+  if (!target || String(target.site) !== siteId || !canRenderPublic(target as PublicState))
+    throw new CommunityError('Discussion target not found', 404, 'TARGET_NOT_FOUND')
+  return target
+}
+
+function assertWriter(context: CommunityPolicyContext, siteId: string, authorId: string) {
+  if (
+    context.siteId !== siteId ||
+    context.actor.memberId !== authorId ||
+    context.actor.status !== 'active'
+  )
+    throw new CommunityError('Member cannot write in this context', 403, 'WRITER_MISMATCH')
+}
+
+async function assertDiscussionTarget(
+  payload: Payload,
+  discussion: Record<string, unknown>,
+  siteId: string,
+) {
+  if (discussion.kind !== 'attached') return null
+  const attached = discussion.attachedTo as {
+    relationTo: 'content' | 'media-assets' | 'albums'
+    value: string | { id: string }
+  }
+  if (!attached?.relationTo || !attached.value)
+    throw new CommunityError('Target not found', 404, 'TARGET_NOT_FOUND')
+  return discussionTarget(
+    payload,
+    siteId,
+    attached.relationTo,
+    typeof attached.value === 'string' ? attached.value : attached.value.id,
+  )
+}
 
 export async function queryDb<T = any>(
   payload: Payload,
@@ -152,7 +244,7 @@ export async function resolveCommunityActor(
       overrideAccess: true,
     })
     isModerator = roles.docs.length > 0
-    if (!isModerator) {
+    if (!isModerator && (!payload.collections || payload.collections['team-memberships'])) {
       const memberships = await payload.find({
         collection: 'team-memberships',
         where: {
@@ -423,6 +515,7 @@ export async function getOrCreateAttachedDiscussion(
       and: [
         { site: { equals: input.siteId } },
         { kind: { equals: 'attached' } },
+        { 'attachedTo.relationTo': { equals: input.attachedToCollection } },
         { 'attachedTo.value': { equals: input.attachedToId } },
       ],
     },
@@ -431,7 +524,7 @@ export async function getOrCreateAttachedDiscussion(
     overrideAccess: true,
   })
 
-  let existing = discussions.docs[0] as unknown as CommunityDiscussionRecord | undefined
+  const existing = discussions.docs[0] as unknown as CommunityDiscussionRecord | undefined
   if (!existing && input.canonicalPath) {
     const byPath = await payload.find({
       collection: 'discussions',
@@ -445,9 +538,8 @@ export async function getOrCreateAttachedDiscussion(
       depth: 0,
       overrideAccess: true,
     })
-    if (byPath.docs[0]) {
-      existing = byPath.docs[0] as unknown as CommunityDiscussionRecord
-    }
+    if (byPath.docs[0])
+      throw new CommunityError('Discussion path is already in use', 409, 'DISCUSSION_PATH_CONFLICT')
   }
 
   if (existing) {
@@ -530,7 +622,37 @@ export async function addComment(
   input: AddCommentInput,
   context: CommunityPolicyContext,
 ): Promise<CommunityPostRecord> {
+  assertWriter(context, input.siteId, input.authorMemberId)
+  return withExecutionLock(
+    payload,
+    `discussion:attached:${input.siteId}:${input.attachedToCollection}:${input.attachedToId}`,
+    () => discussionTransaction(payload, (scoped) => addCommentInternal(scoped, input, context)),
+  )
+}
+
+async function addCommentInternal(
+  payload: Payload,
+  input: AddCommentInput,
+  context: CommunityPolicyContext,
+): Promise<CommunityPostRecord> {
   enforceCommunityWriteRateLimit(context, 'comment')
+  const target = await discussionTarget(
+    payload,
+    input.siteId,
+    input.attachedToCollection,
+    input.attachedToId,
+  )
+  input = {
+    ...input,
+    title: String(target.title ?? target.name ?? input.title),
+    canonicalPath: String(target.canonicalPath ?? input.canonicalPath),
+    commentsPolicy:
+      input.attachedToCollection === 'content'
+        ? ((target.commentsPolicy as AddCommentInput['commentsPolicy']) ?? 'closed')
+        : input.commentsPolicy,
+  }
+  if (!input.body.trim() || input.body.length > 20000)
+    throw new CommunityError('Body must contain 1 to 20000 characters', 400, 'INVALID_BODY')
   if (hasSanctionReadBoundary(payload))
     try {
       await assertMemberCanPost(payload, {
@@ -571,6 +693,9 @@ export async function addComment(
     )
   }
 
+  const parentPost = input.parentPostId
+    ? await requireDiscussionPost(payload, input.parentPostId, discussion.id)
+    : null
   const countRes = await payload.find({
     collection: 'discussion-posts',
     where: { discussion: { equals: discussion.id } },
@@ -617,12 +742,6 @@ export async function addComment(
   // Dispatch notification to content/discussion owner or parent comment author
   let recipientMemberId: string | undefined
   if (input.parentPostId) {
-    const parentPost = (await payload.findByID({
-      collection: 'discussion-posts',
-      id: input.parentPostId,
-      depth: 0,
-      overrideAccess: true,
-    })) as unknown as Record<string, unknown> | null
     if (parentPost && parentPost.authorMember) {
       recipientMemberId = String(
         typeof parentPost.authorMember === 'string'
@@ -660,6 +779,7 @@ export async function listDiscussionComments(
   payload: Payload,
   discussionId: string,
   context: CommunityPolicyContext,
+  pagination?: { page?: number; limit?: number },
 ): Promise<CommunityPostRecord[]> {
   const discussion = (await payload.findByID({
     collection: 'discussions',
@@ -677,6 +797,7 @@ export async function listDiscussionComments(
   if (discSite && discSite !== context.siteId) {
     throw new CommunityError('Tenant site mismatch', 404, 'SITE_MISMATCH')
   }
+  await assertDiscussionTarget(payload, discussion, context.siteId)
 
   const decision = evaluateCommunityPolicy(
     context,
@@ -702,7 +823,8 @@ export async function listDiscussionComments(
     collection: 'discussion-posts',
     where: { discussion: { equals: discussionId } },
     sort: 'displayOrder',
-    limit: 100,
+    limit: Math.max(1, Math.min(100, pagination?.limit ?? 30)),
+    page: Math.max(1, pagination?.page ?? 1),
     depth: 1,
     overrideAccess: true,
   })
@@ -730,9 +852,7 @@ export async function listDiscussionComments(
     try {
       const profilesRes = await payload.find({
         collection: 'profiles',
-        where: {
-          and: [{ site: { equals: context.siteId } }, { member: { in: authorIds } }],
-        },
+        where: { member: { in: authorIds } },
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -741,12 +861,26 @@ export async function listDiscussionComments(
       for (const p of profilesRes.docs) {
         const memberId = typeof p.member === 'string' ? p.member : (p.member as { id?: string })?.id
         if (memberId) {
-          const sanitized = sanitizeProfileProjection(p as unknown as Record<string, unknown>)
-          profileMap.set(memberId, {
-            displayName: sanitized.displayName,
-            handle: sanitized.handle,
-            avatarUrl: sanitized.avatarUrl,
-          })
+          const raw = p as unknown as Record<string, unknown>
+          const sanitized = sanitizeProfileProjection(raw)
+          const viewer = await relationshipView(
+            payload,
+            context.siteId,
+            context.actor.memberId,
+            memberId,
+          )
+          try {
+            const projected = projectMemberProfile(raw, viewer, {
+              avatarUrl: sanitized.avatarUrl ?? undefined,
+            })
+            profileMap.set(memberId, {
+              displayName: projected.displayName,
+              handle: projected.handle,
+              avatarUrl: projected.avatarUrl ?? null,
+            })
+          } catch {
+            /* A private profile keeps its byline private for this viewer. */
+          }
         }
       }
     } catch {
@@ -856,6 +990,9 @@ export async function listDiscussionComments(
 
   return visible.map((post) => ({
     ...post,
+    attachments: (post.attachments ?? []).map((asset) =>
+      typeof asset === 'string' ? asset : String((asset as { id?: string }).id ?? ''),
+    ),
     authorMember:
       typeof post.authorMember === 'object' && post.authorMember
         ? String((post.authorMember as { id?: string }).id ?? '')
@@ -902,6 +1039,20 @@ export async function editComment(
   if (!discussion || String(discussion.site) !== input.siteId) {
     throw new CommunityError('Tenant site mismatch', 403, 'SITE_MISMATCH')
   }
+  await assertDiscussionTarget(payload, discussion, input.siteId)
+  const privileged = context.actor.isStaff || context.actor.isModerator
+  if (!privileged && (discussion.status !== 'open' || discussion.commentsPolicy === 'closed'))
+    throw new CommunityError('Discussion is closed or locked', 403, 'DISCUSSION_LOCKED')
+  if (
+    !privileged &&
+    (context.now ?? new Date()).getTime() - new Date(String(post.createdAt)).getTime() >
+      EDIT_WINDOW_MS
+  )
+    throw new CommunityError(
+      'Author edit window has expired (15 minutes)',
+      403,
+      'EDIT_WINDOW_EXPIRED',
+    )
 
   const authorId =
     typeof post.authorMember === 'string'
@@ -1045,7 +1196,25 @@ export async function createForumThread(
   input: CreateThreadInput,
   context: CommunityPolicyContext,
 ): Promise<{ discussion: CommunityDiscussionRecord; firstPost: CommunityPostRecord }> {
+  assertWriter(context, input.siteId, input.authorMemberId)
+  return withExecutionLock(payload, `discussion:forum:${input.forumId}`, () =>
+    discussionTransaction(payload, (scoped) => createForumThreadInternal(scoped, input, context)),
+  )
+}
+
+async function createForumThreadInternal(
+  payload: Payload,
+  input: CreateThreadInput,
+  context: CommunityPolicyContext,
+): Promise<{ discussion: CommunityDiscussionRecord; firstPost: CommunityPostRecord }> {
   enforceCommunityWriteRateLimit(context, 'thread')
+  if (
+    !input.title.trim() ||
+    input.title.length > 180 ||
+    !input.body.trim() ||
+    input.body.length > 20000
+  )
+    throw new CommunityError('Title or body is empty or too long', 400, 'INVALID_BODY')
   if (hasSanctionReadBoundary(payload))
     try {
       await assertMemberCanPost(payload, {
@@ -1192,7 +1361,20 @@ export async function replyToForumThread(
   input: ReplyPostInput,
   context: CommunityPolicyContext,
 ): Promise<CommunityPostRecord> {
+  assertWriter(context, input.siteId, input.authorMemberId)
+  return withExecutionLock(payload, `discussion:${input.discussionId}`, () =>
+    discussionTransaction(payload, (scoped) => replyToForumThreadInternal(scoped, input, context)),
+  )
+}
+
+async function replyToForumThreadInternal(
+  payload: Payload,
+  input: ReplyPostInput,
+  context: CommunityPolicyContext,
+): Promise<CommunityPostRecord> {
   enforceCommunityWriteRateLimit(context, 'reply')
+  if (!input.body.trim() || input.body.length > 20000)
+    throw new CommunityError('Body must contain 1 to 20000 characters', 400, 'INVALID_BODY')
   if (hasSanctionReadBoundary(payload))
     try {
       await assertMemberCanPost(payload, {
@@ -1212,7 +1394,7 @@ export async function replyToForumThread(
     overrideAccess: true,
   })) as unknown as Record<string, unknown> | null
 
-  if (!discussion) {
+  if (!discussion || discussion.kind !== 'thread') {
     throw new CommunityError('Thread not found', 404, 'THREAD_NOT_FOUND')
   }
   if (String(discussion.site) !== context.siteId)
@@ -1247,13 +1429,18 @@ export async function replyToForumThread(
     )
   }
 
+  if (input.parentPostId)
+    await requireDiscussionPost(payload, input.parentPostId, input.discussionId)
+  if (input.quotePostId) await requireDiscussionPost(payload, input.quotePostId, input.discussionId)
   const countRes = await payload.find({
     collection: 'discussion-posts',
     where: { discussion: { equals: input.discussionId } },
-    limit: 0,
+    sort: '-displayOrder',
+    limit: 1,
     overrideAccess: true,
   })
-  const nextOrder = countRes.totalDocs + 1
+  const nextOrder =
+    Number((countRes.docs[0] as unknown as { displayOrder?: number })?.displayOrder ?? 0) + 1
   const permalink = `${String(discussion.canonicalPath)}#post-${nextOrder}`
 
   const post = (await payload.create({
@@ -1935,6 +2122,11 @@ export async function dispatchCommunityNotification(
     payloadData: Record<string, unknown>
   },
 ): Promise<void> {
+  if (
+    payload.collections &&
+    (!payload.collections['activity-events'] || !payload.collections.notifications)
+  )
+    return
   if (!(await eventNotificationEnabled(payload, input.recipientMemberId, input.type))) return
   const inAppEnabled =
     !hasSanctionReadBoundary(payload) ||

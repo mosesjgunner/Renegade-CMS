@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { createHash } from 'node:crypto'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 import {
   createFixtureCryptoAdapter,
   assertCheckoutQuote,
@@ -29,6 +30,11 @@ const list = (value: unknown) => (Array.isArray(value) ? value : [])
 
 /** Creates an action only after server-side scope/eligibility checks; redirects are not payment proof. */
 export async function POST(request: Request) {
+  if (
+    request.headers.get('origin') &&
+    request.headers.get('origin') !== new URL(request.url).origin
+  )
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const input = (await request.json()) as {
     sessionId?: string
     proposalId?: string
@@ -41,6 +47,20 @@ export async function POST(request: Request) {
       { status: 400 },
     )
   const payload = await getPayload({ config })
+  const lockKey = `commerce.checkout.initiate:${input.proposalId ?? input.sessionId}`
+  return withExecutionLock(payload, lockKey, () => initiateCheckout(payload, request, input))
+}
+
+async function initiateCheckout(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  request: Request,
+  input: {
+    sessionId?: string
+    proposalId?: string
+    capabilityId?: string
+    returnUrl?: string
+  },
+) {
   const db: any = payload
   const settings: any = await db.findGlobal({
     slug: 'site-settings',
@@ -63,7 +83,27 @@ export async function POST(request: Request) {
       })
       .catch(() => null)
     if (!proposal) return NextResponse.json({ error: 'Proposal not found.' }, { status: 404 })
-    if (proposal.state !== 'active' || proposal.expiresAt <= new Date().toISOString()) {
+    const proposalExpired = proposal.expiresAt <= new Date().toISOString()
+    let existingProposalSession: any = null
+    if (proposal.state === 'consumed' && !proposalExpired) {
+      const priorSessions = await db.find({
+        collection: 'checkout-sessions',
+        where: { proposal: { equals: proposal.id } },
+        limit: 1,
+        depth: 1,
+        overrideAccess: true,
+      })
+      existingProposalSession = priorSessions.docs[0] ?? null
+    }
+    if (
+      proposalExpired ||
+      (proposal.state !== 'active' &&
+        !(
+          proposal.state === 'consumed' &&
+          existingProposalSession &&
+          ['open', 'pending'].includes(String(existingProposalSession.state))
+        ))
+    ) {
       return NextResponse.json({ error: 'Proposal is expired or inactive.' }, { status: 409 })
     }
     const proposalCart: any =
@@ -350,6 +390,7 @@ export async function POST(request: Request) {
       }
     }
     const replayResponse = NextResponse.json({
+      sessionId: session.id,
       intentId: existing.docs[0].id,
       attemptId: previous?.id,
       state: previous?.state ?? existing.docs[0].state,

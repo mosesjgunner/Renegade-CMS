@@ -175,6 +175,12 @@ export function evaluateCommunityPolicy(
 
   // 8. Visibility Checks for Read Action
   if (action === 'read' && target) {
+    if (
+      ['draft', 'hidden', 'archived'].includes(String(target.status)) &&
+      !actor.isStaff &&
+      !actor.isModerator
+    )
+      return { allowed: false, reason: 'content_not_published', status: 404 }
     const visibility = target.visibility ?? 'public'
     if (visibility === 'public' || visibility === 'unlisted') {
       return { allowed: true }
@@ -187,7 +193,7 @@ export function evaluateCommunityPolicy(
       return { allowed: true }
     }
 
-    if (visibility === 'private') {
+    if (visibility === 'private' || visibility === 'friends') {
       const isOwner =
         actor.memberId &&
         (target.authorMemberId === actor.memberId || target.ownerId === actor.memberId)
@@ -200,6 +206,7 @@ export function evaluateCommunityPolicy(
       }
       return { allowed: false, reason: 'private_visibility', status: 403 }
     }
+    return { allowed: false, reason: 'unsupported_visibility', status: 403 }
   }
 
   return { allowed: true }

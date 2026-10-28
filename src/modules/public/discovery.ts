@@ -2902,10 +2902,17 @@ function buildGenericRecordDiscoveryDocument(input: {
   const isPublic =
     canonicalPath !== '/' &&
     Boolean(slug || record.canonicalPath) &&
-    canRenderPublic(record, now) &&
+    canRenderPublic(
+      collection === 'discussions' && record.status === 'locked'
+        ? { ...record, status: 'open' }
+        : record,
+      now,
+    ) &&
+    (collection !== 'discussions' || record.kind === 'thread') &&
     (collection !== 'products' || record.state === 'published')
   const isIndexable =
     isPublic &&
+    record.removeFromDiscovery !== true &&
     settings.indexingMode !== 'noindex' &&
     settings.launchState === 'live' &&
     record.seoNoIndex !== true

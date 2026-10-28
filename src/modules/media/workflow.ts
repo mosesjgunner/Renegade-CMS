@@ -1569,6 +1569,24 @@ async function publicMediaWithAncestors(
     return resolveMediaReplacement(payload, media, true)
   }
 
+  // Catalog media follows the live product lifecycle, never a stale usage projection.
+  const products = await findIfRegistered(payload, {
+    collection: 'products',
+    where: {
+      and: [
+        { site: { equals: id(media.site) } },
+        { media: { equals: mediaId } },
+        { state: { equals: 'published' } },
+        { removeFromDiscovery: { not_equals: true } },
+        { retentionMode: { not_equals: 'tombstone' } },
+      ],
+    },
+    depth: 0,
+    limit: 1,
+    overrideAccess: true,
+  } as never)
+  if (products.docs.length) return resolveMediaReplacement(payload, media, true)
+
   const references = await Promise.all([
     findIfRegistered(payload, {
       collection: 'content',
@@ -1696,8 +1714,7 @@ async function publicMediaWithAncestors(
       liveUsages.push(usage)
       continue
     }
-    if (!['content', 'social-network-variants'].includes(String(relation.relationTo)))
-      continue
+    if (!['content', 'social-network-variants'].includes(String(relation.relationTo))) continue
     const target = (await payload
       .findByID({
         collection: relation.relationTo,
@@ -1721,10 +1738,7 @@ async function publicMediaWithAncestors(
     const ancestors = await findIfRegistered<Doc>(payload, {
       collection: 'media-assets',
       where: {
-        and: [
-          { site: { equals: id(media.site) } },
-          { replaceGloballyWith: { equals: mediaId } },
-        ],
+        and: [{ site: { equals: id(media.site) } }, { replaceGloballyWith: { equals: mediaId } }],
       },
       limit: 100,
       depth: 0,

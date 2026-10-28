@@ -1,0 +1,89 @@
+[
+  {
+    "command": [
+      "npm.cmd",
+      "test"
+    ],
+    "exit": 0,
+    "passed": 1738,
+    "failed": 0,
+    "skipped": 0,
+    "filesPassed": 248,
+    "log": "unit.log"
+  },
+  {
+    "command": [
+      "npx.cmd",
+      "eslint",
+      "src/app/(frontend)/api/community/conversations/route.ts",
+      "src/app/(frontend)/api/community/message-requests/route.ts",
+      "src/app/(frontend)/api/community/notifications/route.ts",
+      "src/app/(frontend)/api/v1/notifications/[id]/read/route.ts",
+      "src/app/(frontend)/api/v1/notifications/mark-all-read/route.ts",
+      "src/app/(frontend)/api/v1/notifications/route.ts",
+      "src/app/(frontend)/api/v1/notifications/stream/route.ts",
+      "src/app/(frontend)/messages/page.tsx",
+      "tests/rc1-10c/browser.ts",
+      "tests/rc1-10c/probe.ts",
+      "tests/rc1-10c/provenance.ts",
+      "tests/unit/rc1-10c-messaging-privacy.test.ts",
+      "--max-warnings=0"
+    ],
+    "exit": 0,
+    "log": "lint.log"
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "typecheck"
+    ],
+    "exit": 0,
+    "log": "typecheck.log"
+  },
+  {
+    "command": [
+      "powershell",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "tests/rc1-10c/run.ps1",
+      "browser"
+    ],
+    "exit": 0,
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0,
+    "log": "trace.json"
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "test:migrations:fresh"
+    ],
+    "exit": 0,
+    "passed": 127
+  },
+  {
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "tests/rc1-10c/provenance.ts",
+      "--check"
+    ],
+    "exit": 0,
+    "files": 1439,
+    "treeHash": "dfe6e3098fce6d97f0427a60abe67bef3f914ca63da77faabcad631ace6486c6"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0
+  }
+]

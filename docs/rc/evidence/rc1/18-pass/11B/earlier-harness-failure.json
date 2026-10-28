@@ -1,0 +1,10 @@
+{
+  "passed": 3,
+  "failed": 1,
+  "checks": [
+    "review/approve/publish persisted b3653b09-923f-4c83-9429-6e7e79b87f15",
+    "review/approve/publish persisted 5f46586e-af8d-4fc6-bf19-d9263d07ab2b",
+    "review/approve/publish persisted 8e75c622-feac-4ed1-8acf-abaca461e55a"
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: guest A browser add persists 2 units and exact 2400 server total"
+}

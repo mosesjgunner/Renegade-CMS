@@ -12,6 +12,8 @@ const relationId = (value: any) =>
   typeof value === 'object' && value !== null ? String(value.id ?? '') : String(value ?? '')
 
 export async function POST(request: Request) {
+  if (request.headers.get('origin') !== new URL(request.url).origin)
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const payload = await getPayload({ config })
   const db: any = payload
   const auth = await payload.auth({ headers: request.headers })
@@ -24,6 +26,8 @@ export async function POST(request: Request) {
     reason?: string
     refundId?: string
   }
+  if (!['preview', 'request', 'approve', 'reconcile'].includes(String(input.action)))
+    return NextResponse.json({ error: 'Invalid refund action.' }, { status: 400 })
   const actorId = String((auth.user as any)?.id ?? '')
   const operate = async () => {
     if (input.action === 'approve' || input.action === 'reconcile') {
@@ -109,9 +113,11 @@ export async function POST(request: Request) {
           { state: { in: ['processing', 'succeeded', 'unknown', 'awaiting-approval'] } },
         ],
       },
-      limit: 100,
+      pagination: false,
       overrideAccess: true,
     })
+    if (input.action !== 'preview' && priorRefunds.docs.some((row: any) => row.state !== 'succeeded'))
+      return NextResponse.json({ error: 'Resolve the pending refund before requesting another.' }, { status: 409 })
     const refundedMinor = priorRefunds.docs
       .reduce(
         (sum: bigint, row: any) =>

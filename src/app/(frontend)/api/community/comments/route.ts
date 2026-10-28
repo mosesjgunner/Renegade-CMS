@@ -1,13 +1,16 @@
+import { discussionRequestSite } from '@/modules/community/discussion-operations'
+import { discussionPostsPage, discussionPage } from '@/modules/community/discussion-operations'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { verifyCsrf } from '@/modules/identity/member-identity'
+import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
 
 import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import {
   addComment,
   editComment,
   deleteComment,
-  listDiscussionComments,
+  discussionTarget,
   resolveCommunityActor,
   CommunityError,
 } from '@/modules/community/service'
@@ -26,20 +29,33 @@ export async function GET(request: Request) {
   }
 
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  if (
+    !isRegisteredCollection(payload, 'discussions') ||
+    !isRegisteredCollection(payload, 'discussion-posts')
+  ) {
+    return Response.json(
+      { error: 'Community discussions service is unavailable.' },
+      { status: 503 },
+    )
   }
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
 
   try {
     let targetDiscussionId = discussionId
     if (!targetDiscussionId && attachedToId) {
+      const collection = url.searchParams.get('attachedToCollection') ?? 'content'
+      if (!['content', 'media-assets', 'albums'].includes(collection))
+        return Response.json({ error: 'Unsupported target' }, { status: 400 })
+      await discussionTarget(payload, siteId, collection as 'content', attachedToId)
       const disc = await payload.find({
         collection: 'discussions',
         where: {
           and: [
             { site: { equals: siteId } },
             { kind: { equals: 'attached' } },
+            { 'attachedTo.relationTo': { equals: collection } },
             { 'attachedTo.value': { equals: attachedToId } },
           ],
         },
@@ -51,12 +67,23 @@ export async function GET(request: Request) {
       if (disc.docs[0]) {
         targetDiscussionId = String(disc.docs[0].id)
       } else {
-        return Response.json({ comments: [] })
+        return Response.json(
+          { comments: [], page: 1, hasNextPage: false },
+          { headers: { 'cache-control': 'private, no-store' } },
+        )
       }
     }
 
-    const comments = await listDiscussionComments(payload, targetDiscussionId!, { siteId, actor })
-    return Response.json({ comments })
+    const result = await discussionPostsPage(
+      payload,
+      targetDiscussionId!,
+      { siteId, actor },
+      discussionPage(url.searchParams.get('page')),
+    )
+    return Response.json(
+      { comments: result.posts, page: result.page, hasNextPage: result.hasNextPage },
+      { headers: { 'cache-control': 'private, no-store' } },
+    )
   } catch (err: unknown) {
     if (err instanceof CommunityError) {
       return Response.json({ error: err.message, code: err.code }, { status: err.status })
@@ -70,8 +97,14 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  if (
+    !isRegisteredCollection(payload, 'discussions') ||
+    !isRegisteredCollection(payload, 'discussion-posts')
+  ) {
+    return Response.json(
+      { error: 'Community discussions service is unavailable.' },
+      { status: 503 },
+    )
   }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -80,6 +113,8 @@ export async function POST(request: Request) {
     return Response.json({ error: 'siteId, attachedToId, and body are required' }, { status: 400 })
   }
 
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Sign-in required to comment' }, { status: 401 })
@@ -105,7 +140,7 @@ export async function POST(request: Request) {
         typeof content?.site === 'string'
           ? content.site
           : String((content?.site as { id?: unknown } | undefined)?.id ?? '')
-      if (!content || contentSite !== siteId) {
+      if (!content || contentSite !== siteId || !canRenderPublic(content as PublicState)) {
         return Response.json({ error: 'Content not found' }, { status: 404 })
       }
       commentsPolicy = ['open', 'members', 'closed'].includes(String(content.commentsPolicy))
@@ -143,8 +178,14 @@ export async function PATCH(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  if (
+    !isRegisteredCollection(payload, 'discussions') ||
+    !isRegisteredCollection(payload, 'discussion-posts')
+  ) {
+    return Response.json(
+      { error: 'Community discussions service is unavailable.' },
+      { status: 503 },
+    )
   }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -155,6 +196,8 @@ export async function PATCH(request: Request) {
     return Response.json({ error: 'siteId, commentId, and body are required' }, { status: 400 })
   }
 
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Sign-in required to edit comment' }, { status: 401 })
@@ -185,8 +228,14 @@ export async function DELETE(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
-  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
-    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  if (
+    !isRegisteredCollection(payload, 'discussions') ||
+    !isRegisteredCollection(payload, 'discussion-posts')
+  ) {
+    return Response.json(
+      { error: 'Community discussions service is unavailable.' },
+      { status: 503 },
+    )
   }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -196,6 +245,8 @@ export async function DELETE(request: Request) {
     return Response.json({ error: 'siteId and commentId are required' }, { status: 400 })
   }
 
+  if (!(await discussionRequestSite(payload, request.headers, siteId)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Sign-in required to delete comment' }, { status: 401 })

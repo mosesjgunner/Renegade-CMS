@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field, Where } from 'payload'
+import { APIError, type CollectionConfig, type Field, type Where } from 'payload'
 import {
   operatorSiteCreateAccess,
   operatorSiteReadAccess,
@@ -12,7 +12,7 @@ import {
   retentionFields,
   seoFields,
 } from './canonical-shared'
-import { assertCatalogReady, catalogProductFromDocument } from '../modules/commerce/catalog'
+import { validateCatalogWrite } from '../modules/commerce/catalog-write'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 import { assertCampaignTransition, assertDonationTransition } from '../modules/commerce/donations'
 import {
@@ -114,16 +114,16 @@ export const Products: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [
-      ({ data, originalDoc, operation, context }) => {
+      ({ data, originalDoc, context }) => {
         if (
-          operation === 'update' &&
-          data?.state === 'published' &&
-          originalDoc?.state !== 'published' &&
+          ['review', 'approved', 'published'].includes(String(data?.state)) &&
+          data?.state !== originalDoc?.state &&
           context?.catalogWorkflow !== true
         )
-          throw new Error('Publish products through the catalog or coordinated release workflow.')
-        if (data?.catalogContractVersion && ['approved', 'published'].includes(String(data.state)))
-          assertCatalogReady(catalogProductFromDocument(data))
+          throw new APIError(
+            'Publish and review products through the catalog or coordinated release workflow.',
+            400,
+          )
         return data
       },
       async ({ data, originalDoc, req, context }) => {
@@ -140,6 +140,52 @@ export const Products: CollectionConfig = {
           data: data as Record<string, unknown> | null | undefined,
           originalDoc: originalDoc as Record<string, unknown> | null | undefined,
         })
+        if (data) {
+          try {
+            validateCatalogWrite(data, originalDoc, context?.catalogWorkflow === true)
+          } catch (error) {
+            throw new APIError(
+              error instanceof Error ? error.message : 'Invalid catalog product.',
+              400,
+            )
+          }
+          const merged = { ...originalDoc, ...data }
+          const relationId = (value: unknown) =>
+            String(
+              typeof value === 'object' && value !== null && 'id' in value
+                ? value.id
+                : (value ?? ''),
+            )
+          for (const mediaId of Array.isArray(merged.media) ? merged.media : []) {
+            const asset = await req.payload.findByID({
+              collection: 'media-assets',
+              id: relationId(mediaId),
+              depth: 0,
+              req,
+              overrideAccess: true,
+            })
+            if (relationId(asset.site) !== relationId(merged.site))
+              throw new APIError('Product media must belong to the product site.', 400)
+          }
+          for (const entry of merged.digitalDelivery?.assets ?? []) {
+            const asset = await req.payload.findByID({
+              collection: 'media-assets',
+              id: entry.mediaId,
+              depth: 0,
+              req,
+              overrideAccess: true,
+            })
+            if (
+              relationId(asset.site) !== relationId(merged.site) ||
+              asset.publicPolicy !== 'private' ||
+              asset.rightsStatus !== 'approved'
+            )
+              throw new APIError(
+                'Digital delivery requires approved private media belonging to the product site.',
+                400,
+              )
+          }
+        }
         return data
       },
     ],

@@ -95,24 +95,25 @@ export async function emitCommunityEvent(
 
   // Persist before notifying in-memory subscribers when the optional durable
   // collection is available. Both outputs use the same privacy decision.
-  try {
-    const seq = Date.now()
-    await payload.create({
-      collection: 'realtime-events',
-      overrideAccess: true,
-      data: {
-        scopeKind: 'site',
-        site: fullEvent.siteId,
-        scopeKey: `site:${fullEvent.siteId}`,
-        sequence: seq,
-        kind: fullEvent.type,
-        recipientMember: fullEvent.recipientMemberId ?? null,
-        payload: fullEvent.payload,
-        occurredAt: fullEvent.occurredAt,
-      },
-    })
-  } catch {
-    // If realtime-events is unpopulated or optional, memory bus still functions
-  }
+  if (!payload.collections || payload.collections['realtime-events'])
+    try {
+      await payload.create({
+        collection: 'realtime-events',
+        overrideAccess: true,
+        data: {
+          scopeKind: 'site',
+          site: fullEvent.siteId,
+          scopeKey: `site:${fullEvent.siteId}`,
+          kind: fullEvent.type,
+          recipientMember: fullEvent.recipientMemberId ?? null,
+          payload: fullEvent.payload,
+          occurredAt: fullEvent.occurredAt,
+        },
+      })
+    } catch (error) {
+      // A registered collection failure may already have rolled back the Payload
+      // request transaction. Never report business success after that rollback.
+      if (payload.collections?.['realtime-events']) throw error
+    }
   communityRealtime.emitCommunityEvent(fullEvent)
 }

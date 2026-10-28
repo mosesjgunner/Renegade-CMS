@@ -45,6 +45,22 @@ export function CartView() {
     fetchCart()
   }, [])
 
+  async function mergeGuestCart() {
+    const token = document.cookie
+      .split(';')
+      .map((part) => part.trim())
+      .find((part) => part.startsWith('renegade-member-csrf='))
+      ?.split('=')[1]
+    const response = await fetch('/api/commerce/cart/merge', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-member-csrf': token ?? '' },
+      body: '{}',
+    })
+    const result = await response.json()
+    if (response.ok) await fetchCart()
+    else setCouponError(result.error ?? 'Cart merge failed.')
+  }
+
   async function fetchCart() {
     setLoading(true)
     try {
@@ -70,7 +86,7 @@ export function CartView() {
     }
   }
 
-  async function updateLineQuantity(lineId: string, newQuantity: number) {
+  async function updateLineQuantity(lineId: string, newQuantity: number, variantSku?: string) {
     if (!cart) return
     setUpdatingLine(lineId)
     setAnnouncement(`Updating quantity...`)
@@ -83,6 +99,7 @@ export function CartView() {
           expectedVersion: cart.version,
           lineId,
           quantity: newQuantity,
+          variantSku,
         }),
       })
 
@@ -275,6 +292,10 @@ export function CartView() {
       <main className="max-w-4xl mx-auto p-8 space-y-6">
         <h1 className="text-3xl font-black">Shopping Cart</h1>
         <p className="text-muted-foreground">Your cart is currently empty.</p>
+        <button type="button" onClick={mergeGuestCart}>
+          Merge guest cart after signing in
+        </button>
+        {couponError && <p role="alert">{couponError}</p>}
         <Link
           href="/store"
           className="inline-block px-5 py-2.5 bg-primary text-primary-foreground font-bold rounded"
@@ -300,6 +321,10 @@ export function CartView() {
         </Link>
       </header>
 
+      <button type="button" onClick={mergeGuestCart}>
+        Merge guest cart after signing in
+      </button>
+      {couponError && <p role="alert">{couponError}</p>}
       {/* Reconciliation Notes / Alerts */}
       {cart.reconciliationNotes && cart.reconciliationNotes.length > 0 && (
         <section
@@ -336,6 +361,25 @@ export function CartView() {
                 <div className="space-y-1">
                   <h3 className="font-bold text-lg">{item.displaySnapshot.title}</h3>
                   <p className="text-xs text-muted-foreground">SKU: {item.variantSku}</p>
+                  {(item.availableVariants?.length ?? 0) > 1 && (
+                    <label>
+                      Option
+                      <select
+                        aria-label={`Option for ${item.displaySnapshot.title}`}
+                        value={item.variantSku}
+                        disabled={updatingLine === item.lineId}
+                        onChange={(event) =>
+                          updateLineQuantity(item.lineId, item.quantity, event.target.value)
+                        }
+                      >
+                        {item.availableVariants?.map((variant) => (
+                          <option key={variant.sku} value={variant.sku}>
+                            {variant.title}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <p className="font-semibold">
                     ${(Number(item.displaySnapshot.unitPriceMinor) / 100).toFixed(2)}{' '}
                     {item.displaySnapshot.currency} each
@@ -483,7 +527,8 @@ export function CartView() {
             )}
 
             <p className="text-xs text-muted-foreground">
-              Prices, promotions and availability are validated and guaranteed server-side.
+              Current prices and promotions are checked on the server. Shipping and tax are
+              confirmed in the checkout quote.
             </p>
           </div>
 

@@ -1,7 +1,7 @@
 import type { Payload } from 'payload'
 import { currentMember, readMemberSession, type IdentityStore } from '../identity/member-identity'
 import { publicSiteForHost } from '../public/site-scope'
-import { guestCartCookieName, hashGuestToken } from './cart'
+import { guestCartCookieName, hashGuestToken, cartExpiry } from './cart'
 
 export const commerceRelationId = (value: unknown): string =>
   typeof value === 'object' && value !== null && 'id' in value
@@ -13,12 +13,23 @@ export async function canAccessCommerceCart(
   payload: Payload,
   request: Request,
   cart: {
+    createdAt?: unknown
+    state?: unknown
+    expiresAt?: unknown
     site?: unknown
     member?: unknown
     owner?: unknown
     guestTokenHash?: unknown
   },
 ) {
+  if (cart.state !== undefined && cart.state !== 'active') return false
+  if (
+    cart.expiresAt != null &&
+    (!Number.isFinite(Date.parse(String(cart.expiresAt))) ||
+      Date.parse(String(cart.expiresAt)) <= Date.now())
+  )
+    return false
+  if (!cart.expiresAt && cart.createdAt && Date.parse(cartExpiry(cart)) <= Date.now()) return false
   const siteId = commerceRelationId(cart.site)
   if (!siteId || siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
     return false

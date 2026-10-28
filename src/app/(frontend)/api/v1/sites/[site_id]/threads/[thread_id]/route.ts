@@ -1,3 +1,5 @@
+import { discussionRequestSite } from '@/modules/community/discussion-operations'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -24,11 +26,15 @@ const problem = (status: number, code: string, message: string, details?: unknow
   json({ error: { code, message, details } }, status)
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ site_id: string; thread_id: string }> },
 ) {
   const { site_id, thread_id } = await context.params
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
 
   try {
     const thread = await getThreadLifecycle(payload, { siteId: site_id, threadId: thread_id })
@@ -46,8 +52,14 @@ export async function PATCH(
   context: { params: Promise<{ site_id: string; thread_id: string }> },
 ) {
   const { site_id, thread_id } = await context.params
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
+  if (request.method !== 'GET' && (!actor.memberId || actor.status !== 'active'))
+    return Response.json({ error: 'Active member authentication required' }, { status: 401 })
 
   const body = (await request.json().catch(() => null)) as Record<string, unknown> | null
   if (!body) {

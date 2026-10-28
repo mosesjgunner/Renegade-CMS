@@ -1,5 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { verifyCsrf } from '@/modules/identity/member-identity'
+import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { resolveCommunityActor, CommunityError } from '@/modules/community/service'
 import {
   applyModerationAction,
@@ -9,8 +11,24 @@ import {
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
+  const publicSiteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!publicSiteId) {
+    return Response.json({ error: 'Publication site is unavailable.' }, { status: 404 })
+  }
+
+  if (!(await samePublicOrigin(payload, request))) {
+    return Response.json({ error: 'Cross-origin request denied.' }, { status: 403 })
+  }
+
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
+
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
-  const siteId = String(body.siteId ?? request.headers.get('x-site-id') ?? 'default')
+  if (body.siteId && String(body.siteId) !== publicSiteId) {
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  }
+  const siteId = publicSiteId
 
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (!actor.isStaff && !actor.isModerator) {
@@ -41,12 +59,19 @@ export async function POST(request: Request) {
       targetId,
       action,
       scope: String(body.scope ?? 'object') as never,
-      scopeId: body.scopeId ? String(body.scopeId) : null,
+      scopeId: body.scopeId
+        ? String(body.scopeId)
+        : String(body.scope ?? 'object') === 'object'
+          ? targetId
+          : null,
       expiresAt: body.expiresAt ? String(body.expiresAt) : null,
       reason,
       details,
     })
-    return Response.json({ success: true, data: result }, { status: 200 })
+    return Response.json(
+      { success: true, actionId: result.actionId, data: result },
+      { status: 200 },
+    )
   } catch (err: unknown) {
     if (err instanceof CommunityError || err instanceof ModerationActionError) {
       return Response.json({ error: err.message, code: err.code }, { status: err.status })
@@ -57,8 +82,17 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
+  const publicSiteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!publicSiteId) {
+    return Response.json({ error: 'Publication site is unavailable.' }, { status: 404 })
+  }
+
   const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? 'default'
+  const querySiteId = url.searchParams.get('siteId')
+  if (querySiteId && querySiteId !== publicSiteId) {
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  }
+  const siteId = publicSiteId
 
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (!actor.isStaff && !actor.isModerator) {

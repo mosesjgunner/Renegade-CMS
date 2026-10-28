@@ -1,0 +1,111 @@
+[
+  {
+    "command": [
+      "npx.cmd",
+      "vitest",
+      "run",
+      "tests/unit/rc1-10d-moderation-lifecycle.test.ts",
+      "tests/unit/comm-05a-moderation-reports.test.ts",
+      "tests/unit/comm-05b-moderation-actions.test.ts",
+      "tests/unit/comm-05c-moderation-appeals-audit.test.ts",
+      "tests/unit/comm-05d-abuse-triage.test.ts"
+    ],
+    "exit": 0,
+    "passed": 28,
+    "failed": 0,
+    "skipped": 0,
+    "filesPassed": 5
+  },
+  {
+    "command": [
+      "npx.cmd",
+      "vitest",
+      "run",
+      "tests/unit/comm-03-comments-lifecycle.test.ts",
+      "tests/unit/comm-03b-comment-composer.test.ts",
+      "tests/unit/rc1-10c-messaging-privacy.test.ts",
+      "tests/unit/rc1-10b-discussion-boundaries.test.ts"
+    ],
+    "exit": 0,
+    "passed": 50,
+    "failed": 0,
+    "skipped": 0,
+    "filesPassed": 4
+  },
+  {
+    "command": [
+      "npx.cmd",
+      "eslint",
+      "src/modules/community/moderation-actions.ts",
+      "src/modules/community/inbox-notifications.ts",
+      "src/modules/community/conversation-composer.ts",
+      "src/app/(frontend)/api/community/reports/route.ts",
+      "src/app/(frontend)/api/community/moderation/route.ts",
+      "src/app/(frontend)/api/community/moderation-sites/route.ts",
+      "src/app/(frontend)/api/community/moderation/appeals/route.ts",
+      "src/modules/admin/CommunityModerationCenter.tsx",
+      "src/app/(frontend)/moderation/page.tsx",
+      "tests/rc1-10d/browser.ts",
+      "tests/unit/rc1-10d-moderation-lifecycle.test.ts",
+      "--max-warnings=0"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "typecheck"
+    ],
+    "exit": 0
+  },
+  {
+    "command": [
+      "powershell",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "tests/rc1-10d/run.ps1",
+      "-Action",
+      "browser"
+    ],
+    "exit": 0,
+    "passed": 35,
+    "failed": 0,
+    "skipped": 0,
+    "log": "trace.json"
+  },
+  {
+    "command": [
+      "powershell",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "tests/rc1-10d/run.ps1",
+      "-Action",
+      "fresh-final"
+    ],
+    "exit": 0,
+    "passed": 127
+  },
+  {
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "tests/rc1-10d/provenance.ts",
+      "--check"
+    ],
+    "exit": 0,
+    "files": 1444,
+    "treeHash": "3213930391639ae711b52bc73881fbbd1f61644e785ccfa5383d3159ba758e9f"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0
+  }
+]

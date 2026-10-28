@@ -1,0 +1,154 @@
+[
+  {
+    "path": "src/app/(frontend)/[...path]/page.tsx",
+    "sha256": "085647bfee4c7e9c8bcae21099e57d06a5fbf677eb337eb315d43f2042103c2f"
+  },
+  {
+    "path": "src/app/(frontend)/api/community/comments/route.ts",
+    "sha256": "e5a82795b1e2327de670a36f85ea900bae29e29cfecde31af5de4e62b0e27c41"
+  },
+  {
+    "path": "src/app/(frontend)/api/community/posts/route.ts",
+    "sha256": "a1912b4cdbb2987f61d8d3d0ab5583a868c18b7f3343e830ff84be054f121aed"
+  },
+  {
+    "path": "src/app/(frontend)/api/community/threads/route.ts",
+    "sha256": "6c8328259bc3a5a57eca2f8f9e09da4ee4f67cd7a4778326e7f89318b818c047"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/spaces/[space_id]/route.ts",
+    "sha256": "81510bd976c12ca3a27e840c7bdf770a04f2d03975550e5c45430af811aa4db2"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]/route.ts",
+    "sha256": "70be30208537e5908be3b473d42b528f58a8f2972f401cea25a699a7ce6489a0"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route.ts",
+    "sha256": "dad70ecf6904a0397acf44ead5e388b9c42a00ab5272fb81513bc8e1c34f717d"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/route.ts",
+    "sha256": "a60b36c86c6dfeefc491aab159502badc2977dc71f2d3b205d8925bbd358ab5c"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/topics/[topic_id]/route.ts",
+    "sha256": "1f7fc72070261a18eb4f43b359a67806d60de5d4b67e7b0ba4a59d4f27dde191"
+  },
+  {
+    "path": "src/app/(frontend)/api/v1/sites/[site_id]/topics/route.ts",
+    "sha256": "fd2df7cbaf99524b08f46233dc7487f7378f6796c75e68bc8016cbc469f5bb41"
+  },
+  {
+    "path": "src/app/(frontend)/forums/[forumSlug]/[topicSlug]/page.tsx",
+    "sha256": "b5d161df0e112c2fd83389c8090bf698fe4ca43800b110d9e6ef915cb271d7de"
+  },
+  {
+    "path": "src/app/(frontend)/forums/[forumSlug]/page.tsx",
+    "sha256": "36edb4c53caf0f0f47deaba9303633492590e0ad5ea6dcafbe86d8f40e9ae99a"
+  },
+  {
+    "path": "src/app/(frontend)/forums/page.tsx",
+    "sha256": "cb394030e4a1bd313f8fb805cc774b777829c8f886d6dd997d26f277a438d6e5"
+  },
+  {
+    "path": "src/collections/Community.ts",
+    "sha256": "75f17b7fe2b52a0e381626a6e42ab54f72233b1b58d0efcd5f86b1b036f8c41e"
+  },
+  {
+    "path": "src/migrations/20261026_100000_rc1_discussion_pins.ts",
+    "sha256": "c955a9653936ca2fa2fb3fadcf11058dc091679339b1eb8ee314ad090542f405"
+  },
+  {
+    "path": "src/migrations/20261026_101000_rc1_discussion_event_ids.ts",
+    "sha256": "18b2fba26763f2344f3c552fb4e0f8dd407c0ccb69e2276a975d8aeab24311fd"
+  },
+  {
+    "path": "src/migrations/index.ts",
+    "sha256": "6f5c09a6e54a4d19fc082fa60f29de8c6d1f75b29d03e58e15793e6ecae5cafe"
+  },
+  {
+    "path": "src/modules/community/ForumThreadComposer.tsx",
+    "sha256": "bf8df2540705134a6793200ee1e4e28be4a3a0053394f3f6390c1b03fd7119e9"
+  },
+  {
+    "path": "src/modules/community/ForumThreadView.tsx",
+    "sha256": "74e5e9b0b0302075896df255fb46ab10cd2482811ab9da3dca8bdcb11ff5e422"
+  },
+  {
+    "path": "src/modules/community/comment-composer.ts",
+    "sha256": "d255a84eb36a96b8031a3178be013a5583224fd72f5c4dc16a3fcbcf9bbe7a30"
+  },
+  {
+    "path": "src/modules/community/components/CommentSection.tsx",
+    "sha256": "1488c06d4718d33c70818a7ccf0ed1f62573a39ac9dd49b0ae0522e8a450bac8"
+  },
+  {
+    "path": "src/modules/community/discussion-operations.ts",
+    "sha256": "ae44db1856dd8f506ba1e248608a8877fd93fefa4c24b1bb0e2b3ae254c7af85"
+  },
+  {
+    "path": "src/modules/community/discussion-tree.ts",
+    "sha256": "5218c257194e76b4bad6deef3dedca24351e72927baf6fd18e1de0cf2604fd8a"
+  },
+  {
+    "path": "src/modules/community/policy.ts",
+    "sha256": "78dc1d0e64c49a6fd34a2e9eae96b84c8763dc31b9a40ae15e9ee892dcc5d346"
+  },
+  {
+    "path": "src/modules/community/realtime.ts",
+    "sha256": "7ec843a6faeb56268215b09243f8dea13eefecbac56bfebc30611db22a196eab"
+  },
+  {
+    "path": "src/modules/community/service.ts",
+    "sha256": "8300c4b91dcc7a8881f0e257891a7888fbfdb75ee2fe7c00976973b6958212c4"
+  },
+  {
+    "path": "src/modules/public/discovery.ts",
+    "sha256": "2ced270ce3e2aff0debd076c90d212862d891cefbbaff2a294eb95125dd9398a"
+  },
+  {
+    "path": "src/modules/public/search-projection.ts",
+    "sha256": "bacd9b3f5e4ac22e5d91bbf6229c86774b65c29aa532cb39b89703be25e568e6"
+  },
+  {
+    "path": "src/payload-types.ts",
+    "sha256": "e0ffdccbc6b49dc052e55ce837a9c63399fba75670bde21d25f31ae43b9a1f95"
+  },
+  {
+    "path": "tests/rc1-10b/browser.ts",
+    "sha256": "cbb49a02eb8873b95d006ecadea9057561c1e603d2dedd718cab0f17e4be0bfd"
+  },
+  {
+    "path": "tests/rc1-10b/probe.ts",
+    "sha256": "5bbdb438868c37f7fef96eecaa734dca33e1d635fbac9177b12bbd8736ec679d"
+  },
+  {
+    "path": "tests/rc1-10b/provenance.ts",
+    "sha256": "772153cd96cafe07ce5ca545d84199cc2db6caded6be9e273d862bda2c7b7e0c"
+  },
+  {
+    "path": "tests/rc1-10b/run.ps1",
+    "sha256": "9a17ebc1fc305c8c9d4f2dfab28a5ed9481c86bae45b4b84640f275179efc239"
+  },
+  {
+    "path": "tests/unit/comm-03-comments-lifecycle.test.ts",
+    "sha256": "50bcdb00477528cd8ce1eeedf8e0c43bfcfbfebb7188c2dc5c7100d989f908d2"
+  },
+  {
+    "path": "tests/unit/comm-03b-comment-composer.test.ts",
+    "sha256": "fa7ca21f3e2531424d71e64f6bafefbd0e397669bdb551d4e4e47dfb68d71382"
+  },
+  {
+    "path": "tests/unit/rc1-10b-discussion-boundaries.test.ts",
+    "sha256": "c6aee2c896249195a85c5c278b1a096e1a282bc720b14d7fb997fe975e1c3eee"
+  },
+  {
+    "path": "tests/unit/rc1-10b-discussion-operations.test.ts",
+    "sha256": "b6ac1e0f81a1a9b77542ae354a2f895f1c82e08f0fc16eacb1dbea400acc563e"
+  },
+  {
+    "path": "tests/unit/rc1-10b-routes.test.ts",
+    "sha256": "ee649a69d2f12d6e2889698594a40ff323f64e212b0d17709a59054661c6639e"
+  }
+]

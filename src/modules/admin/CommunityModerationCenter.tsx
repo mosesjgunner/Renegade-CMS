@@ -3,6 +3,13 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import Link from 'next/link'
 
+function csrfHeader(): Record<string, string> {
+  if (typeof document === 'undefined') return {}
+  const match = document.cookie.match(/(?:^|;\s*)renegade-member-csrf=([^;]+)/)
+  const token = match?.[1]
+  return token ? { 'x-member-csrf': decodeURIComponent(token) } : {}
+}
+
 type Report = {
   id: string
   siteId: string
@@ -102,7 +109,7 @@ export default function CommunityModerationCenter() {
   }, [siteId, loadData])
 
   useEffect(() => {
-    void fetch('/api/community/moderation-sites')
+    void fetch('/api/community/moderation-sites', { credentials: 'same-origin' })
       .then(async (response) => {
         if (response.ok) setSiteId(String((await response.json()).siteId))
         else {
@@ -127,7 +134,10 @@ export default function CommunityModerationCenter() {
     try {
       const res = await fetch('/api/community/moderation', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          ...csrfHeader(),
+        },
         credentials: 'same-origin',
         body: JSON.stringify({
           siteId,
@@ -311,6 +321,7 @@ export default function CommunityModerationCenter() {
                     <option value="warn">Warn Author</option>
                     <option value="quarantine">Quarantine Content</option>
                     <option value="remove">Remove Content</option>
+                    <option value="reinstate">Reinstate Content</option>
                     <option value="lock_thread">Lock Thread</option>
                     <option value="suspend_posting">Suspend Member Posting</option>
                     <option value="ban_member">Ban Member</option>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { resolvePublicUrl } from '../public/semantic-url'
 
@@ -27,6 +27,8 @@ export function ForumThreadComposer({
   const [body, setBody] = useState('')
   const [status, setStatus] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -68,7 +70,12 @@ export function ForumThreadComposer({
   if (!isOpen) {
     return (
       <div className="my-6">
-        <button className="btn btn-primary" type="button" onClick={() => setIsOpen(true)}>
+        <button
+          className="btn btn-primary"
+          type="button"
+          disabled={!ready}
+          onClick={() => setIsOpen(true)}
+        >
           + New Topic
         </button>
       </div>

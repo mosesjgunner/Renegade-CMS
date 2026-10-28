@@ -1,0 +1,60 @@
+{
+  "succeeded": false,
+  "passed": 12,
+  "failed": 1,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "fixture operator native API creates site-scoped forum hierarchy and rejects foreign parent/cycle",
+      "passed": true
+    },
+    {
+      "name": "Alice 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Bob 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Foreign moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "operator grants moderation to the ordinary members only in their assigned sites",
+      "passed": true
+    },
+    {
+      "name": "ordinary article comment UI persists canonical author/site attachment and renders saved output",
+      "passed": true
+    },
+    {
+      "name": "multiple-member article reply tree reloads through canonical comments with depth two",
+      "passed": true
+    },
+    {
+      "name": "anonymous article HTML contains the same saved comment bodies before hydration",
+      "passed": true
+    },
+    {
+      "name": "ordinary author edit persists while object-ID edits/deletes from another member leave body intact",
+      "passed": true
+    },
+    {
+      "name": "unpublished article rejects commenting without creating an attached discussion",
+      "passed": true
+    },
+    {
+      "name": "article CSRF failure is an actual denied HTTP request",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "locator.fill: Timeout 120000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Topic Title', { exact: true })\u001b[22m\n\n    at <anonymous> (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:529:63)"
+    }
+  ]
+}

@@ -20,6 +20,13 @@ const routeMocks = vi.hoisted(() => ({
 }))
 vi.mock('@payload-config', () => ({ default: {} }))
 vi.mock('payload', () => ({ getPayload: routeMocks.getPayload }))
+vi.mock('@/modules/community/discussion-operations', () => ({
+  discussionRequestSite: async () => true,
+  versionedCommentTarget: async () => ({
+    thread: { isClosed: false, isFrozen: false },
+    content: { commentsPolicy: 'open' },
+  }),
+}))
 vi.mock('@/modules/community/service', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/modules/community/service')>()),
   resolveCommunityActor: routeMocks.resolveCommunityActor,
@@ -637,6 +644,7 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       routeMocks.resolveCommunityActor.mockResolvedValue({
         kind: 'member',
         memberId: authorId,
+        status: 'active',
         isStaff: false,
         isModerator: false,
       } satisfies CommunityActor)
@@ -678,6 +686,8 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
           headers: {
             'content-type': 'application/json',
             'idempotency-key': 'idem-test-empty',
+            cookie: 'renegade-member-csrf=valid',
+            'x-member-csrf': 'valid',
           },
           body: JSON.stringify({ body: '   ' }),
         },

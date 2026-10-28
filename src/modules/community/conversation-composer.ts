@@ -4,6 +4,7 @@ import { checkBlockBetween, dispatchCommunityNotification } from './service'
 import { blockMember } from './service'
 import { ingestModerationReport } from './moderation-reports'
 import { linkMessageAttachments } from './message-attachments'
+import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 
 export class ConversationError extends Error {
   constructor(
@@ -112,6 +113,14 @@ export async function startDirectConversation(
       403,
       'BLOCKED_COMMUNICATION',
     )
+  try {
+    await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.memberId })
+  } catch (err) {
+    if (err instanceof ModerationActionError) {
+      throw new ConversationError(err.message, err.status, err.code)
+    }
+    throw err
+  }
   const [low, high] = orderedPair(input.memberId, input.recipientMemberId)
   const mutual = await hasMutualRelationship(
     payload,
@@ -231,6 +240,14 @@ export async function sendConversationMessage(
     throw new ConversationError('Message contains no allowed content', 422, 'EMPTY_MESSAGE')
   if (!input.idempotencyKey.trim())
     throw new ConversationError('idempotencyKey is required', 400, 'IDEMPOTENCY_KEY_REQUIRED')
+  try {
+    await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.senderId })
+  } catch (err) {
+    if (err instanceof ModerationActionError) {
+      throw new ConversationError(err.message, err.status, err.code)
+    }
+    throw err
+  }
   const result = await transaction<Record<string, unknown> & { duplicate: boolean }>(
     payload,
     async (query) => {

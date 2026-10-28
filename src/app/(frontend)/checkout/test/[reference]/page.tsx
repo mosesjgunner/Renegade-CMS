@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import {
-  guestCanConfirmTestCheckout,
+  canConfirmTestCheckout,
   localTestCheckoutEnabled,
 } from '@/modules/commerce/local-test-checkout'
 
@@ -48,12 +48,12 @@ export default async function LocalTestCheckoutPage({
   })
   if (
     !session ||
-    !guestCanConfirmTestCheckout({
-      cookie: requestHeaders.get('cookie') ?? '',
-      sessionId,
+    !(await canConfirmTestCheckout(payload, {
+      headers: requestHeaders,
+      session,
       siteId: id(attempt.site),
       expiresAt: String(attempt.expiresAt),
-    })
+    }))
   )
     notFound()
   return (

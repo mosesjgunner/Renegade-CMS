@@ -7,8 +7,7 @@ import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadComposer } from '@/modules/community/ForumThreadComposer'
 import { resolvePublicUrl } from '@/modules/public/semantic-url'
-import { resolveCommunityActor } from '@/modules/community/service'
-import { evaluateCommunityPolicy } from '@/modules/community/policy'
+import { browseDiscussions, discussionPage } from '@/modules/community/discussion-operations'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,8 +37,10 @@ export async function generateMetadata({
 
 export default async function ForumTopicsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ forumSlug: string }>
+  searchParams: Promise<{ page?: string; q?: string }>
 }) {
   const { forumSlug } = await params
   const payload = await getPayload({ config })
@@ -61,39 +62,15 @@ export default async function ForumTopicsPage({
   const forum = forumRes.docs[0]
   if (!forum) notFound()
 
-  const discussionsRes = await payload.find({
-    collection: 'discussions',
-    where: {
-      and: [
-        { site: { equals: siteId } },
-        { forum: { equals: forum.id } },
-        { kind: { equals: 'thread' } },
-        { moderationState: { not_equals: 'removed' } },
-      ],
-    },
-    sort: '-createdAt',
-    limit: 50,
-    depth: 1,
-    overrideAccess: true,
+  const query = await searchParams
+  const page = discussionPage(query.page)
+  const result = await browseDiscussions(payload, {
+    siteId,
+    forumId: String(forum.id),
+    page,
+    query: query.q,
   })
-
-  const actor = await resolveCommunityActor(payload, requestHeaders, siteId)
-  const discussions = discussionsRes.docs.filter(
-    (discussion) =>
-      evaluateCommunityPolicy(
-        { siteId, actor },
-        {
-          siteId,
-          ownerId: String(
-            typeof discussion.owner === 'object' ? discussion.owner?.id : (discussion.owner ?? ''),
-          ),
-          visibility: String(discussion.visibility),
-          moderationState: String(discussion.moderationState),
-          status: String(discussion.status),
-        },
-        'read',
-      ).allowed,
-  )
+  const discussions = result.docs
 
   return (
     <main className="container mx-auto max-w-5xl px-6 py-12">
@@ -118,6 +95,13 @@ export default async function ForumTopicsPage({
         </div>
       </header>
 
+      <form method="get" className="flex gap-2">
+        <label>
+          Search topics
+          <input className="form-input" name="q" defaultValue={query.q ?? ''} />
+        </label>
+        <button type="submit">Search topics</button>
+      </form>
       <ForumThreadComposer siteId={siteId} forumId={forum.id} forumSlug={forum.slug} />
 
       <section aria-labelledby="topics-heading" className="mt-8">
@@ -147,6 +131,7 @@ export default async function ForumTopicsPage({
                           href={targetHref}
                           className="hover:underline text-stone-900 dark:text-stone-100"
                         >
+                          {disc.pinned ? 'Pinned: ' : ''}
                           {disc.title}
                         </Link>
                       </h3>
@@ -172,6 +157,16 @@ export default async function ForumTopicsPage({
           </div>
         )}
       </section>
+      <nav aria-label="Topic pages" className="flex gap-4 mt-4">
+        {page > 1 ? (
+          <Link href={`?page=${page - 1}&q=${encodeURIComponent(query.q ?? '')}`}>
+            Previous topics
+          </Link>
+        ) : null}
+        {result.hasNextPage ? (
+          <Link href={`?page=${page + 1}&q=${encodeURIComponent(query.q ?? '')}`}>Next topics</Link>
+        ) : null}
+      </nav>
     </main>
   )
 }

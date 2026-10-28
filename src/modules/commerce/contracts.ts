@@ -179,6 +179,10 @@ export function eligiblePaymentMethods(
     .filter((method) => {
       if (
         method.merchantConnectionId !== context.merchant.merchantConnectionId ||
+        (method.siteId && method.siteId !== context.merchant.siteId) ||
+        (method.spaceId &&
+          context.merchant.spaceId &&
+          method.spaceId !== context.merchant.spaceId) ||
         !method.enabled ||
         method.health !== 'healthy'
       )

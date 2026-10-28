@@ -115,6 +115,16 @@ export function evaluatePromotion(
   }
 
   // 5. Per-customer usage limit
+  if (
+    promo.usageLimitPerCustomer !== undefined &&
+    (!context.customerId || context.customerUsageCounts?.[promo.id] === undefined)
+  ) {
+    return {
+      promotion: promo,
+      eligible: false,
+      ineligibilityReason: 'Customer usage history is unavailable for this promotion.',
+    }
+  }
   if (promo.usageLimitPerCustomer !== undefined && context.customerId) {
     const customerUsage = context.customerUsageCounts?.[promo.id] ?? 0
     if (customerUsage >= promo.usageLimitPerCustomer) {

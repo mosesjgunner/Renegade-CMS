@@ -1,0 +1,34 @@
+﻿{
+    "baseCommit":  "87a9ef6bb35405658ef5dd3fb94f3f95771a799e",
+    "description":  "Clean initial checkout plus these seven source changes; paths and SHA-256 are exact. Documentation and evidence are not executable source.",
+    "files":  [
+                  {
+                      "path":  "src/app/(frontend)/api/community/comments/route.ts",
+                      "sha256":  "fd15eccf6e5b2b52fe1f841389ec377eea894abcb90a5b9bafb8a94255e2644c"
+                  },
+                  {
+                      "path":  "src/app/(frontend)/api/community/posts/route.ts",
+                      "sha256":  "f75ce4cecf8892c1df549537dd6205e61ca75f6ea76c8c56f77412389ca1eb22"
+                  },
+                  {
+                      "path":  "src/app/(frontend)/api/community/threads/route.ts",
+                      "sha256":  "c0b1b3067bb220257563861f52443ba2c9143b604153d80d1404043b2477ef3e"
+                  },
+                  {
+                      "path":  "src/modules/community/ForumThreadView.tsx",
+                      "sha256":  "09607d4533bd5d4d6961b9914dbbe06ccd8a252920063eaf6320ecde7aaea5d8"
+                  },
+                  {
+                      "path":  "src/modules/community/service.ts",
+                      "sha256":  "f778520be878b867e7330068544473e47f93bf83868bf9646ef92427754a3488"
+                  },
+                  {
+                      "path":  "tests/unit/rc1-10b-discussion-boundaries.test.ts",
+                      "sha256":  "d674165c361cf266c397dc7405fa9c904acec5b31ec6c59e7c663a5e3455bcf7"
+                  },
+                  {
+                      "path":  "tests/unit/rc1-10b-routes.test.ts",
+                      "sha256":  "f7f76bb90eeb0338fb1d4cd37e625dde9ebc5a09991b38126bfc7e88521708bd"
+                  }
+              ]
+}

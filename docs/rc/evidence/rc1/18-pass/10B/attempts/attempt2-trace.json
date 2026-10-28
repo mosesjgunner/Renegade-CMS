@@ -1,0 +1,16 @@
+{
+  "succeeded": false,
+  "passed": 1,
+  "failed": 1,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "fixture operator native API creates site-scoped forum hierarchy and rejects foreign parent/cycle",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "page.goto: Timeout 90000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:39012/member-auth/verify?token=[redacted]\", waiting until \"load\"\u001b[22m\n\n    at member (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:162:14)\n    at async <anonymous> (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:378:17)"
+    }
+  ]
+}

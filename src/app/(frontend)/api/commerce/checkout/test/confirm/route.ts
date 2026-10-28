@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { POST as receiveWebhook } from '@/app/(frontend)/api/commerce/webhooks/[provider]/route'
 import {
-  guestCanConfirmTestCheckout,
+  canConfirmTestCheckout,
   localTestCheckoutEnabled,
   signedLocalPaymentEvent,
 } from '@/modules/commerce/local-test-checkout'
@@ -46,12 +46,12 @@ export async function POST(request: Request) {
   })
   if (
     !session ||
-    !guestCanConfirmTestCheckout({
-      cookie: request.headers.get('cookie') ?? '',
-      sessionId,
+    !(await canConfirmTestCheckout(payload, {
+      headers: request.headers,
+      session,
       siteId: id(attempt.site),
       expiresAt: String(attempt.expiresAt),
-    })
+    }))
   )
     return NextResponse.json({ error: 'Test checkout access denied.' }, { status: 403 })
   if (attempt.state !== 'action-required' && attempt.state !== 'succeeded')

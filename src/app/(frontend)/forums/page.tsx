@@ -1,3 +1,4 @@
+import { discussionRows } from '@/modules/community/discussion-tree'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { headers } from 'next/headers'
@@ -84,9 +85,16 @@ export default async function ForumsIndexPage() {
                       No forums in this section yet.
                     </p>
                   ) : (
-                    sectionForums.map((forum) => (
+                    discussionRows(
+                      sectionForums.map((forum) => ({
+                        ...forum,
+                        parent: typeof forum.parent === 'string' ? forum.parent : forum.parent?.id,
+                      })),
+                    ).map(({ post: forum, depth }) => (
                       <article
                         key={forum.id}
+                        data-depth={depth}
+                        style={{ marginLeft: `${Math.min(depth, 4) * 16}px` }}
                         className="p-6 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
                       >
                         <div>

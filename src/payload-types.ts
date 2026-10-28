@@ -5781,6 +5781,7 @@ export interface Discussion {
   owner?: (string | null) | Member;
   kind: 'attached' | 'thread';
   title: string;
+  pinned?: boolean | null;
   forum?: (string | null) | Forum;
   attachedTo?:
     | ({
@@ -12399,6 +12400,7 @@ export interface DiscussionsSelect<T extends boolean = true> {
   owner?: T;
   kind?: T;
   title?: T;
+  pinned?: T;
   forum?: T;
   attachedTo?: T;
   promotedContent?: T;

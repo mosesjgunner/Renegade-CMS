@@ -8,7 +8,7 @@ export async function GET(request: Request) {
   const siteId = await publicSiteForHost(payload, request.headers.get('host'))
   if (!siteId) return Response.json({ error: 'Publication site is unavailable.' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
-  if (!actor.isModerator)
+  if (!actor.isModerator && !actor.isStaff)
     return Response.json({ error: 'Site moderation grant required.' }, { status: 403 })
   return Response.json({ siteId }, { headers: { 'cache-control': 'private, no-store' } })
 }

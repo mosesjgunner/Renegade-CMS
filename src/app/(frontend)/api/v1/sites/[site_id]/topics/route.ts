@@ -1,3 +1,5 @@
+import { discussionRequestSite } from '@/modules/community/discussion-operations'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -15,8 +17,14 @@ const json = (body: unknown, status = 200) =>
 export async function GET(request: Request, context: { params: Promise<{ site_id: string }> }) {
   const { site_id } = await context.params
   const url = new URL(request.url)
+  if (request.method !== 'GET' && !verifyCsrf(request.headers))
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   const payload = await getPayload({ config })
+  if (!(await discussionRequestSite(payload, request.headers, site_id)))
+    return Response.json({ error: 'Community site unavailable' }, { status: 404 })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
+  if (request.method !== 'GET' && (!actor.memberId || actor.status !== 'active'))
+    return Response.json({ error: 'Active member authentication required' }, { status: 401 })
   try {
     const data = await listForumTopics(payload, {
       siteId: site_id,

@@ -1,0 +1,18 @@
+{
+  "marker": "mvpw0738",
+  "identities": [
+    {
+      "memberId": "41213213-d33f-48bf-a63f-c9071ceb7140",
+      "displayName": "Alice"
+    },
+    {
+      "memberId": "984b9193-fceb-4d2e-9c48-62ff6ca38118",
+      "displayName": "Bob"
+    },
+    {
+      "memberId": "77aad100-4049-4d70-b932-9e8f9aaff101",
+      "displayName": "Charlie"
+    }
+  ],
+  "timestamp": "2026-10-26T23:28:58.757Z"
+}

@@ -9,6 +9,8 @@ import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity
 import {
   mergeGuestAndMemberCarts,
   guestCartCookieName,
+  activeCartLifetimeWhere,
+  cartExpiry,
   hashGuestToken,
   type VersionedCart,
 } from '@/modules/commerce/cart'
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No guest cart token provided.' }, { status: 400 })
     }
 
-    return await withExecutionLock(rootPayload, `commerce.cart.merge:${siteId}:${memberId}`, () =>
+    return await withExecutionLock(rootPayload, `commerce.cart.site:${siteId}`, () =>
       withExecutionLock(
         rootPayload,
         `commerce.cart.merge.guest:${siteId}:${hashGuestToken(guestToken)}`,
@@ -66,7 +68,9 @@ export async function POST(request: Request) {
                   and: [
                     { site: { equals: siteId } },
                     { guestTokenHash: { equals: guestHash } },
+                    { member: { exists: false } },
                     { state: { equals: 'active' } },
+                    activeCartLifetimeWhere(),
                   ],
                 },
                 limit: 1,
@@ -87,6 +91,7 @@ export async function POST(request: Request) {
                     { site: { equals: siteId } },
                     { member: { equals: memberId } },
                     { state: { equals: 'active' } },
+                    activeCartLifetimeWhere(),
                   ],
                 },
                 limit: 1,
@@ -105,7 +110,7 @@ export async function POST(request: Request) {
                       guestDoc.merchantConnection?.id ?? guestDoc.merchantConnection ?? undefined,
                     publication: guestDoc.publication?.id ?? guestDoc.publication ?? undefined,
                     space: guestDoc.space?.id ?? guestDoc.space ?? undefined,
-                    expiresAt: guestDoc.expiresAt ?? undefined,
+                    expiresAt: cartExpiry(guestDoc),
                     currency: guestDoc.currency ?? 'USD',
                     items: [],
                     appliedCouponCodes: [],
@@ -120,7 +125,7 @@ export async function POST(request: Request) {
               const productsResult = await (payload as any).find({
                 collection: 'products',
                 where: { and: [{ site: { equals: siteId } }, { state: { equals: 'published' } }] },
-                limit: 100,
+                pagination: false,
                 depth: 1,
                 overrideAccess: true,
               })
@@ -128,7 +133,7 @@ export async function POST(request: Request) {
               const promotionsResult = await (payload as any).find({
                 collection: 'promotions',
                 where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
-                limit: 50,
+                pagination: false,
                 overrideAccess: true,
               })
 
@@ -140,6 +145,9 @@ export async function POST(request: Request) {
                 productCapabilities: Array.isArray(d.productCapabilities)
                   ? d.productCapabilities
                   : [],
+                merchantConnectionId: String(
+                  d.merchantConnection?.id ?? d.merchantConnection ?? '',
+                ),
                 variants: Array.isArray(d.variants) ? d.variants : [],
                 offers: Array.isArray(d.offers) ? d.offers : [],
               }))
@@ -158,11 +166,12 @@ export async function POST(request: Request) {
                 status: p.status,
                 stackingRule: p.stackingRule,
                 stackingPriority: Number(p.stackingPriority ?? 0),
-                usageLimitTotal: p.usageLimitTotal ? Number(p.usageLimitTotal) : undefined,
+                usageLimitTotal: p.usageLimitTotal != null ? Number(p.usageLimitTotal) : undefined,
                 usageCount: Number(p.usageCount ?? 0),
-                usageLimitPerCustomer: p.usageLimitPerCustomer
-                  ? Number(p.usageLimitPerCustomer)
-                  : undefined,
+                startsAt: p.startsAt,
+                endsAt: p.endsAt,
+                usageLimitPerCustomer:
+                  p.usageLimitPerCustomer != null ? Number(p.usageLimitPerCustomer) : undefined,
                 eligibility: p.eligibility ?? {},
               }))
 
@@ -183,7 +192,7 @@ export async function POST(request: Request) {
                 reconciliationNotes: Array.isArray(guestDoc.reconciliationNotes)
                   ? guestDoc.reconciliationNotes
                   : [],
-                expiresAt: String(guestDoc.expiresAt ?? new Date().toISOString()),
+                expiresAt: cartExpiry(guestDoc),
                 createdAt: String(guestDoc.createdAt),
                 updatedAt: String(guestDoc.updatedAt),
               }
@@ -194,6 +203,7 @@ export async function POST(request: Request) {
                 merchantConnectionId: String(
                   memberDoc.merchantConnection?.id ?? memberDoc.merchantConnection ?? '',
                 ),
+                customerId: memberId,
                 version: Number(memberDoc.version ?? 1),
                 currency: String(memberDoc.currency ?? 'USD'),
                 items: Array.isArray(memberDoc.items) ? memberDoc.items : [],
@@ -205,7 +215,7 @@ export async function POST(request: Request) {
                 reconciliationNotes: Array.isArray(memberDoc.reconciliationNotes)
                   ? memberDoc.reconciliationNotes
                   : [],
-                expiresAt: String(memberDoc.expiresAt ?? new Date().toISOString()),
+                expiresAt: cartExpiry(memberDoc),
                 createdAt: String(memberDoc.createdAt),
                 updatedAt: String(memberDoc.updatedAt),
               }

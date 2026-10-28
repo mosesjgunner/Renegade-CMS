@@ -2,12 +2,20 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { resolveCommunityActor } from '@/modules/community/service'
 import { ConversationError, actOnMessageRequest } from '@/modules/community/conversation-composer'
+import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 
 /** Recipient-only request decisions. Pending requests deliberately have no delivery side effect. */
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? request.headers.get('x-site-id') ?? 'default')
+
+  if (siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  if (!verifyCsrf(request.headers) || !(await samePublicOrigin(payload, request)))
+    return Response.json({ error: 'CSRF verification required.' }, { status: 403 })
+
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId)
     return Response.json({ error: 'Authentication required' }, { status: 401 })

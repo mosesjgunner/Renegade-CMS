@@ -134,6 +134,22 @@ export async function targetIsDeliverable(payload: Payload, event: InboxEvent) {
     )
     return Boolean(rows[0]) && !rows[0]!.quarantined
   }
+  if (type === 'post') {
+    const rows = await executeDbQuery<{ status: string; moderation_state: string }>(
+      payload,
+      'SELECT p.status, p.moderation_state FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id=$1 AND d.site_id=$2',
+      [id, site],
+    )
+    return rows[0]?.status === 'published' && rows[0]?.moderation_state === 'clear'
+  }
+  if (type === 'discussion') {
+    const rows = await executeDbQuery<{ moderation_state: string }>(
+      payload,
+      'SELECT moderation_state FROM discussions WHERE id=$1 AND site_id=$2',
+      [id, site],
+    )
+    return rows[0]?.moderation_state === 'clear'
+  }
   return true // moderation/member targets contain no content text snapshot.
 }
 

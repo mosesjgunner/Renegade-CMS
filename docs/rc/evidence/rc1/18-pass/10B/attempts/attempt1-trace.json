@@ -1,0 +1,16 @@
+{
+  "succeeded": false,
+  "passed": 1,
+  "failed": 1,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "fixture operator native API creates site-scoped forum hierarchy and rejects foreign parent/cycle",
+      "passed": true
+    },
+    {
+      "passed": false,
+      "error": "page.waitForResponse: Timeout 90000ms exceeded while waiting for event \"response\"\n    at member (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:144:26)\n    at async <anonymous> (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-10b\\browser.ts:360:17)"
+    }
+  ]
+}

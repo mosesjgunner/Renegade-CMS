@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
+import { withExecutionLock } from '../operations/execution-lock'
 import { applyNormalizedPaymentEvent, receiptMessageSnapshot } from './payment-operations'
 import {
   configuredPaymentProvider,
@@ -163,388 +164,423 @@ export const processPaymentEventTask = {
   // One durable lane preserves provider event ordering across processes; event IDs still deduplicate replays.
   concurrency: () => 'commerce.payment-events',
   handler: async ({ input, req }: { input: { webhookEventId: string }; req: any }) => {
-    const inbox: any = await req.payload.findByID({
+    const initialInbox: any = await req.payload.findByID({
       collection: 'payment-webhook-events',
       id: input.webhookEventId,
       depth: 0,
       overrideAccess: true,
     })
-    if (!inbox || inbox.processingState === 'processed') return { output: {} }
-    await req.payload.update({
-      collection: 'payment-webhook-events',
-      id: inbox.id,
-      data: { processingState: 'processing', attempts: Number(inbox.attempts ?? 0) + 1 },
-      overrideAccess: true,
-    })
-    try {
-      const attemptId = String(inbox.sanitizedEvidence?.attemptId ?? '')
-      const attempt: any = await req.payload.findByID({
-        collection: 'payment-attempts',
-        id: attemptId,
+    if (!initialInbox || initialInbox.processingState === 'processed') return { output: {} }
+    const lockKey = `commerce.payment-attempt:${String(initialInbox.sanitizedEvidence?.attemptId ?? initialInbox.id)}`
+    return withExecutionLock(req.payload, lockKey, async () => {
+      const inbox: any = await req.payload.findByID({
+        collection: 'payment-webhook-events',
+        id: input.webhookEventId,
         depth: 0,
         overrideAccess: true,
       })
-      const normalized: NormalizedPaymentEvent = {
-        providerEventId: inbox.providerEventId,
-        providerReference: attempt.providerReference,
-        ...(inbox.sanitizedEvidence?.providerPaymentReference
-          ? { providerPaymentReference: String(inbox.sanitizedEvidence.providerPaymentReference) }
-          : {}),
-        kind: inbox.normalizedKind,
-        ...(inbox.sanitizedEvidence?.amountMinor
-          ? { amountMinor: String(inbox.sanitizedEvidence.amountMinor) }
-          : {}),
-        ...(inbox.sanitizedEvidence?.currency
-          ? { currency: String(inbox.sanitizedEvidence.currency) }
-          : {}),
-        occurredAt: inbox.occurredAt ?? inbox.verifiedAt,
-        ...(inbox.sequence !== undefined ? { sequence: Number(inbox.sequence) } : {}),
-        sanitizedEvidence: inbox.sanitizedEvidence ?? {},
-      }
-      const next = applyNormalizedPaymentEvent(
-        {
-          id: String(attempt.id),
-          checkoutSessionId: relationId(attempt.checkoutSession),
-          proposalId: relationId(attempt.proposal),
-          customerKey: '',
-          siteId: relationId(attempt.site),
-          amountMinor: attempt.amountMinor,
-          currency: attempt.currency,
-          attempt: Number(attempt.attempt),
-          state: attempt.state,
-          providerReference: attempt.providerReference,
-          providerPaymentReference: attempt.providerPaymentReference,
-          refundedAmountMinor: attempt.refundedAmountMinor ?? '0',
-          lastProviderSequence: attempt.lastProviderSequence,
-          processedEventIds: attempt.processedEventIds ?? [],
-        },
-        normalized,
-      )
-      const terminalSuccessConflict =
-        ['failed', 'cancelled'].includes(attempt.state) && normalized.kind === 'succeeded'
-      const amountOrCurrencyMismatch =
-        normalized.kind === 'succeeded' &&
-        ((normalized.amountMinor && normalized.amountMinor !== attempt.amountMinor) ||
-          (normalized.currency && normalized.currency !== attempt.currency))
+      if (!inbox || inbox.processingState === 'processed') return { output: {} }
       await req.payload.update({
-        collection: 'payment-attempts',
-        id: attempt.id,
-        data: {
-          state: next.state,
-          providerPaymentReference: next.providerPaymentReference,
-          lastProviderSequence: next.lastProviderSequence,
-          processedEventIds: next.processedEventIds,
-          lastReconciledAt: new Date().toISOString(),
-          ...(next.state === 'unknown'
-            ? {
-                unknownSince: attempt.unknownSince ?? new Date().toISOString(),
-                nextReconcileAt: new Date().toISOString(),
-                ...(terminalSuccessConflict
-                  ? {
-                      failure: {
-                        code: 'terminal-success-conflict',
-                        message:
-                          'Provider success conflicts with a locally terminal attempt; manual reconciliation is required.',
-                      },
-                    }
-                  : {}),
-                ...(amountOrCurrencyMismatch
-                  ? { failure: { code: 'amount-or-currency-mismatch' } }
-                  : {}),
-              }
-            : {}),
-        },
+        collection: 'payment-webhook-events',
+        id: inbox.id,
+        data: { processingState: 'processing', attempts: Number(inbox.attempts ?? 0) + 1 },
         overrideAccess: true,
       })
-      if (terminalSuccessConflict || amountOrCurrencyMismatch)
-        await quarantinePaymentAttempt(
-          req.payload,
-          attempt,
-          terminalSuccessConflict ? 'terminal-success-conflict' : 'amount-or-currency-mismatch',
-          {
-            providerEventId: normalized.providerEventId,
-            providerReference: normalized.providerReference,
-            amountMinor: normalized.amountMinor ?? null,
-            currency: normalized.currency ?? null,
-          },
-        )
-      const intent: any = await req.payload.findByID({
-        collection: 'payment-intents',
-        id: relationId(attempt.paymentIntent),
-        depth: 1,
-        overrideAccess: true,
-      })
-      const session: any =
-        typeof intent.checkoutSession === 'object'
-          ? intent.checkoutSession
-          : await req.payload.findByID({
-              collection: 'checkout-sessions',
-              id: intent.checkoutSession,
-              depth: 1,
-              overrideAccess: true,
-            })
-      const intentState =
-        next.state === 'succeeded'
-          ? 'paid'
-          : next.state === 'action-required'
-            ? 'requires-action'
-            : next.state === 'processing' || next.state === 'unknown'
-              ? 'pending'
-              : next.state === 'partially-refunded'
-                ? 'paid'
-                : next.state
-      await req.payload.update({
-        collection: 'payment-intents',
-        id: intent.id,
-        data: { state: intentState },
-        overrideAccess: true,
-      })
-      await ingestDonationEvidence(req.payload, {
-        providerKey: String(inbox.providerKey),
-        providerEventId: String(inbox.providerEventId),
-        paymentIntentId: String(intent.id),
-        state:
-          next.state === 'succeeded'
-            ? 'settled'
-            : ['failed', 'cancelled'].includes(next.state)
-              ? 'failed'
-              : ['processing', 'action-required'].includes(next.state)
-                ? 'pending'
-                : 'unknown',
-        occurredAt: String(inbox.occurredAt ?? inbox.verifiedAt),
-        verifiedAt: String(inbox.verifiedAt),
-        amountMinor: normalized.amountMinor,
-        currency: normalized.currency,
-        evidence: {
-          ...(inbox.sanitizedEvidence ?? {}),
-          subscriptionReference: inbox.sanitizedEvidence?.subscriptionReference,
-        },
-      })
-      if (['partially-refunded', 'refunded', 'disputed', 'cancelled'].includes(next.state)) {
-        const donationResult = await req.payload.find({
-          collection: 'donations',
-          where: { paymentIntent: { equals: String(intent.id) } },
-          limit: 1,
+      try {
+        const attemptId = String(inbox.sanitizedEvidence?.attemptId ?? '')
+        const attempt: any = await req.payload.findByID({
+          collection: 'payment-attempts',
+          id: attemptId,
           depth: 0,
           overrideAccess: true,
         })
-        const donation = donationResult.docs[0]
-        if (donation)
-          await reverseDonation(req.payload, {
-            donationId: String(donation.id),
-            eventKey: `provider:${inbox.providerKey}:${inbox.providerEventId}:donation-reversal`,
-            kind:
-              next.state === 'disputed'
-                ? 'disputed'
-                : next.state === 'partially-refunded'
-                  ? 'partially-refunded'
-                  : 'refunded',
-            ...(next.state === 'partially-refunded'
-              ? { amountMinor: String(inbox.sanitizedEvidence?.amountMinor ?? '') }
-              : {}),
-            occurredAt: String(inbox.occurredAt ?? inbox.verifiedAt),
-            evidence: { providerKey: inbox.providerKey, providerEventId: inbox.providerEventId },
-          })
-      }
-      if (!['partially-refunded', 'refunded', 'disputed'].includes(next.state))
+        const normalized: NormalizedPaymentEvent = {
+          providerEventId: inbox.providerEventId,
+          providerReference: attempt.providerReference,
+          ...(inbox.sanitizedEvidence?.providerPaymentReference
+            ? { providerPaymentReference: String(inbox.sanitizedEvidence.providerPaymentReference) }
+            : {}),
+          kind: inbox.normalizedKind,
+          ...(inbox.sanitizedEvidence?.amountMinor
+            ? { amountMinor: String(inbox.sanitizedEvidence.amountMinor) }
+            : {}),
+          ...(inbox.sanitizedEvidence?.currency
+            ? { currency: String(inbox.sanitizedEvidence.currency) }
+            : {}),
+          occurredAt: inbox.occurredAt ?? inbox.verifiedAt,
+          ...(inbox.sequence !== undefined ? { sequence: Number(inbox.sequence) } : {}),
+          sanitizedEvidence: inbox.sanitizedEvidence ?? {},
+        }
+        const next = applyNormalizedPaymentEvent(
+          {
+            id: String(attempt.id),
+            checkoutSessionId: relationId(attempt.checkoutSession),
+            proposalId: relationId(attempt.proposal),
+            customerKey: '',
+            siteId: relationId(attempt.site),
+            amountMinor: attempt.amountMinor,
+            currency: attempt.currency,
+            attempt: Number(attempt.attempt),
+            state: attempt.state,
+            providerReference: attempt.providerReference,
+            providerPaymentReference: attempt.providerPaymentReference,
+            refundedAmountMinor: attempt.refundedAmountMinor ?? '0',
+            lastProviderSequence: attempt.lastProviderSequence,
+            processedEventIds: attempt.processedEventIds ?? [],
+          },
+          normalized,
+        )
+        const terminalSuccessConflict =
+          ['failed', 'cancelled'].includes(attempt.state) && normalized.kind === 'succeeded'
+        const amountOrCurrencyMismatch =
+          normalized.kind === 'succeeded' &&
+          ((normalized.amountMinor && normalized.amountMinor !== attempt.amountMinor) ||
+            (normalized.currency && normalized.currency !== attempt.currency))
         await req.payload.update({
-          collection: 'checkout-sessions',
-          id: session.id,
+          collection: 'payment-attempts',
+          id: attempt.id,
           data: {
-            state:
-              next.state === 'succeeded'
-                ? 'completed'
-                : next.state === 'failed'
-                  ? 'failed'
-                  : next.state === 'cancelled'
-                    ? 'cancelled'
-                    : 'pending',
+            state: next.state,
+            providerPaymentReference: next.providerPaymentReference,
+            lastProviderSequence: next.lastProviderSequence,
+            processedEventIds: next.processedEventIds,
+            lastReconciledAt: new Date().toISOString(),
+            ...(next.state === 'unknown'
+              ? {
+                  unknownSince: attempt.unknownSince ?? new Date().toISOString(),
+                  nextReconcileAt: new Date().toISOString(),
+                  ...(terminalSuccessConflict
+                    ? {
+                        failure: {
+                          code: 'terminal-success-conflict',
+                          message:
+                            'Provider success conflicts with a locally terminal attempt; manual reconciliation is required.',
+                        },
+                      }
+                    : {}),
+                  ...(amountOrCurrencyMismatch
+                    ? { failure: { code: 'amount-or-currency-mismatch' } }
+                    : {}),
+                }
+              : {}),
           },
           overrideAccess: true,
         })
-      if (next.state === 'succeeded') {
-        const transactionID = await req.payload.db.beginTransaction()
-        const transactionReq = transactionID ? { ...req, transactionID } : req
-        const transactionalPayload = transactionID
-          ? new Proxy(req.payload, {
-              get(target, property) {
-                const value = target[property]
-                return ['find', 'findByID', 'create', 'update'].includes(String(property)) &&
-                  typeof value === 'function'
-                  ? (options: any) => value.call(target, { ...options, req: transactionReq })
-                  : value
-              },
-            })
-          : req.payload
-        let finalized
-        try {
-          if (!transactionID) throw new Error('Transactional inventory storage is unavailable.')
-          await lockCommerceStock(
+        if (terminalSuccessConflict || amountOrCurrencyMismatch)
+          await quarantinePaymentAttempt(
             req.payload,
-            transactionID,
-            (intent.orderLines ?? []).map((line: any) => String(line.productId)),
-            relationId(session.cart),
-          )
-          finalized = await finalizeVerifiedOrder(transactionalPayload, {
-            intent: {
-              ...intent,
-              providerKey: attempt.providerKey,
-              providerReference: attempt.providerReference,
+            attempt,
+            terminalSuccessConflict ? 'terminal-success-conflict' : 'amount-or-currency-mismatch',
+            {
+              providerEventId: normalized.providerEventId,
+              providerReference: normalized.providerReference,
+              amountMinor: normalized.amountMinor ?? null,
+              currency: normalized.currency ?? null,
             },
-            session,
-            merchantId: relationId(attempt.merchantConnection),
-            verifiedAt: inbox.verifiedAt,
-          })
-          if (transactionID) await req.payload.db.commitTransaction(transactionID)
-        } catch (error) {
-          if (transactionID) await req.payload.db.rollbackTransaction(transactionID)
-          throw error
-        }
-        const order = finalized.order
-        const proposal = relationId(session.proposal)
-          ? await req.payload.findByID({
-              collection: 'checkout-proposals',
-              id: relationId(session.proposal),
-              depth: 0,
-              overrideAccess: true,
-            })
-          : null
-        await queueReceipt(req.payload, { order, session, proposal })
-      }
-      if (next.state === 'disputed') {
-        const orders = await req.payload.find({
-          collection: 'orders',
-          where: { checkoutSession: { equals: session.id } },
-          limit: 1,
+          )
+        const intent: any = await req.payload.findByID({
+          collection: 'payment-intents',
+          id: relationId(attempt.paymentIntent),
+          depth: 1,
           overrideAccess: true,
         })
-        const order = orders.docs[0]
-        if (order) {
-          const disputeRef = String(inbox.sanitizedEvidence?.objectId ?? inbox.providerEventId)
-          const prior = await req.payload.find({
-            collection: 'commerce-disputes',
-            where: { providerDisputeReference: { equals: disputeRef } },
+        const session: any =
+          typeof intent.checkoutSession === 'object'
+            ? intent.checkoutSession
+            : await req.payload.findByID({
+                collection: 'checkout-sessions',
+                id: intent.checkoutSession,
+                depth: 1,
+                overrideAccess: true,
+              })
+        const intentState =
+          next.state === 'succeeded'
+            ? 'paid'
+            : next.state === 'action-required'
+              ? 'requires-action'
+              : next.state === 'processing' || next.state === 'unknown'
+                ? 'pending'
+                : next.state === 'partially-refunded'
+                  ? 'paid'
+                  : next.state
+        const financialEventId = `provider:${inbox.providerKey}:${inbox.providerEventId}`
+        const existingFinancialEvents = Array.isArray(intent.financialEvents)
+          ? intent.financialEvents
+          : []
+        const nextFinancialEvents = existingFinancialEvents.some(
+          (entry: any) => entry?.id === financialEventId,
+        )
+          ? existingFinancialEvents
+          : [
+              ...existingFinancialEvents,
+              {
+                id: financialEventId,
+                kind: normalized.kind,
+                resultingState: next.state,
+                amountMinor: String(normalized.amountMinor ?? attempt.amountMinor),
+                currency: String(normalized.currency ?? attempt.currency),
+                occurredAt: String(inbox.occurredAt ?? inbox.verifiedAt),
+                verifiedAt: String(inbox.verifiedAt),
+                providerReference: String(attempt.providerReference ?? ''),
+              },
+            ]
+        await req.payload.update({
+          collection: 'payment-intents',
+          id: intent.id,
+          data: { state: intentState, financialEvents: nextFinancialEvents },
+          overrideAccess: true,
+        })
+        await ingestDonationEvidence(req.payload, {
+          providerKey: String(inbox.providerKey),
+          providerEventId: String(inbox.providerEventId),
+          paymentIntentId: String(intent.id),
+          state:
+            next.state === 'succeeded'
+              ? 'settled'
+              : ['failed', 'cancelled'].includes(next.state)
+                ? 'failed'
+                : ['processing', 'action-required'].includes(next.state)
+                  ? 'pending'
+                  : 'unknown',
+          occurredAt: String(inbox.occurredAt ?? inbox.verifiedAt),
+          verifiedAt: String(inbox.verifiedAt),
+          amountMinor: normalized.amountMinor,
+          currency: normalized.currency,
+          evidence: {
+            ...(inbox.sanitizedEvidence ?? {}),
+            subscriptionReference: inbox.sanitizedEvidence?.subscriptionReference,
+          },
+        })
+        if (['partially-refunded', 'refunded', 'disputed', 'cancelled'].includes(next.state)) {
+          const donationResult = await req.payload.find({
+            collection: 'donations',
+            where: { paymentIntent: { equals: String(intent.id) } },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          })
+          const donation = donationResult.docs[0]
+          if (donation)
+            await reverseDonation(req.payload, {
+              donationId: String(donation.id),
+              eventKey: `provider:${inbox.providerKey}:${inbox.providerEventId}:donation-reversal`,
+              kind:
+                next.state === 'disputed'
+                  ? 'disputed'
+                  : next.state === 'partially-refunded'
+                    ? 'partially-refunded'
+                    : 'refunded',
+              ...(next.state === 'partially-refunded'
+                ? { amountMinor: String(inbox.sanitizedEvidence?.amountMinor ?? '') }
+                : {}),
+              occurredAt: String(inbox.occurredAt ?? inbox.verifiedAt),
+              evidence: { providerKey: inbox.providerKey, providerEventId: inbox.providerEventId },
+            })
+        }
+        if (!['partially-refunded', 'refunded', 'disputed'].includes(next.state))
+          await req.payload.update({
+            collection: 'checkout-sessions',
+            id: session.id,
+            data: {
+              state:
+                next.state === 'succeeded'
+                  ? 'completed'
+                  : next.state === 'failed'
+                    ? 'failed'
+                    : next.state === 'cancelled'
+                      ? 'cancelled'
+                      : 'pending',
+            },
+            overrideAccess: true,
+          })
+        if (next.state === 'succeeded') {
+          const transactionID = await req.payload.db.beginTransaction()
+          const transactionReq = transactionID ? { ...req, transactionID } : req
+          const transactionalPayload = transactionID
+            ? new Proxy(req.payload, {
+                get(target, property) {
+                  const value = target[property]
+                  return ['find', 'findByID', 'create', 'update'].includes(String(property)) &&
+                    typeof value === 'function'
+                    ? (options: any) => value.call(target, { ...options, req: transactionReq })
+                    : value
+                },
+              })
+            : req.payload
+          let finalized
+          try {
+            if (!transactionID) throw new Error('Transactional inventory storage is unavailable.')
+            await lockCommerceStock(
+              req.payload,
+              transactionID,
+              (intent.orderLines ?? []).map((line: any) => String(line.productId)),
+              relationId(session.cart),
+            )
+            finalized = await finalizeVerifiedOrder(transactionalPayload, {
+              intent: {
+                ...intent,
+                providerKey: attempt.providerKey,
+                providerReference: attempt.providerReference,
+              },
+              session,
+              merchantId: relationId(attempt.merchantConnection),
+              verifiedAt: inbox.verifiedAt,
+            })
+            if (transactionID) await req.payload.db.commitTransaction(transactionID)
+          } catch (error) {
+            if (transactionID) await req.payload.db.rollbackTransaction(transactionID)
+            throw error
+          }
+          const order = finalized.order
+          const proposal = relationId(session.proposal)
+            ? await req.payload.findByID({
+                collection: 'checkout-proposals',
+                id: relationId(session.proposal),
+                depth: 0,
+                overrideAccess: true,
+              })
+            : null
+          await queueReceipt(req.payload, { order, session, proposal })
+        }
+        if (next.state === 'disputed') {
+          const orders = await req.payload.find({
+            collection: 'orders',
+            where: { checkoutSession: { equals: session.id } },
             limit: 1,
             overrideAccess: true,
           })
-          if (!prior.docs.length)
-            await req.payload.create({
+          const order = orders.docs[0]
+          if (order) {
+            const disputeRef = String(inbox.sanitizedEvidence?.objectId ?? inbox.providerEventId)
+            const prior = await req.payload.find({
               collection: 'commerce-disputes',
+              where: { providerDisputeReference: { equals: disputeRef } },
+              limit: 1,
+              overrideAccess: true,
+            })
+            if (!prior.docs.length)
+              await req.payload.create({
+                collection: 'commerce-disputes',
+                data: {
+                  site: order.site,
+                  publication: order.publication,
+                  space: order.space,
+                  order: order.id,
+                  paymentAttempt: attempt.id,
+                  providerDisputeReference: disputeRef,
+                  amountMinor: String(inbox.sanitizedEvidence?.amountMinor ?? attempt.amountMinor),
+                  currency: String(inbox.sanitizedEvidence?.currency ?? attempt.currency),
+                  state: 'open',
+                  sanitizedEvidence: inbox.sanitizedEvidence,
+                  auditLog: [{ kind: 'provider-dispute-opened', at: inbox.verifiedAt }],
+                },
+                overrideAccess: true,
+              })
+            await req.payload.update({
+              collection: 'orders',
+              id: order.id,
               data: {
-                site: order.site,
-                publication: order.publication,
-                space: order.space,
-                order: order.id,
-                paymentAttempt: attempt.id,
-                providerDisputeReference: disputeRef,
-                amountMinor: String(inbox.sanitizedEvidence?.amountMinor ?? attempt.amountMinor),
-                currency: String(inbox.sanitizedEvidence?.currency ?? attempt.currency),
-                state: 'open',
-                sanitizedEvidence: inbox.sanitizedEvidence,
-                auditLog: [{ kind: 'provider-dispute-opened', at: inbox.verifiedAt }],
+                state: 'exception',
+                exception: { code: 'payment-disputed', disputeReference: disputeRef },
               },
               overrideAccess: true,
             })
-          await req.payload.update({
-            collection: 'orders',
-            id: order.id,
-            data: {
-              state: 'exception',
-              exception: { code: 'payment-disputed', disputeReference: disputeRef },
-            },
-            overrideAccess: true,
-          })
+          }
         }
-      }
-      if (['partially-refunded', 'refunded'].includes(next.state)) {
-        const orders = await req.payload.find({
-          collection: 'orders',
-          where: { checkoutSession: { equals: session.id } },
-          limit: 1,
-          overrideAccess: true,
-        })
-        const order = orders.docs[0]
-        if (order) {
-          const providerRefundReference = String(
-            inbox.sanitizedEvidence?.objectId ?? inbox.providerEventId,
-          )
-          const prior = await req.payload.find({
-            collection: 'commerce-refunds',
-            where: { providerRefundReference: { equals: providerRefundReference } },
+        if (['partially-refunded', 'refunded'].includes(next.state)) {
+          const orders = await req.payload.find({
+            collection: 'orders',
+            where: { checkoutSession: { equals: session.id } },
             limit: 1,
             overrideAccess: true,
           })
-          const amountMinor = String(
-            inbox.sanitizedEvidence?.amountMinor ??
-              (next.state === 'refunded' ? attempt.amountMinor : '0'),
-          )
-          if (!prior.docs.length && amountMinor !== '0')
-            await req.payload.create({
+          const order = orders.docs[0]
+          if (order) {
+            const providerRefundReference = String(
+              inbox.sanitizedEvidence?.objectId ?? inbox.providerEventId,
+            )
+            const prior = await req.payload.find({
               collection: 'commerce-refunds',
+              where: { providerRefundReference: { equals: providerRefundReference } },
+              limit: 1,
+              overrideAccess: true,
+            })
+            const amountMinor = String(
+              inbox.sanitizedEvidence?.amountMinor ??
+                (next.state === 'refunded' ? attempt.amountMinor : '0'),
+            )
+            if (!prior.docs.length && amountMinor !== '0')
+              await req.payload.create({
+                collection: 'commerce-refunds',
+                data: {
+                  site: order.site,
+                  publication: order.publication,
+                  space: order.space,
+                  order: order.id,
+                  paymentAttempt: attempt.id,
+                  idempotencyKey: `provider-refund:${attempt.providerKey}:${providerRefundReference}`,
+                  amountMinor,
+                  currency: attempt.currency,
+                  kind: next.state === 'refunded' ? 'full' : 'partial',
+                  state: 'succeeded',
+                  reason: 'Provider-originated refund evidence',
+                  requestedBy: 'provider',
+                  providerRefundReference,
+                  providerEvidence: inbox.sanitizedEvidence,
+                  downstreamPolicy: { fulfillment: 'manual-review' },
+                  auditLog: [{ kind: 'provider-refund-observed', at: inbox.verifiedAt }],
+                },
+                overrideAccess: true,
+              })
+            await req.payload.update({
+              collection: 'orders',
+              id: order.id,
               data: {
-                site: order.site,
-                publication: order.publication,
-                space: order.space,
-                order: order.id,
-                paymentAttempt: attempt.id,
-                idempotencyKey: `provider-refund:${attempt.providerKey}:${providerRefundReference}`,
-                amountMinor,
-                currency: attempt.currency,
-                kind: next.state === 'refunded' ? 'full' : 'partial',
-                state: 'succeeded',
-                reason: 'Provider-originated refund evidence',
-                requestedBy: 'provider',
-                providerRefundReference,
-                providerEvidence: inbox.sanitizedEvidence,
-                downstreamPolicy: { fulfillment: 'manual-review' },
-                auditLog: [{ kind: 'provider-refund-observed', at: inbox.verifiedAt }],
+                state: next.state === 'refunded' ? 'refunded' : order.state,
+                refundExtension: {
+                  state: next.state === 'refunded' ? 'full' : 'partial',
+                  latestProviderEventId: inbox.providerEventId,
+                },
+                transitionLog: [
+                  ...(order.transitionLog ?? []),
+                  {
+                    kind: next.state,
+                    providerEventId: inbox.providerEventId,
+                    at: inbox.verifiedAt,
+                  },
+                ],
               },
               overrideAccess: true,
             })
-          await req.payload.update({
-            collection: 'orders',
-            id: order.id,
-            data: {
-              state: next.state === 'refunded' ? 'refunded' : order.state,
-              refundExtension: {
-                state: next.state === 'refunded' ? 'full' : 'partial',
-                latestProviderEventId: inbox.providerEventId,
-              },
-              transitionLog: [
-                ...(order.transitionLog ?? []),
-                { kind: next.state, providerEventId: inbox.providerEventId, at: inbox.verifiedAt },
-              ],
-            },
-            overrideAccess: true,
-          })
+          }
         }
+        await req.payload.update({
+          collection: 'payment-webhook-events',
+          id: inbox.id,
+          data: {
+            processingState: 'processed',
+            processedAt: new Date().toISOString(),
+            outcome: { paymentAttemptId: attempt.id, state: next.state },
+          },
+          overrideAccess: true,
+        })
+        return { output: {} }
+      } catch (error) {
+        await req.payload.update({
+          collection: 'payment-webhook-events',
+          id: inbox.id,
+          data: {
+            processingState: 'failed',
+            lastError:
+              error instanceof Error
+                ? error.message.slice(0, 500)
+                : 'Payment event processing failed.',
+          },
+          overrideAccess: true,
+        })
+        throw error
       }
-      await req.payload.update({
-        collection: 'payment-webhook-events',
-        id: inbox.id,
-        data: {
-          processingState: 'processed',
-          processedAt: new Date().toISOString(),
-          outcome: { paymentAttemptId: attempt.id, state: next.state },
-        },
-        overrideAccess: true,
-      })
-      return { output: {} }
-    } catch (error) {
-      await req.payload.update({
-        collection: 'payment-webhook-events',
-        id: inbox.id,
-        data: {
-          processingState: 'failed',
-          lastError:
-            error instanceof Error
-              ? error.message.slice(0, 500)
-              : 'Payment event processing failed.',
-        },
-        overrideAccess: true,
-      })
-      throw error
-    }
+    })
   },
 } as unknown as TaskConfig
 
@@ -625,6 +661,12 @@ export const reconcilePaymentsTask = {
             },
             overrideAccess: true,
           })
+          await quarantinePaymentAttempt(req.payload, attempt, 'amount-or-currency-mismatch', {
+            providerReference: payment.providerReference,
+            amountMinor: payment.amountMinor,
+            currency: payment.currency,
+            source: 'provider-reconciliation',
+          })
           continue
         }
         if (
@@ -641,7 +683,7 @@ export const reconcilePaymentsTask = {
             },
             overrideAccess: true,
           })
-          await quarantinePaymentAttempt(req.payload, attempt, 'amount-or-currency-mismatch', {
+          await quarantinePaymentAttempt(req.payload, attempt, 'terminal-success-conflict', {
             providerReference: payment.providerReference,
             amountMinor: payment.amountMinor,
             currency: payment.currency,

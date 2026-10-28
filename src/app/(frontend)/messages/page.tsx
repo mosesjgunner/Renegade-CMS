@@ -171,7 +171,11 @@ function MessagesContent() {
   const activeConv = conversations.find((c) => c.id === selected)
   const isPendingRequest = activeConv?.request_state === 'pending_request'
   const isRecipient = currentMemberId && activeConv?.request_recipient_member_id === currentMemberId
-  const isSender = currentMemberId && activeConv?.request_sender_member_id === currentMemberId
+  const isSender =
+    currentMemberId &&
+    isPendingRequest &&
+    (activeConv?.request_sender_member_id === currentMemberId ||
+      (!activeConv?.request_sender_member_id && !isRecipient))
 
   return (
     <main className="container mx-auto max-w-3xl px-6 py-12">

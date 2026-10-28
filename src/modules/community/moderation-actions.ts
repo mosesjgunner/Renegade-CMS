@@ -5,6 +5,7 @@ export const moderationActions = [
   'warn',
   'quarantine',
   'remove',
+  'reinstate',
   'lock_thread',
   'suspend_posting',
   'ban_member',
@@ -256,6 +257,50 @@ export async function applyModerationAction(payload: Payload, input: Input) {
         input.targetId,
       ]).catch(() => ({ rows: [] }))
     }
+    if (input.action === 'reinstate') {
+      if (input.targetType === 'post')
+        await query(
+          "UPDATE discussion_posts SET status='published', moderation_state='clear', updated_at=now() WHERE id=$1",
+          [input.targetId],
+        )
+      else if (input.targetType === 'discussion')
+        await query(
+          "UPDATE discussions SET moderation_state='clear', status='open', updated_at=now() WHERE id=$1 AND site_id=$2",
+          [input.targetId, input.siteId],
+        )
+      else if (input.targetType === 'comment')
+        await query("UPDATE comments SET status='visible', updated_at=now() WHERE id=$1", [
+          input.targetId,
+        ])
+      else if (input.targetType === 'forum_post')
+        await query(
+          "UPDATE forum_posts SET is_quarantined=false, review_status='clear', updated_at=now() WHERE id=$1",
+          [input.targetId],
+        )
+      else if (input.targetType === 'forum_topic')
+        await query(
+          "UPDATE forum_topics SET is_quarantined=false, is_locked=false, updated_at=now() WHERE id=$1 AND site_id=$2",
+          [input.targetId, input.siteId],
+        )
+      if (item.authorId) {
+        await query(
+          'UPDATE member_sanctions SET revoked_at=now() WHERE site_id=$1 AND member_id=$2 AND revoked_at IS NULL',
+          [input.siteId, item.authorId],
+        ).catch(() => ({ rows: [] }))
+      }
+      await query(
+        `INSERT INTO outbox_events (event_type,payload,idempotency_key,created_at) VALUES ('search.rehydrate.v1',$1::jsonb,$2,now())`,
+        [
+          JSON.stringify({
+            version: 1,
+            site_id: input.siteId,
+            canonical_id: input.targetId,
+            source: 'moderation_reinstate',
+          }),
+          `search.rehydrate.v1:moderation-reinstate:${input.targetId}:${Date.now()}`,
+        ],
+      ).catch(() => ({ rows: [] }))
+    }
     const action = (
       await query<{ id: string }>(
         `INSERT INTO moderation_actions (site_id,case_id,actor,actor_member_id,target_type,target_id,action,scope,scope_id,expires_at,reason,details)
@@ -323,9 +368,18 @@ export async function applyModerationAction(payload: Payload, input: Input) {
       target_id: input.targetId,
       action: input.action,
     })
+    await query(
+      `UPDATE moderation_cases SET status='closed', closed_at=now(), closed_by_member_id=$1, disposition=$2 WHERE id=$3 AND site_id=$4`,
+      [input.actorMemberId, input.action, input.caseId, input.siteId],
+    )
+    await query(
+      `UPDATE community_reports SET status='resolved', updated_at=now() WHERE parent_case_id=$1 AND site_id=$2`,
+      [input.caseId, input.siteId],
+    )
     return { actionId: action.id }
   })
-  if (input.action === 'quarantine' || input.action === 'remove') await invalidateAfterQuarantine()
+  if (input.action === 'quarantine' || input.action === 'remove' || input.action === 'reinstate')
+    await invalidateAfterQuarantine()
   return result
 }
 

@@ -6,7 +6,8 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadView, type ForumPostData } from '@/modules/community/ForumThreadView'
-import { resolveCommunityActor, listDiscussionComments } from '@/modules/community/service'
+import { resolveCommunityActor } from '@/modules/community/service'
+import { discussionPostsPage } from '@/modules/community/discussion-operations'
 import { evaluateCommunityPolicy } from '@/modules/community/policy'
 
 export const dynamic = 'force-dynamic'
@@ -60,13 +61,15 @@ async function resolveThread(forumSlug: string, topicSlug: string) {
     ).allowed
   )
     return null
-  const posts = await listDiscussionComments(payload, discussion.id, { siteId, actor })
+  const postPage = await discussionPostsPage(payload, discussion.id, { siteId, actor })
 
   return {
     siteId,
     forum,
     discussion,
-    posts: posts as unknown as ForumPostData[],
+    posts: postPage.posts as unknown as ForumPostData[],
+    hasNextPage: postPage.hasNextPage,
+    actor,
   }
 }
 
@@ -92,7 +95,7 @@ export default async function ForumThreadPage({
   const data = await resolveThread(forumSlug, topicSlug)
   if (!data) notFound()
 
-  const { siteId, forum, discussion, posts } = data
+  const { siteId, forum, discussion, posts, actor, hasNextPage } = data
   const isLocked = discussion.status === 'locked'
 
   return (
@@ -144,6 +147,11 @@ export default async function ForumThreadPage({
         discussionId={String(discussion.id)}
         isLocked={isLocked}
         initialPosts={posts}
+        actorMemberId={actor.memberId}
+        canModerate={actor.isModerator || actor.isStaff}
+        pinned={Boolean(discussion.pinned)}
+        commentsPolicy={discussion.commentsPolicy}
+        initialHasNextPage={hasNextPage}
       />
     </main>
   )

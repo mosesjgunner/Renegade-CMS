@@ -565,6 +565,12 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
     )
     const existing = priorRows[0]
     if (existing) {
+      if (String(existing.author_id) !== input.authorId)
+        throw new CommentComposerError(
+          'Idempotency key belongs to another author.',
+          409,
+          'IDEMPOTENCY_AUTHOR_MISMATCH',
+        )
       const createdAt = new Date(String(existing.created_at)).getTime()
       if (currentTime - createdAt <= 60_000) {
         return {
@@ -717,6 +723,12 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
         [input.threadId, clientMutationId],
       )
       if (priorRows[0]) {
+        if (String(priorRows[0].author_id) !== input.authorId)
+          throw new CommentComposerError(
+            'Idempotency key belongs to another author.',
+            409,
+            'IDEMPOTENCY_AUTHOR_MISMATCH',
+          )
         return {
           comment: priorRows[0],
           replayed: true,

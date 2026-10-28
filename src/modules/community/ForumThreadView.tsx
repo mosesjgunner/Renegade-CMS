@@ -1,6 +1,9 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { discussionRows } from './discussion-tree'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -17,7 +20,10 @@ export type ForumPostData = {
   createdAt: string
   authorMember?: { id?: string; displayName?: string; handle?: string } | string | null
   authorGuest?: { name?: string } | null
+  authorProfile?: { displayName?: string; handle?: string } | null
+  parent?: string | null
   moderationState?: string
+  isTombstone?: boolean
 }
 
 export function ForumThreadView({
@@ -25,20 +31,75 @@ export function ForumThreadView({
   discussionId,
   isLocked,
   initialPosts,
+  actorMemberId,
+  canModerate = false,
+  pinned = false,
+  commentsPolicy = 'open',
+  initialHasNextPage = false,
 }: {
   siteId: string
   discussionId: string
   isLocked: boolean
   initialPosts: ForumPostData[]
+  actorMemberId?: string
+  canModerate?: boolean
+  pinned?: boolean
+  commentsPolicy?: string
+  initialHasNextPage?: boolean
 }) {
+  const router = useRouter()
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
   const [posts, setPosts] = useState<ForumPostData[]>(initialPosts)
   const [replyBody, setReplyBody] = useState('')
+  const [replyParent, setReplyParent] = useState<string | null>(null)
   const [replying, setReplying] = useState(false)
   const [statusMessage, setStatusMessage] = useState('')
   const [reportingPostId, setReportingPostId] = useState<string | null>(null)
   const [reportReason, setReportReason] = useState('')
   const [reportDetails, setReportDetails] = useState('')
   const [reactions, setReactions] = useState<Record<string, { count: number; active: boolean }>>({})
+  const [page, setPage] = useState(1)
+  const [hasNextPage, setHasNextPage] = useState(initialHasNextPage)
+  const [editing, setEditing] = useState<string | null>(null)
+  const [editedBody, setEditedBody] = useState('')
+  const [moderationReason, setModerationReason] = useState('')
+  const closed = isLocked || commentsPolicy === 'closed'
+
+  async function refreshPosts(nextPage = 1) {
+    const response = await fetch(
+      `/api/community/posts?siteId=${siteId}&discussionId=${discussionId}&page=${nextPage}`,
+    )
+    if (!response.ok) throw new Error('Could not load discussion. Please retry.')
+    const result = await response.json()
+    setPosts((previous) =>
+      nextPage === 1
+        ? (result.posts ?? [])
+        : [...previous, ...(result.posts ?? [])].filter(
+            (item, index, all) => all.findIndex((entry) => entry.id === item.id) === index,
+          ),
+    )
+    setPage(nextPage)
+    setHasNextPage(Boolean(result.hasNextPage))
+  }
+
+  async function mutate(path: string, method: string, data: Record<string, unknown>) {
+    try {
+      const response = await fetch(path, {
+        method,
+        headers: { 'content-type': 'application/json', ...csrfHeader() },
+        body: JSON.stringify({ siteId, ...data }),
+      })
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error ?? 'Discussion update failed')
+      setStatusMessage('Saved.')
+      setEditing(null)
+      await refreshPosts()
+      router.refresh()
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : 'Discussion update failed')
+    }
+  }
 
   async function handleReply(e: FormEvent) {
     e.preventDefault()
@@ -54,6 +115,7 @@ export function ForumThreadView({
           siteId,
           discussionId,
           body: replyBody.trim(),
+          parentPostId: replyParent ?? undefined,
         }),
       })
 
@@ -65,17 +127,11 @@ export function ForumThreadView({
       }
 
       setReplyBody('')
+      setReplyParent(null)
       setStatusMessage('Reply posted.')
       setReplying(false)
 
-      // Refresh posts list
-      const fetchPosts = await fetch(
-        `/api/community/posts?siteId=${encodeURIComponent(siteId)}&discussionId=${encodeURIComponent(discussionId)}`,
-      )
-      if (fetchPosts.ok) {
-        const result = await fetchPosts.json()
-        setPosts(result.posts ?? [])
-      }
+      await refreshPosts()
     } catch {
       setStatusMessage('Network error posting reply.')
       setReplying(false)
@@ -143,7 +199,64 @@ export function ForumThreadView({
   }
 
   return (
-    <div className="space-y-6">
+    <fieldset
+      disabled={!ready}
+      aria-label="Topic discussion"
+      className="space-y-6 min-w-0 border-0 p-0"
+    >
+      {canModerate ? (
+        <section aria-label="Topic moderation" className="space-y-2 rounded border p-4">
+          <label>
+            Moderation reason
+            <input
+              className="form-input"
+              value={moderationReason}
+              onChange={(event) => setModerationReason(event.target.value)}
+            />
+          </label>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              type="button"
+              disabled={!moderationReason.trim()}
+              onClick={() =>
+                void mutate('/api/community/threads', 'PATCH', {
+                  discussionId,
+                  pinned: !pinned,
+                  reason: moderationReason,
+                })
+              }
+            >
+              {pinned ? 'Unpin topic' : 'Pin topic'}
+            </button>
+            <button
+              type="button"
+              disabled={!moderationReason.trim()}
+              onClick={() =>
+                void mutate('/api/community/threads', 'PATCH', {
+                  discussionId,
+                  status: isLocked ? 'open' : 'locked',
+                  reason: moderationReason,
+                })
+              }
+            >
+              {isLocked ? 'Unlock topic' : 'Lock topic'}
+            </button>
+            <button
+              type="button"
+              disabled={!moderationReason.trim()}
+              onClick={() =>
+                void mutate('/api/community/threads', 'PATCH', {
+                  discussionId,
+                  commentsPolicy: commentsPolicy === 'closed' ? 'open' : 'closed',
+                  reason: moderationReason,
+                })
+              }
+            >
+              {commentsPolicy === 'closed' ? 'Open replies' : 'Close replies'}
+            </button>
+          </div>
+        </section>
+      ) : null}
       {statusMessage ? (
         <p role="status" className="text-sm font-medium text-stone-600 dark:text-stone-300">
           {statusMessage}
@@ -151,14 +264,16 @@ export function ForumThreadView({
       ) : null}
 
       <div className="space-y-4">
-        {posts.map((post, idx) => {
+        {discussionRows(posts).map(({ post, depth }, idx) => {
           const author =
-            typeof post.authorMember === 'object' && post.authorMember
+            post.authorProfile?.displayName ||
+            post.authorProfile?.handle ||
+            (typeof post.authorMember === 'object' && post.authorMember
               ? post.authorMember.displayName || post.authorMember.handle || 'Member'
               : post.authorGuest?.name ||
                 (typeof post.authorMember === 'string'
                   ? `Member ${post.authorMember.slice(0, 8)}`
-                  : 'Author')
+                  : 'Author'))
 
           const rx = reactions[post.id] ?? { count: 0, active: false }
 
@@ -166,6 +281,9 @@ export function ForumThreadView({
             <article
               key={post.id}
               id={`post-${post.displayOrder || idx + 1}`}
+              data-post-id={post.id}
+              data-depth={depth}
+              style={{ marginLeft: `${Math.min(depth, 4) * 16}px` }}
               className="p-6 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm"
             >
               <header className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-stone-800 text-xs text-stone-500">
@@ -187,11 +305,100 @@ export function ForumThreadView({
               </header>
 
               <div className="mt-4 prose dark:prose-invert max-w-none text-sm text-stone-800 dark:text-stone-100 whitespace-pre-wrap">
-                {post.body}
+                {post.parent ? (
+                  <p>
+                    <a
+                      href={`#post-${posts.find((item) => item.id === post.parent)?.displayOrder ?? ''}`}
+                    >
+                      Reply to earlier post
+                    </a>
+                  </p>
+                ) : null}
+                {editing === post.id ? (
+                  <div>
+                    <label>
+                      Edit post
+                      <textarea
+                        className="form-input block w-full"
+                        value={editedBody}
+                        onChange={(event) => setEditedBody(event.target.value)}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void mutate('/api/community/comments', 'PATCH', {
+                          commentId: post.id,
+                          body: editedBody,
+                        })
+                      }
+                    >
+                      Save edit
+                    </button>
+                    <button type="button" onClick={() => setEditing(null)}>
+                      Cancel edit
+                    </button>
+                  </div>
+                ) : (
+                  post.body
+                )}
               </div>
 
               <footer className="mt-4 pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
+                  {!closed && actorMemberId && !post.isTombstone ? (
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      onClick={() => setReplyParent(post.id)}
+                    >
+                      Reply
+                    </button>
+                  ) : null}
+                  {(post.authorMember === actorMemberId || canModerate) && !post.isTombstone ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditing(post.id)
+                          setEditedBody(post.body)
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm('Delete this post?'))
+                            void mutate('/api/community/comments', 'DELETE', { commentId: post.id })
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  ) : null}
+                  {canModerate ? (
+                    <label>
+                      Post moderation
+                      <select
+                        aria-label={`Moderation for post ${post.displayOrder}`}
+                        value={post.moderationState ?? 'clear'}
+                        disabled={!moderationReason.trim()}
+                        onChange={(event) =>
+                          void mutate('/api/community/posts', 'PATCH', {
+                            postId: post.id,
+                            moderationState: event.target.value,
+                            reason: moderationReason,
+                          })
+                        }
+                      >
+                        <option value="clear">Published</option>
+                        <option value="review">Pending review</option>
+                        <option value="restricted">Restricted</option>
+                        <option value="removed">Removed</option>
+                      </select>
+                    </label>
+                  ) : null}
                   <button
                     type="button"
                     className={`btn btn-sm flex items-center gap-1 ${rx.active ? 'border-primary text-primary' : ''}`}
@@ -256,16 +463,38 @@ export function ForumThreadView({
         })}
       </div>
 
-      {isLocked ? (
+      {hasNextPage ? (
+        <button
+          type="button"
+          onClick={() =>
+            void refreshPosts(page + 1).catch((error) => setStatusMessage(error.message))
+          }
+        >
+          Load more posts
+        </button>
+      ) : null}
+      {closed ? (
         <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 text-center text-sm text-stone-600 dark:text-stone-400">
-          This thread has been locked by moderators. Replies are disabled.
+          Replies are closed or locked by moderators.
         </div>
+      ) : !actorMemberId ? (
+        <p>
+          <Link href="/member-auth">Sign in</Link> to reply.
+        </p>
       ) : (
         <form
           onSubmit={handleReply}
           className="p-6 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm space-y-4"
         >
           <h3 className="text-base font-semibold">Post a reply</h3>
+          {replyParent ? (
+            <p>
+              Replying to post #{posts.find((post) => post.id === replyParent)?.displayOrder}{' '}
+              <button type="button" onClick={() => setReplyParent(null)}>
+                Cancel
+              </button>
+            </p>
+          ) : null}
           <textarea
             className="form-input block w-full"
             rows={4}
@@ -279,6 +508,6 @@ export function ForumThreadView({
           </button>
         </form>
       )}
-    </div>
+    </fieldset>
   )
 }

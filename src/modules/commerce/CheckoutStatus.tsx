@@ -2,11 +2,38 @@
 
 import { useEffect, useState } from 'react'
 
+type OrderItemView = {
+  productId: string
+  variantSku: string
+  title: string
+  quantity: number
+  unitAmountMinor: string
+  lineAmountMinor: string
+  currency: string
+}
+
 type Status = {
   downloads?: Array<{ path: string; label: string }>
   checkout: { state: string }
   payment: { state: string; amountMinor: string; currency: string } | null
-  order: { orderNumber: string; state: string; receiptNumber: string | null } | null
+  order: {
+    orderNumber: string
+    state: string
+    amountMinor?: string
+    currency?: string
+    receiptNumber: string | null
+    history?: Array<{ kind: string; at: string; amountMinor: string | null }>
+    refund?: { state: string; amountMinor: string } | null
+    items?: OrderItemView[]
+    totalsSnapshot?: {
+      subtotalMinor: string
+      adjustmentsTotalMinor: string
+      netShippingMinor: string
+      taxTotalMinor: string
+      grandTotalMinor: string
+      currency: string
+    } | null
+  } | null
 }
 
 export function CheckoutStatus({
@@ -55,7 +82,7 @@ export function CheckoutStatus({
   }, [sessionId])
   if (error) return <p role="alert">{error}</p>
   if (!status) return <p role="status">Checking secure payment status…</p>
-  const paid = status.payment?.state === 'succeeded' && status.order
+  const paid = Boolean(status.order?.receiptNumber)
   return (
     <section aria-live="polite">
       <h1>
@@ -63,8 +90,27 @@ export function CheckoutStatus({
       </h1>
       {paid ? (
         <>
-          <p>Order {status.order?.orderNumber} is paid.</p>
+          <p>Order {status.order?.orderNumber} is {status.order?.state}.</p>
+          {status.order?.refund && <p>Refund: {status.order.refund.amountMinor} {status.order.currency} minor units ({status.order.refund.state}).</p>}
+          <ul aria-label="Order history">
+            {(status.order?.history ?? []).map((entry, index) => <li key={index}>{entry.kind}{entry.at ? ` ? ${entry.at}` : ''}</li>)}
+          </ul>
           <p>Receipt {status.order?.receiptNumber ?? 'is being prepared'}.</p>
+          {status.order?.amountMinor && status.order?.currency && (
+            <p>
+              Settled total: {status.order.amountMinor} {status.order.currency} minor units
+            </p>
+          )}
+          {(status.order?.items?.length ?? 0) > 0 && (
+            <ul aria-label="Order items">
+              {status.order!.items!.map((item) => (
+                <li key={`${item.productId}-${item.variantSku}`}>
+                  {item.title} ({item.variantSku}) × {item.quantity} — {item.lineAmountMinor}{' '}
+                  {item.currency} minor units
+                </li>
+              ))}
+            </ul>
+          )}
           {(status.downloads ?? []).map((file) => (
             <p key={file.path}>
               <a href={file.path}>{file.label}</a>

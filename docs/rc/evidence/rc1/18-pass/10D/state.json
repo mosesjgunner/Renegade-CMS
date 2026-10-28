@@ -1,0 +1,22 @@
+{
+  "marker": "mvpyn2pn",
+  "identities": [
+    {
+      "memberId": "61523eae-f991-4309-a3f2-d08dde439119",
+      "displayName": "Alice"
+    },
+    {
+      "memberId": "a5f701fb-cfe6-44dc-98fe-197f8b59000b",
+      "displayName": "Bob"
+    },
+    {
+      "memberId": "ddf88d47-0e15-4310-bbb0-a63d93c7ac0b",
+      "displayName": "Charlie"
+    },
+    {
+      "memberId": "0a83f28b-6a8f-4747-9afa-84f472621840",
+      "displayName": "Dan"
+    }
+  ],
+  "timestamp": "2026-10-27T00:42:33.749Z"
+}

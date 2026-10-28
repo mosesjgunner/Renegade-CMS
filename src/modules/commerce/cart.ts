@@ -1,5 +1,10 @@
 import { createHash, randomBytes } from 'node:crypto'
-import { computePricing, type PricingSnapshot, type PricedInputLine } from './pricing'
+import {
+  PRICING_RULE_VERSION,
+  computePricing,
+  type PricingSnapshot,
+  type PricedInputLine,
+} from './pricing'
 import { resolvePromotions, type PromotionDefinition } from './promotions'
 import { checkLineAvailability, type VariantInventoryRecord } from './inventory'
 import type { RawAddressInput } from './shipping'
@@ -7,12 +12,33 @@ import type { RawAddressInput } from './shipping'
 export const CART_TTL_MS = 14 * 24 * 60 * 60 * 1000 // 14 days
 export const GUEST_CART_COOKIE_PREFIX = 'renegade_cart_'
 
+/** Older canonical carts may predate expiresAt; retain their original bounded lifetime. */
+export function activeCartLifetimeWhere(now = new Date()) {
+  return {
+    or: [
+      { expiresAt: { greater_than: now.toISOString() } },
+      {
+        and: [
+          { expiresAt: { exists: false } },
+          { createdAt: { greater_than: new Date(now.getTime() - CART_TTL_MS).toISOString() } },
+        ],
+      },
+    ],
+  }
+}
+export function cartExpiry(cart: { expiresAt?: unknown; createdAt?: unknown }) {
+  return String(
+    cart.expiresAt ?? new Date(Date.parse(String(cart.createdAt)) + CART_TTL_MS).toISOString(),
+  )
+}
+
 export type CartItemDisplaySnapshot = Readonly<{
   title: string
   subtitle?: string
   imageUrl?: string
   unitPriceMinor: string
   compareAtMinor?: string
+  taxDisplay?: 'inclusive' | 'exclusive' | 'not-applicable'
   currency: string
 }>
 
@@ -27,6 +53,7 @@ export type CartItem = Readonly<{
   donationAmountMinor?: string
   customOptions?: Readonly<Record<string, string>>
   displaySnapshot: CartItemDisplaySnapshot
+  availableVariants?: readonly { sku: string; title: string }[]
 }>
 
 export type ReconciliationNote = Readonly<{
@@ -79,6 +106,7 @@ export function guestCartCookieName(siteId: string): string {
 export type CatalogProductLookup = Readonly<{
   id: string
   name: string
+  merchantConnectionId?: string
   state: string
   kind: string
   productCapabilities?: readonly string[]
@@ -159,6 +187,7 @@ export function reResolveCart(input: {
   promotions?: readonly PromotionDefinition[]
   shippingAmountMinor?: string
   taxTotalMinor?: string
+  lineTaxAmountsMinor?: Readonly<Record<string, string>>
   now?: string
 }): { cart: VersionedCart; pricingSnapshot: PricingSnapshot } {
   const now = input.now ?? new Date().toISOString()
@@ -168,7 +197,12 @@ export function reResolveCart(input: {
 
   for (const item of input.cart.items) {
     const product = input.products.find((p) => p.id === item.productId)
-    if (!product || product.state !== 'published') {
+    if (
+      !product ||
+      product.state !== 'published' ||
+      (product.merchantConnectionId &&
+        product.merchantConnectionId !== input.cart.merchantConnectionId)
+    ) {
       notes.push({
         code: 'item-unavailable',
         message: `Item "${item.displaySnapshot.title}" is no longer available.`,
@@ -178,6 +212,9 @@ export function reResolveCart(input: {
       continue
     }
 
+    if (!Number.isSafeInteger(item.quantity) || item.quantity <= 0 || item.quantity > 9999) {
+      throw new Error('Invalid cart quantity.')
+    }
     const variant = product.variants?.find((v) => v.sku === item.variantSku)
     if (!variant || variant.status === 'unavailable' || variant.status === 'archived') {
       notes.push({
@@ -267,12 +304,19 @@ export function reResolveCart(input: {
     const updatedItem: CartItem = {
       ...item,
       quantity: quantityToUse,
+      availableVariants: product.variants
+        ?.filter(
+          (candidate) => candidate.status !== 'archived' && candidate.status !== 'unavailable',
+        )
+        .map((candidate) => ({ sku: candidate.sku, title: candidate.title ?? candidate.sku })),
       offerId: matchingOffer.id,
       offerVersion: matchingOffer.version,
       displaySnapshot: {
         ...item.displaySnapshot,
+        title: variant.title ?? product.name,
         unitPriceMinor,
         compareAtMinor: matchingOffer.compareAtMinor,
+        taxDisplay: matchingOffer.taxDisplay,
         currency: input.cart.currency,
       },
     }
@@ -325,7 +369,12 @@ export function reResolveCart(input: {
           lines: pricedInputLines,
           orderAdjustments: promoResolution.adjustments,
           shippingAmountMinor: input.shippingAmountMinor,
+          shippingAdjustmentMinor: promoResolution.adjustments
+            .filter((adjustment) => adjustment.scope === 'shipping')
+            .reduce((sum, adjustment) => sum + BigInt(adjustment.amountMinor), 0n)
+            .toString(),
           taxTotalMinor: input.taxTotalMinor,
+          lineTaxAmountsMinor: input.lineTaxAmountsMinor,
           now,
         })
       : {
@@ -339,7 +388,7 @@ export function reResolveCart(input: {
           currency: input.cart.currency,
           lines: [],
           adjustments: [],
-          ruleVersion: '2026-09-23.1',
+          ruleVersion: PRICING_RULE_VERSION,
           calculatedAt: now,
           pricingHash: 'sha256:empty',
         }

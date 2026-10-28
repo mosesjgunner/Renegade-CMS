@@ -28,7 +28,13 @@ export async function GET(request: Request) {
 
   try {
     const res = await (payload.db as any).pool.query(
-      `SELECT c.* FROM "conversations" c
+      `SELECT c.*,
+        CASE
+          WHEN c.request_recipient_member_id IS NOT NULL THEN
+            CASE WHEN c.request_recipient_member_id = c.direct_member_low_id THEN c.direct_member_high_id ELSE c.direct_member_low_id END
+          ELSE NULL
+        END AS request_sender_member_id
+       FROM "conversations" c
        JOIN "conversation_memberships" cm ON cm.conversation_id = c.id AND cm.left_at IS NULL
        WHERE cm.member_id = $1 AND c.site_id = $2
        ORDER BY c.last_message_at DESC NULLS LAST, c.updated_at DESC

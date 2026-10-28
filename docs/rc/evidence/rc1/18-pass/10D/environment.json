@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-26",
+  "baseCommit": "87a9ef6bb35405658ef5dd3fb94f3f95771a799e",
+  "node": "v24.19.0",
+  "next": "16.3.8",
+  "payload": "3.90.2",
+  "mode": "Next development Turbopack; source execution; no production image claim",
+  "browser": "Playwright Chromium headless; ordinary local SMTP email-link member sessions; fixture operator passkey tokens labelled separately",
+  "localTestAuthentication": false,
+  "enabledTestRoutes": false,
+  "modules": "all",
+  "web": "http://localhost:39014",
+  "smtp": "127.0.0.1:3145 loopback sink",
+  "container": "rc110d-20261026",
+  "containerId": "85159987dfc448b155ef9a03475eb35a25bdddd8ae1fabcbcef928fd41936cd6",
+  "databaseImageId": "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+  "primaryDatabase": "rc110d_release_acceptance",
+  "freshDatabase": "rc110d_fresh_release_acceptance",
+  "media": "scratch/rc110d/media",
+  "dist": ".next-rc110d-turbo",
+  "sourceTreeHash": "3213930391639ae711b52bc73881fbbd1f61644e785ccfa5383d3159ba758e9f",
+  "resourceStatus": "Owned container stopped; web/SMTP ports unbound; all owned data retained."
+}

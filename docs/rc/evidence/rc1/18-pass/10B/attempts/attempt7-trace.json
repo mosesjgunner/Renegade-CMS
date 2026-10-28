@@ -1,0 +1,196 @@
+{
+  "succeeded": true,
+  "passed": 47,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "fixture operator native API creates site-scoped forum hierarchy and rejects foreign parent/cycle",
+      "passed": true
+    },
+    {
+      "name": "Alice 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Bob 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "Foreign moderator 10B: ordinary email UI and local SMTP link establish a member session",
+      "passed": true
+    },
+    {
+      "name": "operator grants moderation to the ordinary members only in their assigned sites",
+      "passed": true
+    },
+    {
+      "name": "ordinary article comment UI persists canonical author/site attachment and renders saved output",
+      "passed": true
+    },
+    {
+      "name": "multiple-member article reply tree reloads through canonical comments with depth two",
+      "passed": true
+    },
+    {
+      "name": "anonymous article HTML contains the same saved comment bodies before hydration",
+      "passed": true
+    },
+    {
+      "name": "ordinary author edit persists while object-ID edits/deletes from another member leave body intact",
+      "passed": true
+    },
+    {
+      "name": "unpublished article rejects commenting without creating an attached discussion",
+      "passed": true
+    },
+    {
+      "name": "article CSRF failure is an actual denied HTTP request",
+      "passed": true
+    },
+    {
+      "name": "ordinary new-topic UI navigates to its persisted canonical public route",
+      "passed": true
+    },
+    {
+      "name": "multiple-member forum tree reload retains nested parent IDs and public author attribution",
+      "passed": true
+    },
+    {
+      "name": "foreign discussion parent/quote object IDs are denied before persistence",
+      "passed": true
+    },
+    {
+      "name": "site substitution, foreign forum ID and anonymous writes are denied",
+      "passed": true
+    },
+    {
+      "name": "foreign thread object IDs cannot bypass the local site hint, including for a local moderator",
+      "passed": true
+    },
+    {
+      "name": "members and foreign-site moderators cannot pin, lock or moderate another site",
+      "passed": true
+    },
+    {
+      "name": "moderator pin UI persists the canonical pin field",
+      "passed": true
+    },
+    {
+      "name": "closed and locked topics reject new replies and locked author edits without new posts",
+      "passed": true
+    },
+    {
+      "name": "review status persists and hides the post body from anonymous readers",
+      "passed": true
+    },
+    {
+      "name": "moderator approval restores the same canonical post and author",
+      "passed": true
+    },
+    {
+      "name": "public topic search discovers the saved public thread",
+      "passed": true
+    },
+    {
+      "name": "public full-text search links to the indexed forum title",
+      "passed": true
+    },
+    {
+      "name": "public search projection contains the public forum title but no post bodies",
+      "passed": true
+    },
+    {
+      "name": "restricted thread disappears from public topic search, route and persisted index",
+      "passed": true
+    },
+    {
+      "name": "post pagination has disjoint pages, stable order and truthful continuation",
+      "passed": true
+    },
+    {
+      "name": "ordinary load-more UI exposes the second persisted page",
+      "passed": true
+    },
+    {
+      "name": "topic paging and persisted pin ordering work through public navigation",
+      "passed": true
+    },
+    {
+      "name": "injected reply HTTP failure shows an error and persists no success",
+      "passed": true
+    },
+    {
+      "name": "ordinary retry after the failed request creates exactly one persisted post",
+      "passed": true
+    },
+    {
+      "name": "author deletion leaves a body-redacted tombstone and retains descendant records",
+      "passed": true
+    },
+    {
+      "name": "article comment paging loads every persisted record including nested replies and tombstones",
+      "passed": true
+    },
+    {
+      "name": "moderator removal leaves a persisted tombstone and tree attribution",
+      "passed": true
+    },
+    {
+      "name": "a historical timestamp fixture exercises the actual HTTP author edit-window denial",
+      "passed": true
+    },
+    {
+      "name": "native attribution replacement and raw member collection bypass are denied",
+      "passed": true
+    },
+    {
+      "name": "concurrent supported API replies allocate unique stable post order and permalinks",
+      "passed": true
+    },
+    {
+      "name": "injected canonical post failure rolls back the new topic and its search projection",
+      "passed": true
+    },
+    {
+      "name": "fixture scoped staff cannot mutate a foreign forum through native HTTP",
+      "passed": true
+    },
+    {
+      "name": "versioned comment API rejects anonymous author-header impersonation with otherwise valid CSRF",
+      "passed": true
+    },
+    {
+      "name": "versioned HTTP comment persists the real session author in its canonical SQL contract",
+      "passed": true
+    },
+    {
+      "name": "versioned idempotency replay returns the same durable comment without duplication",
+      "passed": true
+    },
+    {
+      "name": "versioned idempotency key cannot impersonate another author",
+      "passed": true
+    },
+    {
+      "name": "actual web and PostgreSQL process restart retains exact ordered discussion/post state",
+      "passed": true
+    },
+    {
+      "name": "ordinary authenticated member reload after restart renders preserved article/forum trees",
+      "passed": true
+    },
+    {
+      "name": "site moderator role and pin survive restart",
+      "passed": true
+    },
+    {
+      "name": "member privilege denial remains enforced after restart",
+      "passed": true
+    }
+  ]
+}

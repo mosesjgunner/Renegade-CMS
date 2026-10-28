@@ -1,0 +1,7 @@
+{
+  "database": "rc110b_final_release_acceptance",
+  "migrationCount": 127,
+  "eventIdDefault": "gen_random_uuid()",
+  "eventSequenceGeneration": "ALWAYS",
+  "pinnedType": "boolean"
+}

@@ -9,7 +9,26 @@ export async function POST(request: Request) {
   const auth = await payload.auth({ headers: request.headers })
   const grant = await resolveOperatorGrantContext(payload, auth.user)
   if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
-  const scopes = grant.isGlobalOwner ? [undefined] : grant.authorizedSiteIds
+  const body = await request.json().catch(() => ({}))
+  const requestedSiteId =
+    (typeof body?.siteId === 'string' && body.siteId) ||
+    new URL(request.url).searchParams.get('siteId') ||
+    undefined
+  if (
+    requestedSiteId &&
+    !grant.isGlobalOwner &&
+    !grant.authorizedSiteIds.includes(requestedSiteId)
+  ) {
+    return NextResponse.json(
+      { error: 'Forbidden. You do not have operator access to this site.' },
+      { status: 403 },
+    )
+  }
+  const scopes = requestedSiteId
+    ? [requestedSiteId]
+    : grant.isGlobalOwner
+      ? [undefined]
+      : grant.authorizedSiteIds
   if (!scopes.length) return NextResponse.json({ error: 'No authorized sites.' }, { status: 403 })
   const jobs = []
   for (const siteId of scopes) {

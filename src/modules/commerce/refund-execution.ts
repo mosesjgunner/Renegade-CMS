@@ -24,7 +24,7 @@ async function persistRefundEffects(
     const all = await payload.find({
       collection: 'commerce-refunds',
       where: { and: [{ order: { equals: order.id } }, { state: { equals: 'succeeded' } }] },
-      limit: 100,
+      pagination: false,
       overrideAccess: true,
     })
     const refunded = all.docs.reduce((sum: bigint, row: any) => sum + BigInt(row.amountMinor), 0n)
@@ -63,7 +63,7 @@ async function persistRefundEffects(
       collection: 'donations',
       where: { paymentIntent: { equals: relationId(attempt.paymentIntent) } },
       depth: 0,
-      limit: 100,
+      pagination: false,
       overrideAccess: true,
     })
     for (const gift of gifts.docs)
@@ -82,11 +82,24 @@ async function persistRefundEffects(
       const matchingEntitlements = await payload.find({
         collection: 'entitlements',
         where: { source: { equals: `order:${order.id}` } },
-        limit: 100,
+        pagination: false,
         overrideAccess: true,
       })
       const nowIso = new Date().toISOString()
       for (const ent of matchingEntitlements.docs) {
+        const grants = await payload.find({
+          collection: 'digital-delivery-grants',
+          where: { entitlement: { equals: ent.id } },
+          pagination: false,
+          overrideAccess: true,
+        })
+        for (const grant of grants.docs)
+          await payload.update({
+            collection: 'digital-delivery-grants',
+            id: grant.id,
+            data: { revokedAt: nowIso },
+            overrideAccess: true,
+          })
         await payload.update({
           collection: 'entitlements',
           id: ent.id,

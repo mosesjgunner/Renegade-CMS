@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { LiveProductShowcase } from '../../commerce/LiveProductShowcase'
 import type { ComponentDefinition, PresentationField } from '../../public/page-builder'
 import { ResponsiveMedia } from '../../media/responsive'
 
@@ -350,11 +351,11 @@ starterComponents['publisher.product-showcase'] = {
   fields: { ...common, body, query, variant, link },
   validate: () => [],
   render: (props) => {
-    const title = text(props, 'title', 'Official Campaign Gear')
+    const title = text(props, 'title', 'Products')
     const description =
       typeof props.body === 'string'
         ? props.body
-        : '100% union-printed merchandise powering voter outreach.'
+        : 'Browse published products and current availability.'
     return (
       <section
         id="publisher-product-showcase"
@@ -379,62 +380,7 @@ starterComponents['publisher.product-showcase'] = {
             View All Products →
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {[
-            {
-              name: 'Solidarity Heavyweight Tee',
-              price: '$32.00',
-              badge: 'Union-Made',
-              slug: 'solidarity-heavyweight-tee',
-            },
-            {
-              name: 'Grassroots Enamel Pin Set',
-              price: '$15.00',
-              badge: 'Collector 3-Pack',
-              slug: 'grassroots-enamel-pin-set',
-            },
-            {
-              name: 'Civic Action Canvas Tote',
-              price: '$24.00',
-              badge: '100% Duck Canvas',
-              slug: 'civic-action-canvas-tote',
-            },
-            {
-              name: 'Organizer Field Notebook Set',
-              price: '$18.00',
-              badge: 'Water-Resistant',
-              slug: 'organizer-field-notebook',
-            },
-          ].map((item) => (
-            <div
-              key={item.slug}
-              className="p-4 rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 flex flex-col justify-between"
-            >
-              <div>
-                <span className="badge badge-brand text-[10px] mb-2">{item.badge}</span>
-                <h4 className="font-bold text-sm text-stone-900 dark:text-stone-100">
-                  {item.name}
-                </h4>
-                <p className="text-stone-700 dark:text-stone-300 font-semibold text-sm mt-1">
-                  {item.price}
-                </p>
-              </div>
-              <a
-                href={`/store/${item.slug}`}
-                className="mt-3 block text-center py-1.5 px-3 bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 rounded-lg text-xs font-bold transition-colors"
-              >
-                View Item
-              </a>
-            </div>
-          ))}
-        </div>
-        <div
-          data-provider-state="safe-unconfigured"
-          className="text-xs text-stone-400 text-center border-t border-stone-100 dark:border-stone-800 pt-3"
-        >
-          Commerce items fulfill via union print shops or local test configuration. Unconfigured
-          checkouts cannot charge live cards.
-        </div>
+        <LiveProductShowcase />
       </section>
     )
   },

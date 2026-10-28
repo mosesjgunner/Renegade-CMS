@@ -1,3 +1,4 @@
+import { resolveCommunityActor } from '@/modules/community/service'
 import { createHash } from 'node:crypto'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import config from '@payload-config'
@@ -32,6 +33,15 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
       { error: 'Download is unavailable.' },
       { status: 404, headers: { 'cache-control': 'private, no-store' } },
     )
+  // Member grants are personal; possession of a copied URL is insufficient.
+  if (id(grant.member)) {
+    const actor = await resolveCommunityActor(payload, request.headers, hostSite)
+    if (actor.kind === 'anonymous' || actor.memberId !== id(grant.member))
+      return Response.json(
+        { error: 'Download is unavailable.' },
+        { status: 404, headers: { 'cache-control': 'private, no-store' } },
+      )
+  }
   const entitlement = grant?.entitlement as Record<string, unknown> | undefined
   const decision = authorizePrivateDownload(
     grant
@@ -40,6 +50,7 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
           entitlementActive: Boolean(
             entitlement &&
               !entitlement.revokedAt &&
+              (!entitlement.startsAt || Date.parse(String(entitlement.startsAt)) <= Date.now()) &&
               (!entitlement.endsAt || Date.parse(String(entitlement.endsAt)) > Date.now()),
           ),
           expiresAt: grant.expiresAt ? String(grant.expiresAt) : undefined,

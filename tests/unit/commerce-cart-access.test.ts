@@ -40,6 +40,36 @@ describe('customer cart capability boundary', () => {
       await canAccessCommerceCart(payload, request('unknown.example.test', cookie), cart),
     ).toBe(false)
   })
+  it('retains a recent legacy guest cart with a null expiry', async () => {
+    const cart = {
+      site: 'site-a',
+      expiresAt: null,
+      createdAt: new Date().toISOString(),
+      guestTokenHash: hashGuestToken('legacy'),
+    }
+    expect(
+      await canAccessCommerceCart(
+        payload,
+        request('shop.example.test', guestCartCookieName('site-a') + '=legacy'),
+        cart,
+      ),
+    ).toBe(true)
+  })
+  it('denies an old legacy guest cart without extending its lifetime', async () => {
+    const cart = {
+      site: 'site-a',
+      expiresAt: null,
+      createdAt: '2020-01-01T00:00:00Z',
+      guestTokenHash: hashGuestToken('legacy'),
+    }
+    expect(
+      await canAccessCommerceCart(
+        payload,
+        request('shop.example.test', guestCartCookieName('site-a') + '=legacy'),
+        cart,
+      ),
+    ).toBe(false)
+  })
   it('requires the owning member even when a guest token is supplied', async () => {
     const cart = {
       site: { id: 'site-a' },

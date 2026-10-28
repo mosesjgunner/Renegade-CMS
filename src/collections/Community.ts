@@ -1,9 +1,11 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
+import { searchProjectionHooks } from '../modules/public/search-projection'
 import {
   operatorSiteCreateAccess,
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
   operatorRelatedSiteAccess,
+  preserveRecordRelationshipsAccess,
 } from '../modules/operations/operator-grants'
 
 import {
@@ -49,7 +51,41 @@ export const Forums: CollectionConfig = {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
     read: () => true,
-    update: operatorSiteUpdateAccess,
+    update: preserveRecordRelationshipsAccess('forums', ['site'], operatorSiteUpdateAccess),
+  },
+  hooks: {
+    beforeValidate: [
+      async ({ data, originalDoc, req }) => {
+        const site = String(data?.site ?? originalDoc?.site ?? '')
+        const section = await req.payload.findByID({
+          collection: 'forum-sections',
+          id: String(data?.section ?? originalDoc?.section ?? ''),
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+        if (String(section.site) !== site)
+          throw new APIError('Forum section must belong to the same site.', 400)
+        let parent = data?.parent === undefined ? originalDoc?.parent : data.parent
+        const seen = new Set<string>(originalDoc?.id ? [String(originalDoc.id)] : [])
+        while (parent) {
+          if (seen.has(String(parent)) || seen.size > 100)
+            throw new APIError('Forum hierarchy contains a cycle.', 400)
+          seen.add(String(parent))
+          const record = await req.payload.findByID({
+            collection: 'forums',
+            id: String(parent),
+            depth: 0,
+            overrideAccess: true,
+            req,
+          })
+          if (String(record.site) !== site)
+            throw new APIError('Parent forum must belong to the same site.', 400)
+          parent = record.parent
+        }
+        return data
+      },
+    ],
   },
   fields: [
     ...siteScopeFields(),
@@ -70,13 +106,54 @@ export const Discussions: CollectionConfig = {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: preserveRecordRelationshipsAccess(
+      'discussions',
+      ['site', 'owner', 'forum'],
+      operatorSiteUpdateAccess,
+    ),
   },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
         if (data) assertDiscussionShape(data as Parameters<typeof assertDiscussionShape>[0])
-        if ((data?.kind ?? originalDoc?.kind) === 'attached') return data
+        const id = (value: unknown) =>
+          typeof value === 'object' && value !== null
+            ? String((value as { id?: unknown }).id ?? '')
+            : String(value ?? '')
+        const site = id(data?.site ?? originalDoc?.site)
+        if ((data?.kind ?? originalDoc?.kind) === 'attached') {
+          const attached = (data?.attachedTo ?? originalDoc?.attachedTo) as
+            | { relationTo?: string; value?: unknown }
+            | undefined
+          if (
+            !attached?.relationTo ||
+            !['content', 'media-assets', 'albums'].includes(attached.relationTo)
+          )
+            throw new APIError('Invalid discussion target.', 400)
+          const target = await req.payload
+            .findByID({
+              collection: attached.relationTo as 'content',
+              id: id(attached.value),
+              depth: 0,
+              overrideAccess: true,
+              req,
+            })
+            .catch(() => null)
+          if (!target || id(target.site) !== site)
+            throw new APIError('Discussion target must belong to the same site.', 400)
+          return data
+        }
+        const forum = await req.payload
+          .findByID({
+            collection: 'forums',
+            id: id(data?.forum ?? originalDoc?.forum),
+            depth: 0,
+            overrideAccess: true,
+            req,
+          })
+          .catch(() => null)
+        if (!forum || id(forum.site) !== site)
+          throw new APIError('Forum must belong to the discussion site.', 400)
         data = (await assignRecordSemanticPath({
           payload: req.payload,
           collection: 'discussions',
@@ -105,13 +182,16 @@ export const Discussions: CollectionConfig = {
         })
         return doc
       },
+      ...searchProjectionHooks('discussions').afterChange,
     ],
+    afterDelete: searchProjectionHooks('discussions').afterDelete,
   },
   indexes: [{ fields: ['site', 'canonicalPath'], unique: true }],
   fields: [
     ...ownerFields(),
     { name: 'kind', type: 'select', required: true, options: ['attached', 'thread'] },
     { name: 'title', type: 'text', required: true },
+    { name: 'pinned', type: 'checkbox', defaultValue: false },
     {
       name: 'forum',
       type: 'relationship',
@@ -162,6 +242,44 @@ export const DiscussionPosts: CollectionConfig = {
   slug: 'discussion-posts',
   admin: { useAsTitle: 'permalink', group: 'Community' },
   access: operatorRelatedSiteAccess('discussion.site', 'discussions'),
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc, operation, req }) => {
+        if (operation === 'update')
+          for (const key of [
+            'discussion',
+            'authorMember',
+            'authorGuest',
+            'parent',
+            'quote',
+            'displayOrder',
+            'permalink',
+          ]) {
+            if (
+              data[key] !== undefined &&
+              JSON.stringify(data[key]) !== JSON.stringify(originalDoc[key])
+            )
+              throw new APIError('Post attribution and location cannot be changed.', 400)
+          }
+        const discussionId = String(data.discussion ?? originalDoc?.discussion ?? '')
+        for (const key of ['parent', 'quote']) {
+          if (!data[key]) continue
+          const parent = await req.payload
+            .findByID({
+              collection: 'discussion-posts',
+              id: String(data[key]),
+              depth: 0,
+              overrideAccess: true,
+              req,
+            })
+            .catch(() => null)
+          if (!parent || String(parent.discussion) !== discussionId)
+            throw new APIError('Referenced post must belong to the same discussion.', 400)
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'discussion',

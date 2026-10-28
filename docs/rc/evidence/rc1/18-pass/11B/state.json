@@ -1,0 +1,19 @@
+{
+  "alpha": "2b308c8a-5573-4452-b879-2e9b2b299c7a",
+  "beta": "097b985e-00df-4744-87b0-48bdc5398633",
+  "owner": "3d57b78d-db8a-4e86-aaaf-d2e27fec4fe8",
+  "member": "af9ca957-0896-4ac4-9336-8563f214ffc7",
+  "merchants": [
+    "f927ce95-a1cc-46e2-ab2a-c8b32d34bcd6",
+    "9461ba7a-1a45-42c1-a55c-667a5e894d13"
+  ],
+  "product": "938dfd00-cf2f-45bd-8234-5b6bcb5005d8",
+  "foreign": "1ac513d5-4a40-44c7-9d0b-b4f28d35f299",
+  "other": "9aac3956-26b5-46cc-aae8-008171cc948c",
+  "cartA": "a97f29cc-4f33-4bae-894f-90b7746f6a47",
+  "cartB": "f100be74-5d49-4979-a753-8890941a19ad",
+  "cartM": "e6ecb45a-8e8d-4e96-a6ec-19f6d6d7b424",
+  "proposal": "01a17cba-3f31-7b46-80f2-0c28dc9f23b9",
+  "memberTotal": "8750",
+  "guestTotal": "1750"
+}

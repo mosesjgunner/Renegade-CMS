@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 
 type Item = {
   document: Record<string, unknown>
@@ -92,6 +93,7 @@ export default function CatalogCommandCenter() {
           <h2 id="products-heading" className="text-2xl font-bold">
             Products
           </h2>
+          <Link href="/admin/collections/products/create">Create product</Link>
           <button type="button" disabled={!selected.length} onClick={() => void archive()}>
             Archive selected
           </button>

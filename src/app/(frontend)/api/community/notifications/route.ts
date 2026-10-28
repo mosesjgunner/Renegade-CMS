@@ -6,11 +6,16 @@ import {
   CommunityError,
 } from '@/modules/community/service'
 import { listInbox, markInboxRead } from '@/modules/community/inbox-notifications'
+import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? 'default'
+
+  if (siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
 
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
@@ -66,6 +71,11 @@ export async function PATCH(request: Request) {
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? request.headers.get('x-site-id') ?? 'default')
+
+  if (siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  if (!verifyCsrf(request.headers) || !(await samePublicOrigin(payload, request)))
+    return Response.json({ error: 'CSRF verification required.' }, { status: 403 })
 
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {

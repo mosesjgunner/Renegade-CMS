@@ -170,6 +170,7 @@ export async function PATCH(request: Request) {
         ],
       },
       depth: 1,
+      context: { catalogWorkflow: true },
       overrideAccess: true,
     } as never)
     if (body.action === 'archive') await retainArchiveRedirect(payload, current, body.redirectTo)

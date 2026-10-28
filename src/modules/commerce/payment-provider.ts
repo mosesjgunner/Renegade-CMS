@@ -237,14 +237,18 @@ const assertCreateInput = (input: HostedCheckoutRequest) => {
   }
 }
 
+const sharedDeterministicRecords = new Map<string, ProviderPayment>()
+const sharedDeterministicIdempotency = new Map<string, string>()
+
 export function createDeterministicPaymentAdapter(input: {
   key?: string
   secret: string
   initialState?: ProviderPaymentState
   now?: () => Date
+  isolated?: boolean
 }): PaymentProviderAdapter & { setState(reference: string, state: ProviderPaymentState): void } {
-  const records = new Map<string, ProviderPayment>()
-  const idempotency = new Map<string, string>()
+  const records = input.isolated ? new Map<string, ProviderPayment>() : sharedDeterministicRecords
+  const idempotency = input.isolated ? new Map<string, string>() : sharedDeterministicIdempotency
   const now = input.now ?? (() => new Date())
   return {
     key: input.key ?? 'deterministic-test',

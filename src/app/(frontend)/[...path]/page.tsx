@@ -33,7 +33,7 @@ import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { findIfRegistered, registeredOnly } from '@/modules/public/registered-collections'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { CommentSection } from '@/modules/community/components/CommentSection'
-import { getPublicSsrComments } from '@/modules/community/thread-lifecycle'
+import { attachedDiscussionComments as getPublicSsrComments } from '@/modules/community/discussion-operations'
 import { ProductDetail } from '@/modules/commerce/ProductView'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { hasEntitlement } from '@/modules/commerce/subscription-service'
@@ -725,7 +725,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             </section>
           ) : null}
         </article>
-        {collection === 'content' || collection === 'discussions' ? (
+        {collection === 'content' ? (
           <CommentSection
             attachedToId={String(record.id)}
             attachedToCollection={collection === 'content' ? 'content' : 'content'}

@@ -9,6 +9,8 @@ import {
   createEmptyCart,
   reResolveCart,
   guestCartCookieName,
+  activeCartLifetimeWhere,
+  cartExpiry,
   generateGuestToken,
   hashGuestToken,
   CART_TTL_MS,
@@ -16,6 +18,8 @@ import {
   type CartItem,
 } from '@/modules/commerce/cart'
 import { randomUUID } from 'node:crypto'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
+import { validateCartMutation } from '@/modules/commerce/cart-mutation'
 import { configuredCheckoutMerchant } from '@/modules/commerce/merchant-selection'
 
 async function resolveCartContext(request: Request, payload: any) {
@@ -44,6 +48,7 @@ async function resolveCartContext(request: Request, payload: any) {
           { site: { equals: siteId } },
           { member: { equals: memberId } },
           { state: { equals: 'active' } },
+          activeCartLifetimeWhere(),
         ],
       },
       limit: 1,
@@ -52,7 +57,7 @@ async function resolveCartContext(request: Request, payload: any) {
     if (found.docs.length) cartDoc = found.docs[0]
   }
 
-  if (!cartDoc && guestTokenMatch) {
+  if (!cartDoc && !memberId && guestTokenMatch) {
     const guestHash = hashGuestToken(guestTokenMatch)
     const found = await payload.find({
       collection: 'carts',
@@ -60,7 +65,9 @@ async function resolveCartContext(request: Request, payload: any) {
         and: [
           { site: { equals: siteId } },
           { guestTokenHash: { equals: guestHash } },
+          { member: { exists: false } },
           { state: { equals: 'active' } },
+          activeCartLifetimeWhere(),
         ],
       },
       limit: 1,
@@ -79,7 +86,7 @@ async function loadSiteCatalogAndPromos(payload: any, siteId: string) {
   const productsResult = await payload.find({
     collection: 'products',
     where: { and: [{ site: { equals: siteId } }, { state: { equals: 'published' } }] },
-    limit: 100,
+    pagination: false,
     depth: 1,
     overrideAccess: true,
   })
@@ -87,7 +94,7 @@ async function loadSiteCatalogAndPromos(payload: any, siteId: string) {
   const promotionsResult = await payload.find({
     collection: 'promotions',
     where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
-    limit: 50,
+    pagination: false,
     overrideAccess: true,
   })
 
@@ -116,15 +123,18 @@ async function loadSiteCatalogAndPromos(payload: any, siteId: string) {
       status: p.status,
       stackingRule: p.stackingRule,
       stackingPriority: Number(p.stackingPriority ?? 0),
-      usageLimitTotal: p.usageLimitTotal ? Number(p.usageLimitTotal) : undefined,
+      usageLimitTotal: p.usageLimitTotal != null ? Number(p.usageLimitTotal) : undefined,
       usageCount: Number(p.usageCount ?? 0),
-      usageLimitPerCustomer: p.usageLimitPerCustomer ? Number(p.usageLimitPerCustomer) : undefined,
+      startsAt: p.startsAt,
+      endsAt: p.endsAt,
+      usageLimitPerCustomer:
+        p.usageLimitPerCustomer != null ? Number(p.usageLimitPerCustomer) : undefined,
       eligibility: p.eligibility ?? {},
     })),
   }
 }
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const payload = await getPayload({ config })
   if (!isRegisteredCollection(payload, 'carts')) {
     return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
@@ -142,6 +152,7 @@ export async function GET(request: Request) {
       merchantConnectionId: String(
         cartDoc.merchantConnection?.id ?? cartDoc.merchantConnection ?? '',
       ),
+      customerId: String(cartDoc.member?.id ?? cartDoc.member ?? '') || undefined,
       version: Number(cartDoc.version ?? 1),
       currency: String(cartDoc.currency ?? 'USD'),
       items: Array.isArray(cartDoc.items) ? cartDoc.items : [],
@@ -154,24 +165,26 @@ export async function GET(request: Request) {
       reconciliationNotes: Array.isArray(cartDoc.reconciliationNotes)
         ? cartDoc.reconciliationNotes
         : [],
-      expiresAt: String(cartDoc.expiresAt ?? new Date().toISOString()),
+      expiresAt: cartExpiry(cartDoc),
       createdAt: String(cartDoc.createdAt),
       updatedAt: String(cartDoc.updatedAt),
     }
 
-    const { cart: resolvedCart, pricingSnapshot } = reResolveCart({
-      cart,
-      products,
-      promotions,
-    })
+    const { cart: initialCart, pricingSnapshot } = reResolveCart({ cart, products, promotions })
+    let resolvedCart = initialCart
 
     // Update if notes or version changed
-    if (resolvedCart.reconciliationNotes.length !== cart.reconciliationNotes.length) {
+    if (
+      JSON.stringify(resolvedCart.items) !== JSON.stringify(cart.items) ||
+      JSON.stringify(resolvedCart.appliedCouponCodes) !== JSON.stringify(cart.appliedCouponCodes)
+    ) {
+      resolvedCart = { ...resolvedCart, version: cart.version + 1 }
       await (payload as any).update({
         collection: 'carts',
         id: cart.id,
         data: {
           items: resolvedCart.items,
+          version: cart.version + 1,
           appliedCouponCodes: resolvedCart.appliedCouponCodes,
           reconciliationNotes: resolvedCart.reconciliationNotes,
         },
@@ -179,7 +192,10 @@ export async function GET(request: Request) {
       })
     }
 
-    return NextResponse.json({ cart: resolvedCart, pricing: pricingSnapshot })
+    return NextResponse.json(
+      { cart: resolvedCart, pricing: pricingSnapshot },
+      { headers: { 'Cache-Control': 'private, no-store' } },
+    )
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to retrieve cart.' },
@@ -188,13 +204,15 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const payload = await getPayload({ config })
   if (!isRegisteredCollection(payload, 'carts')) {
     return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
   }
   try {
     const body = await request.json()
+    const invalid = validateCartMutation(body, request.method)
+    if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
     const { productId, variantSku, quantity = 1, donationAmountMinor, customOptions } = body
 
     if (!productId || !variantSku) {
@@ -220,6 +238,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Variant is not available.' }, { status: 404 })
     }
 
+    if (
+      cartDoc &&
+      product.merchantConnectionId &&
+      product.merchantConnectionId !==
+        String(cartDoc.merchantConnection?.id ?? cartDoc.merchantConnection ?? '')
+    )
+      return NextResponse.json({ error: 'Merchant connection mismatch.' }, { status: 409 })
+
     let cart: VersionedCart
     let newGuestToken: string | undefined
 
@@ -230,6 +256,7 @@ export async function POST(request: Request) {
         merchantConnectionId: String(
           cartDoc.merchantConnection?.id ?? cartDoc.merchantConnection ?? '',
         ),
+        customerId: String(cartDoc.member?.id ?? cartDoc.member ?? '') || undefined,
         version: Number(cartDoc.version ?? 1),
         currency: String(cartDoc.currency ?? 'USD'),
         items: Array.isArray(cartDoc.items) ? cartDoc.items : [],
@@ -242,7 +269,7 @@ export async function POST(request: Request) {
         reconciliationNotes: Array.isArray(cartDoc.reconciliationNotes)
           ? cartDoc.reconciliationNotes
           : [],
-        expiresAt: String(cartDoc.expiresAt ?? new Date().toISOString()),
+        expiresAt: cartExpiry(cartDoc),
         createdAt: String(cartDoc.createdAt),
         updatedAt: String(cartDoc.updatedAt),
       }
@@ -261,13 +288,13 @@ export async function POST(request: Request) {
       const merchants = await (payload as any).find({
         collection: 'merchant-connections',
         where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
-        limit: 100,
+        pagination: false,
         overrideAccess: true,
       })
       const methods = await payload.find({
         collection: 'payment-method-capabilities',
         where: { site: { equals: siteId } },
-        limit: 100,
+        pagination: false,
         depth: 0,
         overrideAccess: true,
       })
@@ -289,6 +316,7 @@ export async function POST(request: Request) {
           appliedCouponCodes: [],
           state: 'active',
           version: 1,
+          expiresAt: new Date(Date.now() + CART_TTL_MS).toISOString(),
         },
         overrideAccess: true,
       })
@@ -296,7 +324,9 @@ export async function POST(request: Request) {
       cart = createEmptyCart({
         id: String(created.id),
         siteId,
-        merchantConnectionId: '',
+        merchantConnectionId: String(
+          created.merchantConnection?.id ?? created.merchantConnection ?? '',
+        ),
         currency,
         guestTokenHash: guestHash,
         customerId: memberId || undefined,
@@ -369,13 +399,16 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PATCH(request: Request) {
+async function handlePATCH(request: Request) {
   const payload = await getPayload({ config })
   try {
     const body = await request.json()
+    const invalid = validateCartMutation(body, request.method)
+    if (invalid) return NextResponse.json({ error: invalid }, { status: 400 })
     const {
       expectedVersion,
       lineId,
+      variantSku,
       quantity,
       appliedCouponCodes,
       shippingAddress,
@@ -411,12 +444,40 @@ export async function PATCH(request: Request) {
     }
 
     const { products, promotions } = await loadSiteCatalogAndPromos(payload, siteId)
+    if (variantSku !== undefined) {
+      const item = items.find((line) => line.lineId === lineId)
+      const product = products.find((product: any) => product.id === item?.productId)
+      if (
+        !item ||
+        !product?.variants.some(
+          (variant: any) =>
+            variant.sku === variantSku && !['archived', 'unavailable'].includes(variant.status),
+        )
+      )
+        return NextResponse.json({ error: 'Variant is not available.' }, { status: 404 })
+      const duplicate = items.find(
+        (line) =>
+          line.lineId !== lineId &&
+          line.productId === item.productId &&
+          line.variantSku === variantSku,
+      )
+      if (duplicate)
+        items = items
+          .filter((line) => line.lineId !== lineId)
+          .map((line) =>
+            line.lineId === duplicate.lineId
+              ? { ...line, quantity: line.quantity + item.quantity }
+              : line,
+          )
+      else items = items.map((line) => (line.lineId === lineId ? { ...line, variantSku } : line))
+    }
     const cartToResolve: VersionedCart = {
       id: String(cartDoc.id),
       siteId,
       merchantConnectionId: String(
         cartDoc.merchantConnection?.id ?? cartDoc.merchantConnection ?? '',
       ),
+      customerId: String(cartDoc.member?.id ?? cartDoc.member ?? '') || undefined,
       version: currentVersion + 1,
       currency: String(cartDoc.currency ?? 'USD'),
       items,
@@ -431,7 +492,7 @@ export async function PATCH(request: Request) {
       reconciliationNotes: Array.isArray(cartDoc.reconciliationNotes)
         ? cartDoc.reconciliationNotes
         : [],
-      expiresAt: String(cartDoc.expiresAt ?? new Date().toISOString()),
+      expiresAt: cartExpiry(cartDoc),
       createdAt: String(cartDoc.createdAt),
       updatedAt: new Date().toISOString(),
     }
@@ -457,7 +518,10 @@ export async function PATCH(request: Request) {
       overrideAccess: true,
     })
 
-    return NextResponse.json({ cart: resolvedCart, pricing: pricingSnapshot })
+    return NextResponse.json(
+      { cart: resolvedCart, pricing: pricingSnapshot },
+      { headers: { 'Cache-Control': 'private, no-store' } },
+    )
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to update cart.' },
@@ -466,7 +530,7 @@ export async function PATCH(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+async function handleDELETE(request: Request) {
   const payload = await getPayload({ config })
   if (!isRegisteredCollection(payload, 'carts')) {
     return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
@@ -496,3 +560,26 @@ export async function DELETE(request: Request) {
     )
   }
 }
+
+// Share the same database lock with merge, including anonymous first-cart creation.
+async function locked(request: Request, handler: (request: Request) => Promise<NextResponse>) {
+  const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'carts'))
+    return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
+  if (
+    request.method !== 'GET' &&
+    request.headers.get('origin') &&
+    request.headers.get('origin') !== new URL(request.url).origin
+  )
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
+  try {
+    const siteId = await catalogSiteForHost(payload, request.headers.get('host'))
+    return await withExecutionLock(payload, `commerce.cart.site:${siteId}`, () => handler(request))
+  } catch {
+    return NextResponse.json({ error: 'Cart service unavailable.' }, { status: 503 })
+  }
+}
+export const GET = (request: Request) => locked(request, handleGET)
+export const POST = (request: Request) => locked(request, handlePOST)
+export const PATCH = (request: Request) => locked(request, handlePATCH)
+export const DELETE = (request: Request) => locked(request, handleDELETE)

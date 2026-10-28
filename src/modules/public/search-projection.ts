@@ -181,6 +181,7 @@ export async function rebuildSearchProjection(payload: Payload, siteId?: string)
     'books',
     'page-layouts',
     'products',
+    'discussions',
   ].filter((collection) => collection in payload.collections)
   let processed = 0
   const retained: string[] = []
