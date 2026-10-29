@@ -1,0 +1,31 @@
+{
+  "passed": 24,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "operator creates immutable referral program versions and codes for real site members",
+    "anonymous, foreign-site staff, same-site staff configuration and foreign-origin mutations denied",
+    "declined consent and fabricated financial inputs leave no claim",
+    "stored offer disclosure and untracked redirect use only the owning-site destination without recording denied consent",
+    "explicit allowed interaction persists one canonical click while bot interaction remains untracked",
+    "public Chromium affiliate page discloses the partner relationship before outbound tracking consent",
+    "Chromium shows disclosure and requires explicit consent before storing a host-bound HttpOnly claim",
+    "member subscription signup binds referral but accrues nothing before payment",
+    "real Stripe-test adapter against loopback harness, signed invoice and commerce worker produce one 120 USD commission on immutable 1200 USD order",
+    "supported donation checkout, confirmation and actual worker persist one donation, immutable order, receipt and 100 USD referral commission",
+    "concurrent duplicate signed callbacks are rejected as replay with exactly one persisted conversion and accrual",
+    "conflicting callback identity, currency substitution and forged signatures leave financial evidence unchanged",
+    "supported operator partial refund reverses 30 commission minor units without a payout",
+    "duplicate reversal callback is a replay",
+    "full refund leaves immutable order attribution unchanged, 100 total compensating reversals and zero unpaid gift commission",
+    "joint subscription/donation/referral ledgers reconcile without counting commissions as additional revenue",
+    "owning-host referral code resolves while foreign-host code is hidden",
+    "actual Beta EUR donation accrues 100 EUR without crossing Alpha USD orders or totals",
+    "foreign-order signed callback and unconfigured Beta callback verification fail closed",
+    "ordinary referrer purchase remains a real paid donation but self-referral commission is rejected and persisted",
+    "native order attribution forgery is denied without changing immutable rejection evidence",
+    "operator Chromium drilldown displays stored order, conversion, commission, reversal and truthful no-payout totals",
+    "signed payment amount mismatch remains unknown in operator drilldown with no fabricated donation/order/commission",
+    "worker stopped with real signed payment inbox pending and no fabricated paid order"
+  ]
+}

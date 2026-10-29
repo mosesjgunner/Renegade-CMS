@@ -1,8 +1,10 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any -- SQL operator response */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function ReferralOperations() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
   const [siteId, setSiteId] = useState('')
   const [report, setReport] = useState<any>()
   const [message, setMessage] = useState('')
@@ -22,10 +24,18 @@ export function ReferralOperations() {
   return (
     <section>
       <label>
-        Site ID <input value={siteId} onChange={(event) => setSiteId(event.target.value)} />
+        Site ID{' '}
+        <input
+          disabled={!ready}
+          value={siteId}
+          onChange={(event) => setSiteId(event.target.value)}
+        />
       </label>
-      <button onClick={load}>Load referral ledger</button>
+      <button disabled={!ready} onClick={load}>
+        Load referral ledger
+      </button>
       <button
+        disabled={!ready}
         onClick={async () => {
           const response = await fetch('/api/admin/commerce/affiliate', {
             method: 'POST',
@@ -86,6 +96,15 @@ export function ReferralOperations() {
             ))}
           </ul>
           <h2>Order drilldown</h2>
+          <h3>Captured and pending attribution</h3>
+          <ul>
+            {report.claims.map((row: any) => (
+              <li key={row.id}>
+                Claim {row.id}: {row.payment_state ?? row.checkout_state ?? 'awaiting-checkout'} —{' '}
+                {row.amount_minor ?? '0'} {row.currency ?? ''}
+              </li>
+            ))}
+          </ul>
           {report.orders.map((row: any) => (
             <details key={row.id}>
               <summary>

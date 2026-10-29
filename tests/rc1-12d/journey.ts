@@ -1091,9 +1091,7 @@ try {
       (await opPage.getByText('12d-reversal', { exact: false }).count()) > 0,
     )
     await opContext.close()
-    // Leave a genuine confirmed payment inbox pending for fresh worker recovery after DB/web restart.
-    await stop(worker)
-    worker = undefined
+    // Exercise a real signed amount mismatch, then leave its corrected event for fresh worker recovery.
     await capture()
     const pending = await ctx.request.post(`${base}/api/commerce/donations/intent`, {
       headers: { origin: base, 'idempotency-key': '12d-pending-restart-00001' },
@@ -1101,8 +1099,41 @@ try {
     })
     assert.equal(pending.status(), 201, await pending.text())
     state.pending = await pending.json()
-    await page.goto(new URL(state.pending.actionUrl, base).href)
-    await page.getByRole('button', { name: /confirm/i }).click()
+    const attempt = await row('payment-attempts', state.pending.attemptId)
+    const providerEvent = async (eventId: string, amountMinor: string) => {
+      const raw = JSON.stringify({
+        providerEventId: eventId,
+        providerReference: attempt.providerReference,
+        kind: 'succeeded',
+        amountMinor,
+        currency: 'USD',
+        occurredAt: new Date().toISOString(),
+        sanitizedEvidence: { attemptId: attempt.id, source: '12d-local-adapter-harness' },
+      })
+      return json('/api/commerce/webhooks/deterministic-test', '', 'POST', raw, 202, {
+        'x-commerce-signature': createHmac('sha256', process.env.COMMERCE_TEST_WEBHOOK_SECRET!)
+          .update(raw)
+          .digest('hex'),
+      })
+    }
+    await providerEvent('12d-amount-mismatch', '999999')
+    await until(
+      'mismatched payment quarantined',
+      async () => (await row('payment-attempts', attempt.id)).state === 'unknown',
+    )
+    const unknownReport = await report(operator)
+    check(
+      'signed payment amount mismatch remains unknown in operator drilldown with no fabricated donation/order/commission',
+      unknownReport.claims.some(
+        (c: any) =>
+          c.checkout_session_id === state.pending.sessionId && c.payment_state === 'unknown',
+      ) &&
+        (await sql('SELECT * FROM orders WHERE checkout_session_id=$1', [state.pending.sessionId]))
+          .length === 0,
+    )
+    await stop(worker)
+    worker = undefined
+    await providerEvent('12d-corrected-payment-after-unknown', '1000')
     check(
       'worker stopped with real signed payment inbox pending and no fabricated paid order',
       (await sql('SELECT * FROM orders WHERE checkout_session_id=$1', [state.pending.sessionId]))
@@ -1159,6 +1190,19 @@ try {
       (await signCallback(originalCallback)).replay &&
         (await sql("SELECT * FROM affiliate_conversions WHERE external_event_id='12d-reversal'"))
           .length === 1,
+    )
+    const alphaOrders = await sql("SELECT * FROM orders WHERE site_id=$1 AND state='paid'", [
+      state.alpha,
+    ])
+    const betaReport = await report(operator, state.beta)
+    check(
+      'final canonical revenue is 3200 USD and 1000 EUR with affiliate liabilities 220 USD and 100 EUR kept separate',
+      alphaOrders.reduce((sum: bigint, o: any) => sum + BigInt(o.amount_minor), 0n) === 3200n &&
+        betaReport.orders.reduce((sum: bigint, o: any) => sum + BigInt(o.amount_minor), 0n) ===
+          1000n &&
+        betaReport.totals[0].unpaid_minor === '100' &&
+        betaReport.totals[0].currency === 'EUR' &&
+        (await report(operator)).totals[0].unpaid_minor === '220',
     )
     const ctx = await browser.newContext({ storageState: 'scratch/rc112d/browser.json' })
     const page = await ctx.newPage()

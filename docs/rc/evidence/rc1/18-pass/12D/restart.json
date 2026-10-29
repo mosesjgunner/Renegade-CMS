@@ -1,0 +1,12 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "persisted refund and original subscription order survive PostgreSQL/web restart",
+    "fresh worker settles pending payment and creates exactly one donation/order/commission",
+    "signed callback replay after restart preserves one conversion/reversal evidence record",
+    "final canonical revenue is 3200 USD and 1000 EUR with affiliate liabilities 220 USD and 100 EUR kept separate",
+    "restored customer browser observes recovered paid order output"
+  ]
+}

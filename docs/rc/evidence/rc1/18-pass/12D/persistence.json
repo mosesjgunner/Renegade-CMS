@@ -1,0 +1,444 @@
+{
+    "orders": [
+        {
+            "id": "b82e89e6-f011-414b-9685-15abbe39dbe2",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "paid",
+            "number": "SUB-01a1870f-129b-7b31-8b24-18c5ff505343",
+            "refund": null,
+            "source": {
+                "providerMode": "test",
+                "planRevisionId": "01a1870f-106d-7b60-8f44-8bdc717b6c10",
+                "subscriptionId": "01a1870f-129b-7b31-8b24-18c5ff505343"
+            },
+            "session": "daaff444-4a6f-4a0a-ade1-898c51ecf803",
+            "currency": "USD",
+            "amountMinor": "1200",
+            "attribution": {
+                "model": "last-touch",
+                "status": "attributed",
+                "currency": "USD",
+                "programId": "94be48c3-04b8-4939-ac8f-796ce1937fd2",
+                "explanation": "Attributed to referrer a5efaa1f-db69-4616-b9ec-e6516545d253 via code REF-12D under 12D disclosed community referral v1 (10.00% on 1200 USD). Matures after 0 days holding period.",
+                "attributedAt": "2026-10-29T09:47:53.689Z",
+                "referralCode": "REF-12D",
+                "programVersion": 1,
+                "rateBasisPoints": 1000,
+                "orderAmountMinor": "1200",
+                "referrerMemberId": "a5efaa1f-db69-4616-b9ec-e6516545d253",
+                "eligibleAmountMinor": "1200",
+                "attributionWindowDays": 30,
+                "calculatedCommissionMinor": "120"
+            }
+        },
+        {
+            "id": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "refunded",
+            "number": "order_adba904b-c0f6-47e7-b6ac-979dadb7eae3",
+            "refund": {
+                "state": "full",
+                "refundedAmountMinor": "1000"
+            },
+            "source": {
+                "proposalId": null,
+                "providerKey": "deterministic-test",
+                "paymentIntentId": "5e8970ca-d204-4908-8bf9-32f64481f447",
+                "checkoutSessionId": "adba904b-c0f6-47e7-b6ac-979dadb7eae3"
+            },
+            "session": "adba904b-c0f6-47e7-b6ac-979dadb7eae3",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "attribution": {
+                "model": "last-touch",
+                "status": "attributed",
+                "currency": "USD",
+                "programId": "94be48c3-04b8-4939-ac8f-796ce1937fd2",
+                "explanation": "Attributed to referrer a5efaa1f-db69-4616-b9ec-e6516545d253 via code REF-12D under 12D disclosed community referral v1 (10.00% on 1000 USD). Matures after 0 days holding period.",
+                "attributedAt": "2026-10-29T09:48:10.227Z",
+                "referralCode": "REF-12D",
+                "programVersion": 1,
+                "rateBasisPoints": 1000,
+                "orderAmountMinor": "1000",
+                "referrerMemberId": "a5efaa1f-db69-4616-b9ec-e6516545d253",
+                "eligibleAmountMinor": "1000",
+                "attributionWindowDays": 30,
+                "calculatedCommissionMinor": "100"
+            }
+        },
+        {
+            "id": "eed98fcb-899d-433e-a415-b19266267f09",
+            "site": "195b8c09-d716-4495-93ff-80c6e70ef879",
+            "state": "paid",
+            "number": "order_9991e570-51c3-4362-a8dc-414cd1a5b01f",
+            "refund": null,
+            "source": {
+                "proposalId": null,
+                "providerKey": "deterministic-test",
+                "paymentIntentId": "1c4503cd-fb5f-4a40-ba75-9ab580ceb2f3",
+                "checkoutSessionId": "9991e570-51c3-4362-a8dc-414cd1a5b01f"
+            },
+            "session": "9991e570-51c3-4362-a8dc-414cd1a5b01f",
+            "currency": "EUR",
+            "amountMinor": "1000",
+            "attribution": {
+                "model": "last-touch",
+                "status": "attributed",
+                "currency": "EUR",
+                "programId": "7566ceaa-5f1d-42d5-8e3e-9676f133c378",
+                "explanation": "Attributed to referrer a5efaa1f-db69-4616-b9ec-e6516545d253 via code REF-EUR-12D under 12D disclosed community referral v1 (10.00% on 1000 EUR). Matures after 0 days holding period.",
+                "attributedAt": "2026-10-29T09:48:21.344Z",
+                "referralCode": "REF-EUR-12D",
+                "programVersion": 1,
+                "rateBasisPoints": 1000,
+                "orderAmountMinor": "1000",
+                "referrerMemberId": "a5efaa1f-db69-4616-b9ec-e6516545d253",
+                "eligibleAmountMinor": "1000",
+                "attributionWindowDays": 30,
+                "calculatedCommissionMinor": "100"
+            }
+        },
+        {
+            "id": "6a84e7d2-ea0b-4d1c-8175-b95979c6288f",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "paid",
+            "number": "order_2b0862bd-ae13-4249-93fc-434cee89e078",
+            "refund": null,
+            "source": {
+                "proposalId": null,
+                "providerKey": "deterministic-test",
+                "paymentIntentId": "6f381ff0-9db1-4bd5-92b9-f9b4f152ee59",
+                "checkoutSessionId": "2b0862bd-ae13-4249-93fc-434cee89e078"
+            },
+            "session": "2b0862bd-ae13-4249-93fc-434cee89e078",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "attribution": {
+                "model": "last-touch",
+                "status": "rejected",
+                "currency": "USD",
+                "programId": "94be48c3-04b8-4939-ac8f-796ce1937fd2",
+                "explanation": "Self-referral prohibited: customer and referrer are the same member.",
+                "attributedAt": "2026-10-29T09:48:29.037Z",
+                "referralCode": "REF-12D",
+                "rejectReason": "SELF_REFERRAL_SAME_MEMBER",
+                "programVersion": 1,
+                "orderAmountMinor": "1000",
+                "referrerMemberId": "a5efaa1f-db69-4616-b9ec-e6516545d253",
+                "eligibleAmountMinor": "0",
+                "attributionWindowDays": 30,
+                "calculatedCommissionMinor": "0"
+            }
+        },
+        {
+            "id": "785071aa-091f-4ef7-bd8a-37c370673a3d",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "paid",
+            "number": "order_7b7e9962-600f-4edf-8f56-f2cf2652c67e",
+            "refund": null,
+            "source": {
+                "proposalId": null,
+                "providerKey": "deterministic-test",
+                "paymentIntentId": "497ec777-e6d1-4bab-9304-18f08d835dbd",
+                "checkoutSessionId": "7b7e9962-600f-4edf-8f56-f2cf2652c67e"
+            },
+            "session": "7b7e9962-600f-4edf-8f56-f2cf2652c67e",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "attribution": {
+                "model": "last-touch",
+                "status": "attributed",
+                "currency": "USD",
+                "programId": "94be48c3-04b8-4939-ac8f-796ce1937fd2",
+                "explanation": "Attributed to referrer a5efaa1f-db69-4616-b9ec-e6516545d253 via code REF-12D under 12D disclosed community referral v1 (10.00% on 1000 USD). Matures after 0 days holding period.",
+                "attributedAt": "2026-10-29T09:48:38.422Z",
+                "referralCode": "REF-12D",
+                "programVersion": 1,
+                "rateBasisPoints": 1000,
+                "orderAmountMinor": "1000",
+                "referrerMemberId": "a5efaa1f-db69-4616-b9ec-e6516545d253",
+                "eligibleAmountMinor": "1000",
+                "attributionWindowDays": 30,
+                "calculatedCommissionMinor": "100"
+            }
+        }
+    ],
+    "refunds": [
+        {
+            "id": "01a1870f-6c9a-73c6-84ef-1b7fa38130a3",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "state": "succeeded",
+            "currency": "USD",
+            "amountMinor": "300",
+            "providerEvidence": {
+                "state": "succeeded",
+                "amountMinor": "300",
+                "localReconciliationRequired": false
+            }
+        },
+        {
+            "id": "01a1870f-71d5-737f-8f6e-6cbb21b01c16",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "state": "succeeded",
+            "currency": "USD",
+            "amountMinor": "700",
+            "providerEvidence": {
+                "state": "succeeded",
+                "amountMinor": "700",
+                "localReconciliationRequired": false
+            }
+        }
+    ],
+    "callbacks": [
+        {
+            "hash": "4395b8a1c29f05db24ca26f9ba762d7698e1207d2ecb8dfe2ee71bbb26755083",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "status": "reversed",
+            "eventId": "12d-conversion",
+            "reconciliation": "reversed"
+        },
+        {
+            "hash": "d566b4c9fb4f4f70b41180c9a097d1e65b754cfe46e100a5b67971ad216d8310",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "status": "reversed",
+            "eventId": "12d-reversal",
+            "reconciliation": "reversed"
+        }
+    ],
+    "donations": [
+        {
+            "id": "01a1870f-6423-7079-8bdd-e2a06c04b24e",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "currency": "USD",
+            "feeMinor": "0",
+            "lifecycle": "refunded",
+            "paymentIntent": "5e8970ca-d204-4908-8bf9-32f64481f447",
+            "baseAmountMinor": "1000"
+        },
+        {
+            "id": "01a1870f-8308-7226-87f1-d6931ea3aeca",
+            "site": "195b8c09-d716-4495-93ff-80c6e70ef879",
+            "currency": "EUR",
+            "feeMinor": "0",
+            "lifecycle": "succeeded",
+            "paymentIntent": "1c4503cd-fb5f-4a40-ba75-9ab580ceb2f3",
+            "baseAmountMinor": "1000"
+        },
+        {
+            "id": "01a1870f-a33d-771e-81bc-cb52c2469a52",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "currency": "USD",
+            "feeMinor": "0",
+            "lifecycle": "succeeded",
+            "paymentIntent": "6f381ff0-9db1-4bd5-92b9-f9b4f152ee59",
+            "baseAmountMinor": "1000"
+        },
+        {
+            "id": "01a18711-7e63-7256-84d7-dbc53091d75f",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "currency": "USD",
+            "feeMinor": "0",
+            "lifecycle": "succeeded",
+            "paymentIntent": "497ec777-e6d1-4bab-9304-18f08d835dbd",
+            "baseAmountMinor": "1000"
+        }
+    ],
+    "commissions": [
+        {
+            "id": "f9ec204d-3604-4cc4-8c97-4efd3ccb29ed",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "type": "accrual",
+            "order": "b82e89e6-f011-414b-9685-15abbe39dbe2",
+            "status": "eligible",
+            "currency": "USD",
+            "eventKey": "order:b82e89e6-f011-414b-9685-15abbe39dbe2:accrual",
+            "amountMinor": "120",
+            "compensates": null,
+            "reversedMinor": "0"
+        },
+        {
+            "id": "a6da4f16-1fd6-4b74-904e-b3a307b925c0",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "type": "accrual",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "status": "reversed",
+            "currency": "USD",
+            "eventKey": "order:a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0:accrual",
+            "amountMinor": "100",
+            "compensates": null,
+            "reversedMinor": "100"
+        },
+        {
+            "id": "d0c3962d-bd46-4176-a15a-090309a8661e",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "type": "reversal",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "status": "reversed",
+            "currency": "USD",
+            "eventKey": "order:a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0:reversed:30",
+            "amountMinor": "30",
+            "compensates": "a6da4f16-1fd6-4b74-904e-b3a307b925c0",
+            "reversedMinor": "0"
+        },
+        {
+            "id": "4d5ab66d-5451-4697-8179-bdd45ca3c945",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "type": "reversal",
+            "order": "a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0",
+            "status": "reversed",
+            "currency": "USD",
+            "eventKey": "order:a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0:reversed:100",
+            "amountMinor": "70",
+            "compensates": "a6da4f16-1fd6-4b74-904e-b3a307b925c0",
+            "reversedMinor": "0"
+        },
+        {
+            "id": "9917b5eb-35e3-4eba-9d8c-95f4f1082e05",
+            "site": "195b8c09-d716-4495-93ff-80c6e70ef879",
+            "type": "accrual",
+            "order": "eed98fcb-899d-433e-a415-b19266267f09",
+            "status": "eligible",
+            "currency": "EUR",
+            "eventKey": "order:eed98fcb-899d-433e-a415-b19266267f09:accrual",
+            "amountMinor": "100",
+            "compensates": null,
+            "reversedMinor": "0"
+        },
+        {
+            "id": "780ff130-38dd-471f-8710-4ef60d4d7832",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "type": "accrual",
+            "order": "785071aa-091f-4ef7-bd8a-37c370673a3d",
+            "status": "eligible",
+            "currency": "USD",
+            "eventKey": "order:785071aa-091f-4ef7-bd8a-37c370673a3d:accrual",
+            "amountMinor": "100",
+            "compensates": null,
+            "reversedMinor": "0"
+        }
+    ],
+    "paymentEvents": [
+        {
+            "id": "5e8970ca-d204-4908-8bf9-32f64481f447",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "refunded",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a1870f-5399-731a-8509-1cfa781530e2",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T09:48:14.740Z",
+                    "verifiedAt": "2026-10-29T09:48:14.772Z",
+                    "amountMinor": "1000",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_48fdb6f5761a7e96c0b6d082"
+                },
+                {
+                    "kind": "refunded",
+                    "currency": "USD",
+                    "refundId": "01a1870f-6c9a-73c6-84ef-1b7fa38130a3",
+                    "occurredAt": "2026-10-29T09:48:17.594Z",
+                    "amountMinor": "300",
+                    "providerReference": "det_re_refund:a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0:1:300"
+                },
+                {
+                    "kind": "refunded",
+                    "currency": "USD",
+                    "refundId": "01a1870f-71d5-737f-8f6e-6cbb21b01c16",
+                    "occurredAt": "2026-10-29T09:48:18.962Z",
+                    "amountMinor": "700",
+                    "providerReference": "det_re_refund:a2e7cdeb-03cd-41a4-908f-4c0a482f7aa0:2:700"
+                }
+            ]
+        },
+        {
+            "id": "1c4503cd-fb5f-4a40-ba75-9ab580ceb2f3",
+            "site": "195b8c09-d716-4495-93ff-80c6e70ef879",
+            "state": "paid",
+            "currency": "EUR",
+            "amountMinor": "1000",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a1870f-7cfc-7889-86d2-b7c8d6aadb65",
+                    "kind": "succeeded",
+                    "currency": "EUR",
+                    "occurredAt": "2026-10-29T09:48:22.291Z",
+                    "verifiedAt": "2026-10-29T09:48:22.329Z",
+                    "amountMinor": "1000",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_17531188d8d99e1cbbd248fe"
+                }
+            ]
+        },
+        {
+            "id": "6f381ff0-9db1-4bd5-92b9-f9b4f152ee59",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "paid",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a1870f-9d1c-7e7e-8119-883708a54373",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T09:48:30.728Z",
+                    "verifiedAt": "2026-10-29T09:48:30.768Z",
+                    "amountMinor": "1000",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_5670d858cd7875cb1b760291"
+                }
+            ]
+        },
+        {
+            "id": "497ec777-e6d1-4bab-9304-18f08d835dbd",
+            "site": "0c550f58-cfaf-464a-84ed-683c5dc20cfa",
+            "state": "paid",
+            "currency": "USD",
+            "amountMinor": "1000",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:12d-amount-mismatch",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T09:48:39.084Z",
+                    "verifiedAt": "2026-10-29T09:48:39.154Z",
+                    "amountMinor": "999999",
+                    "resultingState": "unknown",
+                    "providerReference": "det_cs_4e4b21208a5dc8421661974b"
+                },
+                {
+                    "id": "provider:deterministic-test:12d-corrected-payment-after-unknown",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T09:48:41.680Z",
+                    "verifiedAt": "2026-10-29T09:48:41.742Z",
+                    "amountMinor": "1000",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_4e4b21208a5dc8421661974b"
+                }
+            ]
+        }
+    ],
+    "migrationCount": 128,
+    "subscriptionEvents": [
+        {
+            "id": "01a1870f-1e45-7665-8960-a21ba16f1c26",
+            "kind": "invoice_paid",
+            "evidence": {
+                "reason": "",
+                "status": "paid",
+                "currency": "USD",
+                "customer": "cus_harness12d",
+                "objectId": "in_harness12d",
+                "eventType": "invoice.paid",
+                "amountMinor": 1200,
+                "invoiceReference": "in_harness12d"
+            },
+            "subscription": "01a1870f-129b-7b31-8b24-18c5ff505343"
+        }
+    ],
+    "persistedClickCount": 1,
+    "settlementBatchCount": 0
+}

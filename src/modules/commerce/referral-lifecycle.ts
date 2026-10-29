@@ -8,7 +8,7 @@ const hash = (token: string) => createHash('sha256').update(token).digest('hex')
 export function sameReferralOrigin(request: Request) {
   const url = new URL(request.url)
   const origin = request.headers.get('origin')
-  return origin === url.origin || origin === `${url.protocol}//${request.headers.get('host') ?? ''}`
+  return origin === `${url.protocol}//${request.headers.get('host') ?? url.host}`
 }
 export const referralCookie = (siteId: string) => `renegade_referral_${siteId}`
 const cookie = (request: Request, name: string) =>
@@ -234,16 +234,29 @@ export async function reconcileOrderReferral(payload: any, orderId: string) {
       ['paid', 'fulfilling', 'fulfilled', 'refunded'].includes(order.state) ||
       order.receipt?.state === 'issued'
     if (!ledger && hasPaidEvidence) {
-      const buyer = order.owner_id
-        ? (await db.query('SELECT email FROM members WHERE id=$1', [order.owner_id])).rows[0]
+      const checkout = (
+        await db.query(
+          `SELECT s.owner_id,c.member_id,c.owner_id AS cart_owner_id,c.customer_email
+        FROM checkout_sessions s JOIN carts c ON c.id=s.cart_id WHERE s.id=$1 AND s.site_id=$2`,
+          [order.checkout_session_id, order.site_id],
+        )
+      ).rows[0]
+      const buyerId =
+        order.owner_id ||
+        id(order.party_snapshot?.memberId) ||
+        checkout?.owner_id ||
+        checkout?.member_id ||
+        checkout?.cart_owner_id
+      const buyer = buyerId
+        ? (await db.query('SELECT email FROM members WHERE id=$1', [buyerId])).rows[0]
         : null
       const { snapshot: evaluated } = evaluateReferralAttribution({
         program,
         codeOwner: owner,
         referralCode: code,
         customer: {
-          memberId: order.owner_id ?? undefined,
-          email: buyer?.email ?? order.party_snapshot?.email,
+          memberId: buyerId || undefined,
+          email: buyer?.email ?? order.party_snapshot?.email ?? checkout?.customer_email,
         },
         orderAmountMinor: order.amount_minor,
         currency: order.currency,
@@ -384,6 +397,16 @@ export async function reconcileSiteReferrals(payload: any, siteId?: string) {
 }
 
 export async function referralReport(payload: any, siteId: string) {
+  const claims = (
+    await payload.db.pool.query(
+      `SELECT c.id,c.created_at,c.expires_at,c.checkout_session_id,
+    s.state AS checkout_state,s.amount_minor,s.currency,a.state AS payment_state
+    FROM referral_claims c LEFT JOIN checkout_sessions s ON s.id=c.checkout_session_id AND s.site_id=c.site_id
+    LEFT JOIN LATERAL (SELECT state FROM payment_attempts WHERE checkout_session_id=s.id ORDER BY created_at DESC LIMIT 1) a ON true
+    WHERE c.site_id=$1 ORDER BY c.created_at`,
+      [siteId],
+    )
+  ).rows
   const offers = (
     await payload.db.pool.query(
       'SELECT id,name,disclosure,status FROM affiliate_offers WHERE site_id=$1 ORDER BY created_at',
@@ -431,6 +454,7 @@ export async function referralReport(payload: any, siteId: string) {
     siteId,
     codes,
     offers,
+    claims,
     ledgers,
     orders,
     totals,

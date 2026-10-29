@@ -1,7 +1,7 @@
 {
-  "baseCommit": "48de9a28f8c4d3e3864f271a7f14f31b546d9fd9",
-  "treeHash": "2482871a4432a65ef7e631ed9eb54ddea9342b0729379970189617bf146cc4c0",
-  "dirtyStatus": "M docs/rc/RC1-70-SUBPASS-LEDGER.md\n M next-env.d.ts\n M src/app/(frontend)/api/admin/commerce/affiliate/route.ts\n M src/app/(frontend)/api/commerce/affiliate/conversions/route.ts\n M src/app/(frontend)/api/commerce/affiliate/redirect/route.ts\n M src/app/(frontend)/api/commerce/checkout/initiate/route.ts\n M src/app/(frontend)/api/commerce/donations/intent/route.ts\n M src/app/(frontend)/api/commerce/referrals/claim/route.ts\n M src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts\n M src/collections/Commerce.ts\n M src/migrations/index.ts\n M src/modules/admin/CommerceOperations.tsx\n M src/modules/commerce/affiliate-referral-contracts.ts\n M src/modules/commerce/affiliate-service.ts\n M src/modules/commerce/referral-service.ts\n M src/modules/commerce/refund-execution.ts\n M src/modules/commerce/settlement-service.ts\n M src/modules/commerce/tasks.ts\n M src/payload-types.ts\n M tests/rc1-12c/journey.ts\n M tests/unit/refund-reconciliation.test.ts\n M tests/unit/shop-06-affiliate-and-referrals.test.ts\n M tsconfig.json\n?? docs/rc/evidence/rc1/18-pass/12C/restart.json\n?? docs/rc/evidence/rc1/18-pass/12D/\n?? src/app/(frontend)/affiliate/\n?? src/app/(frontend)/commerce/\n?? src/app/(frontend)/referrals/\n?? src/migrations/20261029_120000_rc1_referral_lifecycle.ts\n?? src/modules/commerce/AffiliateOfferConsent.tsx\n?? src/modules/commerce/ReferralConsent.tsx\n?? src/modules/commerce/ReferralOperations.tsx\n?? src/modules/commerce/affiliate-offers-runtime.ts\n?? src/modules/commerce/referral-lifecycle.ts\n?? tests/rc1-12d/\n?? tests/unit/rc1-12d-financial-boundaries.test.ts\n?? tests/unit/rc1-12d-projection-routes.test.ts",
+  "baseCommit": "63d7799f8afcfcc69b6042c6c6932c6e7ad14869",
+  "treeHash": "b7e4b395dbf78dd9ec3e66f664bc01a85f7e4ac698d7c4c3848ea732f42b7d9f",
+  "dirtyStatus": "M docs/rc/RC1-70-SUBPASS-LEDGER.md\n M docs/rc/evidence/rc1/18-pass/12C/source-tree.json\n M docs/rc/evidence/rc1/18-pass/12D/source-tree.json\n M src/modules/commerce/ReferralOperations.tsx\n M src/modules/commerce/referral-lifecycle.ts\n M tests/rc1-12d/journey.ts\n M tests/unit/rc1-12d-financial-boundaries.test.ts\n?? docs/rc/evidence/rc1/18-pass/12C/NEXT.md\n?? docs/rc/evidence/rc1/18-pass/12C/RESULT.md\n?? tests/rc1-12d/provenance.ts",
   "node": "v24.19.0",
   "files": [
     {
@@ -142,7 +142,7 @@
     },
     {
       "path": "src/app/(frontend)/affiliate/[offerId]/page.tsx",
-      "sha256": "4de328aae59610d78ef91c177f94b1c79a55af62081c42e2a73515c5ccf83a16"
+      "sha256": "1a0bf522dff364aaa17bd836b93f54929dc5274dc310012a635fd20e3585acdc"
     },
     {
       "path": "src/app/(frontend)/ap/actors/[handle]/actor.ts",
@@ -226,7 +226,7 @@
     },
     {
       "path": "src/app/(frontend)/api/admin/commerce/affiliate/route.ts",
-      "sha256": "598dc492e2153cfec88b8a3ba763b799ca0266b4102798f16e110c4b12dcb5ed"
+      "sha256": "180fc282767f19778ea87a9dae4b7a23fdefb4448886fe52c868eee51d93f71c"
     },
     {
       "path": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
@@ -470,7 +470,7 @@
     },
     {
       "path": "src/app/(frontend)/api/commerce/affiliate/redirect/route.ts",
-      "sha256": "03756f71b64e3143cd9db4c45206cc6059590231b4fe55e9e9ecf010efd3f9e3"
+      "sha256": "f1e4fe837ee6be55c118266b85f843389fb76e453790d8aa39a0611514f1246a"
     },
     {
       "path": "src/app/(frontend)/api/commerce/cart/merge/route.ts",
@@ -2330,7 +2330,7 @@
     },
     {
       "path": "src/modules/commerce/AffiliateOfferConsent.tsx",
-      "sha256": "fa1a91bc5239b4a67c2f7fa064629ce65164c6de5792c349abaf4029821c6051"
+      "sha256": "27c6c094e051381ad2efe4bad94f2495d303abf5df2decc3acd7478dff8e15e5"
     },
     {
       "path": "src/modules/commerce/CartView.tsx",
@@ -2362,11 +2362,11 @@
     },
     {
       "path": "src/modules/commerce/ReferralOperations.tsx",
-      "sha256": "de463b45ca4c79eee642fe7f033bc98f7627c40fefab1899a10e54175c1d77a1"
+      "sha256": "8d4b5c3eb72d4600065d491514b7664b3cae6a33ebe3ddfb790863bd2cb7af5b"
     },
     {
       "path": "src/modules/commerce/affiliate-offers-runtime.ts",
-      "sha256": "07cf3c48f36e123941d24881fca4f50950b85ffa7812616b7762144d86296482"
+      "sha256": "441bac74eb0330fced17fd1ca7024be0cc9032d2f2018903319f6f1e18742688"
     },
     {
       "path": "src/modules/commerce/affiliate-referral-contracts.ts",
@@ -2502,11 +2502,11 @@
     },
     {
       "path": "src/modules/commerce/referral-lifecycle.ts",
-      "sha256": "875947a4ef04c06db14948de50d093c7f0690da2342849ade887546e5199607f"
+      "sha256": "a85df52e8e3dc2bfb029f2c5619930911a2e46a3ec49e9a1d2fe97784f899e8e"
     },
     {
       "path": "src/modules/commerce/referral-service.ts",
-      "sha256": "79e7552b7537ce105544c7ada3c1e1c0cb36ab38bc9df8adb33b9c65c59a3bf0"
+      "sha256": "53d87cfe5bfa31c6bf9cb0d0105849e52db1bf7c928f9cb47a2bad371aa92fc0"
     },
     {
       "path": "src/modules/commerce/refund-execution.ts",
@@ -4934,7 +4934,7 @@
     },
     {
       "path": "tests/rc1-12c/journey.ts",
-      "sha256": "451bc8a2f614ee3fdd2f6a208db3446ae9ef16832c6c591eacec5349585670ad"
+      "sha256": "850247a691ef902924c6050e5a70e20e9f0e4d4d76ebd1f41fe07d79d0e51dd0"
     },
     {
       "path": "tests/rc1-12c/provenance.ts",
@@ -4946,7 +4946,11 @@
     },
     {
       "path": "tests/rc1-12d/journey.ts",
-      "sha256": "2ec2ba8bd0c50a1b13a2ef66b915ec9e585e8730e5d580454700f66b1c001a4e"
+      "sha256": "7694cb61c569b4bdf4c6b1c970a09c3a8387e241253ed8b1016228087a7d6de7"
+    },
+    {
+      "path": "tests/rc1-12d/provenance.ts",
+      "sha256": "e2e9675466595009eeda06e1d1b161ea049edab10dfaf90357ead85374ca4831"
     },
     {
       "path": "tests/rc1-12d/run.ps1",
@@ -5878,7 +5882,7 @@
     },
     {
       "path": "tests/unit/rc1-12d-financial-boundaries.test.ts",
-      "sha256": "b0ce8d5b13b60096887f7ab02cff425f55d5d950bdf045794744e5ba826ea8f7"
+      "sha256": "c712627960a553c6f0eb6b7afdb38725c980c5f7a06aea34ddb8a84a270d479c"
     },
     {
       "path": "tests/unit/rc1-12d-projection-routes.test.ts",

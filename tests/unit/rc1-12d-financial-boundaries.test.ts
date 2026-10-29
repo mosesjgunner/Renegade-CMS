@@ -5,6 +5,7 @@ import type {
   CommissionLedger,
 } from '../../src/modules/commerce/affiliate-referral-contracts'
 import { reverseCommissionEntry } from '../../src/modules/commerce/referral-service'
+import { sameReferralOrigin } from '../../src/modules/commerce/referral-lifecycle'
 import {
   createSettlementBatch,
   approveSettlementBatch,
@@ -56,6 +57,22 @@ const accrual: CommissionLedger = {
 }
 
 describe('12D financial service boundaries (not persisted lifecycle acceptance)', () => {
+  it('validates browser origin against the served host even when the upstream request URL differs', () => {
+    expect(
+      sameReferralOrigin(
+        new Request('http://localhost:39023/claim', {
+          headers: { host: '127.0.0.1:39023', origin: 'http://localhost:39023' },
+        }),
+      ),
+    ).toBe(false)
+    expect(
+      sameReferralOrigin(
+        new Request('http://localhost:39023/claim', {
+          headers: { host: '127.0.0.1:39023', origin: 'http://127.0.0.1:39023' },
+        }),
+      ),
+    ).toBe(true)
+  })
   it('exports only remaining same-site commission after a partial reversal', () => {
     const entries = [
       { ...accrual, reversedAmountMinor: '30' },
