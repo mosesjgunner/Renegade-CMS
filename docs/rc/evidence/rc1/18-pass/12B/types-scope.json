@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "exclude": [
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules",
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch",
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\.payload-upstream",
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\docs",
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\.next",
+    "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc1-12c\\**\\*"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "testedBase": "ed1ec703ef0401d0876932c310d6f831fc74aef4",
+  "testedTreeHash": "be4f9115f8c68e6e32c77225dc8731168e2bb751b58f17f10a51ad3076046729",
+  "files": 1473,
+  "runtimeAnd11DSourceChanged": 0,
+  "changedOutsideRuntimeScope": [
+    {
+      "path": "tests/rc1-11e/journey.ts",
+      "tested": "7468004a90499b3dc46283b8bdff17572f91cd4c59e1cd5e1361d86f0e4df92b",
+      "current": "b7100193249d1cd333f1a7909c43c5efb6cbe19a6df9fdc08d04fcf1c689cf72"
+    }
+  ],
+  "addedOutsideScope": [],
+  "result": "Scoped runtime and 11D verifier containment PASS. Whole-tree equality differs only in concurrent generated declarations or unexecuted 11E tests; no current aggregate readiness claim."
+}

@@ -32,7 +32,9 @@ const list = (value: unknown) => (Array.isArray(value) ? value : [])
 export async function POST(request: Request) {
   if (
     request.headers.get('origin') &&
-    request.headers.get('origin') !== new URL(request.url).origin
+    request.headers.get('origin') !== new URL(request.url).origin &&
+    request.headers.get('origin') !==
+      `${new URL(request.url).protocol}//${request.headers.get('host') ?? ''}`
   )
     return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const input = (await request.json()) as {
@@ -101,7 +103,7 @@ async function initiateCheckout(
         !(
           proposal.state === 'consumed' &&
           existingProposalSession &&
-          ['open', 'pending'].includes(String(existingProposalSession.state))
+          ['open', 'pending', 'failed'].includes(String(existingProposalSession.state))
         ))
     ) {
       return NextResponse.json({ error: 'Proposal is expired or inactive.' }, { status: 409 })
@@ -159,30 +161,83 @@ async function initiateCheckout(
       })
       .catch(() => null)
     if (!session) return NextResponse.json({ error: 'Session not found.' }, { status: 404 })
-    if (session.state !== 'open')
+    if (
+      session.state === 'failed' &&
+      (!session.expiresAt || session.expiresAt > new Date().toISOString())
+    ) {
+      const nextAttempt = Number(session.attempt ?? 1) + 1
+      const nextBindingKey =
+        session.proposal && session.customerKey
+          ? checkoutBindingKey({
+              proposalId: String(id(session.proposal)),
+              customerKey: String(session.customerKey),
+              siteId: String(id(session.site)),
+              amountMinor: String(session.amountMinor),
+              currency: String(session.currency),
+              attempt: nextAttempt,
+            })
+          : session.bindingKey
+      session = await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: {
+          state: 'open',
+          attempt: nextAttempt,
+          ...(nextBindingKey ? { bindingKey: nextBindingKey } : {}),
+        },
+        depth: 1,
+        overrideAccess: true,
+      })
+    } else if (session.state !== 'open')
       return NextResponse.json({ error: 'Checkout is not open.' }, { status: 409 })
   } else if (proposal) {
     const customerKey = createHash('sha256')
       .update(JSON.stringify(proposal.customer ?? {}))
       .digest('hex')
-    const attempt = 1
-    const bindingKey = checkoutBindingKey({
-      proposalId: String(proposal.id),
-      customerKey,
-      siteId: String(id(proposal.site)),
-      amountMinor: String(proposal.pricingSnapshot.grandTotalMinor),
-      currency: String(proposal.currency),
-      attempt,
-    })
-    const duplicate = await db.find({
+    const priorForProposal = await db.find({
       collection: 'checkout-sessions',
-      where: { bindingKey: { equals: bindingKey } },
+      where: { proposal: { equals: proposal.id } },
       limit: 1,
+      depth: 1,
       overrideAccess: true,
     })
-    if (duplicate.docs.length) session = duplicate.docs[0]
-    // Create checkout session derived directly from immutable proposal
-    else
+    const existingSession = priorForProposal.docs[0]
+    if (existingSession) {
+      if (existingSession.state === 'failed') {
+        const nextAttempt = Number(existingSession.attempt ?? 1) + 1
+        const nextBindingKey = checkoutBindingKey({
+          proposalId: String(proposal.id),
+          customerKey,
+          siteId: String(id(proposal.site)),
+          amountMinor: String(proposal.pricingSnapshot.grandTotalMinor),
+          currency: String(proposal.currency),
+          attempt: nextAttempt,
+        })
+        session = await db.update({
+          collection: 'checkout-sessions',
+          id: existingSession.id,
+          data: {
+            state: 'open',
+            attempt: nextAttempt,
+            bindingKey: nextBindingKey,
+          },
+          depth: 1,
+          overrideAccess: true,
+        })
+      } else {
+        session = existingSession
+      }
+    } else {
+      const attempt = 1
+      const bindingKey = checkoutBindingKey({
+        proposalId: String(proposal.id),
+        customerKey,
+        siteId: String(id(proposal.site)),
+        amountMinor: String(proposal.pricingSnapshot.grandTotalMinor),
+        currency: String(proposal.currency),
+        attempt,
+      })
+      // Create checkout session derived directly from immutable proposal
       session = await db.create({
         collection: 'checkout-sessions',
         data: {
@@ -203,6 +258,7 @@ async function initiateCheckout(
         },
         overrideAccess: true,
       })
+    }
   }
   const cart: any =
     typeof session.cart === 'object'

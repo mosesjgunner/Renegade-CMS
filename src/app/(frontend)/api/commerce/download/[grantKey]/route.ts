@@ -63,9 +63,7 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
         }
       : null,
   )
-  const fingerprint = hash(
-    `${request.headers.get('user-agent') ?? ''}|${request.headers.get('x-forwarded-for') ?? ''}`,
-  )
+  const fingerprint = hash(`download:${grant.id}:${new Date().toISOString().slice(0, 10)}`)
   if (!grant || !decision.allowed) {
     if (grant)
       await payload.create({
@@ -95,6 +93,8 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
     []
   ).find((item) => String(item.mediaId) === String(asset.id))
   if (
+    id(asset.site) !== id(grant.site) ||
+    id(product.site) !== id(grant.site) ||
     !configured ||
     configured.rightsStatus !== 'approved' ||
     configured.malwareStatus !== 'clean' ||

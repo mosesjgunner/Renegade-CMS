@@ -9,6 +9,7 @@ import {
 } from '@/modules/commerce/payment-provider'
 import { signGuestOrderToken } from '@/modules/commerce/payment-operations'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import { localTestCheckoutEnabled } from '@/modules/commerce/local-test-checkout'
 
 const id = (value: unknown) =>
@@ -58,6 +59,8 @@ export async function POST(request: Request) {
   if (!input || typeof input.campaignId !== 'string')
     return NextResponse.json({ error: 'campaignId is required.' }, { status: 400 })
   const payload: any = await getPayload({ config })
+  const sessionToken = readMemberSession(request.headers)
+  const memberId = sessionToken ? await currentMember(payload, sessionToken) : undefined
   let campaign: any
   try {
     campaign = await payload.findByID({
@@ -114,11 +117,6 @@ export async function POST(request: Request) {
     )
   if (!Array.isArray(campaign.recurrence) || !campaign.recurrence.includes(input.recurrence))
     return NextResponse.json({ error: 'Donation frequency is not available.' }, { status: 422 })
-  if (input.recurrence === 'recurring')
-    return NextResponse.json(
-      { error: 'Recurring donation checkout is not configured for this campaign.' },
-      { status: 503 },
-    )
   let fee = '0'
   if (input.feeCover === true) {
     if (!campaign.feeCover)
@@ -187,13 +185,19 @@ export async function POST(request: Request) {
     depth: 0,
     overrideAccess: true,
   })
-  const capability = capabilities.docs.find(
+    const capability = capabilities.docs.find(
     (row: any) =>
       row.providerKey === providerKey &&
       id(row.publication) === id(campaign.publication) &&
       id(row.space) === id(campaign.space) &&
+      (input.recurrence !== 'recurring' || row.recurring === true) &&
       (!row.presentmentCurrencies?.length || row.presentmentCurrencies.includes(campaign.currency)),
   )
+  if (input.recurrence === 'recurring' && !capability)
+    return NextResponse.json(
+      { error: 'Recurring donation checkout is not configured for this campaign.' },
+      { status: 503 },
+    )
   if (!capability)
     return NextResponse.json(
       { error: 'No hosted test payment method accepts this donation currency.' },
@@ -311,6 +315,7 @@ export async function POST(request: Request) {
         feeCoveredAmountMinor: fee,
         minorUnitDigits: digits,
         state: priorAttempt.state,
+        recurrence: prior.recurrence ?? input.recurrence,
         replay: true,
       }),
       request,
@@ -324,8 +329,7 @@ export async function POST(request: Request) {
     siteId,
     campaignId: String(campaign.id),
     campaignVersion: Number(campaign.version),
-    donorSnapshot: {
-      guestName: recognition === 'public' ? input.publicDisplayName.slice(0, 100) : undefined,
+    donorSnapshot: { ...(memberId ? { memberId } : {}), guestName: recognition === 'public' ? input.publicDisplayName.slice(0, 100) : undefined,
       email: input.email,
     },
     money: { baseAmountMinor: amount, feeCoveredAmountMinor: fee, currency: campaign.currency },
@@ -399,6 +403,7 @@ export async function POST(request: Request) {
     data: {
       ...scope,
       merchantConnection: merchant.id,
+      ...(memberId ? { member: memberId } : {}),
       customerEmail: input.email,
       currency: campaign.currency,
       items: [],
@@ -430,6 +435,7 @@ export async function POST(request: Request) {
       providerKey: provider.key,
       amountMinor: totalMinor,
       currency: campaign.currency,
+      ...(memberId ? { owner: memberId } : {}),
       state: 'created',
       orderLines: [],
       expiresAt,
@@ -472,7 +478,7 @@ export async function POST(request: Request) {
       idempotencyKey: attemptKey,
       amountMinor: totalMinor,
       currency: campaign.currency,
-      description: `Donation to ${String(campaign.title).slice(0, 90)}`,
+      description: `${input.recurrence === 'recurring' ? 'Recurring donation' : 'Donation'} to ${String(campaign.title).slice(0, 80)}`,
       successUrl: `${origin}/checkout/return?session=${encodeURIComponent(String(session.id))}`,
       cancelUrl: `${origin}/checkout/cancel?session=${encodeURIComponent(String(session.id))}`,
       expiresAt,
@@ -481,6 +487,9 @@ export async function POST(request: Request) {
         renegade_attempt_id: String(attempt.id),
         renegade_session_id: String(session.id),
         renegade_site_id: String(siteId),
+        renegade_donation_recurrence: String(input.recurrence),
+        renegade_donation_intent_id: String(created.id),
+        ...(memberId ? { renegade_member_id: String(memberId) } : {}),
       },
     })
     if (!action.actionUrl) throw new Error('Provider did not return a hosted checkout URL.')
@@ -542,6 +551,7 @@ export async function POST(request: Request) {
       amountMinor: amount,
       feeCoveredAmountMinor: fee,
       minorUnitDigits: digits,
+      recurrence: input.recurrence,
       state: 'requires-action',
     },
     { status: 201 },

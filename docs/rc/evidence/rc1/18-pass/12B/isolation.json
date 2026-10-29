@@ -1,0 +1,14 @@
+{
+    "applicationImage":  "not built or accepted",
+    "container":  "/rc112b-20261028",
+    "providerHarnessPort":  3145,
+    "postgresTag":  "postgres:16-alpine",
+    "postgresImage":  "sha256:0cefaabd882e42bcb2a2f3dc56d3ce4770560ba62fd7f197f1a2e008fd5731ab",
+    "scope":  "12b",
+    "nextOutput":  ".next-rc112b",
+    "containerId":  "347e8a2016cbccb46fd45b08589802c682e93d2996ec769132a6a18906b80c22",
+    "postgresPort":  5465,
+    "webPort":  39021,
+    "media":  "scratch/rc112b/media",
+    "database":  "rc112b_release_acceptance"
+}

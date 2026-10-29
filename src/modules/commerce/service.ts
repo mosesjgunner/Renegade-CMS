@@ -725,7 +725,7 @@ export async function finalizeVerifiedOrder(
     })),
     { kind: 'payment-confirmed', intentId: input.intent.id, at: input.verifiedAt },
   ]
-  if (!alreadySettled)
+  if (!alreadySettled) {
     order = await db.update({
       collection: 'orders',
       id: order.id,
@@ -743,6 +743,43 @@ export async function finalizeVerifiedOrder(
       },
       overrideAccess: true,
     })
+    const appliedPromoCodes = new Set<string>(
+      (Array.isArray(proposal?.pricingSnapshot?.adjustments)
+        ? proposal.pricingSnapshot.adjustments
+        : []
+      )
+        .map((adj: any) => String(adj?.code ?? '').trim())
+        .filter(Boolean),
+    )
+    if (appliedPromoCodes.size > 0) {
+      const siteId =
+        typeof input.session.site === 'object'
+          ? String(input.session.site?.id ?? '')
+          : String(input.session.site ?? '')
+      for (const code of appliedPromoCodes) {
+        const foundPromos = await db
+          .find({
+            collection: 'promotions',
+            where: {
+              and: [{ site: { equals: siteId } }, { code: { equals: code } }],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] }))
+        const promoDoc = foundPromos.docs[0]
+        if (promoDoc) {
+          await db.update({
+            collection: 'promotions',
+            id: promoDoc.id,
+            data: { usageCount: Number(promoDoc.usageCount ?? 0) + 1 },
+            overrideAccess: true,
+          })
+        }
+      }
+    }
+  }
   // Grants are derived from immutable paid lines, never a redirect or mutable product record.
   const cartMember = cart.member ?? cart.owner
   const memberId =

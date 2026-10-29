@@ -43,11 +43,19 @@ export async function GET(request: Request) {
       overrideAccess: true,
     })
   ).docs.map((row: any) => row.id)
-  const [attempts, refunds, disputes, inbox, reconciliationCases] = await Promise.all([
+  const [attempts, orders, refunds, disputes, inbox, reconciliationCases] = await Promise.all([
     db.find({
       collection: 'payment-attempts',
       where,
       limit: 500,
+      sort: '-createdAt',
+      depth: 0,
+      overrideAccess: true,
+    }),
+    db.find({
+      collection: 'orders',
+      where,
+      limit: 100,
       sort: '-createdAt',
       depth: 0,
       overrideAccess: true,
@@ -131,6 +139,18 @@ export async function GET(request: Request) {
         totalRows: attempts.totalDocs,
       },
       health,
+      orders: (orders.docs as any[]).slice(0, 50).map((row) => ({
+        id: row.id,
+        orderNumber: row.orderNumber,
+        state: row.state,
+        amountMinor: row.amountMinor,
+        currency: row.currency,
+        receiptNumber: row.receipt?.receiptNumber ?? null,
+        createdAt: row.createdAt,
+        auditEntries: Array.isArray(row.transitionLog)
+          ? row.transitionLog.map((entry: any) => String(entry?.kind ?? 'updated'))
+          : [],
+      })),
       pendingActions: (attempts.docs as any[])
         .filter((row) => ['unknown', 'failed', 'processing'].includes(row.state))
         .slice(0, 50)

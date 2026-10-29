@@ -116,8 +116,14 @@ export async function POST(request: Request) {
       pagination: false,
       overrideAccess: true,
     })
-    if (input.action !== 'preview' && priorRefunds.docs.some((row: any) => row.state !== 'succeeded'))
-      return NextResponse.json({ error: 'Resolve the pending refund before requesting another.' }, { status: 409 })
+    if (
+      input.action !== 'preview' &&
+      priorRefunds.docs.some((row: any) => row.state !== 'succeeded')
+    )
+      return NextResponse.json(
+        { error: 'Resolve the pending refund before requesting another.' },
+        { status: 409 },
+      )
     const refundedMinor = priorRefunds.docs
       .reduce(
         (sum: bigint, row: any) =>

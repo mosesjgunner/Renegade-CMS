@@ -1,0 +1,24 @@
+{
+  "baseCommit": "ed1ec703ef0401d0876932c310d6f831fc74aef4",
+  "testedTreeHash": "e36da397d9e325699989a3c58ed39cc97e6c51b4910c2028bb93f6496ee59213",
+  "currentTreeHash": "072f0b4c1b40d52ca091940c89a7ba093a3966e22ca278aa6f39b81b63c45de8",
+  "files": 1481,
+  "wholeTreeMatches": false,
+  "scoped12ARuntimeAndVerifierMatch": true,
+  "allSrcFilesMatch": true,
+  "differences": [
+    {
+      "path": "next-env.d.ts",
+      "testedSha256": "074e6136bbdfb1cd4772a926cf3c57252e21f320ae84c3c6a21fedfd415f8622",
+      "currentSha256": "de7934f9bae7c33401bf208dc764e7bf150fe9eb14ec3ddb7c033dc3ecbed2dc"
+    },
+    {
+      "path": "tests/rc1-11e/provenance.ts",
+      "testedSha256": "b9ace2fb43f6dfe2da4e3807d79ffd918216abcbbdd93c945ec45e9799676d86",
+      "currentSha256": "ee167ae4ab3d1b1fb5f4e11ffc3c8735e0eabe43153ae4cfac393875353f5473"
+    }
+  ],
+  "newSources": [],
+  "boundary": "Only an independently edited 11E verifier or generated Next declarations may differ; every src path and 12A verifier must remain identical. No whole-checkout or sibling acceptance is inferred.",
+  "verifierSha256": "c24cf76fd12367ca5d58f5d72d6200c0b7fa96d802912fd932e92a246dd8de9e"
+}

@@ -6,6 +6,8 @@ import { receiptMessageSnapshot } from '@/modules/commerce/payment-operations'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
+  if (request.headers.get('origin') !== new URL(request.url).origin)
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   const grant = await resolveOperatorGrantContext(payload, auth?.user)

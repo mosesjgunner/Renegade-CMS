@@ -1,0 +1,15 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "assertions": [
+    "restart preserves second period-end cancellation",
+    "database and fresh web restart retain exact subscription ledger invoice evidence and grants",
+    "billing API retains canceled display and distinct paid and failed invoice history",
+    "restart keeps canceled entitlement denied for purchaser and copied download",
+    "fresh worker and replay never regrant or duplicate terminal state",
+    "restart preserves paid original order without issuing another checkout or charge",
+    "restart still denies another member and foreign host subscription history",
+    "fresh browser displays both canceled contracts and persisted paid renewal invoice"
+  ]
+}

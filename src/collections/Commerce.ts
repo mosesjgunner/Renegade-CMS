@@ -12,6 +12,7 @@ import {
   retentionFields,
   seoFields,
 } from './canonical-shared'
+import { validatePlanWrite } from '../modules/commerce/plan-write'
 import { validateCatalogWrite } from '../modules/commerce/catalog-write'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 import { assertCampaignTransition, assertDonationTransition } from '../modules/commerce/donations'
@@ -1114,6 +1115,12 @@ function normalizeSourceWhere(where: any): any {
 
 export const Entitlements: CollectionConfig = {
   ...base('entitlements', 'entitlement'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+  },
   hooks: {
     beforeOperation: [
       ({ args, operation }) => {
@@ -1152,6 +1159,18 @@ export const Entitlements: CollectionConfig = {
 /** Published agreements are immutable snapshots. A new price or policy is a new revision. */
 export const PlanRevisions: CollectionConfig = {
   ...base('plan-revisions', 'name'),
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        try {
+          if (data) validatePlanWrite(data)
+        } catch (error) {
+          throw new APIError(error instanceof Error ? error.message : 'Invalid plan.', 400)
+        }
+        return data
+      },
+    ],
+  },
   access: {
     create: operatorSiteCreateAccess,
     delete: () => false,

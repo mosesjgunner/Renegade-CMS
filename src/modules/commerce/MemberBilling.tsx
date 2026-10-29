@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 type Plan = {
@@ -16,10 +17,15 @@ type Plan = {
 }
 type Subscription = {
   id: string
+  reconciliationUnknown?: boolean
+  invoices?: Array<{ reference: string; state: string; amountMinor: string; currency: string }>
+  graceEnd?: string
   state: string
   plan: { name?: string }
   currentPeriodEnd: string
   cancelAtPeriodEnd: boolean
+  nextBillingAt?: string
+  downloads?: Array<{ path: string }>
   trialEnd?: string
 }
 const csrf = (): Record<string, string> => {
@@ -115,6 +121,25 @@ export function MemberBilling() {
               <li key={subscription.id}>
                 <strong>{subscription.plan.name ?? 'Membership'}</strong>: {subscription.state};
                 period ends {subscription.currentPeriodEnd}.
+                {subscription.reconciliationUnknown && (
+                  <p role="status">
+                    Provider state is unknown. Last confirmed access ends at the saved period or
+                    grace deadline; reconciliation will retry.
+                  </p>
+                )}
+                {subscription.graceEnd && <p>Payment grace ends {subscription.graceEnd}.</p>}
+                {subscription.invoices?.map((invoice) => (
+                  <p key={invoice.reference}>
+                    Invoice {invoice.reference}: {invoice.state};{' '}
+                    {invoice.currency ? price(invoice) : invoice.amountMinor}.
+                  </p>
+                ))}
+                {subscription.nextBillingAt && <p>Next billing: {subscription.nextBillingAt}.</p>}
+                {subscription.downloads?.map((download) => (
+                  <p key={download.path}>
+                    <Link href={download.path}>Subscriber download</Link>
+                  </p>
+                ))}
                 {subscription.cancelAtPeriodEnd && (
                   <p>Cancellation is scheduled for the end of this period.</p>
                 )}

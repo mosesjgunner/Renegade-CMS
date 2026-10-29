@@ -1,0 +1,13 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "after PostgreSQL and Next.js restart, Site Alpha member order retains exception state, receipt number, 2603 USD minor total and revoked download",
+    "after PostgreSQL and Next.js restart, Site Beta guest order retains paid state (3050 USD minor) and active private digital download on Beta host (200)",
+    "after PostgreSQL and Next.js restart, refunded Site Beta member order and refunded Site Alpha guest order keep digital downloads revoked (404)",
+    "after restart and event replay, inventory quantities (Alpha Almanac=6, Alpha Pin=0, Beta Handbook=4), coupon usageCount (SAVE5=1), and Command Center currency totals remain exact"
+  ],
+  "providerMode": "Local deterministic-test signed webhook adapter and Stripe-test signature/replay contract; no live external charges.",
+  "authentication": "Genuine guest Chromium sessions on Site Alpha and Site Beta; member sessions via canonical magic-link service; operator sessions via admin_sessions fixture (no passkey ceremony claim)."
+}

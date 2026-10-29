@@ -1,3 +1,5 @@
+import { executeRefund } from './refund-execution'
+import { revokeOrderDigitalAccess } from './digital-delivery'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
 import { withExecutionLock } from '../operations/execution-lock'
@@ -9,7 +11,7 @@ import {
 } from './payment-provider'
 import { lockCommerceStock } from './transactions'
 import { finalizeVerifiedOrder } from './service'
-import { queueBillingSystemNotice, recomputeSubscriptionEntitlements } from './subscription-service'
+import { reconcileBillingSubscription } from './subscription-reconciliation'
 import { ingestDonationEvidence, reverseDonation } from './donation-ingestion'
 
 const relationId = (value: any) =>
@@ -141,13 +143,37 @@ export const abandonCheckoutTask = {
       limit: 100,
       overrideAccess: true,
     })
-    for (const session of stale.docs)
+    for (const session of stale.docs) {
       await req.payload.update({
         collection: 'checkout-sessions',
         id: session.id,
         data: { state: 'abandoned' },
         overrideAccess: true,
       })
+      const proposalId = relationId(session.proposal)
+      if (proposalId) {
+        await req.payload
+          .update({
+            collection: 'inventory-reservations',
+            where: {
+              and: [{ proposal: { equals: proposalId } }, { status: { equals: 'active' } }],
+            },
+            data: { status: 'expired' },
+            overrideAccess: true,
+          })
+          .catch(() => undefined)
+        await req.payload
+          .update({
+            collection: 'checkout-proposals',
+            where: {
+              and: [{ id: { equals: proposalId } }, { state: { in: ['active', 'consumed'] } }],
+            },
+            data: { state: 'expired' },
+            overrideAccess: true,
+          })
+          .catch(() => undefined)
+      }
+    }
     return { output: {} }
   },
 } as unknown as TaskConfig
@@ -377,6 +403,36 @@ export const processPaymentEventTask = {
               evidence: { providerKey: inbox.providerKey, providerEventId: inbox.providerEventId },
             })
         }
+        if (['refunded', 'disputed', 'cancelled'].includes(next.state)) {
+          const affected = await req.payload.find({
+            collection: 'orders',
+            where: { checkoutSession: { equals: session.id } },
+            pagination: false,
+            overrideAccess: true,
+          })
+          for (const order of affected.docs) {
+            await revokeOrderDigitalAccess(req.payload, String(order.id))
+            if (next.state === 'cancelled')
+              await req.payload.update({
+                collection: 'orders',
+                id: order.id,
+                data: {
+                  state: 'cancelled',
+                  transitionLog: [
+                    ...(order.transitionLog ?? []).filter(
+                      (entry: any) => entry.providerEventId !== inbox.providerEventId,
+                    ),
+                    {
+                      kind: 'payment-cancelled',
+                      providerEventId: inbox.providerEventId,
+                      at: inbox.verifiedAt,
+                    },
+                  ],
+                },
+                overrideAccess: true,
+              })
+          }
+        }
         if (!['partially-refunded', 'refunded', 'disputed'].includes(next.state))
           await req.payload.update({
             collection: 'checkout-sessions',
@@ -509,8 +565,9 @@ export const processPaymentEventTask = {
               inbox.sanitizedEvidence?.amountMinor ??
                 (next.state === 'refunded' ? attempt.amountMinor : '0'),
             )
-            if (!prior.docs.length && amountMinor !== '0')
-              await req.payload.create({
+            let refund = prior.docs[0]
+            if (!refund && amountMinor !== '0')
+              refund = await req.payload.create({
                 collection: 'commerce-refunds',
                 data: {
                   site: order.site,
@@ -527,31 +584,28 @@ export const processPaymentEventTask = {
                   requestedBy: 'provider',
                   providerRefundReference,
                   providerEvidence: inbox.sanitizedEvidence,
+                  correctionReceipt: receiptMessageSnapshot({
+                    orderNumber: order.orderNumber,
+                    receiptNumber: `${order.receipt?.receiptNumber ?? order.orderNumber}-R${providerRefundReference}`,
+                    recipientEmail: String(order.partySnapshot?.email ?? ''),
+                    amountMinor,
+                    currency: attempt.currency,
+                    correctionOf: String(order.receipt?.receiptNumber ?? ''),
+                  }),
                   downstreamPolicy: { fulfillment: 'manual-review' },
                   auditLog: [{ kind: 'provider-refund-observed', at: inbox.verifiedAt }],
                 },
                 overrideAccess: true,
               })
-            await req.payload.update({
-              collection: 'orders',
-              id: order.id,
-              data: {
-                state: next.state === 'refunded' ? 'refunded' : order.state,
-                refundExtension: {
-                  state: next.state === 'refunded' ? 'full' : 'partial',
-                  latestProviderEventId: inbox.providerEventId,
-                },
-                transitionLog: [
-                  ...(order.transitionLog ?? []),
-                  {
-                    kind: next.state,
-                    providerEventId: inbox.providerEventId,
-                    at: inbox.verifiedAt,
-                  },
-                ],
-              },
-              overrideAccess: true,
-            })
+            if (refund) {
+              const reconciled = await withExecutionLock(
+                req.payload,
+                `commerce.refund.order:${order.id}`,
+                () => executeRefund(req.payload, String(refund.id)),
+              )
+              if (reconciled.status !== 200)
+                throw new Error('Confirmed provider refund requires local reconciliation.')
+            }
           }
         }
         await req.payload.update({
@@ -772,188 +826,26 @@ export const reconcilePaymentsTask = {
 export const reconcileSubscriptionsTask = {
   slug: 'commerce-reconcile-subscriptions',
   label: 'Reconcile subscription grace periods and entitlements',
-  inputSchema: [],
+  inputSchema: [{ name: 'siteId', type: 'text' }],
   outputSchema: [],
   retries: { attempts: 3, backoff: { delay: 5000, type: 'exponential' } },
   concurrency: () => 'commerce.reconcile-subscriptions',
   schedule: [{ cron: '0 * * * *', queue: 'commerce' }],
-  handler: async ({ req }: { req: any }) => {
-    const now = new Date()
-    const rows = await req.payload.find({
-      collection: 'subscriptions',
-      where: { state: { in: ['active', 'trialing', 'past_due', 'grace', 'cancel_at_period_end'] } },
-      limit: 500,
-      depth: 1,
-      overrideAccess: true,
-    })
-    const graceHours = Math.max(0, Math.min(24 * 30, Number(process.env.BILLING_GRACE_HOURS ?? 72)))
-    for (const row of rows.docs as any[]) {
-      let state = row.state
-      let currentPeriodStart = String(row.currentPeriodStart)
-      let currentPeriodEnd = String(row.currentPeriodEnd)
-      let cancelAtPeriodEnd = Boolean(row.cancelAtPeriodEnd)
-      let providerStatus = row.providerStatus
-      let graceEndValue: string | null = row.graceEnd ? String(row.graceEnd) : null
-      let planSnapshot = row.planSnapshot
-      let planRevisionId = relationId(row.planRevision)
-      if (row.source === 'provider' && row.providerSubscriptionReference) {
-        try {
-          const provider = recurringProvider(configuredPaymentProvider(String(row.providerKey)))
-          const projection = await provider.reconcileSubscription(
-            String(row.providerSubscriptionReference),
-          )
-          currentPeriodStart = projection.currentPeriodStart
-          currentPeriodEnd = projection.currentPeriodEnd
-          cancelAtPeriodEnd = projection.cancelAtPeriodEnd
-          providerStatus = projection.state
-          state =
-            projection.state === 'active' && cancelAtPeriodEnd
-              ? 'cancel_at_period_end'
-              : projection.state
-          if (projection.state === 'active') graceEndValue = null
-          const providerPrice = String(projection.priceReference ?? '')
-          const currentPrice = String(planSnapshot?.providerMappings?.[row.providerKey] ?? '')
-          if (providerPrice && providerPrice !== currentPrice) {
-            const siteId = relationId(row.site)
-            const plans = await req.payload.find({
-              collection: 'plan-revisions',
-              where: {
-                and: [{ site: { equals: siteId } }, { lifecycle: { equals: 'published' } }],
-              },
-              limit: 1000,
-              depth: 0,
-              overrideAccess: true,
-            })
-            const mapped = (plans.docs as any[]).find(
-              (plan) => String(plan.providerMappings?.[row.providerKey] ?? '') === providerPrice,
-            )
-            if (mapped) {
-              planRevisionId = String(mapped.id)
-              planSnapshot = {
-                id: String(mapped.id),
-                planKey: String(mapped.planKey),
-                revision: Number(mapped.revision),
-                publishedAt: String(mapped.publishedAt),
-                lifecycle: 'published',
-                interval: mapped.interval,
-                intervalCount: Number(mapped.intervalCount),
-                amountMinor: String(mapped.amountMinor),
-                currency: String(mapped.currency),
-                trialDays: Number(mapped.trialDays ?? 0),
-                trialEligibility: mapped.trialEligibility,
-                entitlements: mapped.entitlements ?? [],
-                cancelPolicy: mapped.cancelPolicy,
-                changePolicy: mapped.changePolicy,
-                taxPolicy: mapped.taxPolicy,
-                providerMappings: mapped.providerMappings ?? {},
-              }
-            } else state = 'paused'
-          }
-        } catch {
-          /* retain the last known projection and retry at the next scheduled run */
-        }
-      }
-      const end = Date.parse(currentPeriodEnd)
-      let graceEnd = graceEndValue ? Date.parse(graceEndValue) : NaN
-      if (state === 'past_due' && !Number.isFinite(graceEnd)) {
-        state = graceHours ? 'grace' : 'expired'
-        graceEndValue = graceHours
-          ? new Date(now.getTime() + graceHours * 3600000).toISOString()
-          : null
-        graceEnd = graceEndValue ? Date.parse(graceEndValue) : NaN
-      } else if (state === 'past_due' && Number.isFinite(graceEnd) && now.getTime() < graceEnd) {
-        state = 'grace'
-      } else if (state === 'grace' && Number.isFinite(graceEnd) && now.getTime() >= graceEnd) {
-        state = 'expired'
-      } else if (state === 'cancel_at_period_end' && Number.isFinite(end) && now.getTime() >= end) {
-        state = 'canceled'
-        cancelAtPeriodEnd = false
-      } else if (
-        ['active', 'trialing'].includes(state) &&
-        Number.isFinite(end) &&
-        now.getTime() >= end
-      ) {
-        state = 'expired'
-      }
-      const supporterId = relationId(row.supporter)
-      let billingMemberId =
-        typeof row.supporter === 'object' ? relationId(row.supporter.member) : ''
-      if (!billingMemberId && supporterId) {
-        const supporter = await req.payload
-          .findByID({ collection: 'supporters', id: supporterId, depth: 0, overrideAccess: true })
-          .catch(() => null)
-        billingMemberId = relationId(supporter?.member)
-      }
-      await recomputeSubscriptionEntitlements(req.payload, {
-        id: String(row.id),
-        customerId: supporterId,
-        supporterId,
-        siteId: relationId(row.site),
-        plan: planSnapshot,
-        provider: {
-          key: String(row.providerKey),
-          subscriptionRef: row.providerSubscriptionReference,
-          status: row.providerStatus,
-        },
-        state,
-        source: row.source,
-        currentPeriodStart,
-        currentPeriodEnd,
-        cancelAtPeriodEnd,
-        ...(row.trialEnd ? { trialEnd: String(row.trialEnd) } : {}),
-        ...(graceEndValue ? { graceEnd: graceEndValue } : {}),
-        createdAt: String(row.createdAt),
-        updatedAt: String(row.updatedAt),
-        version: Number(row.version ?? 1),
-      })
-      await req.payload.update({
+  handler: async ({ req, input }: { req: any; input?: { siteId?: string } }) => {
+    let page = 1
+    let more = true
+    while (more) {
+      const rows = await req.payload.find({
         collection: 'subscriptions',
-        id: row.id,
-        data: {
-          lastReconciledAt: now.toISOString(),
-          state,
-          providerStatus,
-          currentPeriodStart,
-          currentPeriodEnd,
-          cancelAtPeriodEnd,
-          graceEnd: graceEndValue,
-          ...(planRevisionId !== relationId(row.planRevision)
-            ? { planRevision: planRevisionId, planSnapshot }
-            : {}),
-        },
-        ...(planRevisionId !== relationId(row.planRevision)
-          ? { context: { subscriptionLifecycleTransition: true } }
-          : {}),
+        ...(input?.siteId ? { where: { site: { equals: input.siteId } } } : {}),
+        limit: 100,
+        page,
+        depth: 0,
         overrideAccess: true,
       })
-      if (['past_due', 'grace'].includes(state)) {
-        const reminderHours = Math.max(
-          1,
-          Math.min(168, Number(process.env.BILLING_REMINDER_HOURS ?? 24)),
-        )
-        const bucket = Math.floor(now.getTime() / (reminderHours * 3600000))
-        await queueBillingSystemNotice(req.payload, {
-          siteId: relationId(row.site),
-          memberId: billingMemberId,
-          subscriptionId: String(row.id),
-          noticeKey: `dunning:${row.id}:${bucket}`,
-          kind: 'billing.payment_action_required',
-          message:
-            state === 'grace'
-              ? `Your renewal needs attention. Access is scheduled to end ${graceEndValue ?? currentPeriodEnd}. Update your payment method to keep access.`
-              : 'Your subscription renewal failed. Please update your payment method.',
-        })
-      }
-      if (state === 'expired' && row.state !== 'expired')
-        await queueBillingSystemNotice(req.payload, {
-          siteId: relationId(row.site),
-          memberId: billingMemberId,
-          subscriptionId: String(row.id),
-          noticeKey: `expired:${row.id}`,
-          kind: 'billing.access_expired',
-          message:
-            'Your subscription access has ended. Renew from billing settings to restore access.',
-        })
+      for (const row of rows.docs) await reconcileBillingSubscription(req.payload, String(row.id))
+      more = Boolean(rows.hasNextPage)
+      page++
     }
     return { output: {} }
   },
@@ -1015,6 +907,34 @@ export async function recoverStaleCommerceJobs(
 
         recoveredCount++
       }
+    }
+  }
+
+  // Billing reconciliation only reads the provider and applies idempotent local projections.
+  // Recover abandoned job leases; the shared provider lock also serializes a slow surviving worker.
+  if (payload.collections?.['payload-jobs']) {
+    const jobs = await payload.find({
+      collection: 'payload-jobs',
+      where: {
+        and: [
+          { taskSlug: { equals: 'commerce-reconcile-subscriptions' } },
+          { processing: { equals: true } },
+          { updatedAt: { less_than_equal: threshold } },
+          { completedAt: { exists: false } },
+        ],
+      },
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const job of jobs.docs) {
+      await payload.update({
+        collection: 'payload-jobs',
+        id: job.id,
+        data: { processing: false },
+        overrideAccess: true,
+      })
+      recoveredCount++
     }
   }
 

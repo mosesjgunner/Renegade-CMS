@@ -44,7 +44,10 @@ export default async function CampaignDonationPage({
   )
     notFound()
   const recurrence = Array.isArray(campaign.recurrence)
-    ? campaign.recurrence.filter((choice): choice is 'one-time' => choice === 'one-time')
+    ? campaign.recurrence.filter(
+        (choice): choice is 'one-time' | 'recurring' =>
+          choice === 'one-time' || choice === 'recurring',
+      )
     : []
   const amounts = Array.isArray(campaign.allowedAmounts)
     ? campaign.allowedAmounts.filter((amount): amount is string => typeof amount === 'string')

@@ -1,0 +1,62 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "canonical refund correction worker persisted SMTP acceptance",
+    "loopback SMTP sink captured exactly one matching correction MIME",
+    "worker rerun sent zero duplicate messages",
+    "three physical packages retain pending acknowledgement",
+    "payment and email acceptance create zero fulfilled orders"
+  ],
+  "deliveryId": "39ccff39-57f1-4c2a-a2d9-6a540d55cca6",
+  "status": "accepted",
+  "provider": "smtp",
+  "captured": [
+    {
+      "to": "guest-buyer@11d.test",
+      "sha256": "a7f8638e1f404a1044fe49b6d8faec7c64ffff774233c31cefc150386c1b9daa"
+    },
+    {
+      "to": "refunded@11d.test",
+      "sha256": "2f9a90c3ca7a8a17aec068547917b7f9274b86f7dcc84aea5f8a1a2d2b70a630"
+    },
+    {
+      "to": "refunded@11d.test",
+      "sha256": "a991ad0044a0b6ab7fb571fe2dae2c0a190b909c7a034a672010faf53d637a7b"
+    },
+    {
+      "to": "disputed@11d.test",
+      "sha256": "a4caa9149280789b35bc84a3388b8c00a2a696685196766d2b45a98d0e3787a3"
+    },
+    {
+      "to": "cancelled@11d.test",
+      "sha256": "fa62554b885f4a9cc2f1baf8acc5f1c7d93b2699b3ccb185cd4db71d4e2ea720"
+    },
+    {
+      "to": "race@11d.test",
+      "sha256": "17b9c0fa9216eefb98d5c36ff9d7af95fe0446a46c2638a6a3a99c05d8dabf6e"
+    },
+    {
+      "to": "member-buyer@11d.test",
+      "sha256": "e7e1be7af380d290a29de4a1730438904e007351397008cb6703bdeee357449e"
+    },
+    {
+      "to": "member-buyer@11d.test",
+      "sha256": "a34f5e4a7e676e2716db5e3826b7473ef6e9d4da6c76c80b254eba6c34d5d0bd"
+    },
+    {
+      "to": "member-buyer@11d.test",
+      "sha256": "729e67c217933fc248cf8b908ba1e834ba06f998a75b9e553bdce68c165d38e4"
+    },
+    {
+      "to": "race@11d.test",
+      "sha256": "03dd506c8599979a0ee091837dac3bc35b17650f95624f57d4a49a544d235db5"
+    },
+    {
+      "to": "member-buyer@11d.test",
+      "sha256": "dcf15f9b3852df3cf8d20e25098247e52b021061d3239d3bfafdf3b4bbda5c0b"
+    }
+  ],
+  "boundary": "Loopback SMTP acceptance only; no remote inbox delivery claim."
+}

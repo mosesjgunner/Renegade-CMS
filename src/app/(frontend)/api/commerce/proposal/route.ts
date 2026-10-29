@@ -527,7 +527,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (
     request.headers.get('origin') &&
-    request.headers.get('origin') !== new URL(request.url).origin
+    request.headers.get('origin') !== new URL(request.url).origin &&
+    request.headers.get('origin') !==
+      `${new URL(request.url).protocol}//${request.headers.get('host') ?? ''}`
   )
     return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const payload = await getPayload({ config })

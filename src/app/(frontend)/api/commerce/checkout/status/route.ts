@@ -129,10 +129,12 @@ export async function GET(request: Request) {
               at: String(entry.at ?? ''),
               amountMinor: entry.amountMinor == null ? null : String(entry.amountMinor),
             })),
-            refund: order.refundExtension ? {
-              state: String(order.refundExtension.state),
-              amountMinor: String(order.refundExtension.refundedAmountMinor ?? '0'),
-            } : null,
+            refund: order.refundExtension
+              ? {
+                  state: String(order.refundExtension.state),
+                  amountMinor: String(order.refundExtension.refundedAmountMinor ?? '0'),
+                }
+              : null,
             items: Array.isArray(order.items)
               ? order.items.map((item: any) => ({
                   productId: String(item.productId ?? ''),

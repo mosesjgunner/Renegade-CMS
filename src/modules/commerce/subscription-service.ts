@@ -100,6 +100,8 @@ export async function recomputeSubscriptionEntitlements(
   payload: PayloadLike,
   subscription: Subscription & { supporterId?: string },
 ): Promise<{ granted: number; revoked: number }> {
+  if (subscription.plan.entitlements.some((grant) => grant.siteId !== subscription.siteId))
+    throw new Error('Subscription entitlement site mismatch.')
   const supporterId = subscription.supporterId ?? subscription.customerId
   if (!supporterId)
     throw new Error('A subscription needs a resolved supporter before it can grant access.')
@@ -181,6 +183,7 @@ export async function hasEntitlement(
     capability: string
     scope?: string
     now?: string
+    unmetered?: boolean
   },
 ): Promise<boolean> {
   const now = input.now ?? new Date().toISOString()
@@ -201,6 +204,9 @@ export async function hasEntitlement(
         { resource: { equals: input.resource } },
         { capability: { equals: input.capability } },
         { startsAt: { less_than_equal: now } },
+        ...(input.unmetered
+          ? [{ or: [{ limit: { exists: false } }, { limit: { equals: null } }] }]
+          : []),
         { or: [{ endsAt: { exists: false } }, { endsAt: { greater_than: now } }] },
         { or: [{ revokedAt: { exists: false } }, { revokedAt: { equals: null } }] },
         ...(input.scope
@@ -213,4 +219,13 @@ export async function hasEntitlement(
     overrideAccess: true,
   })
   return rows.docs.length > 0
+}
+
+/** Period-end agreements cannot gain replacement capabilities before the bought term ends. */
+export function providerPlanChangeDue(
+  plan: { changePolicy?: string },
+  currentEnd: string,
+  providerStart: string,
+): boolean {
+  return plan.changePolicy === 'immediate' || Date.parse(providerStart) >= Date.parse(currentEnd)
 }

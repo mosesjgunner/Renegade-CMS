@@ -59,6 +59,37 @@ async function persistRefundEffects(
       },
       overrideAccess: true,
     })
+    const intentId = relationId(attempt.paymentIntent)
+    const intent = intentId
+      ? await payload.findByID({
+          collection: 'payment-intents',
+          id: intentId,
+          depth: 0,
+          overrideAccess: true,
+        })
+      : null
+    if (intent)
+      await payload.update({
+        collection: 'payment-intents',
+        id: intentId,
+        data: {
+          ...(full ? { state: 'refunded' } : {}),
+          financialEvents: [
+            ...(Array.isArray(intent.financialEvents) ? intent.financialEvents : []).filter(
+              (entry: any) => entry.refundId !== refund.id,
+            ),
+            {
+              kind: 'refunded',
+              refundId: refund.id,
+              amountMinor: refund.amountMinor,
+              currency: refund.currency,
+              providerReference: providerRefundReference,
+              occurredAt: new Date().toISOString(),
+            },
+          ],
+        },
+        overrideAccess: true,
+      })
     const gifts = await payload.find({
       collection: 'donations',
       where: { paymentIntent: { equals: relationId(attempt.paymentIntent) } },
@@ -264,6 +295,13 @@ export async function executeRefund(payload: any, refundId: string) {
       idempotencyKey: refund.idempotencyKey,
       reason: 'requested_by_customer',
     })
+    if (result.state === 'succeeded' && result.amountMinor !== refund.amountMinor)
+      throw new PaymentProviderError(
+        'refund-amount-mismatch',
+        'Provider refund amount requires reconciliation.',
+        false,
+        false,
+      )
     const state = result.state
     providerSucceeded = state === 'succeeded'
     const correctionReceipt =

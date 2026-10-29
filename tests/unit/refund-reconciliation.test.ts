@@ -119,4 +119,19 @@ describe('confirmed refunds and local reconciliation', () => {
     expect(fixture.payload.db.beginTransaction).not.toHaveBeenCalled()
     expect(providerRefund).toHaveBeenCalledOnce()
   })
+  it('quarantines a provider refund amount mismatch without applying benefits or financial effects', async () => {
+    providerRefund.mockResolvedValue({
+      state: 'succeeded',
+      providerRefundReference: 'mismatched',
+      amountMinor: '499',
+    })
+    const fixture = store()
+    fixture.recover()
+    const response = await executeRefund(fixture.payload, 'refund')
+    expect(response.status).toBe(202)
+    expect(fixture.refund.state).toBe('unknown')
+    expect(fixture.refund.providerEvidence.code).toBe('refund-amount-mismatch')
+    expect(fixture.order.state).toBe('paid')
+    expect(fixture.payload.db.beginTransaction).not.toHaveBeenCalled()
+  })
 })

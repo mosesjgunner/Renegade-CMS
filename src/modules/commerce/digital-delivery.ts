@@ -90,3 +90,35 @@ export function deliveryGrantAvailable(grant: {
     downloadCount: Number(grant.downloadCount ?? 0),
   }).allowed
 }
+
+/** Revoke durable order access after verified terminal financial evidence. */
+export async function revokeOrderDigitalAccess(payload: Payload, orderId: string) {
+  const entitlements = await payload.find({
+    collection: 'entitlements',
+    where: { source: { equals: `order:${orderId}` } },
+    pagination: false,
+    overrideAccess: true,
+  })
+  const now = new Date().toISOString()
+  for (const entitlement of entitlements.docs) {
+    const grants = await payload.find({
+      collection: 'digital-delivery-grants',
+      where: { entitlement: { equals: entitlement.id } },
+      pagination: false,
+      overrideAccess: true,
+    })
+    for (const grant of grants.docs)
+      await payload.update({
+        collection: 'digital-delivery-grants',
+        id: grant.id,
+        data: { revokedAt: now },
+        overrideAccess: true,
+      })
+    await payload.update({
+      collection: 'entitlements',
+      id: entitlement.id,
+      data: { revokedAt: now, endsAt: now },
+      overrideAccess: true,
+    })
+  }
+}

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- isolated operator/browser acceptance harness */
 import assert from 'node:assert/strict'
+import { request as httpRequest } from 'node:http'
 import { createHmac } from 'node:crypto'
 import { spawn, type ChildProcess } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
@@ -112,6 +113,22 @@ async function startWeb() {
     await new Promise((resolve) => setTimeout(resolve, 1000))
   }
   throw new Error('Web readiness timed out')
+}
+
+async function processEvent(eventId: string) {
+  for (let run = 0; run < 20; run++) {
+    const inbox = await payload.find({
+      collection: 'payment-webhook-events',
+      where: { providerEventId: { equals: eventId } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    assert.equal(inbox.docs.length, 1)
+    if (inbox.docs[0].processingState === 'processed') return
+    if (inbox.docs[0].processingState === 'failed') throw new Error(inbox.docs[0].lastError)
+    await payload.jobs.run({ queue: 'commerce', limit: 100 })
+  }
+  throw new Error(`Worker did not process ${eventId}`)
 }
 
 function signDeterministicWebhook(body: Record<string, unknown>) {
@@ -921,10 +938,14 @@ try {
     // 5. PAYMENT DISAGREEMENT QUARANTINE & TERMINAL-SUCCESS CONFLICT QUARANTINE
     // =========================================================================
     // Helper to create an isolated guest checkout attempt for negative settlement tests
-    const startIsolatedCheckout = async (email: string) => {
+    const startIsolatedCheckout = async (email: string, digital = false) => {
       const ctx = await browser.newContext()
       const add = await ctx.request.post(`${base}/api/commerce/cart`, {
-        data: { productId: state.physicalProduct, variantSku: 'ALMANAC-STD', quantity: 1 },
+        data: {
+          productId: digital ? state.digitalProduct : state.physicalProduct,
+          variantSku: digital ? 'BRIEFING-PDF' : 'ALMANAC-STD',
+          quantity: 1,
+        },
       })
       assert.equal(add.status(), 200)
       const prop = await ctx.request.post(`${base}/api/commerce/proposal`, {
@@ -1194,78 +1215,6 @@ try {
     await raceCtx.close()
 
     // =========================================================================
-    // 7. UNKNOWN PAYMENT OUTCOME & OPERATOR RECONCILIATION
-    // =========================================================================
-    const reconcileCheckout = await startIsolatedCheckout('reconcile@11d.test')
-    state.reconcileAttemptId = reconcileCheckout.attemptId
-    state.reconcileSessionId = reconcileCheckout.sessionId
-    const reconcileAttemptDoc = await row('payment-attempts', reconcileCheckout.attemptId)
-    // Mark attempt as unknown without providerReference (simulating post-send timeout before provider response arrived)
-    await payload.update({
-      collection: 'payment-attempts',
-      id: reconcileCheckout.attemptId,
-      data: {
-        state: 'unknown',
-        providerReference: null,
-        unknownSince: new Date().toISOString(),
-        nextReconcileAt: new Date().toISOString(),
-      },
-      overrideAccess: true,
-    })
-    const detAdapter = createDeterministicPaymentAdapter({
-      secret: process.env.COMMERCE_TEST_WEBHOOK_SECRET!,
-    })
-    await detAdapter.createHostedCheckout({
-      attemptId: String(reconcileAttemptDoc.id),
-      idempotencyKey: reconcileAttemptDoc.idempotencyKey,
-      amountMinor: reconcileAttemptDoc.amountMinor,
-      currency: reconcileAttemptDoc.currency,
-      description: `Order ${reconcileCheckout.sessionId}`,
-      successUrl: `${base}/checkout/return?session=${reconcileCheckout.sessionId}`,
-      cancelUrl: `${base}/checkout/cancel?session=${reconcileCheckout.sessionId}`,
-      expiresAt: reconcileAttemptDoc.expiresAt,
-      metadata: {
-        renegade_attempt_id: String(reconcileAttemptDoc.id),
-        renegade_session_id: String(reconcileCheckout.sessionId),
-        renegade_site_id: String(state.alpha),
-      },
-    })
-    detAdapter.setState(reconcileAttemptDoc.providerReference, 'succeeded')
-
-    // Foreign Beta staff cannot trigger reconciliation on Alpha
-    const deniedReconcileRes = await request(
-      '/api/admin/commerce/reconcile',
-      staffBetaCookie,
-      'POST',
-      { siteId: state.alpha },
-    )
-    check(
-      'foreign site staff denied reconciliation on Alpha (403)',
-      deniedReconcileRes.status === 403,
-    )
-
-    // Owner triggers reconciliation via supported operator endpoint
-    const reconcileRes = await request('/api/admin/commerce/reconcile', operator, 'POST', {
-      siteId: state.alpha,
-    })
-    assert.equal(reconcileRes.status, 202)
-    for (let i = 0; i < 6; i++) {
-      await payload.jobs.run({ queue: 'commerce', limit: 20 })
-    }
-    const reconciledOrders = await payload.find({
-      collection: 'orders',
-      where: { checkoutSession: { equals: reconcileCheckout.sessionId } },
-      overrideAccess: true,
-    })
-    check(
-      'reconcile-payments task resolves unknown attempt against provider truth and settles 1 order (stock 7 -> 6)',
-      (await row('payment-attempts', reconcileCheckout.attemptId)).state === 'succeeded' &&
-        reconciledOrders.docs.length === 1 &&
-        reconciledOrders.docs[0].state === 'paid' &&
-        (await row('products', state.physicalProduct)).variants[0].inventoryQuantity === 6,
-    )
-
-    // =========================================================================
     // 8. ACCESS CONTROL, HOST ISOLATION & NATIVE REST DENIALS
     // =========================================================================
     // Guest cannot read member's checkout status; member cannot read guest's checkout status without guest cookie
@@ -1327,6 +1276,320 @@ try {
         ownerDashboard.reconciliationCases.length >= 2,
     )
 
+    // 11D: ordinary owned download -> authorized partial/full refund -> persisted revocation.
+    const memberCookie = `renegade-member=${savedMember.sessionToken}`
+    const beforeStatus = await json(
+      `/api/commerce/checkout/status?session=${state.memberSessionId}`,
+      memberCookie,
+    )
+    state.downloadPath = beforeStatus.downloads[0].path
+    check(
+      'copied member download denied anonymously and to another authenticated member',
+      (await request(state.downloadPath)).status === 404,
+    )
+    const otherMagic = await issueMagicLink(payload, `other-${Date.now()}@11d.test`)
+    const other = await consumeMagicLink(payload, otherMagic.token!)
+    const otherCookie = `renegade-member=${other!.sessionToken}`
+    check(
+      'wrong member cannot read order status or download owned bytes',
+      (await request(state.downloadPath, otherCookie)).status === 404 &&
+        (
+          await request(
+            `/api/commerce/checkout/status?session=${state.memberSessionId}`,
+            otherCookie,
+          )
+        ).status === 403,
+    )
+    const downloaded = await request(state.downloadPath, memberCookie)
+    check(
+      'owned private download returns exact uploaded bytes and no-store',
+      downloaded.status === 200 &&
+        Buffer.from(await downloaded.arrayBuffer()).equals(image) &&
+        downloaded.headers.get('cache-control') === 'private, no-store',
+    )
+    const foreignDownloadStatus = await new Promise<number>((resolve, reject) => {
+      const req = httpRequest(
+        `${base}${state.downloadPath}`,
+        { headers: { host: 'beta.11d.test:39018', cookie: memberCookie } },
+        (response) => {
+          response.resume()
+          resolve(response.statusCode!)
+        },
+      )
+      req.on('error', reject)
+      req.end()
+    })
+    check('foreign host cannot use copied download', foreignDownloadStatus === 404)
+    const resendPath = `/api/admin/commerce/receipts/${state.memberOrderId}/resend`
+    check(
+      'receipt resend denies customer and foreign operator',
+      (await request(resendPath, memberCookie, 'POST')).status === 403 &&
+        (await request(resendPath, staffBetaCookie, 'POST')).status === 403,
+    )
+    const resent = await json(resendPath, operator, 'POST', {}, 202)
+    const delivery = await row('email-deliveries', resent.deliveryId)
+    check(
+      'authorized receipt resend queues immutable price and recipient snapshot',
+      delivery.status === 'queued' && delivery.messageSnapshot.variables.amountMinor === '3634',
+    )
+    const refundBody = {
+      action: 'request',
+      orderId: state.memberOrderId,
+      amountMinor: '100',
+      reason: '11D partial refund',
+    }
+    for (const [label, cookie] of [
+      ['anonymous', ''],
+      ['customer', memberCookie],
+      ['foreign staff', staffBetaCookie],
+    ]) {
+      check(
+        `${label} refund denied`,
+        (await request('/api/admin/commerce/refunds', cookie, 'POST', refundBody)).status === 403,
+      )
+    }
+    check(
+      'refund cross-origin denied',
+      (
+        await request('/api/admin/commerce/refunds', operator, 'POST', refundBody, {
+          origin: 'https://evil.test',
+        })
+      ).status === 403,
+    )
+    check(
+      'refund invalid action denied',
+      (
+        await request('/api/admin/commerce/refunds', operator, 'POST', {
+          ...refundBody,
+          action: 'invented',
+        })
+      ).status === 400,
+    )
+    check(
+      'refund exceeding captured total denied',
+      (
+        await request('/api/admin/commerce/refunds', operator, 'POST', {
+          ...refundBody,
+          amountMinor: '99999',
+        })
+      ).status === 422,
+    )
+    const partial = await json('/api/admin/commerce/refunds', operator, 'POST', refundBody)
+    check(
+      'authorized partial refund persisted and retains owned access',
+      partial.refund.state === 'succeeded' &&
+        (await row('orders', state.memberOrderId)).refundExtension.refundedAmountMinor === '100' &&
+        (await request(state.downloadPath, memberCookie)).status === 200,
+    )
+    const pending = await json(
+      '/api/admin/commerce/refunds',
+      operator,
+      'POST',
+      { ...refundBody, amountMinor: '3534', reason: '11D remaining balance' },
+      202,
+    )
+    check(
+      'large refund requires second operator and blocks a new pending refund',
+      pending.approvalRequired &&
+        (await request('/api/admin/commerce/refunds', operator, 'POST', refundBody)).status ===
+          409 &&
+        (
+          await request('/api/admin/commerce/refunds', operator, 'POST', {
+            action: 'approve',
+            refundId: pending.refund.id,
+          })
+        ).status === 409,
+    )
+    const secondOwner = await payload.create({
+      collection: 'users',
+      data: { email: `second-${Date.now()}@11d.test`, role: 'owner' },
+    })
+    const secondCookie = await session(secondOwner)
+    const full = await json('/api/admin/commerce/refunds', secondCookie, 'POST', {
+      action: 'approve',
+      refundId: pending.refund.id,
+    })
+    state.refundId = full.refund.id
+    const refunded = await row('orders', state.memberOrderId)
+    const grantRows = await payload.find({
+      collection: 'digital-delivery-grants',
+      where: { member: { equals: state.memberId } },
+      depth: 1,
+      overrideAccess: true,
+    })
+    check(
+      'full refund persists financial reconciliation and revokes grant plus entitlement',
+      full.refund.state === 'succeeded' &&
+        refunded.state === 'refunded' &&
+        refunded.refundExtension.refundedAmountMinor === '3634' &&
+        grantRows.docs.every((grant: any) => grant.revokedAt && grant.entitlement.revokedAt),
+    )
+    check(
+      'old owned link denied after full refund',
+      (await request(state.downloadPath, memberCookie)).status === 404,
+    )
+    const corrections = await payload.find({
+      collection: 'email-deliveries',
+      where: { idempotencyKey: { equals: `commerce-refund-receipt:${full.refund.id}` } },
+      overrideAccess: true,
+    })
+    check(
+      'one durable correction notification queued without claiming delivery',
+      corrections.docs.length === 1 && corrections.docs[0].status === 'queued',
+    )
+    await json('/api/admin/commerce/refunds', operator, 'POST', {
+      action: 'reconcile',
+      refundId: full.refund.id,
+    })
+    const afterReplay = await row('orders', state.memberOrderId)
+    check(
+      'confirmed refund reconciliation replay keeps one history entry and immutable snapshots',
+      afterReplay.transitionLog.filter((entry: any) => entry.refundId === full.refund.id).length ===
+        1 &&
+        afterReplay.amountMinor === '3634' &&
+        JSON.stringify(afterReplay.items) === JSON.stringify(memberOrderDoc.items) &&
+        JSON.stringify(afterReplay.totalsSnapshot) ===
+          JSON.stringify(memberOrderDoc.totalsSnapshot),
+    )
+    await memberPage.reload()
+    await memberPage.getByText(`Order ${state.memberOrderNumber} is refunded.`).waitFor()
+    check(
+      'customer sees refunded order receipt history and no download link',
+      (await memberPage.getByText(`Receipt ${state.memberReceiptNumber}.`).isVisible()) &&
+        (await memberPage.getByText('Refund: 3634 USD minor units (full).').isVisible()) &&
+        (await memberPage
+          .getByRole('link', { name: 'Download purchased file BRIEFING-PDF' })
+          .count()) === 0,
+    )
+
+    // Verified provider dispute: persisted local review state, no invented resolution.
+    const dispute = signDeterministicWebhook({
+      providerEventId: `11d-dispute:${state.guestAttemptId}`,
+      providerReference: guestAttemptDoc.providerReference,
+      kind: 'disputed',
+      amountMinor: '2359',
+      currency: 'USD',
+      sequence: 30,
+      occurredAt: new Date().toISOString(),
+      sanitizedEvidence: { objectId: `11d-dispute:${state.guestAttemptId}` },
+    })
+    assert.equal(
+      (
+        await request('/api/commerce/webhooks/deterministic-test', '', 'POST', dispute.raw, {
+          'content-type': 'application/json',
+          'x-commerce-signature': dispute.signature,
+        })
+      ).status,
+      202,
+    )
+    await processEvent(`11d-dispute:${state.guestAttemptId}`)
+    const disputes = await payload.find({
+      collection: 'commerce-disputes',
+      where: { order: { equals: state.guestOrderId } },
+      overrideAccess: true,
+    })
+    check(
+      'signed dispute persists review record and order exception without claiming provider resolution',
+      disputes.docs.length === 1 &&
+        disputes.docs[0].state === 'open' &&
+        (await row('orders', state.guestOrderId)).state === 'exception',
+    )
+    check(
+      'financial records cannot be deleted or disputes fabricated through native REST',
+      (await request(`/api/orders/${state.memberOrderId}`, operator, 'DELETE')).status === 403 &&
+        (await request('/api/commerce-disputes', operator, 'POST', { state: 'won' })).status ===
+          403,
+    )
+    const providerRefund = signDeterministicWebhook({
+      providerEventId: `11d-refund:${raceAttemptDoc.id}`,
+      providerReference: raceAttemptDoc.providerReference,
+      kind: 'refunded',
+      amountMinor: raceAttemptDoc.amountMinor,
+      currency: 'USD',
+      sequence: 30,
+      occurredAt: new Date().toISOString(),
+      sanitizedEvidence: {
+        objectId: `11d-refund:${raceAttemptDoc.id}`,
+        amountMinor: raceAttemptDoc.amountMinor,
+      },
+    })
+    assert.equal(
+      (
+        await request('/api/commerce/webhooks/deterministic-test', '', 'POST', providerRefund.raw, {
+          'content-type': 'application/json',
+          'x-commerce-signature': providerRefund.signature,
+        })
+      ).status,
+      202,
+    )
+    await processEvent(`11d-refund:${raceAttemptDoc.id}`)
+    const raceRefunded = await row('orders', raceOrders.docs[0].id)
+    check(
+      'provider-originated refund uses canonical durable financial reconciliation',
+      raceRefunded.state === 'refunded' &&
+        raceRefunded.refundExtension.refundedAmountMinor === raceAttemptDoc.amountMinor,
+    )
+
+    state.terminalDownloads = []
+    for (const terminal of ['cancelled', 'disputed', 'refunded']) {
+      const checkout = await startIsolatedCheckout(`${terminal}@11d.test`, true)
+      const attempt = await row('payment-attempts', checkout.attemptId)
+      const send = async (kind: string, sequence: number) => {
+        const event = signDeterministicWebhook({
+          providerEventId: `11d-${kind}:${attempt.id}`,
+          providerReference: attempt.providerReference,
+          kind,
+          amountMinor: attempt.amountMinor,
+          currency: 'USD',
+          sequence,
+          occurredAt: new Date().toISOString(),
+          sanitizedEvidence: {
+            objectId: `11d-${kind}:${attempt.id}`,
+            amountMinor: attempt.amountMinor,
+          },
+        })
+        assert.equal(
+          (
+            await request('/api/commerce/webhooks/deterministic-test', '', 'POST', event.raw, {
+              'content-type': 'application/json',
+              'x-commerce-signature': event.signature,
+            })
+          ).status,
+          202,
+        )
+        await processEvent(`11d-${kind}:${attempt.id}`)
+      }
+      await send('succeeded', 1)
+      const orders = await payload.find({
+        collection: 'orders',
+        where: { checkoutSession: { equals: checkout.sessionId } },
+        overrideAccess: true,
+      })
+      assert.equal(orders.docs.length, 1)
+      const order = orders.docs[0]
+      const path = order.fulfillmentExtension.downloads[0].path
+      check(
+        `fresh digital ${terminal} test starts with settled receipt and byte-equal owned bearer download`,
+        Boolean(order.receipt.receiptNumber) &&
+          Buffer.from(await (await request(path)).arrayBuffer()).equals(image),
+      )
+      await send(terminal, 2)
+      const finalOrder = await row('orders', order.id)
+      const entitlements = await payload.find({
+        collection: 'entitlements',
+        where: { source: { equals: `order:${order.id}` } },
+        overrideAccess: true,
+      })
+      check(
+        `verified ${terminal} revokes digital access and persists truthful order state`,
+        entitlements.docs.length === 1 &&
+          Boolean(entitlements.docs[0].revokedAt) &&
+          (await request(path)).status === 404 &&
+          finalOrder.state === (terminal === 'disputed' ? 'exception' : terminal),
+      )
+      state.terminalDownloads.push(path)
+    }
+
     await guestContext.storageState({ path: 'scratch/rc111d/guest-browser.json' })
     await memberContext.storageState({ path: 'scratch/rc111d/member-browser.json' })
     await writeFile(`${out}/state.json`, JSON.stringify(state, null, 2))
@@ -1343,8 +1606,8 @@ try {
     await guestPage.goto(`${base}/checkout/return?session=${state.guestSessionId}`)
     await guestPage.getByRole('heading', { name: 'Payment confirmed' }).waitFor({ timeout: 15000 })
     check(
-      'after PostgreSQL and Next.js restart, guest browser retains paid order view and receipt',
-      (await guestPage.getByText(`Order ${state.guestOrderNumber} is paid.`).isVisible()) &&
+      'after PostgreSQL and Next.js restart, guest browser retains disputed order exception and original receipt',
+      (await guestPage.getByText(`Order ${state.guestOrderNumber} is exception.`).isVisible()) &&
         (await guestPage.getByText(`Receipt ${state.guestReceiptNumber}.`).isVisible()) &&
         (await guestPage.getByText('Settled total: 2359 USD minor units').isVisible()),
     )
@@ -1356,12 +1619,12 @@ try {
     await memberPage.goto(`${base}/checkout/return?session=${state.memberSessionId}`)
     await memberPage.getByRole('heading', { name: 'Payment confirmed' }).waitFor({ timeout: 15000 })
     check(
-      'after PostgreSQL and Next.js restart, member browser retains paid order view, receipt and download link',
-      (await memberPage.getByText(`Order ${state.memberOrderNumber} is paid.`).isVisible()) &&
+      'after PostgreSQL and Next.js restart, member browser retains refunded order, receipt and no download link',
+      (await memberPage.getByText(`Order ${state.memberOrderNumber} is refunded.`).isVisible()) &&
         (await memberPage.getByText(`Receipt ${state.memberReceiptNumber}.`).isVisible()) &&
         (await memberPage
           .getByRole('link', { name: 'Download purchased file BRIEFING-PDF' })
-          .isVisible()),
+          .count()) === 0,
     )
 
     const guestOrder = await row('orders', state.guestOrderId)
@@ -1373,17 +1636,28 @@ try {
       overrideAccess: true,
     })
     check(
-      'restart preserves immutable order totals, receipt states, inventory quantity (6) and quarantined cases',
-      guestOrder.state === 'paid' &&
+      'restart preserves immutable order totals, receipt states, inventory quantity (7) and quarantined cases',
+      guestOrder.state === 'exception' &&
         guestOrder.amountMinor === '2359' &&
         guestOrder.receipt?.receiptNumber === state.guestReceiptNumber &&
-        memberOrder.state === 'paid' &&
+        memberOrder.state === 'refunded' &&
         memberOrder.amountMinor === '3634' &&
         memberOrder.receipt?.receiptNumber === state.memberReceiptNumber &&
-        physicalProduct.variants[0].inventoryQuantity === 6 &&
+        physicalProduct.variants[0].inventoryQuantity === 7 &&
         quarantinedCases.docs.length >= 2,
     )
 
+    const saved = JSON.parse(await readFile('scratch/rc111d/member-session.json', 'utf8'))
+    check(
+      'restart retains revoked download and refund totals',
+      (await request(state.downloadPath, `renegade-member=${saved.sessionToken}`)).status === 404 &&
+        memberOrder.refundExtension.refundedAmountMinor === '3634',
+    )
+    for (const path of state.terminalDownloads)
+      check(
+        'restart retains terminal financial access revocation',
+        (await request(path)).status === 404,
+      )
     await guestContext.close()
     await memberContext.close()
   }

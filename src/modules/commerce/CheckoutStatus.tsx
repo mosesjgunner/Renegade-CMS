@@ -90,10 +90,22 @@ export function CheckoutStatus({
       </h1>
       {paid ? (
         <>
-          <p>Order {status.order?.orderNumber} is {status.order?.state}.</p>
-          {status.order?.refund && <p>Refund: {status.order.refund.amountMinor} {status.order.currency} minor units ({status.order.refund.state}).</p>}
+          <p>
+            Order {status.order?.orderNumber} is {status.order?.state}.
+          </p>
+          {status.order?.refund && (
+            <p>
+              Refund: {status.order.refund.amountMinor} {status.order.currency} minor units (
+              {status.order.refund.state}).
+            </p>
+          )}
           <ul aria-label="Order history">
-            {(status.order?.history ?? []).map((entry, index) => <li key={index}>{entry.kind}{entry.at ? ` ? ${entry.at}` : ''}</li>)}
+            {(status.order?.history ?? []).map((entry, index) => (
+              <li key={index}>
+                {entry.kind}
+                {entry.at ? ` ? ${entry.at}` : ''}
+              </li>
+            ))}
           </ul>
           <p>Receipt {status.order?.receiptNumber ?? 'is being prepared'}.</p>
           {status.order?.amountMinor && status.order?.currency && (

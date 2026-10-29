@@ -4,6 +4,8 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { catalogOriginForSite, catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { recurringProvider, configuredPaymentProvider } from '@/modules/commerce/payment-provider'
+import { hasEntitlement } from '@/modules/commerce/subscription-service'
+import { subscriptionInvoices } from '@/modules/commerce/subscription-reconciliation'
 import { visibleProration } from '@/modules/commerce/subscription-contract'
 import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity/member-identity'
 
@@ -30,16 +32,69 @@ export async function GET(request: Request) {
       overrideAccess: true,
     })
     return NextResponse.json({
-      subscriptions: subscriptions.docs.map((sub: any) => ({
-        id: sub.id,
-        state: sub.state,
-        plan: sub.planSnapshot,
-        currentPeriodStart: sub.currentPeriodStart,
-        currentPeriodEnd: sub.currentPeriodEnd,
-        cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
-        trialEnd: sub.trialEnd,
-        graceEnd: sub.graceEnd,
-      })),
+      subscriptions: await Promise.all(
+        subscriptions.docs.map(async (sub: any) => ({
+          id: sub.id,
+          state: sub.state,
+          reconciliationUnknown: sub.failure?.code === 'provider-state-unknown',
+          invoices: subscriptionInvoices(
+            (
+              await (payload as any).find({
+                collection: 'subscription-events',
+                where: { subscription: { equals: sub.id } },
+                limit: 1000,
+                depth: 0,
+                overrideAccess: true,
+              })
+            ).docs,
+          ),
+          plan: {
+            name: sub.planSnapshot?.name,
+            amountMinor: sub.planSnapshot?.amountMinor,
+            currency: sub.planSnapshot?.currency,
+            interval: sub.planSnapshot?.interval,
+            intervalCount: sub.planSnapshot?.intervalCount,
+          },
+          orderId: sub.settings?.orderId ?? null,
+          nextBillingAt:
+            ['active', 'trialing'].includes(sub.state) && !sub.cancelAtPeriodEnd
+              ? sub.state === 'trialing'
+                ? (sub.trialEnd ?? sub.currentPeriodEnd)
+                : sub.currentPeriodEnd
+              : null,
+          downloads: (
+            await Promise.all(
+              (sub.planSnapshot?.entitlements ?? []).map(async (grant: any) =>
+                (await hasEntitlement(payload, {
+                  subjectId: memberId,
+                  siteId,
+                  resource: grant.resource,
+                  capability: grant.capability,
+                  unmetered: grant.capability === 'download',
+                  ...(grant.scope ? { scope: grant.scope } : {}),
+                }))
+                  ? grant
+                  : null,
+              ),
+            )
+          )
+            .filter(Boolean)
+            .filter(
+              (grant: any) =>
+                grant.capability === 'download' &&
+                String(grant.resource).startsWith('media:') &&
+                !grant.scope,
+            )
+            .map((grant: any) => ({
+              path: `/api/commerce/subscriptions/download/${String(grant.resource).slice(5)}`,
+            })),
+          currentPeriodStart: sub.currentPeriodStart,
+          currentPeriodEnd: sub.currentPeriodEnd,
+          cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+          trialEnd: sub.trialEnd,
+          graceEnd: sub.graceEnd,
+        })),
+      ),
     })
   } catch {
     return NextResponse.json({ error: 'Subscription service unavailable.' }, { status: 503 })
@@ -57,6 +112,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'CSRF validation failed.' }, { status: 403 })
     const siteId = await catalogSiteForHost(payload as never, request.headers.get('host'))
     const body = await request.json()
+    if (
+      Object.keys(body).some(
+        (key) => !['subscriptionId', 'action', 'planRevisionId'].includes(key),
+      ) ||
+      (body.action !== undefined && !['portal', 'preview-change'].includes(body.action))
+    )
+      return NextResponse.json({ error: 'Unsupported billing action or fields.' }, { status: 400 })
     if (typeof body.subscriptionId !== 'string')
       return NextResponse.json({ error: 'subscriptionId is required.' }, { status: 400 })
     const supporters = await (payload as any).find({

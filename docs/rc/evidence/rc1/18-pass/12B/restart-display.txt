@@ -1,0 +1,40 @@
+Membership and billing
+Refresh billing status
+Your subscriptions
+Journal monthly 12B: canceled; period ends 2026-10-28T23:33:53.000Z.Manage billing for Journal monthly 12BPreview a plan change 
+Choose a published plan
+Journal annual 12B
+Journal monthly 12B
+Journal annual 12B: canceled; period ends 2027-11-28T23:30:47.000Z.
+
+Invoice in_late12b: paid; $12.00.
+
+Invoice in_failed12b: paid; $12.00.
+
+Invoice in_unknown12b: paid; $12.00.
+
+Invoice in_renewal12b: paid; $12.00.
+
+Invoice in_harness12b: paid; $12.00.
+
+Invoice in_stale12b: paid; $12.00.
+
+Manage billing for Journal annual 12BPreview a plan change 
+Choose a published plan
+Journal annual 12B
+Journal monthly 12B
+Available plans
+Journal annual 12B
+
+$120.00 every 1 year; cancellation: immediate.
+
+Test provider checkout. No live payment is collected.
+
+Start Journal annual 12B
+Journal monthly 12B
+
+$12.00 every 1 month; cancellation: period end.
+
+Test provider checkout. No live payment is collected.
+
+Start Journal monthly 12B

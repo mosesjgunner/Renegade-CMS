@@ -20,7 +20,9 @@ async function cycle(): Promise<void> {
   try {
     if (workerProfile !== 'commerce-only') {
       await payload.jobs.handleSchedules({ queue: 'operations' })
-      await payload.jobs.run({ queue: 'operations' })
+      // Side-effect tasks hold a session lock while issuing further database queries.
+      // Keep pool connections available for that work; recovery drains durable outboxes below.
+      await payload.jobs.run({ queue: 'operations', limit: 1 })
       if (payload.collections['email-deliveries']) {
         const { recoverEmailOutbox } = await import('../modules/audience/tasks')
         await recoverEmailOutbox(payload)
@@ -35,7 +37,8 @@ async function cycle(): Promise<void> {
       const { recoverStaleCommerceJobs } = await import('../modules/commerce/tasks')
       await recoverStaleCommerceJobs(payload).catch(() => undefined)
     }
-    await payload.jobs.run({ queue: 'commerce' })
+    await payload.jobs.handleSchedules({ queue: 'commerce' })
+    await payload.jobs.run({ queue: 'commerce', limit: 1 })
     if (workerProfile === 'media-heavy') {
       const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
       await recoverStaleVideoJobs(payload).catch(() => undefined)

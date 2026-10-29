@@ -15688,7 +15688,9 @@ export interface TaskCommerceReconcilePayments {
  * via the `definition` "TaskCommerce-reconcile-subscriptions".
  */
 export interface TaskCommerceReconcileSubscriptions {
-  input?: unknown;
+  input: {
+    siteId?: string | null;
+  };
   output?: unknown;
 }
 /**

@@ -569,7 +569,9 @@ async function locked(request: Request, handler: (request: Request) => Promise<N
   if (
     request.method !== 'GET' &&
     request.headers.get('origin') &&
-    request.headers.get('origin') !== new URL(request.url).origin
+    request.headers.get('origin') !== new URL(request.url).origin &&
+    request.headers.get('origin') !==
+      `${new URL(request.url).protocol}//${request.headers.get('host') ?? ''}`
   )
     return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   try {

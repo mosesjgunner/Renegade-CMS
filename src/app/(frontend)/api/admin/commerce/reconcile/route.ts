@@ -10,6 +10,8 @@ export async function POST(request: Request) {
   const grant = await resolveOperatorGrantContext(payload, auth.user)
   if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const body = await request.json().catch(() => ({}))
+  if (body.kind !== undefined && !['payments', 'subscriptions'].includes(body.kind))
+    return NextResponse.json({ error: 'Unsupported reconciliation kind.' }, { status: 400 })
   const requestedSiteId =
     (typeof body?.siteId === 'string' && body.siteId) ||
     new URL(request.url).searchParams.get('siteId') ||
@@ -33,7 +35,10 @@ export async function POST(request: Request) {
   const jobs = []
   for (const siteId of scopes) {
     const job = await (payload.jobs as any).queue({
-      task: 'commerce-reconcile-payments',
+      task:
+        body.kind === 'subscriptions'
+          ? 'commerce-reconcile-subscriptions'
+          : 'commerce-reconcile-payments',
       input: siteId ? { siteId } : {},
       queue: 'commerce',
     })

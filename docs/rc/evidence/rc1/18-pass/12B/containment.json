@@ -1,0 +1,55 @@
+{
+  "baseCommit": "ed1ec703ef0401d0876932c310d6f831fc74aef4",
+  "journeyTestedTreeHash": "10b3c47f77648fdc74dc9640523ae2252aca52970fead021d37cde03c2b2251f",
+  "restartTestedTreeHash": "886c04aedf5ac1f234ec38dc309e9300fea4db7503bba1870c758395183264ef",
+  "currentTreeHash": "d00c8e9dc79df46393aa946c539d6d984f0fe5cf673e01f85f32bcf87dd8959a",
+  "allRuntimeUnchangedAcrossProofs": true,
+  "restartVerifierCurrent": true,
+  "journeyVerifierArchivedMatches": true,
+  "strictWholeTreeEqual": false,
+  "journeyDifferences": [
+    {
+      "path": "next-env.d.ts",
+      "tested": "9bcbb7e62c11f807cb3e7d79fb75e01983777780cb239bf3b7fcdbd86070adab",
+      "current": "fd97cf08ec7ea3fca78a3e4201361452da47b63cac6dcdc263c2003b7f77e7b7"
+    },
+    {
+      "path": "tests/rc1-12b/journey.ts",
+      "tested": "8f4d6f3f45fa0797fee950439778b85fc5bb6921c9490f6da74f4562c595ad33",
+      "current": "ae9eaf12a78b41f5b5f1f966a6397c1f6797e81bd9263616719f2b1101c792a6"
+    },
+    {
+      "path": "tests/rc1-12c/journey.ts",
+      "tested": "5b4794f7312ebbba96bcca247eecb60866195358a8a4ac66ba1f2b05af5dc6dd",
+      "current": "be7f60a27337574f269426fcaa16e6dacedfc07b2891ac9bd7616b842d8889d8"
+    }
+  ],
+  "currentDifferences": [
+    {
+      "path": "next-env.d.ts",
+      "tested": "fd97cf08ec7ea3fca78a3e4201361452da47b63cac6dcdc263c2003b7f77e7b7",
+      "current": "9bcbb7e62c11f807cb3e7d79fb75e01983777780cb239bf3b7fcdbd86070adab"
+    },
+    {
+      "path": "tests/rc1-12c/journey.ts",
+      "tested": "be7f60a27337574f269426fcaa16e6dacedfc07b2891ac9bd7616b842d8889d8",
+      "current": "045de553c9f4ce0e43d5cf12ee3926c3a14f2633ddbbbb94313bd09110e921d6"
+    },
+    {
+      "path": "tests/rc1-12c/provenance.ts",
+      "tested": "29d6464023a73b0da03f61a9721b4639ccb3e3315738a76d4a57c7b3688003c3",
+      "current": "36f9a2d47d6d82bd03d2386cecfcc6de160c0ba64a3a6adce9200cc3b63b57cb"
+    },
+    {
+      "path": "tests/rc1-12c/run.ps1",
+      "tested": "b8eff8f0a5f931d3656c1503a57e76a33bec4d81a03434632a895b83ff8df29f",
+      "current": "07a98d675f247d7d1e3995f6a2d0311050a4144abcff0b57a2acdde79f73f640"
+    },
+    {
+      "path": "tests/unit/rc1-12c-donations-acceptance.test.ts",
+      "tested": "cc7ce5d465eeb2eb4f782be0c59bfc219683e15682df5a86c2bc26c226f6f744",
+      "current": "fa0811693ef12e5a5428b6e515db005b96fb882b03243d3dcbe5b3030409fcdb"
+    }
+  ],
+  "boundary": "43 journey assertions retain their exact archived verifier and manifest. Restart verifier selects the contract by ID and additionally observes fresh browser billing. Runtime is identical across both runs. Concurrent 12C verifier and generated Next type-pointer differences carry no acceptance."
+}

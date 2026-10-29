@@ -12,6 +12,16 @@ type Dashboard = {
   }
   summaryScope: { sampled: boolean; rows: number; totalRows: number }
   health: Array<{ providerKey: string; ready: boolean; health: string; reason?: string }>
+  orders?: Array<{
+    id: string
+    orderNumber: string
+    state: string
+    amountMinor: string
+    currency: string
+    receiptNumber: string | null
+    createdAt: string
+    auditEntries: string[]
+  }>
   pendingActions: Array<{
     id: string
     state: string
@@ -117,6 +127,31 @@ export function CommerceOperations() {
       >
         Queue reconciliation
       </button>
+      <button
+        type="button"
+        onClick={async () => {
+          try {
+            const response = await fetch('/api/admin/commerce/reconcile', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({ kind: 'subscriptions' }),
+            })
+            const body = await response.json()
+            setNotice(
+              response.ok && body.queued
+                ? 'Reconciliation queued for your authorized sites.'
+                : (body.error ?? 'Reconciliation was not queued.'),
+            )
+            await load()
+          } catch {
+            setNotice(
+              'Reconciliation could not be confirmed. Refresh server truth before trying again.',
+            )
+          }
+        }}
+      >
+        Queue subscription reconciliation
+      </button>
       <h2>Provider health</h2>
       <ul>
         {data.health.map((item) => (
@@ -165,6 +200,20 @@ export function CommerceOperations() {
         </ul>
       ) : (
         <p>No pending payment exceptions.</p>
+      )}
+      <h2>Orders and audit</h2>
+      {(data.orders ?? []).length ? (
+        <ul>
+          {(data.orders ?? []).map((item) => (
+            <li key={item.id}>
+              <Link href={recordUrl('orders', item.id)}>{item.orderNumber}</Link>: {item.state};{' '}
+              {item.amountMinor} {item.currency}; receipt {item.receiptNumber ?? 'pending'}; audit:{' '}
+              {item.auditEntries.join(' → ') || 'none'}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No recent orders.</p>
       )}
       <h2>Refunds</h2>
       <ul>

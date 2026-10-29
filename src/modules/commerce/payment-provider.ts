@@ -22,6 +22,7 @@ export type ProviderErrorCode =
   | 'rate-limited'
   | 'provider-unavailable'
   | 'unknown-outcome'
+  | 'refund-amount-mismatch'
 
 export class PaymentProviderError extends Error {
   constructor(
@@ -125,6 +126,12 @@ export interface RecurringPaymentProvider {
   createSubscriptionCheckout(input: {
     idempotencyKey: string
     priceReference: string
+    expectedPrice?: {
+      amountMinor: string
+      currency: string
+      interval: string
+      intervalCount: number
+    }
     trialDays?: number
     successUrl: string
     cancelUrl: string
@@ -510,6 +517,24 @@ export function createStripeTestAdapter(input: {
           false,
           true,
         )
+      if (checkout.expectedPrice) {
+        const price = await call(`/prices/${encodeURIComponent(checkout.priceReference)}`)
+        const recurring = price.recurring as StripeObject | undefined
+        const expected = checkout.expectedPrice
+        if (
+          price.active !== true ||
+          String(price.unit_amount) !== expected.amountMinor ||
+          String(price.currency).toUpperCase() !== expected.currency ||
+          recurring?.interval !== expected.interval ||
+          Number(recurring?.interval_count) !== expected.intervalCount
+        )
+          throw new PaymentProviderError(
+            'invalid-request',
+            'Provider price does not match the published agreement.',
+            false,
+            true,
+          )
+      }
       const body = new URLSearchParams({
         mode: 'subscription',
         success_url: checkout.successUrl,
@@ -548,15 +573,29 @@ export function createStripeTestAdapter(input: {
       return String(result.url ?? '')
     },
     async previewSubscriptionChange(change) {
+      const subscription = await call(
+        `/subscriptions/${encodeURIComponent(change.subscriptionReference)}`,
+      )
+      const items = (subscription.items as StripeObject | undefined)?.data as
+        | StripeObject[]
+        | undefined
+      if (items?.length !== 1 || !items[0].id)
+        throw new Error('Plan preview requires one identified subscription item.')
       const result = await call('/invoices/create_preview', {
         method: 'POST',
         body: new URLSearchParams({
           subscription: change.subscriptionReference,
+          'subscription_details[items][0][id]': String(items[0].id),
           'subscription_details[items][0][price]': change.priceReference,
         }),
       })
+      if (
+        !Number.isSafeInteger(result.amount_due ?? result.total) ||
+        !/^[a-z]{3}$/i.test(String(result.currency ?? ''))
+      )
+        throw new Error('Invalid provider change preview.')
       return {
-        amountMinor: String(result.amount_due ?? result.total ?? '0'),
+        amountMinor: String(result.amount_due ?? result.total),
         currency: String(result.currency ?? '').toUpperCase(),
         expiresAt: new Date(now().getTime() + 60_000).toISOString(),
       }
@@ -587,6 +626,23 @@ export function createStripeTestAdapter(input: {
       const item = (
         (result.items as StripeObject | undefined)?.data as StripeObject[] | undefined
       )?.[0]
+      if (
+        ![
+          'incomplete',
+          'trialing',
+          'active',
+          'past_due',
+          'canceled',
+          'paused',
+          'unpaid',
+          'incomplete_expired',
+        ].includes(status)
+      )
+        throw new Error('Unknown provider subscription status.')
+      const start = Number(result.current_period_start ?? item?.current_period_start)
+      const end = Number(result.current_period_end ?? item?.current_period_end)
+      if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start)
+        throw new Error('Invalid provider billing period.')
       return {
         state: (['incomplete', 'trialing', 'active', 'past_due', 'canceled', 'paused'].includes(
           status,
@@ -630,6 +686,7 @@ export function createStripeTestAdapter(input: {
       try {
         const event = JSON.parse(rawBody) as StripeObject
         const object = ((event.data as StripeObject)?.object ?? {}) as StripeObject
+        if (event.livemode === true) return null
         const type = String(event.type)
         const status = String(object.status ?? '')
         const kind =
@@ -684,6 +741,7 @@ export function createStripeTestAdapter(input: {
         return {
           providerEventId: String(event.id),
           ...(subscriptionReference ? { subscriptionReference } : {}),
+          ...(object.object === 'invoice' ? { invoiceReference: String(object.id) } : {}),
           ...(object.invoice && typeof object.invoice === 'string'
             ? { invoiceReference: String(object.invoice) }
             : {}),
@@ -719,7 +777,13 @@ export function createStripeTestAdapter(input: {
             eventType: type,
             status,
             customer: String(object.customer ?? ''),
-            amountMinor: Number(object.amount_refunded ?? object.amount ?? 0),
+            amountMinor: Number(
+              (kind === 'invoice_failed' ? object.amount_due : object.amount_paid) ??
+                object.amount_due ??
+                object.amount_refunded ??
+                object.amount ??
+                0,
+            ),
             currency: String(object.currency ?? '').toUpperCase(),
             reason: String(object.reason ?? ''),
           },

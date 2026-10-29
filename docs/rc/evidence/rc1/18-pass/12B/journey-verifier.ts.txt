@@ -1,0 +1,1138 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import assert from 'node:assert/strict'
+import { createServer, request as httpRequest } from 'node:http'
+import { createHmac } from 'node:crypto'
+import { spawn, type ChildProcess } from 'node:child_process'
+import { createWriteStream } from 'node:fs'
+import { readFile, writeFile } from 'node:fs/promises'
+import { chromium } from '@playwright/test'
+import sharp from 'sharp'
+import { recoverStaleCommerceJobs } from '../../src/modules/commerce/tasks'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+import { issueMagicLink, consumeMagicLink } from '../../src/modules/identity/member-identity'
+import { createPasskeySession } from '../../src/modules/operations/passkey-auth'
+import { loadConfig } from '../../src/modules/core/config'
+import { hasEntitlement } from '../../src/modules/commerce/subscription-service'
+assert.equal(
+  process.env.DATABASE_URL,
+  'postgresql://postgres:postgres@127.0.0.1:5465/rc112b_release_acceptance',
+)
+assert.equal(process.env.RC1_12B_DISPOSABLE, 'yes')
+assert.equal(process.env.LOCAL_E2E_TEST_MODE, 'false')
+assert.equal(process.env.ENABLE_TEST_ROUTES, 'false')
+const out = 'docs/rc/evidence/rc1/18-pass/12B',
+  base = 'http://localhost:39021'
+const restart = process.argv.includes('restart'),
+  trace: string[] = []
+const check = (name: string, value: unknown) => {
+  assert.ok(value, name)
+  trace.push(name)
+  console.log(`PASS ${trace.length}: ${name}`)
+}
+const payload: any = await getPayload({ config })
+const row = (collection: string, id: string) =>
+  payload.findByID({ collection, id, depth: 0, overrideAccess: true })
+const find = async (collection: string, where: any) =>
+  (await payload.find({ collection, where, depth: 0, limit: 100, overrideAccess: true })).docs
+let state: any = restart ? JSON.parse(await readFile(`${out}/state.json`, 'utf8')) : {}
+let web: ChildProcess | undefined
+const browser = await chromium.launch({ headless: true })
+const request = (path: string, cookie = '', method = 'GET', body?: any, headers: any = {}) =>
+  fetch(base + path, {
+    method,
+    headers: {
+      origin: base,
+      ...(cookie ? { cookie } : {}),
+      ...(body && !(body instanceof FormData) ? { 'content-type': 'application/json' } : {}),
+      ...headers,
+    },
+    body:
+      body instanceof FormData
+        ? body
+        : body === undefined
+          ? undefined
+          : typeof body === 'string'
+            ? body
+            : JSON.stringify(body),
+    signal: AbortSignal.timeout(180000),
+  })
+const json = async (
+  path: string,
+  cookie = '',
+  method = 'GET',
+  body?: any,
+  status = 200,
+  headers: any = {},
+) => {
+  const res = await request(path, cookie, method, body, headers)
+  const text = await res.text()
+  assert.equal(res.status, status, `${method} ${path}: ${text.slice(0, 1500)}`)
+  return status >= 500 ? { raw: text } : JSON.parse(text)
+}
+async function operatorSession(user: any) {
+  const session = await createPasskeySession(
+    user,
+    loadConfig().payloadSecret,
+    async (id, expires) => {
+      await payload.db.pool.query(
+        'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3)',
+        [id, user.id, expires],
+      )
+    },
+  )
+  return `renegade-passkey=${session.token}`
+}
+const memberCookie = (member: any) =>
+  `renegade-member=${member.sessionToken}; renegade-member-csrf=rc112b-csrf`
+let harnessRecord: any = restart
+  ? JSON.parse(await readFile('scratch/rc112b/payment.json', 'utf8'))
+  : null
+const records: Record<string, any> = restart
+  ? JSON.parse(await readFile('scratch/rc112b/records.json', 'utf8'))
+  : {}
+const providerCalls: any[] = []
+let providerUnavailable = false,
+  blockProvider = false,
+  providerBlocked = false
+let eventClock = Math.floor(Date.now() / 1000)
+const nextEventTime = () => (eventClock = Math.max(eventClock + 1, Math.floor(Date.now() / 1000)))
+const harness = createServer(async (req, res) => {
+  try {
+    const chunks: Buffer[] = []
+    for await (const chunk of req) chunks.push(Buffer.from(chunk))
+    const form = new URLSearchParams(Buffer.concat(chunks).toString())
+    if (req.url?.startsWith('/v1/prices/')) {
+      const annual = req.url.endsWith('price_year12b')
+      res.setHeader('content-type', 'application/json')
+      res.end(
+        JSON.stringify({
+          active: true,
+          unit_amount: annual ? 12000 : 1200,
+          currency: 'usd',
+          recurring: { interval: annual ? 'year' : 'month', interval_count: 1 },
+        }),
+      )
+      return
+    }
+    if (req.url === '/v1/balance') {
+      res.setHeader('content-type', 'application/json')
+      res.end('{}')
+      return
+    }
+    if (req.url === '/v1/checkout/sessions') {
+      assert.equal(form.get('mode'), 'subscription')
+      assert.ok(['price_month12b', 'price_year12b'].includes(form.get('line_items[0][price]')!))
+      providerCalls.push(Object.fromEntries(form))
+      harnessRecord = {
+        id: providerCalls.length > 1 ? 'sub_end12b' : 'sub_harness12b',
+        object: 'subscription',
+        customer: 'cus_harness12b',
+        status: 'active',
+        current_period_start: Math.floor(Date.now() / 1000) - 2,
+        current_period_end: Math.floor(Date.now() / 1000) + 2592000,
+        items: { data: [{ id: 'si_harness12b', price: { id: form.get('line_items[0][price]') } }] },
+        metadata: Object.fromEntries(
+          [...form]
+            .filter(([key]) => key.startsWith('subscription_data[metadata]'))
+            .map(([key, value]) => [key.slice(28, -1), value]),
+        ),
+      }
+      records[harnessRecord.id] = harnessRecord
+      await writeFile('scratch/rc112b/payment.json', JSON.stringify(harnessRecord))
+      res.setHeader('content-type', 'application/json')
+      res.end(
+        JSON.stringify({
+          id: 'cs_harness12b',
+          customer: harnessRecord.customer,
+          subscription: harnessRecord.id,
+          url: 'http://127.0.0.1:3145/pay',
+        }),
+      )
+      return
+    }
+    if (req.url === '/v1/billing_portal/sessions') {
+      assert.equal(form.get('customer'), harnessRecord.customer)
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify({ url: 'http://127.0.0.1:3145/portal' }))
+      return
+    }
+    if (req.url === '/v1/invoices/create_preview') {
+      assert.equal(form.get('subscription_details[items][0][id]'), 'si_harness12b')
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify({ amount_due: 10800, currency: 'usd' }))
+      return
+    }
+    if (req.url === '/portal') {
+      res.setHeader('content-type', 'text/html')
+      res.end(
+        '<h1>Isolated billing portal</h1><p>Local adapter harness. No charges.</p>' +
+          ['schedule', 'resume', 'change', 'cancel']
+            .map(
+              (action) =>
+                `<form method="post" action="/portal/${action}"><button>${action}</button></form>`,
+            )
+            .join(''),
+      )
+      return
+    }
+    if (req.url?.startsWith('/portal/')) {
+      const action = req.url.slice(8)
+      if (action === 'schedule') harnessRecord.cancel_at_period_end = true
+      if (action === 'resume') harnessRecord.cancel_at_period_end = false
+      if (action === 'change') {
+        harnessRecord.items.data[0].price.id = 'price_year12b'
+        harnessRecord.current_period_end += 29030400
+      }
+      if (action === 'cancel') {
+        harnessRecord.status = 'canceled'
+        harnessRecord.cancel_at_period_end = false
+      }
+      records[harnessRecord.id] = harnessRecord
+      await writeFile('scratch/rc112b/payment.json', JSON.stringify(harnessRecord))
+      await signed(
+        `evt_portal_${action}_${harnessRecord.id}`,
+        action === 'cancel' ? 'customer.subscription.deleted' : 'customer.subscription.updated',
+        harnessRecord,
+      )
+      res.writeHead(303, { location: base + '/members/settings?tab=billing' })
+      res.end()
+      return
+    }
+    if (req.url?.startsWith('/v1/subscriptions/')) {
+      if (blockProvider) {
+        providerBlocked = true
+        return
+      }
+      if (providerUnavailable) {
+        res.writeHead(503)
+        res.end('{}')
+        return
+      }
+      res.setHeader('content-type', 'application/json')
+      res.end(JSON.stringify(records[req.url.slice('/v1/subscriptions/'.length)]))
+      return
+    }
+    if (req.url === '/pay') {
+      res.setHeader('content-type', 'text/html')
+      res.end(
+        '<h1>Isolated payment harness</h1><p>No real payment.</p><form action="/confirm" method="post"><button>Confirm harness payment</button></form>',
+      )
+      return
+    }
+    if (req.url === '/confirm') {
+      await signed('evt_paid12b', 'invoice.paid', {
+        object: 'invoice',
+        id: 'in_harness12b',
+        subscription: harnessRecord.id,
+        customer: harnessRecord.customer,
+        status: 'paid',
+        amount_paid: 1200,
+        currency: 'usd',
+      })
+      res.writeHead(303, { location: base + '/members/settings?tab=billing' })
+      res.end()
+      return
+    }
+    res.writeHead(404)
+    res.end()
+  } catch (error) {
+    res.writeHead(500)
+    res.end(String(error))
+  }
+})
+async function signed(
+  id: string,
+  type: string,
+  object: any,
+  expected = 202,
+  created = nextEventTime(),
+) {
+  const raw = JSON.stringify({
+    id,
+    type,
+    created,
+    livemode: false,
+    data: { object },
+  })
+  const t = Math.floor(Date.now() / 1000),
+    sig = createHmac('sha256', process.env.COMMERCE_STRIPE_TEST_WEBHOOK_SECRET!)
+      .update(`${t}.${raw}`)
+      .digest('hex')
+  return json('/api/commerce/webhooks/stripe-test', '', 'POST', raw, expected, {
+    'stripe-signature': `t=${t},v1=${sig}`,
+  })
+}
+async function foreign(path: string, cookie: string) {
+  return new Promise<{ status: number; body: string }>((resolve, reject) => {
+    const req = httpRequest(
+      {
+        hostname: '127.0.0.1',
+        port: 39021,
+        path,
+        headers: { host: 'beta.12b.test:39021', cookie },
+      },
+      (res) => {
+        let body = ''
+        res.on('data', (chunk) => (body += chunk))
+        res.on('end', () => resolve({ status: res.statusCode!, body }))
+      },
+    )
+    req.on('error', reject)
+    req.end()
+  })
+}
+try {
+  if (!restart) {
+    const stamp = Date.now()
+    const alpha = await payload.create({
+      collection: 'sites',
+      data: { name: '12B Alpha', slug: `alpha12b-${stamp}`, lifecycle: 'active' },
+    })
+    const beta = await payload.create({
+      collection: 'sites',
+      data: { name: '12B Beta', slug: `beta12b-${stamp}`, lifecycle: 'active' },
+    })
+    const owner = await payload.create({
+      collection: 'users',
+      data: { email: `owner-${stamp}@12b.test`, role: 'owner' },
+    })
+    const staff = await payload.create({
+      collection: 'users',
+      data: { email: `staff-${stamp}@12b.test`, role: 'staff' },
+    })
+    await payload.create({
+      collection: 'member-site-roles',
+      data: {
+        member: typeof staff.member === 'object' ? staff.member.id : staff.member,
+        site: beta.id,
+        role: 'contributor',
+      },
+    })
+    const member = await consumeMagicLink(
+      payload,
+      (await issueMagicLink(payload, `buyer-${stamp}@12b.test`)).token!,
+    )
+    const other = await consumeMagicLink(
+      payload,
+      (await issueMagicLink(payload, `other-${stamp}@12b.test`)).token!,
+    )
+    await writeFile('scratch/rc112b/sessions.json', JSON.stringify({ member, other }))
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        canonicalOrigin: base,
+        canonicalOriginsBySite: { [alpha.id]: base, [beta.id]: 'http://beta.12b.test:39021' },
+        launchState: 'live',
+        adminExperience: { optionalCapabilities: { commerceCheckout: true } },
+      },
+    })
+    const merchant = await payload.create({
+      collection: 'merchant-connections',
+      data: {
+        site: alpha.id,
+        label: '12B harness Stripe test',
+        providerKey: 'stripe-test',
+        merchantCountry: 'US',
+        status: 'active',
+      },
+    })
+    state = {
+      alpha: alpha.id,
+      beta: beta.id,
+      owner: owner.id,
+      staff: staff.id,
+      memberId: member!.memberId,
+      merchant: merchant.id,
+    }
+  }
+  const sessions = JSON.parse(await readFile('scratch/rc112b/sessions.json', 'utf8')),
+    cookie = memberCookie(sessions.member),
+    otherCookie = memberCookie(sessions.other)
+  const operator = await operatorSession(await row('users', state.owner)),
+    staff = await operatorSession(await row('users', state.staff))
+  await new Promise<void>((resolve) => harness.listen(3145, '127.0.0.1', resolve))
+  web = spawn(
+    process.execPath,
+    [
+      '--import',
+      './tests/rc1-12b/stripe-preload.mjs',
+      'node_modules/next/dist/bin/next',
+      'dev',
+      '--hostname',
+      '127.0.0.1',
+      '--port',
+      '39021',
+    ],
+    { env: process.env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] },
+  )
+  const log = createWriteStream(`${out}/${restart ? 'restart-web' : 'web'}.log`)
+  web.stdout!.pipe(log, { end: false })
+  web.stderr!.pipe(log, { end: false })
+  let ready = false
+  for (let i = 0; i < 180; i++) {
+    try {
+      if ((await request('/api/catalog')).status < 500) {
+        ready = true
+        break
+      }
+    } catch {}
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+  }
+  assert.ok(ready, 'Web readiness')
+  if (!restart) {
+    const bytes = await sharp({
+      create: { width: 64, height: 64, channels: 3, background: '#445566' },
+    })
+      .png()
+      .toBuffer()
+    const form = new FormData()
+    form.set('siteId', state.alpha)
+    form.set('title', '12B private guide')
+    form.set('file', new File([bytes], 'guide12b.png', { type: 'image/png' }))
+    const asset = (await json('/api/media/upload', operator, 'POST', form, 201)).asset
+    await json(`/api/media-assets/${asset.id}`, operator, 'PATCH', {
+      publicPolicy: 'private',
+      rightsStatus: 'approved',
+    })
+    await payload.jobs.run({ queue: 'media', limit: 20 })
+    state.media = asset.id
+    await writeFile('scratch/rc112b/guide.png', bytes)
+    const entitlements = [
+      { siteId: state.alpha, resource: 'journal12b', capability: 'read', term: 'subscription' },
+      {
+        siteId: state.alpha,
+        resource: `media:${asset.id}`,
+        capability: 'download',
+        term: 'subscription',
+      },
+    ]
+    const plan = {
+      site: state.alpha,
+      planKey: 'journal12b',
+      revision: 1,
+      name: 'Journal monthly 12B',
+      interval: 'month',
+      intervalCount: 1,
+      amountMinor: '1200',
+      currency: 'USD',
+      trialDays: 0,
+      trialEligibility: 'none',
+      entitlements,
+      cancelPolicy: 'period_end',
+      changePolicy: 'immediate',
+      taxPolicy: 'provider',
+      providerMappings: { 'stripe-test': 'price_month12b' },
+      publishedAt: new Date().toISOString(),
+    }
+    state.plan = (await json('/api/plan-revisions', operator, 'POST', plan, 201)).doc.id
+    state.year = (
+      await json(
+        '/api/plan-revisions',
+        operator,
+        'POST',
+        {
+          ...plan,
+          planKey: 'journalyear12b',
+          name: 'Journal annual 12B',
+          interval: 'year',
+          cancelPolicy: 'immediate',
+          amountMinor: '12000',
+          providerMappings: { 'stripe-test': 'price_year12b' },
+        },
+        201,
+      )
+    ).doc.id
+    check(
+      'operator creates persisted monthly and annual immutable prices',
+      (await row('plan-revisions', state.plan)).amountMinor === '1200' &&
+        (await row('plan-revisions', state.year)).interval === 'year',
+    )
+    await json(
+      '/api/plan-revisions',
+      operator,
+      'POST',
+      { ...plan, planKey: 'invalid', amountMinor: '0.01' },
+      400,
+    )
+    await json(
+      '/api/plan-revisions',
+      operator,
+      'POST',
+      { ...plan, planKey: 'foreign', entitlements: [{ ...entitlements[0], siteId: state.beta }] },
+      400,
+    )
+    check(
+      'invalid price and foreign-site entitlement plans rejected',
+      !(await find('plan-revisions', { planKey: { in: ['invalid', 'foreign'] } })).length,
+    )
+    await json('/api/plan-revisions', staff, 'POST', { ...plan, planKey: 'overreach' }, 403)
+    await json(`/api/plan-revisions/${state.plan}`, operator, 'PATCH', { amountMinor: '1' }, 403)
+    check(
+      'foreign-site operator creation and published price edits denied',
+      (await row('plan-revisions', state.plan)).amountMinor === '1200',
+    )
+    const betaPlan = (
+      await json(
+        '/api/plan-revisions',
+        operator,
+        'POST',
+        {
+          ...plan,
+          site: state.beta,
+          planKey: 'beta12b',
+          entitlements: [{ ...entitlements[0], siteId: state.beta }],
+        },
+        201,
+      )
+    ).doc.id
+    await json(
+      '/api/commerce/subscriptions/checkout',
+      cookie,
+      'POST',
+      { planRevisionId: betaPlan },
+      404,
+      { 'idempotency-key': 'wrong-site', 'x-member-csrf': 'rc112b-csrf' },
+    )
+    await json(
+      '/api/commerce/subscriptions/checkout',
+      cookie,
+      'POST',
+      { planRevisionId: state.plan },
+      403,
+      { 'idempotency-key': 'no-csrf' },
+    )
+    check(
+      'foreign-site plan signup and missing CSRF denied',
+      !(await find('subscriptions', { site: { equals: state.alpha } })).length,
+    )
+    const pubs = await find('publications', { site: { equals: state.alpha } })
+    const body = {
+      root: {
+        type: 'root',
+        format: '',
+        indent: 0,
+        version: 1,
+        children: [
+          {
+            type: 'paragraph',
+            format: '',
+            indent: 0,
+            version: 1,
+            children: [
+              {
+                type: 'text',
+                text: 'SUBSCRIBER-SECRET-12B',
+                format: 0,
+                detail: 0,
+                mode: 'normal',
+                style: '',
+                version: 1,
+              },
+            ],
+          },
+        ],
+      },
+    }
+    state.content = (
+      await json(
+        '/api/content',
+        operator,
+        'POST',
+        {
+          site: state.alpha,
+          publication: pubs[0].id,
+          slug: 'journal12b',
+          title: 'Subscriber journal 12B',
+          contentType: 'article',
+          status: 'published',
+          visibility: 'public',
+          body,
+          publishedAt: new Date().toISOString(),
+          requiredEntitlement: { resource: 'journal12b', capability: 'read' },
+        },
+        201,
+      )
+    ).doc.id
+    state.contentPath = (await row('content', state.content)).canonicalPath
+    check(
+      'unsubscribed member cannot read protected content',
+      !(await (await request(state.contentPath, cookie)).text()).includes('SUBSCRIBER-SECRET-12B'),
+    )
+    check(
+      'unsubscribed member cannot download private asset',
+      (await request(`/api/commerce/subscriptions/download/${asset.id}`, cookie)).status === 404,
+    )
+    await json(
+      '/api/commerce/subscriptions/checkout',
+      '',
+      'POST',
+      { planRevisionId: state.plan },
+      401,
+      { 'idempotency-key': 'anon' },
+    )
+    await json(
+      '/api/commerce/subscriptions/checkout',
+      cookie,
+      'POST',
+      { planRevisionId: state.plan, amountMinor: '1', memberId: sessions.other.memberId },
+      400,
+      { 'idempotency-key': 'forge', 'x-member-csrf': 'rc112b-csrf' },
+    )
+    check(
+      'anonymous and forged signup fields denied',
+      !(await find('subscriptions', { site: { equals: state.alpha } })).length,
+    )
+    const ctx = await browser.newContext()
+    await ctx.addCookies([
+      { name: 'renegade-member', value: sessions.member.sessionToken, url: base },
+      { name: 'renegade-member-csrf', value: 'rc112b-csrf', url: base },
+    ])
+    const page = await ctx.newPage()
+    await page.goto(base + '/members/settings?tab=billing')
+    await page
+      .getByRole('button', { name: 'Start Journal monthly 12B', exact: true })
+      .waitFor({ timeout: 120000 })
+    check(
+      'billing UI lists server monthly and annual prices',
+      (await page.locator('#billing').innerText()).includes('120.00'),
+    )
+    const checkoutResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes('/subscriptions/checkout') &&
+        response.request().method() === 'POST',
+    )
+    await page.getByRole('button', { name: 'Start Journal monthly 12B', exact: true }).click()
+    await page
+      .getByRole('heading', { name: 'Isolated payment harness' })
+      .waitFor({ timeout: 120000 })
+    const subs = await find('subscriptions', { site: { equals: state.alpha } })
+    assert.equal(subs.length, 1)
+    state.subscription = subs[0].id
+    state.order = subs[0].settings.orderId
+    check(
+      'UI signup persists incomplete subscription and pending linked order',
+      subs[0].state === 'incomplete' &&
+        (await row('orders', state.order)).state === 'pending-payment',
+    )
+    check(
+      'actual adapter sends selected immutable provider price and member correlation',
+      providerCalls[0]['line_items[0][price]'] === 'price_month12b' &&
+        providerCalls[0]['subscription_data[metadata][renegade_member_id]'] === state.memberId,
+    )
+    const replay = await json(
+      '/api/commerce/subscriptions/checkout',
+      cookie,
+      'POST',
+      { planRevisionId: state.plan },
+      200,
+      {
+        'idempotency-key': (await checkoutResponse).request().headers()['idempotency-key'],
+        'x-member-csrf': 'rc112b-csrf',
+      },
+    )
+    check(
+      'checkout retry returns original subscription without a second provider checkout',
+      replay.replay === true &&
+        replay.subscriptionId === state.subscription &&
+        providerCalls.length === 1,
+    )
+    // Exercise event activation before payment: access derives from provider state, order awaits invoice.
+    await signed('evt_subscribed12b', 'customer.subscription.created', harnessRecord)
+    check(
+      'signed subscribed event grants exactly selected capabilities',
+      (await find('entitlements', { source: { equals: `subscription:${state.subscription}` } }))
+        .length === 2,
+    )
+    check(
+      'activation does not manufacture collected payment',
+      (await row('orders', state.order)).state === 'pending-payment',
+    )
+    await page.getByRole('button', { name: 'Confirm harness payment' }).click()
+    await page.getByRole('button', { name: 'Refresh billing status' }).waitFor({ timeout: 120000 })
+    await page.getByRole('button', { name: 'Refresh billing status' }).click()
+    await page.getByText('Next billing:', { exact: false }).waitFor({ timeout: 30000 })
+    check(
+      'harness invoice persists paid order and upcoming billing UI',
+      (await row('orders', state.order)).state === 'paid' &&
+        (await page.locator('#billing').innerText()).includes('active'),
+    )
+    await page.screenshot({ path: `${out}/billing.png` })
+    await ctx.close()
+    await writeFile(`${out}/state.json`, JSON.stringify(state, null, 2))
+  }
+  const listing = async () => (await json('/api/commerce/subscriptions', cookie)).subscriptions[0]
+  const snapshot = async () => ({
+    subscription: await row('subscriptions', state.subscription),
+    events: await find('subscription-events', { subscription: { equals: state.subscription } }),
+    grants: await find('entitlements', {
+      source: { equals: `subscription:${state.subscription}` },
+    }),
+  })
+  const canRead = () =>
+    hasEntitlement(payload, {
+      subjectId: state.memberId,
+      siteId: state.alpha,
+      resource: 'journal12b',
+      capability: 'read',
+    })
+  let pendingBillingJob = ''
+  const workerCycle = async (label: string, interrupt = false) => {
+    const heartbeat = `scratch/rc112b/${label}-heartbeat.json`
+    const worker = spawn(
+      process.execPath,
+      [
+        '--import',
+        './tests/rc1-12b/stripe-preload.mjs',
+        '--import',
+        'tsx',
+        'src/scripts/run-jobs-worker.ts',
+      ],
+      {
+        env: {
+          ...process.env,
+          WORKER_PROFILE: 'commerce-only',
+          WORKER_HEARTBEAT_FILE: heartbeat,
+          WORKER_POLL_INTERVAL_MS: '1000',
+        },
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      },
+    )
+    const log = createWriteStream(`${out}/${label}.log`)
+    worker.stdout!.pipe(log, { end: false })
+    worker.stderr!.pipe(log, { end: false })
+    try {
+      const deadline = Date.now() + 120000
+      while (Date.now() < deadline) {
+        if (interrupt && providerBlocked) return
+        try {
+          const value = JSON.parse(await readFile(heartbeat, 'utf8'))
+          if (
+            !interrupt &&
+            value.pid === worker.pid &&
+            (await row('payload-jobs', pendingBillingJob)).completedAt
+          )
+            return
+        } catch {}
+        if (worker.exitCode != null) throw new Error(`Worker exited ${worker.exitCode}`)
+        await new Promise((resolve) => setTimeout(resolve, 250))
+      }
+      throw new Error(`Worker timed out: ${label}`)
+    } finally {
+      if (worker.pid)
+        await new Promise((resolve) =>
+          spawn('taskkill', ['/pid', String(worker.pid), '/t', '/f'], {
+            windowsHide: true,
+            stdio: 'ignore',
+          }).once('exit', resolve),
+        )
+      log.end()
+    }
+  }
+  const queue = async () => {
+    const queued = await json(
+      '/api/admin/commerce/reconcile',
+      operator,
+      'POST',
+      { siteId: state.alpha, kind: 'subscriptions' },
+      202,
+    )
+    pendingBillingJob = queued.jobId
+    return queued
+  }
+  if (!restart) {
+    const ctx = await browser.newContext()
+    await ctx.addCookies([
+      { name: 'renegade-member', value: sessions.member.sessionToken, url: base },
+      { name: 'renegade-member-csrf', value: 'rc112b-csrf', url: base },
+    ])
+    const page = await ctx.newPage()
+    const billing = async () => {
+      await page.goto(base + '/members/settings?tab=billing')
+      await page
+        .getByRole('button', { name: 'Manage billing for', exact: false })
+        .waitFor({ timeout: 120000 })
+    }
+    const portal = async (action: string) => {
+      await billing()
+      await page.getByRole('button', { name: 'Manage billing for', exact: false }).click()
+      await page.getByRole('heading', { name: 'Isolated billing portal' }).waitFor()
+      await page.getByRole('button', { name: action, exact: true }).click()
+      await page.getByRole('button', { name: 'Manage billing for', exact: false }).waitFor()
+    }
+    const invoice = (reference: string, paid: boolean) => ({
+      object: 'invoice',
+      id: reference,
+      subscription: harnessRecord.id,
+      customer: harnessRecord.customer,
+      status: paid ? 'paid' : 'open',
+      amount_paid: paid ? 1200 : 0,
+      amount_due: 1200,
+      currency: 'usd',
+    })
+    harnessRecord.current_period_end += 2592000
+    await signed('evt_renewal12b', 'invoice.paid', invoice('in_renewal12b', true))
+    check(
+      'signed renewal extends persisted period and exactly two stable grants',
+      (await row('subscriptions', state.subscription)).currentPeriodEnd ===
+        new Date(harnessRecord.current_period_end * 1000).toISOString() &&
+        (await snapshot()).grants.length === 2,
+    )
+    await billing()
+    check(
+      'member billing shows renewal invoice paid and next billing',
+      (await page.locator('#billing').innerText()).includes('Invoice in_renewal12b: paid') &&
+        (await listing()).nextBillingAt,
+    )
+    const renewalVersion = (await row('subscriptions', state.subscription)).version
+    await Promise.all([
+      signed('evt_renewal12b', 'invoice.paid', invoice('in_renewal12b', true), 200),
+      signed('evt_renewal12b', 'invoice.paid', invoice('in_renewal12b', true), 200),
+    ])
+    check(
+      'concurrent renewal replay leaves version and invoice count unchanged',
+      (await row('subscriptions', state.subscription)).version === renewalVersion &&
+        (await listing()).invoices.filter((i: any) => i.reference === 'in_renewal12b').length === 1,
+    )
+    providerUnavailable = true
+    const beforeUnknown = await snapshot()
+    await signed('evt_unknown12b', 'invoice.paid', invoice('in_unknown12b', true), 500)
+    check(
+      'provider error rolls back signed event and cannot manufacture renewal success',
+      JSON.stringify(await snapshot()) === JSON.stringify(beforeUnknown),
+    )
+    await queue()
+    await workerCycle('unknown-worker')
+    check(
+      'worker exposes unknown provider state while retaining bounded last-known access',
+      (await listing()).reconciliationUnknown === true && (await canRead()),
+    )
+    providerUnavailable = false
+    await signed('evt_unknown12b', 'invoice.paid', invoice('in_unknown12b', true))
+    check(
+      'exact event succeeds once after provider recovery',
+      !(await listing()).reconciliationUnknown &&
+        (await listing()).invoices.some(
+          (i: any) => i.reference === 'in_unknown12b' && i.state === 'paid',
+        ),
+    )
+    harnessRecord.status = 'past_due'
+    await signed('evt_failure12b', 'invoice.payment_failed', invoice('in_failed12b', false))
+    const boundedFailure = await snapshot()
+    check(
+      'failed invoice atomically caps entitlements at grace before any worker runs',
+      boundedFailure.subscription.state === 'grace' &&
+        boundedFailure.grants.every(
+          (grant: any) => grant.endsAt === boundedFailure.subscription.graceEnd,
+        ),
+    )
+    const beforeInterrupt = await snapshot()
+    await queue()
+    blockProvider = true
+    await workerCycle('interrupted-worker', true)
+    blockProvider = false
+    check(
+      'killed worker leaves subscription ledger and entitlements atomic and unchanged',
+      JSON.stringify(await snapshot()) === JSON.stringify(beforeInterrupt),
+    )
+    await new Promise((resolve) => setTimeout(resolve, 1200))
+    check(
+      'canonical recovery reopens abandoned billing job lease',
+      (await recoverStaleCommerceJobs(payload, 1000)) >= 1,
+    )
+    await workerCycle('recovered-worker')
+    const grace = await row('subscriptions', state.subscription)
+    check(
+      'fresh worker applies dunning grace and one in-app notice',
+      grace.state === 'grace' &&
+        (await canRead()) &&
+        (await find('activity-events', { type: { equals: 'billing.payment_action_required' } }))
+          .length === 1,
+    )
+    await billing()
+    check(
+      'member observes failed invoice and contractual grace deadline',
+      (await page.locator('#billing').innerText()).includes(
+        'Invoice in_failed12b: payment_failed',
+      ) && (await page.locator('#billing').innerText()).includes('Payment grace ends'),
+    )
+    await queue()
+    await workerCycle('grace-retry-worker')
+    check(
+      'worker retry preserves grace deadline and deduplicates dunning notices',
+      (await row('subscriptions', state.subscription)).graceEnd === grace.graceEnd &&
+        (await find('activity-events', { type: { equals: 'billing.payment_action_required' } }))
+          .length === 1,
+    )
+    console.log('Waiting for the isolated contractual grace deadline', grace.graceEnd)
+    while (Date.now() <= Date.parse(grace.graceEnd))
+      await new Promise((resolve) => setTimeout(resolve, 500))
+    check(
+      'canonical access expires at the saved grace deadline with worker stopped',
+      !(await canRead()),
+    )
+    await queue()
+    await workerCycle('grace-expiry-worker')
+    check(
+      'expired grace revokes canonical access while invoice remains failed',
+      (await row('subscriptions', state.subscription)).state === 'expired' &&
+        !(await canRead()) &&
+        (await listing()).invoices.some(
+          (i: any) => i.reference === 'in_failed12b' && i.state === 'payment_failed',
+        ),
+    )
+    await queue()
+    await workerCycle('expired-retry-worker')
+    check(
+      'expired retry never extends grace or duplicates expiry notice',
+      (await row('subscriptions', state.subscription)).graceEnd === grace.graceEnd &&
+        (await find('activity-events', { type: { equals: 'billing.access_expired' } })).length ===
+          1,
+    )
+    harnessRecord.status = 'active'
+    await signed('evt_recovery12b', 'invoice.paid', invoice('in_failed12b', true))
+    check(
+      'successful payment recovery restores stable grants and paid invoice',
+      (await canRead()) &&
+        (await listing()).invoices.some(
+          (i: any) => i.reference === 'in_failed12b' && i.state === 'paid',
+        ) &&
+        (await snapshot()).grants.length === 2,
+    )
+    await portal('schedule')
+    check(
+      'customer schedules period-end cancellation and retains contractual access',
+      (await row('subscriptions', state.subscription)).state === 'cancel_at_period_end' &&
+        !(await listing()).nextBillingAt &&
+        (await canRead()),
+    )
+    await signed('evt_late_invoice12b', 'invoice.paid', invoice('in_late12b', true))
+    check(
+      'invoice arriving after cancel request cannot unschedule provider cancellation',
+      (await row('subscriptions', state.subscription)).cancelAtPeriodEnd === true,
+    )
+    await portal('resume')
+    check(
+      'customer can withdraw scheduled cancellation through hosted billing',
+      (await row('subscriptions', state.subscription)).state === 'active' &&
+        (await listing()).nextBillingAt,
+    )
+    await billing()
+    await page.getByLabel('Preview a plan change').selectOption(state.year)
+    await page.getByText('Provider change estimate:', { exact: false }).waitFor()
+    check(
+      'customer sees actual adapter plan change preview',
+      (await page.locator('#billing').innerText()).includes('108.00'),
+    )
+    await portal('change')
+    check(
+      'customer plan change persists mapped immutable annual agreement',
+      (await row('subscriptions', state.subscription)).planRevision === state.year &&
+        (await listing()).plan.name === 'Journal annual 12B' &&
+        (await canRead()),
+    )
+    const stable = await snapshot()
+    await signed(
+      'evt_stale_cancel12b',
+      'customer.subscription.deleted',
+      { ...harnessRecord, status: 'canceled' },
+      202,
+      1,
+    )
+    check(
+      'out-of-order stale cancellation is retained in ledger without revoking current agreement',
+      (await row('subscriptions', state.subscription)).version === stable.subscription.version &&
+        (await canRead()),
+    )
+    await portal('cancel')
+    check(
+      'customer immediate cancellation revokes access and displays terminal status',
+      (await row('subscriptions', state.subscription)).state === 'canceled' &&
+        !(await canRead()) &&
+        (await page.locator('#billing').innerText()).includes('canceled'),
+    )
+    const canceled = await row('subscriptions', state.subscription)
+    await signed('evt_stale_paid12b', 'invoice.paid', invoice('in_stale12b', true), 202, 2)
+    check(
+      'late paid invoice after terminal cancellation never resurrects access',
+      (await row('subscriptions', state.subscription)).version === canceled.version &&
+        !(await canRead()),
+    )
+    await json(
+      '/api/admin/commerce/reconcile',
+      staff,
+      'POST',
+      { siteId: state.alpha, kind: 'subscriptions' },
+      403,
+    )
+    await json(
+      '/api/admin/commerce/reconcile',
+      cookie,
+      'POST',
+      { siteId: state.alpha, kind: 'subscriptions' },
+      403,
+    )
+    await json(
+      '/api/commerce/subscriptions',
+      otherCookie,
+      'POST',
+      { subscriptionId: state.subscription, action: 'portal' },
+      404,
+      { 'x-member-csrf': 'rc112b-csrf' },
+    )
+    await json(
+      '/api/commerce/subscriptions',
+      cookie,
+      'POST',
+      { subscriptionId: state.subscription, action: 'cancel', state: 'active' },
+      400,
+      { 'x-member-csrf': 'rc112b-csrf' },
+    )
+    await json(
+      '/api/commerce/subscriptions',
+      cookie,
+      'POST',
+      { subscriptionId: state.subscription, action: 'portal' },
+      403,
+    )
+    check(
+      'foreign staff member impersonation unsupported action and CSRF mutations denied',
+      (await row('subscriptions', state.subscription)).state === 'canceled' &&
+        JSON.parse((await foreign('/api/commerce/subscriptions', cookie)).body).subscriptions
+          .length === 0,
+    )
+    const beforeSignature = (await row('subscriptions', state.subscription)).version
+    await json('/api/commerce/webhooks/stripe-test', '', 'POST', '{}', 401, {
+      'stripe-signature': 't=1,v1=invalid',
+    })
+    check(
+      'forged provider signature cannot alter cancellation or ledger projection',
+      (await row('subscriptions', state.subscription)).version === beforeSignature,
+    )
+    await json(
+      `/api/subscriptions/${state.subscription}`,
+      operator,
+      'PATCH',
+      { state: 'active' },
+      403,
+    )
+    check('even owner native API cannot fabricate a renewal or grant', !(await canRead()))
+    const endSignup = await json(
+      '/api/commerce/subscriptions/checkout',
+      cookie,
+      'POST',
+      { planRevisionId: state.plan },
+      201,
+      { 'idempotency-key': 'period-end-second12b', 'x-member-csrf': 'rc112b-csrf' },
+    )
+    state.periodEndSubscription = endSignup.subscriptionId
+    harnessRecord.current_period_end = Math.floor(Date.now() / 1000) + 20
+    const endPortal = await json(
+      '/api/commerce/subscriptions',
+      cookie,
+      'POST',
+      { subscriptionId: state.periodEndSubscription, action: 'portal' },
+      200,
+      { 'x-member-csrf': 'rc112b-csrf' },
+    )
+    await page.goto(endPortal.url)
+    await page.getByRole('button', { name: 'schedule', exact: true }).click()
+    await page.getByRole('button', { name: 'Refresh billing status' }).waitFor()
+    check(
+      'separate customer contract scheduled for end retains access before deadline',
+      (await row('subscriptions', state.periodEndSubscription)).state === 'cancel_at_period_end' &&
+        (await canRead()),
+    )
+    while (Date.now() <= harnessRecord.current_period_end * 1000)
+      await new Promise((resolve) => setTimeout(resolve, 250))
+    await queue()
+    await workerCycle('period-end-worker')
+    check(
+      'worker ends scheduled cancellation at contractual deadline without a charge',
+      (await row('subscriptions', state.periodEndSubscription)).state === 'canceled' &&
+        !(await canRead()),
+    )
+    await writeFile('scratch/rc112b/records.json', JSON.stringify(records))
+    await writeFile(`${out}/state.json`, JSON.stringify(state, null, 2))
+    await page.screenshot({ path: `${out}/billing.png` })
+    await ctx.close()
+    await writeFile('scratch/rc112b/payment.json', JSON.stringify(harnessRecord))
+    await writeFile(`${out}/expected.json`, JSON.stringify(await snapshot(), null, 2))
+  } else {
+    check(
+      'restart preserves second period-end cancellation',
+      (await row('subscriptions', state.periodEndSubscription)).state === 'canceled',
+    )
+    const expected = JSON.parse(await readFile(`${out}/expected.json`, 'utf8'))
+    check(
+      'database and fresh web restart retain exact subscription ledger invoice evidence and grants',
+      JSON.stringify(await snapshot()) === JSON.stringify(expected),
+    )
+    check(
+      'billing API retains canceled display and distinct paid and failed invoice history',
+      (await listing()).state === 'canceled' && (await listing()).invoices.length >= 4,
+    )
+    check(
+      'restart keeps canceled entitlement denied for purchaser and copied download',
+      !(await canRead()) &&
+        (await request(`/api/commerce/subscriptions/download/${state.media}`, cookie)).status ===
+          404,
+    )
+    const version = (await row('subscriptions', state.subscription)).version
+    await signed(
+      'evt_portal_cancel_sub_harness12b',
+      'customer.subscription.deleted',
+      harnessRecord,
+      200,
+    )
+    await queue()
+    await workerCycle('restart-worker')
+    check(
+      'fresh worker and replay never regrant or duplicate terminal state',
+      !(await canRead()) &&
+        (await row('subscriptions', state.subscription)).version === version &&
+        (await snapshot()).grants.length === 2,
+    )
+    check(
+      'restart preserves paid original order without issuing another checkout or charge',
+      (await row('orders', state.order)).state === 'paid' && providerCalls.length === 0,
+    )
+    check(
+      'restart still denies another member and foreign host subscription history',
+      !(await json('/api/commerce/subscriptions', otherCookie)).subscriptions.length &&
+        !JSON.parse((await foreign('/api/commerce/subscriptions', cookie)).body).subscriptions
+          .length,
+    )
+  }
+  await writeFile(
+    `${out}/${restart ? 'restart-persistence' : 'persistence'}.json`,
+    JSON.stringify(await snapshot(), null, 2),
+  )
+  await writeFile(
+    `${out}/${restart ? 'restart' : 'journey'}.json`,
+    JSON.stringify({ passed: trace.length, failed: 0, skipped: 0, assertions: trace }, null, 2),
+  )
+} finally {
+  await browser.close()
+  if (web?.pid) {
+    await new Promise<void>((resolve) => {
+      const child = spawn('taskkill', ['/pid', String(web!.pid), '/t', '/f'], {
+        windowsHide: true,
+        stdio: 'ignore',
+      })
+      child.on('exit', () => resolve())
+    })
+  }
+  harness.closeAllConnections()
+  await new Promise<void>((resolve) => harness.close(() => resolve()))
+  const pool = payload.db.pool
+  const idle = new Set(pool._idle.map((entry: any) => entry.client))
+  for (const client of [...pool._clients])
+    if (!idle.has(client)) {
+      assert.ok(!client.activeQuery)
+      client.release(true)
+    }
+  await pool.end()
+  await payload.destroy()
+}
