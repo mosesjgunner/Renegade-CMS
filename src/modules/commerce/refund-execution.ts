@@ -5,6 +5,7 @@ import { transactionPayload } from '../core/transaction-payload'
 import { receiptMessageSnapshot } from './payment-operations'
 import { configuredPaymentProvider, PaymentProviderError } from './payment-provider'
 import { reverseDonation } from './donation-ingestion'
+import { reconcileOrderReferral } from './referral-lifecycle'
 const relationId = (value: any) =>
   typeof value === 'object' && value !== null ? String(value.id ?? '') : String(value ?? '')
 async function persistRefundEffects(
@@ -213,6 +214,7 @@ async function persistRefundEffects(
     await root.db.rollbackTransaction(transactionID)
     throw error
   }
+  await reconcileOrderReferral(root, String(order.id))
 }
 
 async function reconciliationPending(payload: any, refundId: string) {

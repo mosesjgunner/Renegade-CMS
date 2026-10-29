@@ -1,87 +1,80 @@
-import { NextRequest, NextResponse } from 'next/server'
+import config from '@payload-config'
+import { getPayload } from 'payload'
+import { NextResponse } from 'next/server'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import {
-  evaluateReferralAttribution,
-  type CodeOwnerRecord,
-  type ReferralCustomerContext,
-} from '../../../../../../modules/commerce/referral-service'
-import type { ReferralProgram } from '../../../../../../modules/commerce/affiliate-referral-contracts'
+  captureReferral,
+  referralCode,
+  referralCookie,
+  sameReferralOrigin,
+} from '@/modules/commerce/referral-lifecycle'
 
 export const dynamic = 'force-dynamic'
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json()
-    const { code, orderAmountMinor, currency, customer, codeOwner, program } = body
-
-    if (!code || !orderAmountMinor || !currency) {
-      return NextResponse.json({ error: 'Missing required code or order amounts' }, { status: 400 })
-    }
-
-    // Default sample program if none provided in request
-    const referralProgram: ReferralProgram = program ?? {
-      id: 'default-referral-program',
-      siteId: 'default-site',
-      version: 1,
-      name: 'Default Referral Program',
-      status: 'active',
-      eligibility: {
-        allowedMemberRoles: ['member', 'subscriber', 'author'],
-        requireVerifiedEmail: false,
-      },
-      codes: { minLength: 3, maxLength: 32 },
-      benefit: {
-        referrerRewardType: 'basis_points',
-        referrerRewardValue: '1000', // 10%
-      },
-      attribution: {
-        model: 'last-touch',
-        windowDays: 30,
-        requireCookieConsent: false,
-      },
-      selfReferralRules: {
-        blockSameMemberId: true,
-        blockSameEmail: true,
-        blockSamePaymentMethod: true,
-        blockSameIpHash: true,
-      },
-      holdPeriodDays: 14,
-      reversalRules: {
-        reverseOnOrderRefund: true,
-        reverseOnOrderCancel: true,
-        reverseOnDispute: true,
-      },
-      terms: {
-        version: '1.0',
-        publishedAt: new Date().toISOString(),
-        text: 'Standard referral program terms and conditions.',
-      },
-    }
-
-    const defaultOwner: CodeOwnerRecord = codeOwner ?? {
-      memberId: 'referrer_member_1',
-      email: 'referrer@example.com',
-      role: 'member',
-      emailVerified: true,
-    }
-
-    const customerContext: ReferralCustomerContext = customer ?? {
-      memberId: 'customer_member_2',
-      email: 'buyer@example.com',
-    }
-
-    const result = evaluateReferralAttribution({
-      program: referralProgram,
-      referralCode: code,
-      codeOwner: defaultOwner,
-      customer: customerContext,
-      orderAmountMinor: String(orderAmountMinor),
-      currency: String(currency),
-      consented: body.consented ?? true,
+export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  const siteId = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!siteId) return NextResponse.json({ error: 'Referral not found.' }, { status: 404 })
+  const record = await referralCode(
+    payload,
+    siteId,
+    new URL(request.url).searchParams.get('code') ?? '',
+  )
+  if (!record) return NextResponse.json({ error: 'Referral not found.' }, { status: 404 })
+  return NextResponse.json({
+    name: record.program.name,
+    disclosure: record.program.terms.text,
+    termsVersion: record.program.terms.version,
+    windowDays: record.program.attribution.windowDays,
+  })
+}
+export async function POST(request: Request) {
+  if (!sameReferralOrigin(request))
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
+  const input = await request.json().catch(() => null)
+  if (
+    !input ||
+    typeof input.code !== 'string' ||
+    Object.keys(input).some((key) => !['code', 'consented'].includes(key))
+  )
+    return NextResponse.json({ error: 'Only code and consented are accepted.' }, { status: 400 })
+  const payload = await getPayload({ config })
+  const siteId = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!siteId) return NextResponse.json({ error: 'Referral not found.' }, { status: 404 })
+  if (input.consented !== true) {
+    const response = NextResponse.json({
+      attributed: false,
+      reason: 'CONSENT_REQUIRED',
+      persisted: false,
     })
-
-    return NextResponse.json(result)
-  } catch (err: unknown) {
-    const errorMsg = err instanceof Error ? err.message : 'Attribution evaluation failed'
-    return NextResponse.json({ error: errorMsg }, { status: 400 })
+    response.cookies.set(referralCookie(siteId), '', {
+      path: '/',
+      maxAge: 0,
+      httpOnly: true,
+      sameSite: 'lax',
+    })
+    return response
+  }
+  try {
+    const result = await captureReferral(payload, siteId, input.code)
+    const response = NextResponse.json(
+      {
+        captured: true,
+        persisted: true,
+        claimId: result.claimId,
+        commissionState: 'pending-order-payment',
+        payoutState: 'not-executed',
+      },
+      { status: 201 },
+    )
+    response.cookies.set(referralCookie(siteId), result.token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: new URL(request.url).protocol === 'https:',
+      expires: result.expiresAt,
+    })
+    return response
+  } catch {
+    return NextResponse.json({ error: 'Referral link unavailable.' }, { status: 404 })
   }
 }

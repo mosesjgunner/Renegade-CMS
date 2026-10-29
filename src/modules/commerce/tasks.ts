@@ -1,4 +1,5 @@
 import { executeRefund } from './refund-execution'
+import { reconcileOrderReferral, reconcileSiteReferrals } from './referral-lifecycle'
 import { revokeOrderDigitalAccess } from './digital-delivery'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
@@ -488,6 +489,7 @@ export const processPaymentEventTask = {
             throw error
           }
           const order = finalized.order
+          await reconcileOrderReferral(req.payload, String(order.id))
           const proposal = relationId(session.proposal)
             ? await req.payload.findByID({
                 collection: 'checkout-proposals',
@@ -851,11 +853,26 @@ export const reconcileSubscriptionsTask = {
   },
 } as unknown as TaskConfig
 
+export const reconcileReferralsTask = {
+  slug: 'commerce-reconcile-referrals',
+  label: 'Reconcile recorded referral commissions and reversals',
+  inputSchema: [{ name: 'siteId', type: 'text' }],
+  outputSchema: [],
+  retries: { attempts: 3, backoff: { delay: 5000, type: 'exponential' } },
+  concurrency: () => 'commerce.reconcile-referrals',
+  schedule: [{ cron: '* * * * *', queue: 'commerce' }],
+  handler: async ({ req, input }: { req: any; input?: { siteId?: string } }) => {
+    await reconcileSiteReferrals(req.payload, input?.siteId)
+    return { output: {} }
+  },
+} as unknown as TaskConfig
+
 export const commerceTasks = [
   abandonCheckoutTask,
   processPaymentEventTask,
   reconcilePaymentsTask,
   reconcileSubscriptionsTask,
+  reconcileReferralsTask,
 ]
 
 /**
@@ -917,7 +934,9 @@ export async function recoverStaleCommerceJobs(
       collection: 'payload-jobs',
       where: {
         and: [
-          { taskSlug: { equals: 'commerce-reconcile-subscriptions' } },
+          {
+            taskSlug: { in: ['commerce-reconcile-subscriptions', 'commerce-reconcile-referrals'] },
+          },
           { processing: { equals: true } },
           { updatedAt: { less_than_equal: threshold } },
           { completedAt: { exists: false } },

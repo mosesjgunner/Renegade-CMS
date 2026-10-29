@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from '@payload-config'
+import { bindCheckoutReferral } from '@/modules/commerce/referral-lifecycle'
 import { getPayload } from 'payload'
 import { withExecutionLock } from '@/modules/operations/execution-lock'
 import { validatePlanWrite } from '@/modules/commerce/plan-write'
@@ -170,6 +171,7 @@ export async function POST(request: Request) {
           subscription,
           merchantRows.docs.find((merchant: any) => merchant.providerKey === providerKey).id,
         )
+        await bindCheckoutReferral(payload, request, id(order.checkoutSession), siteId)
         const member = await db.findByID({
           collection: 'members',
           id: memberId,

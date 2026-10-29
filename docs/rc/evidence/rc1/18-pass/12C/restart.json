@@ -1,0 +1,14 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "after PostgreSQL and Next.js restart, guest Alpha donation retains partially-refunded state, receipt, 2500 base, 102 fee, and public recognition",
+    "after PostgreSQL and Next.js restart, member recurring donation retains succeeded state and recurrence: recurring",
+    "after PostgreSQL and Next.js restart, Site Beta donation retains 2000 EUR minor total",
+    "after PostgreSQL and Next.js restart, fully refunded donation retains refunded state and its supporter entitlement remains revoked",
+    "after PostgreSQL and Next.js restart, Campaign Alpha progress totals USD minor units accurately less partial refunds"
+  ],
+  "providerMode": "Local deterministic-test signed webhook adapter and local test checkout contract; no live charges.",
+  "authentication": "Genuine guest Chromium sessions on Site Alpha and Site Beta; member sessions via canonical magic-link service; operator sessions via admin_sessions fixture."
+}

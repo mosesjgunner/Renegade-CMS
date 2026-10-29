@@ -538,6 +538,7 @@ export interface Config {
       'commerce-process-payment-event': TaskCommerceProcessPaymentEvent;
       'commerce-reconcile-payments': TaskCommerceReconcilePayments;
       'commerce-reconcile-subscriptions': TaskCommerceReconcileSubscriptions;
+      'commerce-reconcile-referrals': TaskCommerceReconcileReferrals;
       inline: {
         input: unknown;
         output: unknown;
@@ -3509,7 +3510,8 @@ export interface PayloadJob {
           | 'commerce-abandon-checkouts'
           | 'commerce-process-payment-event'
           | 'commerce-reconcile-payments'
-          | 'commerce-reconcile-subscriptions';
+          | 'commerce-reconcile-subscriptions'
+          | 'commerce-reconcile-referrals';
         taskID: string;
         input?:
           | {
@@ -3577,6 +3579,7 @@ export interface PayloadJob {
         | 'commerce-process-payment-event'
         | 'commerce-reconcile-payments'
         | 'commerce-reconcile-subscriptions'
+        | 'commerce-reconcile-referrals'
       )
     | null;
   queue?: string | null;
@@ -9040,6 +9043,18 @@ export interface Order {
     | number
     | boolean
     | null;
+  /**
+   * Immutable consented referral snapshot from canonical settlement.
+   */
+  referralAttribution?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   downstreamInstructions?:
     | {
         [k: string]: unknown;
@@ -14326,6 +14341,7 @@ export interface OrdersSelect<T extends boolean = true> {
   totalsSnapshot?: T;
   termsSnapshot?: T;
   sourceSnapshot?: T;
+  referralAttribution?: T;
   downstreamInstructions?: T;
   transitionLog?: T;
   refundExtension?: T;
@@ -15688,6 +15704,16 @@ export interface TaskCommerceReconcilePayments {
  * via the `definition` "TaskCommerce-reconcile-subscriptions".
  */
 export interface TaskCommerceReconcileSubscriptions {
+  input: {
+    siteId?: string | null;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-reconcile-referrals".
+ */
+export interface TaskCommerceReconcileReferrals {
   input: {
     siteId?: string | null;
   };

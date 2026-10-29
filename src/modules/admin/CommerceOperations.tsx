@@ -82,6 +82,9 @@ export function CommerceOperations() {
   return (
     <main>
       <h1>Commerce operations</h1>
+      <p>
+        <Link href="/commerce/referrals">Referral attribution and commission drilldowns</Link>
+      </p>
       {notice && <p role="status">{notice}</p>}
       <p>{data.disclaimer}</p>
       {data.summaryScope.sampled && (

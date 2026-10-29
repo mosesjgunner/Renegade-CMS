@@ -2,6 +2,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const providerRefund = vi.hoisted(() => vi.fn())
+const referralReconcile = vi.hoisted(() => vi.fn().mockResolvedValue({ state: 'unattributed' }))
+vi.mock('../../src/modules/commerce/referral-lifecycle', () => ({
+  reconcileOrderReferral: referralReconcile,
+}))
 vi.mock('payload', () => ({
   createLocalReq: async (_: unknown, payload: unknown) => ({ payload }),
 }))
@@ -100,6 +104,7 @@ describe('confirmed refunds and local reconciliation', () => {
     expect(fixture.payload.db.rollbackTransaction).toHaveBeenCalledOnce()
     fixture.recover()
     expect((await executeRefund(fixture.payload, 'refund')).status).toBe(200)
+    expect(referralReconcile).toHaveBeenCalledWith(fixture.payload, 'order')
     expect(fixture.order.state).toBe('refunded')
     expect(fixture.refund.providerEvidence.localReconciliationRequired).toBe(false)
     expect((await executeRefund(fixture.payload, 'refund')).status).toBe(200)

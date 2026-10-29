@@ -18,6 +18,7 @@ import {
   type RawConversionInput,
 } from '../../src/modules/commerce/affiliate-service'
 import {
+  createPendingCommissionEntry,
   evaluateReferralAttribution,
   matureCommissionLedger,
   reverseCommissionEntry,
@@ -409,6 +410,7 @@ describe('SHOP-06 Affiliate and Referral Shared Contract', () => {
       const selfMember = evaluateReferralAttribution({
         program: baseProgram,
         referralCode: 'REF-ALICE',
+        consented: true,
         codeOwner: owner,
         customer: { memberId: 'mem_alice', email: 'other@example.com' },
         orderAmountMinor: '10000',
@@ -421,6 +423,7 @@ describe('SHOP-06 Affiliate and Referral Shared Contract', () => {
       const selfEmail = evaluateReferralAttribution({
         program: baseProgram,
         referralCode: 'REF-ALICE',
+        consented: true,
         codeOwner: owner,
         customer: { memberId: 'mem_bob', email: 'Alice@example.com' },
         orderAmountMinor: '10000',
@@ -455,6 +458,7 @@ describe('SHOP-06 Affiliate and Referral Shared Contract', () => {
       const expiredAttribution = evaluateReferralAttribution({
         program: baseProgram,
         referralCode: 'REF-ALICE',
+        consented: true,
         codeOwner: owner,
         customer: { memberId: 'mem_bob', email: 'bob@example.com' },
         orderAmountMinor: '5000',
@@ -476,6 +480,57 @@ describe('SHOP-06 Affiliate and Referral Shared Contract', () => {
       })
       expect(noConsent.eligible).toBe(false)
       expect(noConsent.snapshot.rejectReason).toBe('CONSENT_REQUIRED')
+    })
+
+    it('requires affirmative consent and verified referrer eligibility evidence', () => {
+      const input = {
+        program: baseProgram,
+        referralCode: 'REF-ALICE',
+        codeOwner: owner,
+        customer: { memberId: 'mem_bob' },
+        orderAmountMinor: '5000',
+        currency: 'USD',
+      }
+      expect(evaluateReferralAttribution(input).snapshot.rejectReason).toBe('CONSENT_REQUIRED')
+      expect(evaluateReferralAttribution({ ...input, consented: true }).eligible).toBe(true)
+      const attribution = evaluateReferralAttribution({ ...input, consented: true }).snapshot
+      const commission = {
+        siteId: baseProgram.siteId,
+        program: baseProgram,
+        attribution,
+        orderId: 'recorded-order',
+        orderNumber: 'ORDER-1',
+      }
+      expect(createPendingCommissionEntry(commission).status).toBe('pending')
+      expect(() => createPendingCommissionEntry({ ...commission, siteId: 'foreign' })).toThrow(
+        'same-site',
+      )
+      expect(() =>
+        createPendingCommissionEntry({
+          ...commission,
+          attribution: { ...attribution, status: 'rejected' },
+        }),
+      ).toThrow('same-site')
+      expect(() =>
+        createPendingCommissionEntry({
+          ...commission,
+          attribution: { ...attribution, programVersion: 999 },
+        }),
+      ).toThrow('same-site')
+      expect(
+        evaluateReferralAttribution({
+          ...input,
+          consented: true,
+          codeOwner: { ...owner, role: undefined },
+        }).snapshot.rejectReason,
+      ).toBe('ROLE_INELIGIBLE')
+      expect(
+        evaluateReferralAttribution({
+          ...input,
+          consented: true,
+          codeOwner: { ...owner, emailVerified: undefined },
+        }).snapshot.rejectReason,
+      ).toBe('EMAIL_UNVERIFIED')
     })
   })
 

@@ -88,7 +88,7 @@ export type AttributionEvaluationResult = Readonly<{
 /**
  * Consented first-party referral attribution evaluator.
  * - Enforces program active status, member eligibility, and terms.
- * - Strictly blocks self-referrals (same member, same email, same payment method, same IP hash).
+ * - Blocks self-referrals by canonical member and email identity.
  * - Applies attribution model (first-touch or last-touch) and window limit.
  * - Computes integer commission and caps.
  * - Produces frozen, explainable attribution snapshot.
@@ -99,9 +99,45 @@ export function evaluateReferralAttribution(
   const { program, referralCode, codeOwner, customer, orderAmountMinor, currency } = input
   const now = input.now ?? new Date()
   const attributedAt = input.attributedAt ?? now
+  const reject = (rejectReason: string, explanation: string): AttributionEvaluationResult => ({
+    eligible: false,
+    snapshot: {
+      programId: program.id,
+      programVersion: program.version,
+      referrerMemberId: codeOwner.memberId,
+      referralCode,
+      model: program.attribution.model,
+      attributedAt: Number.isFinite(attributedAt.getTime())
+        ? attributedAt.toISOString()
+        : now.toISOString(),
+      attributionWindowDays: program.attribution.windowDays,
+      orderAmountMinor,
+      eligibleAmountMinor: '0',
+      calculatedCommissionMinor: '0',
+      currency,
+      explanation,
+      status: 'rejected',
+      rejectReason,
+    },
+  })
+  if (!Number.isFinite(attributedAt.getTime()) || attributedAt.getTime() > now.getTime())
+    return reject(
+      'ATTRIBUTION_TIME_INVALID',
+      'Attribution time must be valid and no later than the qualifying transaction.',
+    )
+  if (program.eligibility.disallowedMemberIds?.includes(codeOwner.memberId))
+    return reject('REFERRER_DISALLOWED', 'Referrer is excluded by this program.')
+  if (program.eligibility.minimumAccountAgeDays) {
+    const created = Date.parse(codeOwner.accountCreatedAt ?? '')
+    if (
+      !Number.isFinite(created) ||
+      now.getTime() - created < program.eligibility.minimumAccountAgeDays * 86400000
+    )
+      return reject('ACCOUNT_AGE_INELIGIBLE', 'Referrer account age does not satisfy the program.')
+  }
 
   // Consent check
-  if (program.attribution.requireCookieConsent && input.consented === false) {
+  if (program.attribution.requireCookieConsent && input.consented !== true) {
     return {
       eligible: false,
       snapshot: {
@@ -172,8 +208,7 @@ export function evaluateReferralAttribution(
 
   if (
     program.eligibility.allowedMemberRoles.length > 0 &&
-    codeOwner.role &&
-    !program.eligibility.allowedMemberRoles.includes(codeOwner.role)
+    (!codeOwner.role || !program.eligibility.allowedMemberRoles.includes(codeOwner.role))
   ) {
     return {
       eligible: false,
@@ -196,7 +231,7 @@ export function evaluateReferralAttribution(
     }
   }
 
-  if (program.eligibility.requireVerifiedEmail && codeOwner.emailVerified === false) {
+  if (program.eligibility.requireVerifiedEmail && codeOwner.emailVerified !== true) {
     return {
       eligible: false,
       snapshot: {
@@ -374,6 +409,18 @@ export function createPendingCommissionEntry(input: {
   now?: Date
 }): CommissionLedger {
   const { siteId, program, attribution, orderId, orderNumber, paymentIntentId } = input
+  if (
+    siteId !== program.siteId ||
+    attribution.programId !== program.id ||
+    attribution.programVersion !== program.version ||
+    attribution.status !== 'attributed' ||
+    !orderId ||
+    !orderNumber
+  ) {
+    throw new Error(
+      'Commission requires same-site, matching attributed program and order evidence.',
+    )
+  }
   const now = input.now ?? new Date()
   const matureTime = new Date(now.getTime() + program.holdPeriodDays * 24 * 3600 * 1000)
 
@@ -428,6 +475,9 @@ export function reverseCommissionEntry(input: {
   reversalEntry: CommissionLedger
 } {
   const { entry, reason, refundReference } = input
+  if (entry.type !== 'accrual' || entry.status === 'reversed') {
+    throw new Error('Only an unreversed accrual can be reversed.')
+  }
   const now = input.now ?? new Date()
 
   const updatedEntry: CommissionLedger = {

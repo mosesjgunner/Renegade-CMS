@@ -616,6 +616,14 @@ export const Orders: CollectionConfig = {
     { name: 'totalsSnapshot', type: 'json' },
     { name: 'termsSnapshot', type: 'json' },
     { name: 'sourceSnapshot', type: 'json' },
+    {
+      name: 'referralAttribution',
+      type: 'json',
+      admin: {
+        readOnly: true,
+        description: 'Immutable consented referral snapshot from canonical settlement.',
+      },
+    },
     { name: 'downstreamInstructions', type: 'json', defaultValue: [] },
     { name: 'transitionLog', type: 'json', defaultValue: [] },
     { name: 'refundExtension', type: 'json' },

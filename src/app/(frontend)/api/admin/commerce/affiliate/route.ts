@@ -1,6 +1,13 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextRequest, NextResponse } from 'next/server'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { createAffiliateOffer } from '@/modules/commerce/affiliate-offers-runtime'
+import {
+  createReferralCode,
+  referralReport,
+  sameReferralOrigin,
+} from '@/modules/commerce/referral-lifecycle'
 import {
   approveSettlementBatch,
   createSettlementBatch,
@@ -10,7 +17,23 @@ import {
 
 export const dynamic = 'force-dynamic'
 
+export async function GET(request: NextRequest) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  const siteId = request.nextUrl.searchParams.get('siteId')
+  if (
+    !grant.authorized ||
+    !siteId ||
+    (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  )
+    return NextResponse.json({ error: 'Unauthorized site.' }, { status: 403 })
+  return NextResponse.json(await referralReport(payload, siteId))
+}
+
 export async function POST(request: NextRequest) {
+  if (!sameReferralOrigin(request))
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   const user = auth.user as { id?: string | number; role?: string } | null
@@ -20,6 +43,33 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action } = body
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (
+      !grant.authorized ||
+      !body.siteId ||
+      (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(body.siteId))
+    )
+      return NextResponse.json({ error: 'Unauthorized site.' }, { status: 403 })
+    if (action === 'create-referral-code' || action === 'create-affiliate-offer') {
+      if (!['owner', 'administrator'].includes(String(user?.role)))
+        return NextResponse.json({ error: 'Owner or administrator required.' }, { status: 403 })
+      if (action === 'create-affiliate-offer')
+        return NextResponse.json(await createAffiliateOffer(payload, body.siteId, body.offer), {
+          status: 201,
+        })
+      return NextResponse.json(
+        await createReferralCode(payload, body.siteId, body, String(user?.id)),
+        { status: 201 },
+      )
+    }
+    if (action === 'reconcile-referrals') {
+      const job = await payload.jobs.queue({
+        task: 'commerce-reconcile-referrals',
+        queue: 'commerce',
+        input: { siteId: body.siteId },
+      })
+      return NextResponse.json({ queued: true, jobId: job.id }, { status: 202 })
+    }
 
     if (
       ['approve-batch', 'export-batch'].includes(action) &&

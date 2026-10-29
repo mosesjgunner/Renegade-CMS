@@ -46,6 +46,9 @@ export function summarizeCommissionLiabilities(
 
   for (const entry of ledgers) {
     if (entry.siteId !== siteId) continue
+    // Compensating entries are audit evidence; the original accrual already
+    // carries its current reversed/settled status. Counting both doubles money.
+    if (entry.type !== 'accrual') continue
     const curr = entry.currency
     if (!byCurrency.has(curr)) {
       byCurrency.set(curr, {
@@ -58,7 +61,10 @@ export function summarizeCommissionLiabilities(
       })
     }
     const acc = byCurrency.get(curr)!
-    const amount = BigInt(entry.amountMinor)
+    const gross = BigInt(entry.amountMinor)
+    const reversed = BigInt(entry.reversedAmountMinor ?? '0')
+    const amount = entry.status === 'reversed' ? gross : gross - reversed
+    if (entry.status !== 'reversed') acc.reversed += reversed
 
     switch (entry.status) {
       case 'pending':
@@ -72,6 +78,9 @@ export function summarizeCommissionLiabilities(
         acc.onHold += amount
         break
       case 'approved':
+        acc.eligible += amount
+        acc.eligibleCount++
+        break
       case 'settled':
         acc.settled += amount
         break
@@ -128,6 +137,7 @@ export function createSettlementBatch(input: CreateSettlementBatchInput): {
 
   for (const entry of ledgers) {
     if (entry.siteId !== siteId || entry.currency !== currency) continue
+    if (entry.type !== 'accrual') continue
     if (entry.status !== 'eligible') continue
 
     if (entry.fraudFlag || activeHoldMemberIds.has(entry.referrerMemberId)) {
@@ -136,7 +146,7 @@ export function createSettlementBatch(input: CreateSettlementBatchInput): {
     }
 
     includedIds.push(entry.id)
-    totalAmount += BigInt(entry.amountMinor)
+    totalAmount += BigInt(entry.amountMinor) - BigInt(entry.reversedAmountMinor ?? '0')
   }
 
   assertMoney(totalAmount.toString(), currency)
@@ -227,6 +237,8 @@ export function generateSettlementExport(
   const lineItems: ExportLineItem[] = ledgers
     .filter(
       (l) =>
+        l.siteId === batch.siteId &&
+        l.type === 'accrual' &&
         l.currency === batch.currency &&
         (l.settlementBatchId === batch.id ||
           (['approved', 'eligible'].includes(l.status) &&
@@ -236,7 +248,7 @@ export function generateSettlementExport(
       ledgerId: l.id,
       referrerMemberId: l.referrerMemberId,
       orderNumber: l.orderNumber,
-      amountMinor: l.amountMinor,
+      amountMinor: (BigInt(l.amountMinor) - BigInt(l.reversedAmountMinor ?? '0')).toString(),
       currency: l.currency,
     }))
 

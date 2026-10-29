@@ -1,0 +1,43 @@
+{
+    "base":  "48de9a28f8c4d3e3864f271a7f14f31b546d9fd9",
+    "scope":  "All git-visible modified/untracked executable source/config paths; docs/evidence excluded. Unmodified tracked files inherit base HEAD. No image claim.",
+    "preexisting":  "tests/rc1-12c/journey.ts; preserved concurrent work",
+    "files":  [
+                  {
+                      "path":  "src/app/(frontend)/api/commerce/affiliate/conversions/route.ts",
+                      "sha256":  "95c08da5489490e14f904059550eecadb5d9c209f2e59434b634b43055e5f24a"
+                  },
+                  {
+                      "path":  "src/app/(frontend)/api/commerce/referrals/claim/route.ts",
+                      "sha256":  "ac9d3ce33c3360f795326be3eee2dae85b90e23a2488d39545b651a2ba72e718"
+                  },
+                  {
+                      "path":  "src/modules/commerce/affiliate-service.ts",
+                      "sha256":  "5154cbd993cc8fea06529f0dd1d54d1b652736ed7c5ced3a5648c0a1b3b91e0c"
+                  },
+                  {
+                      "path":  "src/modules/commerce/referral-service.ts",
+                      "sha256":  "79e7552b7537ce105544c7ada3c1e1c0cb36ab38bc9df8adb33b9c65c59a3bf0"
+                  },
+                  {
+                      "path":  "src/modules/commerce/settlement-service.ts",
+                      "sha256":  "4385203a7aadbca8d9770c0479a28e9d8e32898275a9182e589bc7db86d37584"
+                  },
+                  {
+                      "path":  "tests/rc1-12c/journey.ts",
+                      "sha256":  "a5e13c912edaedaaf5b280ec1b0eaada95d74cc8d4befe08c41bf9c3b9a1730a"
+                  },
+                  {
+                      "path":  "tests/unit/rc1-12d-financial-boundaries.test.ts",
+                      "sha256":  "b0ce8d5b13b60096887f7ab02cff425f55d5d950bdf045794744e5ba826ea8f7"
+                  },
+                  {
+                      "path":  "tests/unit/rc1-12d-projection-routes.test.ts",
+                      "sha256":  "28b7e13648da814865303a4b91b76b6022c864070ac68dddbccc03c76e13e363"
+                  },
+                  {
+                      "path":  "tests/unit/shop-06-affiliate-and-referrals.test.ts",
+                      "sha256":  "3951c51b89d4177cab04556ade6cd816d7e33736334388c3460873bcb93a6217"
+                  }
+              ]
+}

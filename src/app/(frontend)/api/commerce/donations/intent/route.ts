@@ -1,4 +1,5 @@
 import config from '@payload-config'
+import { bindCheckoutReferral } from '@/modules/commerce/referral-lifecycle'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
@@ -185,7 +186,7 @@ export async function POST(request: Request) {
     depth: 0,
     overrideAccess: true,
   })
-    const capability = capabilities.docs.find(
+  const capability = capabilities.docs.find(
     (row: any) =>
       row.providerKey === providerKey &&
       id(row.publication) === id(campaign.publication) &&
@@ -329,7 +330,9 @@ export async function POST(request: Request) {
     siteId,
     campaignId: String(campaign.id),
     campaignVersion: Number(campaign.version),
-    donorSnapshot: { ...(memberId ? { memberId } : {}), guestName: recognition === 'public' ? input.publicDisplayName.slice(0, 100) : undefined,
+    donorSnapshot: {
+      ...(memberId ? { memberId } : {}),
+      guestName: recognition === 'public' ? input.publicDisplayName.slice(0, 100) : undefined,
       email: input.email,
     },
     money: { baseAmountMinor: amount, feeCoveredAmountMinor: fee, currency: campaign.currency },
@@ -425,6 +428,7 @@ export async function POST(request: Request) {
     },
     overrideAccess: true,
   })
+  await bindCheckoutReferral(payload, request, String(session.id), String(id(session.site)))
   const payment = await payload.create({
     collection: 'payment-intents',
     data: {

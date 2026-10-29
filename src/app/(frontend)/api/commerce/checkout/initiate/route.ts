@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from '@payload-config'
+import { bindCheckoutReferral } from '@/modules/commerce/referral-lifecycle'
 import { createHash } from 'node:crypto'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -412,6 +413,7 @@ async function initiateCheckout(
       { error: 'Payment method is not eligible for this checkout.' },
       { status: 422 },
     )
+  await bindCheckoutReferral(payload, request, String(session.id), String(id(session.site)))
   const existing = await db.find({
     collection: 'payment-intents',
     where: {

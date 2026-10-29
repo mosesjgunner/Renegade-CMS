@@ -1,7 +1,7 @@
 {
-  "baseCommit": "ed1ec703ef0401d0876932c310d6f831fc74aef4",
-  "treeHash": "12db53f0887f10b339c5750b4163042f07625be85eb29c657b1bd9ba3c5bb903",
-  "dirtyStatus": "M docs/rc/RC1-70-SUBPASS-LEDGER.md\n M next-env.d.ts\n M src/app/(frontend)/api/admin/commerce/dashboard/route.ts\n M src/app/(frontend)/api/admin/commerce/receipts/[orderId]/resend/route.ts\n M src/app/(frontend)/api/admin/commerce/reconcile/route.ts\n M src/app/(frontend)/api/admin/commerce/refunds/route.ts\n M src/app/(frontend)/api/commerce/cart/route.ts\n M src/app/(frontend)/api/commerce/checkout/initiate/route.ts\n M src/app/(frontend)/api/commerce/checkout/status/route.ts\n M src/app/(frontend)/api/commerce/donations/intent/route.ts\n M src/app/(frontend)/api/commerce/download/[grantKey]/route.ts\n M src/app/(frontend)/api/commerce/proposal/route.ts\n M src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts\n M src/app/(frontend)/api/commerce/subscriptions/route.ts\n M src/app/(frontend)/api/commerce/webhooks/[provider]/route.ts\n M src/app/(frontend)/donate/[campaignId]/page.tsx\n M src/collections/Commerce.ts\n M src/modules/admin/CommerceOperations.tsx\n M src/modules/commerce/CheckoutStatus.tsx\n M src/modules/commerce/MemberBilling.tsx\n M src/modules/commerce/digital-delivery.ts\n M src/modules/commerce/payment-provider.ts\n M src/modules/commerce/refund-execution.ts\n M src/modules/commerce/service.ts\n M src/modules/commerce/subscription-service.ts\n M src/modules/commerce/tasks.ts\n M src/payload-types.ts\n M src/scripts/run-jobs-worker.ts\n M tests/rc1-11d/journey.ts\n M tests/rc1-11d/provenance.ts\n M tests/rc1-11d/run.ps1\n M tests/unit/refund-reconciliation.test.ts\n M tsconfig.json\n?? docs/rc/evidence/rc1/18-pass/11D/\n?? docs/rc/evidence/rc1/18-pass/11E/\n?? docs/rc/evidence/rc1/18-pass/12A/\n?? docs/rc/evidence/rc1/18-pass/12B/\n?? docs/rc/evidence/rc1/18-pass/12C/\n?? src/app/(frontend)/api/commerce/subscriptions/download/\n?? src/modules/commerce/plan-write.ts\n?? src/modules/commerce/subscription-order.ts\n?? src/modules/commerce/subscription-reconciliation.ts\n?? tests/rc1-11d/notifications.ts\n?? tests/rc1-11d/smtp-sink.ts\n?? tests/rc1-11e/\n?? tests/rc1-12a/\n?? tests/rc1-12b/\n?? tests/rc1-12c/\n?? tests/unit/rc1-11d-digital-revocation.test.ts\n?? tests/unit/rc1-11e-commerce-acceptance.test.ts\n?? tests/unit/rc1-12a-plan-boundaries.test.ts\n?? tests/unit/rc1-12b-provider.test.ts\n?? tests/unit/rc1-12b-renewal.test.ts\n?? tests/unit/rc1-12c-donations-acceptance.test.ts",
+  "baseCommit": "48de9a28f8c4d3e3864f271a7f14f31b546d9fd9",
+  "treeHash": "2482871a4432a65ef7e631ed9eb54ddea9342b0729379970189617bf146cc4c0",
+  "dirtyStatus": "M docs/rc/RC1-70-SUBPASS-LEDGER.md\n M next-env.d.ts\n M src/app/(frontend)/api/admin/commerce/affiliate/route.ts\n M src/app/(frontend)/api/commerce/affiliate/conversions/route.ts\n M src/app/(frontend)/api/commerce/affiliate/redirect/route.ts\n M src/app/(frontend)/api/commerce/checkout/initiate/route.ts\n M src/app/(frontend)/api/commerce/donations/intent/route.ts\n M src/app/(frontend)/api/commerce/referrals/claim/route.ts\n M src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts\n M src/collections/Commerce.ts\n M src/migrations/index.ts\n M src/modules/admin/CommerceOperations.tsx\n M src/modules/commerce/affiliate-referral-contracts.ts\n M src/modules/commerce/affiliate-service.ts\n M src/modules/commerce/referral-service.ts\n M src/modules/commerce/refund-execution.ts\n M src/modules/commerce/settlement-service.ts\n M src/modules/commerce/tasks.ts\n M src/payload-types.ts\n M tests/rc1-12c/journey.ts\n M tests/unit/refund-reconciliation.test.ts\n M tests/unit/shop-06-affiliate-and-referrals.test.ts\n M tsconfig.json\n?? docs/rc/evidence/rc1/18-pass/12C/restart.json\n?? docs/rc/evidence/rc1/18-pass/12D/\n?? src/app/(frontend)/affiliate/\n?? src/app/(frontend)/commerce/\n?? src/app/(frontend)/referrals/\n?? src/migrations/20261029_120000_rc1_referral_lifecycle.ts\n?? src/modules/commerce/AffiliateOfferConsent.tsx\n?? src/modules/commerce/ReferralConsent.tsx\n?? src/modules/commerce/ReferralOperations.tsx\n?? src/modules/commerce/affiliate-offers-runtime.ts\n?? src/modules/commerce/referral-lifecycle.ts\n?? tests/rc1-12d/\n?? tests/unit/rc1-12d-financial-boundaries.test.ts\n?? tests/unit/rc1-12d-projection-routes.test.ts",
   "node": "v24.19.0",
   "files": [
     {
@@ -141,6 +141,10 @@
       "sha256": "0a2522c5f80131dfc8b028927d11dbbf0491ecc28c53e0b28b52389daefa0bfe"
     },
     {
+      "path": "src/app/(frontend)/affiliate/[offerId]/page.tsx",
+      "sha256": "4de328aae59610d78ef91c177f94b1c79a55af62081c42e2a73515c5ccf83a16"
+    },
+    {
       "path": "src/app/(frontend)/ap/actors/[handle]/actor.ts",
       "sha256": "e753d83abcdd7728a3e94acf7f71b83b72ef2195c2e2c3935282614d0b12a909"
     },
@@ -222,7 +226,7 @@
     },
     {
       "path": "src/app/(frontend)/api/admin/commerce/affiliate/route.ts",
-      "sha256": "c163337129fc4408fdec62038d0b8e6b553e123194ace93f22cf023eb6a7062e"
+      "sha256": "598dc492e2153cfec88b8a3ba763b799ca0266b4102798f16e110c4b12dcb5ed"
     },
     {
       "path": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
@@ -462,11 +466,11 @@
     },
     {
       "path": "src/app/(frontend)/api/commerce/affiliate/conversions/route.ts",
-      "sha256": "069d2d11cead22259c6f0ab001ec5630ab9f6b501306f82526322328b2e1c66b"
+      "sha256": "e45adedd050c4acb68e43675148740e918ce5da7c2c80c69f210afffceb687d9"
     },
     {
       "path": "src/app/(frontend)/api/commerce/affiliate/redirect/route.ts",
-      "sha256": "d92c6d4cf9c3a752a22b51b43f465be7bef788e445088989286b4effbb725263"
+      "sha256": "03756f71b64e3143cd9db4c45206cc6059590231b4fe55e9e9ecf010efd3f9e3"
     },
     {
       "path": "src/app/(frontend)/api/commerce/cart/merge/route.ts",
@@ -478,7 +482,7 @@
     },
     {
       "path": "src/app/(frontend)/api/commerce/checkout/initiate/route.ts",
-      "sha256": "168dc2fa8087b13df6deabd4649e86bc51a1bd69fd399c44338cc3c9c25f59ab"
+      "sha256": "1204d0d36f320bbabff22b2229ee6263bd176e7a4945c09a0da605fe53c8a7ff"
     },
     {
       "path": "src/app/(frontend)/api/commerce/checkout/methods/route.ts",
@@ -502,11 +506,11 @@
     },
     {
       "path": "src/app/(frontend)/api/commerce/donations/intent/route.ts",
-      "sha256": "ac4e8a0030213b3627b893c904bd8b2fbb784ad50cd0b162ae8469745370db6a"
+      "sha256": "8faf2599897de26bc7830575d9cdb814d9b172f1b719fdd2f644ae9c9ad25dfa"
     },
     {
       "path": "src/app/(frontend)/api/commerce/donations/privacy/route.ts",
-      "sha256": "6f16ae9bda6377901bd5b0ea840e9c826825c8e9380ca11c431aa9d2ff4078c7"
+      "sha256": "0764aa035d64e7b652a56e4e4d68fa82062fc82ee54b34e3f3b61fe97ed16ec7"
     },
     {
       "path": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
@@ -518,11 +522,11 @@
     },
     {
       "path": "src/app/(frontend)/api/commerce/referrals/claim/route.ts",
-      "sha256": "f4901462dd8c5cf584a6c0528b8bf04c9a9a64610ed8dbedcdb6b263f807780b"
+      "sha256": "14725c8e3ba9fba9493f8243dcb5f814dc538a259900ce440005d9f9eaca604b"
     },
     {
       "path": "src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts",
-      "sha256": "0ee1f7186af7154ddaee590b0e7ded7af98e88ae2b855f2c77932f140c295d85"
+      "sha256": "39cb6b27e03890e2a91f353f6b05d90fdaa415733610d533bed8a29c17216119"
     },
     {
       "path": "src/app/(frontend)/api/commerce/subscriptions/download/[mediaId]/route.ts",
@@ -1001,6 +1005,10 @@
       "sha256": "c740ba9b315bdcbd4f95631a40363b00f62153a0e375c57f7cfcde6d93d4251a"
     },
     {
+      "path": "src/app/(frontend)/commerce/referrals/page.tsx",
+      "sha256": "69f8a5f474e3c107a5f4ae880829722072385736d95bbdcb6e844d5f3895cae8"
+    },
+    {
       "path": "src/app/(frontend)/connections/page.tsx",
       "sha256": "57c982bbe73b0ac7ad8b0000d8f75db81129c0ac9eef8b6f638772af874e67b2"
     },
@@ -1209,6 +1217,10 @@
       "sha256": "07d2d17277838c6592f77fabf5850476644b03720fee56c14307b4cd00568ae1"
     },
     {
+      "path": "src/app/(frontend)/referrals/[code]/page.tsx",
+      "sha256": "c2502eb56cf10a030229aab88d5dc962c218ddc63b4aceb48f9d854ba5063519"
+    },
+    {
       "path": "src/app/(frontend)/robots.ts",
       "sha256": "d422e9b9d90a8f24c64f97da415d08576cd14029ee94e2609ddb7cc54ade5098"
     },
@@ -1334,7 +1346,7 @@
     },
     {
       "path": "src/collections/Commerce.ts",
-      "sha256": "7058de7ed2640a5e31a181acf4b30570a8e2e238e57421d9fe0ff84885047fa1"
+      "sha256": "79babfd2295afa681256260460aa925cde770171150985a119912d8631e114d7"
     },
     {
       "path": "src/collections/Community.ts",
@@ -1953,8 +1965,12 @@
       "sha256": "18b2fba26763f2344f3c552fb4e0f8dd407c0ccb69e2276a975d8aeab24311fd"
     },
     {
+      "path": "src/migrations/20261029_120000_rc1_referral_lifecycle.ts",
+      "sha256": "612a48640d778b663cfdaa9cc93bab8a9b3ff00445b6d034796a5956aa551981"
+    },
+    {
       "path": "src/migrations/index.ts",
-      "sha256": "6f5c09a6e54a4d19fc082fa60f29de8c6d1f75b29d03e58e15793e6ecae5cafe"
+      "sha256": "01514b8470bfbc5242f093dafa4e034431f3df31f242f7015321dd236784e632"
     },
     {
       "path": "src/modules/admin/AffiliateReferralDashboard.tsx",
@@ -1990,7 +2006,7 @@
     },
     {
       "path": "src/modules/admin/CommerceOperations.tsx",
-      "sha256": "1a21febf9aaf2dd5d407bc817ddaff09269bf7c239a13ea8f40a229da3944ef6"
+      "sha256": "87d2a0598e752ca91e30223114097b146a0d22a67f012484663ab32a7db276fb"
     },
     {
       "path": "src/modules/admin/CommunityModerationCenter.tsx",
@@ -2313,6 +2329,10 @@
       "sha256": "b134a7c095c0768653def41a65b23171c4698768218dca9afa0e684ccebdf8a0"
     },
     {
+      "path": "src/modules/commerce/AffiliateOfferConsent.tsx",
+      "sha256": "fa1a91bc5239b4a67c2f7fa064629ce65164c6de5792c349abaf4029821c6051"
+    },
+    {
       "path": "src/modules/commerce/CartView.tsx",
       "sha256": "c0de8fd8763e1fdf2d9945fe97d9f000570c026675662e8c01738dd30c2a662e"
     },
@@ -2337,12 +2357,24 @@
       "sha256": "ec5fd97a294a44fb1696aead4bb7036a9da8bc123ff7cade4bee07a4c32096b5"
     },
     {
+      "path": "src/modules/commerce/ReferralConsent.tsx",
+      "sha256": "d69685389f96e7578249803df9ec126c95e54620991af9b40cfa3a4384f35f3c"
+    },
+    {
+      "path": "src/modules/commerce/ReferralOperations.tsx",
+      "sha256": "de463b45ca4c79eee642fe7f033bc98f7627c40fefab1899a10e54175c1d77a1"
+    },
+    {
+      "path": "src/modules/commerce/affiliate-offers-runtime.ts",
+      "sha256": "07cf3c48f36e123941d24881fca4f50950b85ffa7812616b7762144d86296482"
+    },
+    {
       "path": "src/modules/commerce/affiliate-referral-contracts.ts",
-      "sha256": "f8d70bd5e3c13579c0c4cfeac5a0f9f09cb516ffcd15a366f0d8209cf210585c"
+      "sha256": "7c4f846aed1f9a9c545e0988fb43e7b5c1732ccae87d5464b4cc29099f99ea46"
     },
     {
       "path": "src/modules/commerce/affiliate-service.ts",
-      "sha256": "90f1c25985cd5956230e1938135c072923a94b31aaeff98847069bed281a24e6"
+      "sha256": "fe704041e10549f8d65617d7669b7a84f46493becd259ae274080e37f40bcd38"
     },
     {
       "path": "src/modules/commerce/cart-access.ts",
@@ -2469,12 +2501,16 @@
       "sha256": "290dfdff3577aa856b763ad481f3c432b9d387c15bf797be958114135621d685"
     },
     {
+      "path": "src/modules/commerce/referral-lifecycle.ts",
+      "sha256": "875947a4ef04c06db14948de50d093c7f0690da2342849ade887546e5199607f"
+    },
+    {
       "path": "src/modules/commerce/referral-service.ts",
-      "sha256": "ed3bc04577785972cc11a6c50acab91940fb41ada1a504d861876a9809ac7aa3"
+      "sha256": "79e7552b7537ce105544c7ada3c1e1c0cb36ab38bc9df8adb33b9c65c59a3bf0"
     },
     {
       "path": "src/modules/commerce/refund-execution.ts",
-      "sha256": "c82855e1d463a6734824fec6a12e77c165a92868929c24c41a642054a088b91e"
+      "sha256": "bdd9356fe610153c1aea0027d2e6befc0a3539cc6211409168f9ba3e80946516"
     },
     {
       "path": "src/modules/commerce/service.ts",
@@ -2482,7 +2518,7 @@
     },
     {
       "path": "src/modules/commerce/settlement-service.ts",
-      "sha256": "e3b77289056492bb5bf7a18b1e9744be08953c49f6b88784d5edede95ad78152"
+      "sha256": "6841fbf0ba47ea053e90732bd328ac9567e7c54747e5fae262d404980f9dfbd8"
     },
     {
       "path": "src/modules/commerce/shipping.ts",
@@ -2510,7 +2546,7 @@
     },
     {
       "path": "src/modules/commerce/tasks.ts",
-      "sha256": "385263849a1f574b76af57d3e68fbf1130c4e2ff3f8be90111b0cd1c6769b9ec"
+      "sha256": "34c951d5b1a77d1a0e031f8c2debf7418489bec5adb91792d1ce61f6fbc9e125"
     },
     {
       "path": "src/modules/commerce/tax.ts",
@@ -3654,7 +3690,7 @@
     },
     {
       "path": "src/payload-types.ts",
-      "sha256": "1e9869f03bbd5918a3b47805e53ac0752c0eac1bd93efe1c2845255f0176138e"
+      "sha256": "e6f04cfc2b5a80e709bb09651ba4a194fbe1eb244254bc17759563a588ec9da1"
     },
     {
       "path": "src/payload.config.ts",
@@ -4882,7 +4918,7 @@
     },
     {
       "path": "tests/rc1-12b/journey.ts",
-      "sha256": "8f4d6f3f45fa0797fee950439778b85fc5bb6921c9490f6da74f4562c595ad33"
+      "sha256": "ae9eaf12a78b41f5b5f1f966a6397c1f6797e81bd9263616719f2b1101c792a6"
     },
     {
       "path": "tests/rc1-12b/provenance.ts",
@@ -4898,15 +4934,31 @@
     },
     {
       "path": "tests/rc1-12c/journey.ts",
-      "sha256": "f0a484659853c0b7be8c0f2ef9b5805770b3c057e913e658fdccc88e2950dac7"
+      "sha256": "451bc8a2f614ee3fdd2f6a208db3446ae9ef16832c6c591eacec5349585670ad"
     },
     {
       "path": "tests/rc1-12c/provenance.ts",
-      "sha256": "29d6464023a73b0da03f61a9721b4639ccb3e3315738a76d4a57c7b3688003c3"
+      "sha256": "36f9a2d47d6d82bd03d2386cecfcc6de160c0ba64a3a6adce9200cc3b63b57cb"
     },
     {
       "path": "tests/rc1-12c/run.ps1",
-      "sha256": "b8eff8f0a5f931d3656c1503a57e76a33bec4d81a03434632a895b83ff8df29f"
+      "sha256": "07a98d675f247d7d1e3995f6a2d0311050a4144abcff0b57a2acdde79f73f640"
+    },
+    {
+      "path": "tests/rc1-12d/journey.ts",
+      "sha256": "2ec2ba8bd0c50a1b13a2ef66b915ec9e585e8730e5d580454700f66b1c001a4e"
+    },
+    {
+      "path": "tests/rc1-12d/run.ps1",
+      "sha256": "8e7053d9c77f3a3f5301b7be42b616b285fe5f10728a349d1c267b276e2fea13"
+    },
+    {
+      "path": "tests/rc1-12d/stripe-preload.mjs",
+      "sha256": "cc9091ca0da5fd72ff9ca5930a4d453fe0049df6a2f933679541fd6f3a95cf69"
+    },
+    {
+      "path": "tests/rc1-12d/tsconfig.json",
+      "sha256": "91be935c7ebb66317595ae8165a5eab7920d05ca258138f2974d17f937196369"
     },
     {
       "path": "tests/smoke/presentation.smoke.mjs",
@@ -5822,7 +5874,15 @@
     },
     {
       "path": "tests/unit/rc1-12c-donations-acceptance.test.ts",
-      "sha256": "cc7ce5d465eeb2eb4f782be0c59bfc219683e15682df5a86c2bc26c226f6f744"
+      "sha256": "fa0811693ef12e5a5428b6e515db005b96fb882b03243d3dcbe5b3030409fcdb"
+    },
+    {
+      "path": "tests/unit/rc1-12d-financial-boundaries.test.ts",
+      "sha256": "b0ce8d5b13b60096887f7ab02cff425f55d5d950bdf045794744e5ba826ea8f7"
+    },
+    {
+      "path": "tests/unit/rc1-12d-projection-routes.test.ts",
+      "sha256": "26ac6924f6b59a124e3d0267b6b5f6480629479cca9dcfb268d637eadddeeec4"
     },
     {
       "path": "tests/unit/readiness-probe.unit.test.ts",
@@ -5838,7 +5898,7 @@
     },
     {
       "path": "tests/unit/refund-reconciliation.test.ts",
-      "sha256": "459964291d3fcd383525fa600d8cd6881b2ddd53cb6a653a452cd91829f2d2ae"
+      "sha256": "0308fe92a9cb0d284bb6dea174b08825352a56edadbace7e3013fcd41f83adbe"
     },
     {
       "path": "tests/unit/related-site-access.test.ts",
@@ -5890,7 +5950,7 @@
     },
     {
       "path": "tests/unit/shop-06-affiliate-and-referrals.test.ts",
-      "sha256": "4338265531e534a81c1b7005a0313baa5cc6c316c4ab4e2e31fd69d1ec3b306f"
+      "sha256": "3951c51b89d4177cab04556ade6cd816d7e33736334388c3460873bcb93a6217"
     },
     {
       "path": "tests/unit/shop-07-donation-checkout-route.test.ts",

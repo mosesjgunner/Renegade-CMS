@@ -187,7 +187,7 @@ export function resolveOutboundRedirect(input: OutboundRedirectInput): OutboundR
 
   // 3. Sub-ID & Click tracking (only if tracking is permitted and not a bot)
   let clickToken = ''
-  const clickId = `clk_${randomUUID()}`
+  const clickId = randomUUID()
 
   if (!trackingOff && !botDetected) {
     clickToken = `tok_${randomBytes(8).toString('hex')}`
@@ -347,6 +347,9 @@ export function importConversionEvidence(input: {
 }): ConversionImportResult {
   const { siteId, source, network, existingEvidence, existingClicks, existingOffers } = input
   const now = input.now ?? new Date()
+  if (!siteId?.trim() || !network?.trim()) {
+    throw new Error('Conversion evidence requires site and network identity.')
+  }
 
   const importedList: ConversionEvidence[] = []
   const duplicatesList: ConversionEvidence[] = []
@@ -354,9 +357,22 @@ export function importConversionEvidence(input: {
   let unmatchedCount = 0
 
   for (const item of input.items) {
+    if (typeof item.externalEventId !== 'string' || !item.externalEventId.trim()) {
+      throw new Error('Conversion evidence requires an external event ID.')
+    }
+    if (
+      item.status &&
+      !['pending', 'approved', 'rejected', 'reversed', 'settled'].includes(item.status)
+    ) {
+      throw new Error('Unsupported conversion status.')
+    }
+    if (item.occurredAt && !Number.isFinite(Date.parse(item.occurredAt))) {
+      throw new Error('Conversion evidence requires a valid occurrence timestamp.')
+    }
     const rawPayloadHash = computeConversionSourceHash(item.rawLine ?? item)
-    const existing = existingEvidence.find(
+    const existing = [...existingEvidence, ...importedList].find(
       (ev) =>
+        ev.siteId === siteId &&
         ev.network === network &&
         (ev.externalEventId === item.externalEventId || ev.rawPayloadHash === rawPayloadHash),
     )
@@ -384,9 +400,10 @@ export function importConversionEvidence(input: {
       // 1. Match click by token or id
       const matchedClick = existingClicks.find(
         (c) =>
-          c.clickToken === item.attributionHint ||
-          c.id === item.attributionHint ||
-          item.attributionHint?.includes(c.clickToken),
+          c.siteId === siteId &&
+          c.trackingAllowed &&
+          !c.botDetected &&
+          (c.clickToken === item.attributionHint || c.id === item.attributionHint),
       )
 
       if (matchedClick) {
@@ -397,7 +414,9 @@ export function importConversionEvidence(input: {
         matchedCount++
       } else {
         // 2. Try match offer by slug
-        const matchedOffer = existingOffers.find((o) => o.slug === item.attributionHint)
+        const matchedOffer = existingOffers.find(
+          (o) => o.siteId === siteId && o.slug === item.attributionHint,
+        )
         if (matchedOffer) {
           matchedOfferId = matchedOffer.id
           reconciliationState = isReversal ? 'reversed' : 'matched'

@@ -207,6 +207,7 @@ export type CommissionLedger = Readonly<{
   currency: string
   amountMinor: string
   type: CommissionLedgerType
+  reversedAmountMinor?: string
   status: CommissionLedgerStatus
   matureAt: string
   createdAt: string

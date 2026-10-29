@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": ["../../src/**/*.ts", "../../src/**/*.tsx", "./journey.ts", "../../tests/unit/rc1-12d-*.test.ts", "../../tests/unit/shop-06-affiliate-and-referrals.test.ts", "../../tests/unit/refund-reconciliation.test.ts"],
+  "exclude": ["../../node_modules", "../../.next*", "../../.worktrees"]
+}
