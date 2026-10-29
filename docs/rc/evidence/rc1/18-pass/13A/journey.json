@@ -1,0 +1,27 @@
+{
+  "passed": 20,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "wrong-role, foreign-site, native mapping bypass, provider configuration overreach and foreign origin rejected before persistence",
+    "provider/site/merchant, foreign artwork, insufficient pixels, wrong provider variant and template placement fail preflight",
+    "reviewed mappings pin real private artwork bytes and adapter-observed variant/cost, ignoring caller-supplied cost",
+    "review/approve/publish persisted 18413471-cfb5-4419-bfe9-48cacc406e7e",
+    "review/approve/publish persisted b79d1514-8051-439d-be96-534b83d98adf",
+    "review/approve/publish persisted b9c938e9-1156-4751-ac67-3963602af4b7",
+    "public catalog hides private mapping/artwork metadata and operator reads do not expose credentials",
+    "currency and provider PO Box policy reject checkout before a payment attempt or job exists",
+    "unpaid physical checkout and native job forgery cannot create fulfillment or a provider order",
+    "real confirmation UI -> signed local payment -> actual worker persists paid mixed order, full plan, manual package and held POD job",
+    "concurrent plan retries and duplicate payment callback retain one package of each kind",
+    "later mapping review returns product to draft without changing sold order/job snapshots",
+    "review/approve/publish persisted b79d1514-8051-439d-be96-534b83d98adf",
+    "normal operator UI displays the persisted plan plus held job and manual queue",
+    "provider disabled after checkout preserves real paid order but creates no deliverable jobs",
+    "authorized operator repair and manual override persist audit and deduplicate, while staff override is denied",
+    "foreign-site and anonymous fulfillment instructions cannot access or mutate saved plans",
+    "partial/full refund gates block release, submission and replanning before any provider creation",
+    "actual cancelled checkout cannot create a fulfillment plan or provider order",
+    "real physical payment is left queued with worker stopped for restart acceptance"
+  ]
+}

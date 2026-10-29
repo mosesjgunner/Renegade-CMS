@@ -1,0 +1,31 @@
+{
+  "passed": 24,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "wrong-role, foreign-site, native mapping bypass, provider configuration overreach and foreign origin rejected before persistence",
+    "provider/site/merchant, foreign artwork, insufficient pixels, wrong provider variant and template placement fail preflight",
+    "reviewed mappings pin real private artwork bytes and adapter-observed variant/cost, ignoring caller-supplied cost",
+    "review/approve/publish persisted f3385a67-a6b1-4a86-a50a-95f9c123cc0a",
+    "review/approve/publish persisted e032b615-fb0d-48a7-b8f9-ee42986ef823",
+    "review/approve/publish persisted 51f3f1b1-8447-4bd2-9d1c-2e7a647bb132",
+    "public catalog hides private mapping/artwork metadata and operator reads do not expose credentials",
+    "currency and provider PO Box policy reject checkout before a payment attempt or job exists",
+    "unpaid physical checkout and native job forgery cannot create fulfillment or a provider order",
+    "real confirmation UI -> signed local payment -> actual worker persists paid mixed order, full plan, manual package and held POD job",
+    "concurrent plan retries and duplicate payment callback retain one package of each kind",
+    "staff, foreign-site and anonymous provider submission denied with zero attempts",
+    "concurrent Printful simulator submit persists one request/actual provider ID and one reserved attempt",
+    "operator polling persists actual simulator production outcome",
+    "explicit local simulator shipment remains labeled simulator, with actual response request ID",
+    "operator UI refetch displays persisted provider order and shipped simulator observation",
+    "review/approve/publish persisted e032b615-fb0d-48a7-b8f9-ee42986ef823",
+    "lost Printify simulator response persists exception, one attempt and no fabricated provider ID",
+    "unknown outcome blocks resubmit/cancel and unauthorized repair",
+    "stable request lookup recovers actual persisted Printify simulator order without a second submission",
+    "actual known provider rejection persists failed state and redacted diagnostic",
+    "explicit operator repair retries only known rejection, retaining reason and exactly two attempts",
+    "unsupported provider fails safely without substituting another adapter",
+    "actual durable simulator calls retain two distinct provider identities, exact signed artwork requests and unique order identities"
+  ]
+}

@@ -98,7 +98,13 @@ export default async function FulfillmentAdminPage({ searchParams }: Props) {
     releasedAt: doc.releasedAt ? String(doc.releasedAt) : undefined,
     auditTrail: Array.isArray(doc.auditTrail) ? doc.auditTrail : [],
     lastError: doc.lastError ? String(doc.lastError) : undefined,
-    lastReconciledAt: doc.lastReconciledAt ? String(doc.lastReconciledAt) : undefined,
+    fulfillments: Array.isArray(doc.fulfillments) ? doc.fulfillments : [...(doc.auditTrail ?? [])].reverse().find((a) => a.details?.fulfillments?.length)?.details?.fulfillments ?? [],
+    lastReconciledAt: doc.lastReconciledAt
+      ? String(doc.lastReconciledAt)
+      : [...(doc.auditTrail ?? [])]
+          .reverse()
+          .find((a: { action: string }) => a.action === 'provider_poll_observed')?.details
+          ?.reconciledAt,
     createdAt: String(doc.createdAt),
     updatedAt: String(doc.updatedAt),
   }))
@@ -169,6 +175,7 @@ export default async function FulfillmentAdminPage({ searchParams }: Props) {
       initialManualPackages={initialManualPackages}
       initialTab={tab}
       initialProviderFilter={provider}
+      siteId={grant.authorizedSiteIds[0]}
     />
   )
 }

@@ -56,7 +56,11 @@
     ".next-rc112c/types/**/*.ts",
     ".next-rc112c/dev/types/**/*.ts",
     ".next-rc112d/types/**/*.ts",
-    ".next-rc112d/dev/types/**/*.ts"
+    ".next-rc112d/dev/types/**/*.ts",
+    ".next-rc113a/types/**/*.ts",
+    ".next-rc113a/dev/types/**/*.ts",
+    ".next-rc113b/types/**/*.ts",
+    ".next-rc113b/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

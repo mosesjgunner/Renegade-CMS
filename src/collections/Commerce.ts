@@ -14,6 +14,7 @@ import {
 } from './canonical-shared'
 import { validatePlanWrite } from '../modules/commerce/plan-write'
 import { validateCatalogWrite } from '../modules/commerce/catalog-write'
+import { decryptCredential } from '../modules/commerce/pod-connection'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 import { assertCampaignTransition, assertDonationTransition } from '../modules/commerce/donations'
 import {
@@ -116,6 +117,13 @@ export const Products: CollectionConfig = {
   hooks: {
     beforeValidate: [
       ({ data, originalDoc, context }) => {
+        if (
+          data?.podMappings !== undefined &&
+          JSON.stringify(data.podMappings ?? []) !==
+            JSON.stringify(originalDoc?.podMappings ?? []) &&
+          context?.fulfillmentMappingWrite !== true
+        )
+          throw new APIError('Use the authorized fulfillment mapping workflow.', 403)
         if (
           ['review', 'approved', 'published'].includes(String(data?.state)) &&
           data?.state !== originalDoc?.state &&
@@ -332,6 +340,10 @@ export const Products: CollectionConfig = {
     {
       name: 'podMappings',
       type: 'json',
+      access: {
+        read: ({ req }) =>
+          Boolean(req.user && ['owner', 'administrator', 'staff'].includes(String(req.user.role))),
+      },
       admin: {
         description:
           'Reviewed remote IDs/options, pinned artwork revision, mockup provenance and cost/availability snapshot.',
@@ -1383,8 +1395,48 @@ export const CatalogImportRuns: CollectionConfig = {
 
 export const PodConnections: CollectionConfig = {
   ...base('pod-connections', 'label'),
+  hooks: {
+    beforeValidate: [
+      async ({ data, originalDoc, req }) => {
+        const value = { ...originalDoc, ...data }
+        const merchant = await req.payload.findByID({
+          collection: 'merchant-connections',
+          id: String(value.merchantConnection?.id ?? value.merchantConnection ?? ''),
+          depth: 0,
+          req,
+          overrideAccess: true,
+        })
+        if (
+          String(typeof merchant.site === 'object' ? merchant.site.id : merchant.site) !==
+          String(value.site?.id ?? value.site)
+        )
+          throw new APIError('POD merchant must belong to the connection site.', 400)
+        if (data?.encryptedApiKey) {
+          try {
+            decryptCredential(data.encryptedApiKey)
+          } catch {
+            throw new APIError('Use an encrypted POD credential envelope.', 400)
+          }
+        }
+        return data
+      },
+    ],
+  },
+  access: {
+    create: (args) =>
+      ['owner', 'administrator'].includes(String(args.req.user?.role))
+        ? operatorSiteCreateAccess(args)
+        : false,
+    update: (args) =>
+      ['owner', 'administrator'].includes(String(args.req.user?.role))
+        ? operatorSiteUpdateAccess(args)
+        : false,
+    read: operatorSiteReadAccess,
+    delete: () => false,
+  },
   fields: [
     ...ownerFields(),
+    ref('merchantConnection', 'merchant-connections', true),
     { name: 'providerKey', type: 'text', required: true },
     { name: 'label', type: 'text', required: true },
     { name: 'remoteStoreId', type: 'text' },
@@ -1392,12 +1444,13 @@ export const PodConnections: CollectionConfig = {
     {
       name: 'encryptedApiKey',
       type: 'text',
+      access: { read: () => false },
       required: true,
       admin: {
         description: 'Encrypted credential envelope; never display or store plaintext secrets.',
       },
     },
-    { name: 'encryptedWebhookSecret', type: 'text' },
+    { name: 'encryptedWebhookSecret', type: 'text', access: { read: () => false } },
     select('status', ['active', 'degraded', 'disabled'], 'active'),
     { name: 'capabilities', type: 'json', defaultValue: {} },
     { name: 'lastHealthCheckedAt', type: 'date' },

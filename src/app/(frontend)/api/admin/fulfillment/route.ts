@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import configPromise from '@payload-config'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
+import {
+  configureFulfillmentMapping,
+  inspectPodArtwork,
+  assertFulfillmentOrderEligible,
+} from '@/modules/commerce/fulfillment-mapping'
+import { reconcileFulfillmentPlan, checkAndCompleteOrderFulfillment, reconcileOutstandingFulfillmentOrders } from '@/modules/commerce/fulfillment-operator'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
@@ -8,21 +15,54 @@ import {
   markManualFulfillmentInProduction,
   shipManualFulfillmentPackage,
   cancelManualFulfillmentPackage,
-  handoffFailedPodJobToManual,
   type ManualFulfillmentPackage,
 } from '@/modules/commerce/manual-fulfillment'
-import {
-  releasePodJobHold,
-  cancelPodJob,
-  submitPodJobWithRetry,
-} from '@/modules/commerce/pod-operations'
-import { PodEmulatorAdapter } from '@/modules/commerce/pod-emulator'
-import { PrintfulPodAdapter } from '@/modules/commerce/pod-real-provider'
-import { decryptCredential } from '@/modules/commerce/pod-connection'
+import { adapterForPodConnection } from '@/modules/commerce/pod-adapters'
+import { executePodOperatorAction } from '@/modules/commerce/pod-operator'
 import { PodProviderError, type PodProviderAdapter } from '@/modules/commerce/pod-contract'
-import type { PODJob } from '@/modules/commerce/fulfillment-plan'
 
 export const dynamic = 'force-dynamic'
+
+export async function GET(request: Request) {
+  const payload = await getPayload({ config: configPromise })
+  const auth = await payload.auth({ headers: request.headers }).catch(() => null)
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  if (
+    !grant.authorized ||
+    !siteId ||
+    (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  )
+    return NextResponse.json({ error: 'Forbidden site.' }, { status: 403 })
+  const [products, orders] = await Promise.all(
+    ['products', 'orders'].map((collection) =>
+      payload.find({
+        collection: collection as any,
+        where: { site: { equals: siteId } },
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      }),
+    ),
+  )
+  return NextResponse.json({
+    siteId,
+    products: products.docs.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      variants: p.variants,
+      mappings: p.podMappings ?? [],
+    })),
+    orders: orders.docs.map((o: any) => ({
+      id: o.id,
+      number: o.orderNumber,
+      state: o.state,
+      plan: o.fulfillmentExtension ?? null,
+    })),
+    scope: 'Latest 100 products/orders for this site.',
+    providerCreation: 'not-implied',
+  })
+}
 
 const relationId = (value: any) =>
   typeof value === 'object' && value !== null ? String(value.id ?? '') : String(value ?? '')
@@ -47,15 +87,8 @@ async function resolvePodAdapter(
     if (conn.status === 'disabled')
       throw new PodProviderError('configuration', 'Provider connection is disabled.', false, true)
     providerKey = conn.providerKey
-    if (providerKey === 'printful' && conn.encryptedApiKey) {
-      const apiKey = decryptCredential(conn.encryptedApiKey)
-      return new PrintfulPodAdapter({
-        apiKey,
-        storeId: conn.remoteStoreId,
-      })
-    }
+    return adapterForPodConnection(conn)
   }
-  if (providerKey === 'pod-emulator') return new PodEmulatorAdapter()
   throw new PodProviderError(
     'configuration',
     'The selected POD provider is not configured.',
@@ -65,6 +98,11 @@ async function resolvePodAdapter(
 }
 
 export async function POST(request: Request) {
+  const url = new URL(request.url)
+  if (
+    request.headers.get('origin') !== `${url.protocol}//${request.headers.get('host') ?? url.host}`
+  )
+    return NextResponse.json({ error: 'Invalid origin.' }, { status: 403 })
   const payload = await getPayload({ config: configPromise })
   const incomingHeaders = request.headers
   const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
@@ -90,6 +128,125 @@ export async function POST(request: Request) {
   }
 
   try {
+    if (action === 'save-mapping') {
+      if (!['owner', 'administrator'].includes(String((auth?.user as any)?.role)))
+        return NextResponse.json(
+          { error: 'Mapping review requires owner or administrator.' },
+          { status: 403 },
+        )
+      const product: any = await payload.findByID({
+        collection: 'products',
+        id: body.productId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      assertSiteAccess(relationId(product.site))
+      const mapping = await withExecutionLock(payload, `commerce.mapping:${product.id}`, async () =>
+        configureFulfillmentMapping(
+          payload,
+          await payload.findByID({
+            collection: 'products',
+            id: product.id,
+            depth: 0,
+            overrideAccess: true,
+          }),
+          body.mapping,
+          actorId,
+        ),
+      )
+      return NextResponse.json({ success: true, mapping })
+    }
+    if (action === 'reconcile-plan' || action === 'override-manual') {
+      let orderId = body.orderId
+      if (!orderId && body.checkoutSessionId) {
+        const session: any = await payload.findByID({
+          collection: 'checkout-sessions',
+          id: body.checkoutSessionId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        assertSiteAccess(relationId(session.site))
+        const orders = await payload.find({
+          collection: 'orders',
+          where: { checkoutSession: { equals: session.id } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        orderId = orders.docs[0]?.id
+        if (!orderId)
+          return NextResponse.json(
+            { error: 'Unsettled checkout cannot create fulfillment.' },
+            { status: 409 },
+          )
+      }
+      const order: any = await payload.findByID({
+        collection: 'orders',
+        id: orderId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      assertSiteAccess(relationId(order.site))
+      if (
+        action === 'override-manual' &&
+        (!['owner', 'administrator'].includes(String((auth?.user as any)?.role)) ||
+          !String(body.reason ?? '').trim())
+      )
+        return NextResponse.json(
+          { error: 'An owner/administrator and audited reason are required.' },
+          { status: 403 },
+        )
+      const result = await withExecutionLock(
+        payload,
+        `commerce.fulfillment.order:${order.id}`,
+        () =>
+          reconcileFulfillmentPlan(
+            payload,
+            order.id,
+            action === 'override-manual'
+              ? { jobId: body.jobId, actorId, reason: body.reason }
+              : undefined,
+          ),
+      )
+      return NextResponse.json({ success: true, ...result })
+    }
+    if (
+      ['release-pod-hold', 'submit-pod-job', 'start-production-manual', 'ship-manual'].includes(
+        action,
+      )
+    ) {
+      const collection = body.jobId ? 'pod-jobs' : 'manual-fulfillment-packages'
+      const target: any = await payload.findByID({
+        collection: collection as any,
+        id: body.jobId ?? body.packageId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      assertSiteAccess(relationId(target.site))
+      const order: any = await payload.findByID({
+        collection: 'orders',
+        id: relationId(target.order),
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (relationId(order.site) !== relationId(target.site))
+        throw new Error('Forbidden. Order/site mismatch.')
+      await assertFulfillmentOrderEligible(payload, order)
+      if (body.jobId) {
+        const connection: any = await payload.findByID({
+          collection: 'pod-connections',
+          id: relationId(target.connection),
+          depth: 0,
+          overrideAccess: true,
+        })
+        if (
+          relationId(connection.site) !== relationId(order.site) ||
+          relationId(connection.merchantConnection) !== relationId(order.merchantConnection) ||
+          connection.providerKey !== target.providerKey
+        )
+          throw new Error('Forbidden. Provider/site/merchant binding does not match the order.')
+      }
+    }
     // -------------------------------------------------------------
     // MANUAL FULFILLMENT ACTIONS
     // -------------------------------------------------------------
@@ -234,68 +391,10 @@ export async function POST(request: Request) {
         overrideAccess: true,
       })
 
-      // Check if all packages/jobs for parent order are fulfilled
       const orderId = relationId(doc.order)
       if (orderId) {
-        const [siblingManualRes, siblingPodRes] = await Promise.all([
-          payload.find({
-            collection: 'manual-fulfillment-packages',
-            where: { order: { equals: orderId } },
-            depth: 0,
-            pagination: false,
-            limit: 0,
-            overrideAccess: true,
-          }),
-          payload.find({
-            collection: 'pod-jobs',
-            where: { order: { equals: orderId } },
-            depth: 0,
-            pagination: false,
-            limit: 0,
-            overrideAccess: true,
-          }),
-        ])
-
-        const allManualShippedOrCancelled = siblingManualRes.docs.every(
-          (m: any) => m.id === packageId || m.status === 'shipped' || m.status === 'cancelled',
-        )
-        const allPodShippedOrCancelled = siblingPodRes.docs.every(
-          (p: any) =>
-            p.state === 'shipped' ||
-            p.state === 'delivered' ||
-            p.state === 'cancelled' ||
-            (p.state === 'failed' &&
-              siblingManualRes.docs.some(
-                (m: any) =>
-                  m.source === 'pod-submission-exhausted' &&
-                  m.packageIndex === p.packageIndex &&
-                  (m.id === packageId || m.status === 'shipped'),
-              )),
-        )
-
-        if (allManualShippedOrCancelled && allPodShippedOrCancelled) {
-          const orderDoc: any = await payload.findByID({
-            collection: 'orders',
-            id: orderId,
-            depth: 0,
-            overrideAccess: true,
-          })
-          const currentLog = Array.isArray(orderDoc?.transitionLog) ? orderDoc.transitionLog : []
-          await payload.update({
-            collection: 'orders',
-            id: orderId,
-            data: {
-              state: 'fulfilled',
-              transitionLog: [
-                ...currentLog,
-                { kind: 'order-fulfilled', at: new Date().toISOString(), actor: actorId },
-              ],
-            },
-            overrideAccess: true,
-          })
-        }
+        await checkAndCompleteOrderFulfillment(payload, orderId, actorId, { shippedPackageId: packageId })
       }
-
       return NextResponse.json({ success: true, package: saved })
     }
 
@@ -340,228 +439,56 @@ export async function POST(request: Request) {
         },
         overrideAccess: true,
       })
+      const orderId = relationId(doc.order)
+      if (orderId) await checkAndCompleteOrderFulfillment(payload, orderId, actorId)
       return NextResponse.json({ success: true, package: saved })
     }
 
     // -------------------------------------------------------------
     // POD JOB ACTIONS
     // -------------------------------------------------------------
-    if (action === 'release-pod-hold') {
-      const { jobId } = body
-      if (!jobId) return NextResponse.json({ error: 'jobId is required.' }, { status: 400 })
-
-      const doc: any = await payload.findByID({
-        collection: 'pod-jobs',
-        id: jobId,
-        depth: 0,
-        overrideAccess: true,
-      })
-      if (!doc) return NextResponse.json({ error: 'POD job not found.' }, { status: 404 })
-      assertSiteAccess(relationId(doc.site))
-
-      const job: PODJob = {
-        id: String(doc.id),
-        orderId: relationId(doc.order),
-        siteId: relationId(doc.site),
-        connectionId: relationId(doc.connection),
-        providerKey: doc.providerKey,
-        packageIndex: doc.packageIndex ?? 0,
-        idempotencyKey: doc.idempotencyKey,
-        payloadHash: doc.payloadHash,
-        state: doc.state,
-        addressPolicy: doc.addressPolicy,
-        recipientSnapshot: doc.recipientSnapshot,
-        itemsSnapshot: doc.itemsSnapshot ?? [],
-        costSnapshot: doc.costSnapshot ?? { estimatedCostMinor: '0', currency: 'USD' },
-        attemptCount: doc.attemptCount ?? 0,
-        externalOrderId: doc.externalOrderId,
-        holdExpiresAt: doc.holdExpiresAt,
-        releasedAt: doc.releasedAt,
-        auditTrail: doc.auditTrail ?? [],
-        lastError: doc.lastError,
-        lastReconciledAt: doc.lastReconciledAt,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      }
-
-      const updated = releasePodJobHold(job, actorId)
-      const saved = await payload.update({
-        collection: 'pod-jobs',
-        id: jobId,
-        data: {
-          state: updated.state,
-          releasedAt: updated.releasedAt,
-          auditTrail: updated.auditTrail as any,
-        },
-        overrideAccess: true,
-      })
-      return NextResponse.json({ success: true, job: saved })
-    }
-
-    if (action === 'submit-pod-job') {
-      const { jobId } = body
-      if (!jobId) return NextResponse.json({ error: 'jobId is required.' }, { status: 400 })
-
-      const doc: any = await payload.findByID({
-        collection: 'pod-jobs',
-        id: jobId,
-        depth: 0,
-        overrideAccess: true,
-      })
-      if (!doc) return NextResponse.json({ error: 'POD job not found.' }, { status: 404 })
-      assertSiteAccess(relationId(doc.site))
-
-      const job: PODJob = {
-        id: String(doc.id),
-        orderId: relationId(doc.order),
-        siteId: relationId(doc.site),
-        connectionId: relationId(doc.connection),
-        providerKey: doc.providerKey,
-        packageIndex: doc.packageIndex ?? 0,
-        idempotencyKey: doc.idempotencyKey,
-        payloadHash: doc.payloadHash,
-        state: doc.state,
-        addressPolicy: doc.addressPolicy,
-        recipientSnapshot: doc.recipientSnapshot,
-        itemsSnapshot: doc.itemsSnapshot ?? [],
-        costSnapshot: doc.costSnapshot ?? { estimatedCostMinor: '0', currency: 'USD' },
-        attemptCount: doc.attemptCount ?? 0,
-        externalOrderId: doc.externalOrderId,
-        holdExpiresAt: doc.holdExpiresAt,
-        releasedAt: doc.releasedAt,
-        auditTrail: doc.auditTrail ?? [],
-        lastError: doc.lastError,
-        lastReconciledAt: doc.lastReconciledAt,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      }
-
-      const adapter = await resolvePodAdapter(
-        payload,
-        job.connectionId,
-        job.providerKey,
-        job.siteId,
-      )
-      const outcome = await submitPodJobWithRetry({ job, adapter, actor: actorId })
-
-      if (outcome.success) {
-        const saved = await payload.update({
-          collection: 'pod-jobs',
-          id: jobId,
-          data: {
-            state: outcome.job.state,
-            externalOrderId: outcome.job.externalOrderId,
-            attemptCount: outcome.job.attemptCount,
-            auditTrail: outcome.job.auditTrail as any,
-          },
-          overrideAccess: true,
-        })
-        return NextResponse.json({ success: true, job: saved })
-      } else {
-        const savedJob = await payload.update({
-          collection: 'pod-jobs',
-          id: jobId,
-          data: {
-            state: outcome.job.state,
-            attemptCount: outcome.job.attemptCount,
-            lastError: outcome.job.lastError,
-            auditTrail: outcome.job.auditTrail as any,
-          },
-          overrideAccess: true,
-        })
-
-        let manualHandoff: any = null
-        if (outcome.handoffRequired) {
-          const manualPkg = handoffFailedPodJobToManual(
-            outcome.job,
-            outcome.error,
-            undefined,
-            actorId,
-          )
-          manualHandoff = await payload.create({
-            collection: 'manual-fulfillment-packages',
-            data: {
-              site: outcome.job.siteId,
-              order: outcome.job.orderId,
-              packageIndex: manualPkg.packageIndex,
-              source: manualPkg.source,
-              status: manualPkg.status,
-              approvedLines: manualPkg.approvedLines as any,
-              permissionedAddressManifest: manualPkg.permissionedAddressManifest,
-              instructions: manualPkg.instructions,
-              auditTrail: manualPkg.auditTrail as any,
-            },
-            overrideAccess: true,
-          })
-        }
-
+    if (
+      [
+        'submit-pod-job',
+        'retry-pod-job',
+        'reconcile-pod-job',
+        'cancel-pod-job',
+        'release-pod-hold',
+      ].includes(action)
+    ) {
+      if (!['owner', 'administrator'].includes(String((auth?.user as any)?.role)))
         return NextResponse.json(
-          {
-            success: false,
-            error: outcome.error,
-            job: savedJob,
-            manualHandoff,
-          },
-          { status: outcome.retryable ? 503 : 409 },
+          { error: 'Provider actions require owner or administrator.' },
+          { status: 403 },
         )
-      }
+      if (!body.jobId) return NextResponse.json({ error: 'jobId is required.' }, { status: 400 })
+      const result = await executePodOperatorAction(
+        payload,
+        body.jobId,
+        action,
+        actorId,
+        assertSiteAccess,
+        body.reason,
+      )
+      return NextResponse.json(result, {
+        status: result.success ? 200 : result.retryable ? 503 : 409,
+      })
     }
 
-    if (action === 'cancel-pod-job') {
-      const { jobId, reason = 'Operator cancellation' } = body
-      if (!jobId) return NextResponse.json({ error: 'jobId is required.' }, { status: 400 })
-
-      const doc: any = await payload.findByID({
-        collection: 'pod-jobs',
-        id: jobId,
-        depth: 0,
-        overrideAccess: true,
+        if (action === 'reconcile-outstanding') {
+      if (!['owner', 'administrator'].includes(String((auth?.user as any)?.role)))
+        return NextResponse.json(
+          { error: 'Reconciling outstanding jobs requires owner or administrator.' },
+          { status: 403 },
+        )
+      const siteId = body.siteId
+      if (!siteId) return NextResponse.json({ error: 'siteId is required.' }, { status: 400 })
+      assertSiteAccess(siteId)
+      const result = await reconcileOutstandingFulfillmentOrders(payload, {
+        siteId,
+        actor: actorId,
       })
-      if (!doc) return NextResponse.json({ error: 'POD job not found.' }, { status: 404 })
-      assertSiteAccess(relationId(doc.site))
-
-      const job: PODJob = {
-        id: String(doc.id),
-        orderId: relationId(doc.order),
-        siteId: relationId(doc.site),
-        connectionId: relationId(doc.connection),
-        providerKey: doc.providerKey,
-        packageIndex: doc.packageIndex ?? 0,
-        idempotencyKey: doc.idempotencyKey,
-        payloadHash: doc.payloadHash,
-        state: doc.state,
-        addressPolicy: doc.addressPolicy,
-        recipientSnapshot: doc.recipientSnapshot,
-        itemsSnapshot: doc.itemsSnapshot ?? [],
-        costSnapshot: doc.costSnapshot ?? { estimatedCostMinor: '0', currency: 'USD' },
-        attemptCount: doc.attemptCount ?? 0,
-        externalOrderId: doc.externalOrderId,
-        holdExpiresAt: doc.holdExpiresAt,
-        releasedAt: doc.releasedAt,
-        auditTrail: doc.auditTrail ?? [],
-        lastError: doc.lastError,
-        lastReconciledAt: doc.lastReconciledAt,
-        createdAt: doc.createdAt,
-        updatedAt: doc.updatedAt,
-      }
-
-      const adapter = await resolvePodAdapter(
-        payload,
-        job.connectionId,
-        job.providerKey,
-        job.siteId,
-      )
-      const updated = await cancelPodJob(job, adapter, reason, actorId)
-      const saved = await payload.update({
-        collection: 'pod-jobs',
-        id: jobId,
-        data: {
-          state: updated.state,
-          auditTrail: updated.auditTrail as any,
-        },
-        overrideAccess: true,
-      })
-      return NextResponse.json({ success: true, job: saved })
+      return NextResponse.json({ success: true, ...result })
     }
 
     if (action === 'check-provider-health') {
@@ -578,13 +505,27 @@ export async function POST(request: Request) {
       if (!conn) return NextResponse.json({ error: 'Connection not found.' }, { status: 404 })
       assertSiteAccess(relationId(conn.site))
 
-      const adapter = await resolvePodAdapter(
-        payload,
-        connectionId,
-        conn.providerKey,
-        relationId(conn.site),
-      )
-      const health = await adapter.health()
+      let health: {
+        ready: boolean
+        health: 'healthy' | 'degraded' | 'unavailable'
+        reason?: string
+      }
+      try {
+        const adapter = await resolvePodAdapter(
+          payload,
+          connectionId,
+          conn.providerKey,
+          relationId(conn.site),
+        )
+        health = await adapter.health()
+      } catch {
+        health = {
+          ready: false,
+          health: 'unavailable',
+          reason:
+            'Provider not configured or unavailable. Repair the connection before submission.',
+        }
+      }
       const saved = await payload.update({
         collection: 'pod-connections',
         id: connectionId,
@@ -595,7 +536,20 @@ export async function POST(request: Request) {
         },
         overrideAccess: true,
       })
-      return NextResponse.json({ success: true, connection: saved, health })
+      return NextResponse.json(
+        {
+          success: health.ready,
+          connection: {
+            id: saved.id,
+            status: saved.status,
+            lastHealthStatus: saved.lastHealthStatus,
+            lastHealthReason: saved.lastHealthReason,
+            lastHealthCheckedAt: saved.lastHealthCheckedAt,
+          },
+          health,
+        },
+        { status: health.ready ? 200 : 503 },
+      )
     }
 
     if (action === 'pod-preflight') {
@@ -614,13 +568,29 @@ export async function POST(request: Request) {
       const siteId = relationId(connection.site)
       assertSiteAccess(siteId)
       const adapter = await resolvePodAdapter(payload, connectionId, connection.providerKey, siteId)
+      const actual = await inspectPodArtwork(payload, siteId, {
+        mediaAssetId: artwork.id,
+        area: printArea,
+        placement,
+      })
       const preflight = await adapter.preflight({
         variantId,
         printArea,
-        artwork,
         placement,
+        artwork: {
+          id: actual.area.artworkRenditionId,
+          hash: actual.area.artworkHash,
+          mimeType: 'image/png',
+          widthPx: actual.evidence.width,
+          heightPx: actual.evidence.height,
+          dpi: actual.frozen.effectiveDpi,
+        },
       })
-      return NextResponse.json({ success: true, preflight })
+      return NextResponse.json({
+        success: preflight.passed,
+        preflight,
+        evidenceClass: adapter.metadata.mode,
+      })
     }
 
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })

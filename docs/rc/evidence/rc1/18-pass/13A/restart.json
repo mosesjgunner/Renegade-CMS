@@ -1,0 +1,11 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "stored refund, plan and audited manual override survive PostgreSQL/web restart",
+    "fresh worker creates exactly one frozen plan/manual package/POD job and retries add no duplicates",
+    "restored customer browser observes the recovered paid physical order",
+    "all planning jobs remain unsubmitted with zero provider orders, including refunded/cancelled instructions"
+  ]
+}

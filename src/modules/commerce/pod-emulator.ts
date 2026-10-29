@@ -135,7 +135,7 @@ type StoredOrder = {
 }
 
 export class PodEmulatorAdapter implements PodProviderAdapter {
-  readonly key = 'pod-emulator'
+  readonly key: string = 'pod-emulator'
   readonly contractVersion = POD_ADAPTER_CONTRACT_VERSION
   readonly capabilities = EMULATOR_CAPABILITIES
   readonly metadata = {
@@ -605,7 +605,7 @@ export class PodEmulatorAdapter implements PodProviderAdapter {
         'provider-unavailable',
         this.healthReason ?? 'Emulator provider is currently unavailable.',
         true,
-        false,
+        true,
       )
     }
   }

@@ -392,7 +392,7 @@ export function validateCatalogProduct(product: CatalogProduct): readonly string
         issues.push(`Affiliate variant ${variant.sku} must use affiliate availability.`)
   }
   if (product.capabilities.includes('pod')) {
-    if (!product.podMappings?.length)
+    if (product.state !== 'draft' && !product.podMappings?.length)
       issues.push('POD products require reviewed provider mappings.')
     for (const mapping of product.podMappings ?? []) {
       const variant = product.variants.find((item) => item.sku === mapping.variantSku)
@@ -433,6 +433,8 @@ const offerIsCurrentlyActive = (offer: CatalogOffer, now: number) =>
 
 export function assertCatalogReady(product: CatalogProduct, now = new Date()) {
   const issues = [...validateCatalogProduct(product)]
+  if (product.capabilities.includes('pod') && !product.podMappings?.length)
+    issues.push('POD products require reviewed provider mappings before approval/publication.')
   if (!product.variants.some((variant) => variant.status !== 'archived'))
     issues.push('At least one non-archived variant is required.')
   if (!product.offers.some((offer) => offerIsCurrentlyActive(offer, now.getTime())))
@@ -591,6 +593,8 @@ export function planCatalogImport(
 
 export function catalogReadiness(product: CatalogProduct, now = new Date()) {
   const blockers = [...validateCatalogProduct(product)]
+  if (product.capabilities.includes('pod') && !product.podMappings?.length)
+    blockers.push('POD products require reviewed provider mappings before approval/publication.')
   if (!product.variants.some((variant) => variant.status !== 'archived'))
     blockers.push('At least one non-archived variant is required.')
   if (!product.offers.some((offer) => offerIsCurrentlyActive(offer, now.getTime())))

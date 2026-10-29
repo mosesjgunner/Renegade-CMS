@@ -178,8 +178,16 @@ export function buildFulfillmentPlan(input: {
         continue
       }
 
-      const connection = input.connectionsByProviderKey.get(mapping.providerKey)
-      if (!connection || connection.status === 'disabled') {
+      if (
+        mapping.siteId !== input.siteId ||
+        mapping.productId !== item.productId ||
+        mapping.variantSku !== item.variantSku
+      )
+        throw new Error('POD mapping does not match the plan site/product/variant.')
+      const connection = input.connectionsByProviderKey.get(
+        mapping.connectionId ?? mapping.providerKey,
+      )
+      if (!connection || connection.status !== 'active') {
         // Honest fallback: if connection is disabled or missing, route to manual package!
         manualItemsFallback.push({
           reason: 'provider-disabled',
@@ -188,27 +196,37 @@ export function buildFulfillmentPlan(input: {
         continue
       }
 
-      const existing = podItemsByProvider.get(mapping.providerKey)
+      if (
+        connection.siteId !== input.siteId ||
+        connection.providerKey !== mapping.providerKey ||
+        mapping.snapshot.currency !== input.currency
+      )
+        throw new Error('POD connection/site/provider/currency mismatch.')
+      const existing = podItemsByProvider.get(connection.id)
       if (existing) {
         existing.items.push(item)
       } else {
-        podItemsByProvider.set(mapping.providerKey, { connection, items: [item] })
+        podItemsByProvider.set(connection.id, { connection, items: [item] })
       }
     }
   }
 
   // Build POD packages
-  for (const [providerKey, group] of podItemsByProvider.entries()) {
+  for (const group of podItemsByProvider.values()) {
     let estimatedCost = 0n
     for (const item of group.items) {
-      const unitCost = BigInt(item.podMapping?.snapshot?.costMinor ?? '1200')
+      if (
+        !item.podMapping?.snapshot?.available ||
+        !/^(0|[1-9][0-9]*)$/.test(item.podMapping.snapshot.costMinor)
+      )
+        throw new Error('POD item requires observed available cost evidence.')
+      const unitCost = BigInt(item.podMapping.snapshot.costMinor)
       estimatedCost += unitCost * BigInt(item.quantity)
     }
-    estimatedCost += 450n // default estimated shipping
 
     providerPackages.push({
       packageIndex: nextPackageIndex++,
-      providerKey,
+      providerKey: group.connection.providerKey,
       connectionId: group.connection.id,
       items: group.items,
       estimatedCostMinor: estimatedCost.toString(),
@@ -373,6 +391,7 @@ export function createPodJobAfterPaidAcceptance(input: {
 }
 
 export function isPodJobEligibleForSubmission(job: PODJob, now: number = Date.now()): boolean {
+  if (job.externalOrderId) return false
   if (job.state === 'created' || job.state === 'submitting') return true
   if (job.state === 'on_hold') {
     if (job.releasedAt) return true

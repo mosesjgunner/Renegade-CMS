@@ -60,6 +60,8 @@ export class PodProviderError extends Error {
     message: string,
     readonly retryable: boolean,
     readonly outcomeKnown: boolean,
+    readonly requestId?: string,
+    readonly httpStatus?: number,
   ) {
     super(message)
     this.name = 'PodProviderError'
@@ -167,6 +169,7 @@ export type PodRecipientAddress = Readonly<{
 
 export type PodOrderItemInput = Readonly<{
   variantId: string
+  remoteProductId?: string
   externalVariantSku?: string
   quantity: number
   printAreas: readonly Readonly<{
@@ -199,6 +202,8 @@ export type PodLineFulfillment = Readonly<{
 
 export type PodOrderResult = Readonly<{
   externalOrderId: string
+  providerStatus?: string
+  requestId?: string
   state: PodProviderState
   costMinor?: string
   currency?: string
@@ -276,6 +281,7 @@ export interface PodProviderAdapter {
   estimateCost(input: PodCostEstimateInput): Promise<PodCostEstimate>
   createOrder(input: PodCreateOrderInput): Promise<PodOrderResult>
   getOrder(externalOrderId: string): Promise<PodOrderResult>
+  findOrderByIdempotencyKey?(idempotencyKey: string): Promise<PodOrderResult | null>
   cancelOrder(
     externalOrderId: string,
     reason?: string,

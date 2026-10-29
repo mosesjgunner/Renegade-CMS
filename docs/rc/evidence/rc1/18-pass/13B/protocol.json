@@ -1,0 +1,339 @@
+{
+  "runId": "90545147-e720-406c-af62-9cbe21282499",
+  "passed": 12,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "printful actual HTTP adapter submission retains provider identity/status/request ID",
+    "printful transmits stable request identity in actual protocol body",
+    "printful provider-server restart retains real response identity",
+    "printful actual unknown status cannot manufacture acceptance/shipment",
+    "printful known HTTP rejection remains redacted and known",
+    "printful actual lost-response order recovered by stable external request identity",
+    "printify actual HTTP adapter submission retains provider identity/status/request ID",
+    "printify transmits stable request identity in actual protocol body",
+    "printify provider-server restart retains real response identity",
+    "printify actual unknown status cannot manufacture acceptance/shipment",
+    "printify known HTTP rejection remains redacted and known",
+    "printify actual lost-response order recovered by stable external request identity"
+  ],
+  "calls": [
+    {
+      "provider": "printful",
+      "method": "POST",
+      "path": "/printful/orders",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printful",
+        "recipient": {
+          "name": "Protocol Local",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "state_code": "TX",
+          "country_code": "US",
+          "zip": "78701",
+          "email": "local@example.test"
+        },
+        "items": [
+          {
+            "variant_id": 123,
+            "quantity": 1,
+            "files": [
+              {
+                "type": "front",
+                "url": "https://example.test/local-only-not-fetched.png"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "code": 200,
+        "result": {
+          "id": 1012,
+          "status": "pending",
+          "external_id": "90545147-e720-406c-af62-9cbe21282499-printful"
+        }
+      },
+      "requestId": "protocol-13",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printful",
+      "method": "GET",
+      "path": "/printful/orders/1012",
+      "input": {},
+      "response": {
+        "code": 200,
+        "result": {
+          "id": 1012,
+          "status": "unrecognized-provider-status",
+          "external_id": "90545147-e720-406c-af62-9cbe21282499-printful"
+        }
+      },
+      "requestId": "protocol-14",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printful",
+      "method": "GET",
+      "path": "/printful/orders/1012",
+      "input": {},
+      "response": {
+        "code": 200,
+        "result": {
+          "id": 1012,
+          "status": "unrecognized-provider-status",
+          "external_id": "90545147-e720-406c-af62-9cbe21282499-printful"
+        }
+      },
+      "requestId": "protocol-15",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printful",
+      "method": "POST",
+      "path": "/printful/orders",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printful-reject",
+        "recipient": {
+          "name": "Protocol Local",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "state_code": "TX",
+          "country_code": "US",
+          "zip": "78701",
+          "email": "local@example.test"
+        },
+        "items": [
+          {
+            "variant_id": 123,
+            "quantity": 1,
+            "files": [
+              {
+                "type": "front",
+                "url": "https://example.test/local-only-not-fetched.png"
+              }
+            ]
+          }
+        ]
+      },
+      "response": {
+        "error": "local rejection; secret must not be persisted"
+      },
+      "requestId": "protocol-16",
+      "status": 422,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printful",
+      "method": "POST",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printful-lost",
+        "recipient": {
+          "name": "Protocol Local",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "state_code": "TX",
+          "country_code": "US",
+          "zip": "78701",
+          "email": "local@example.test"
+        },
+        "items": [
+          {
+            "variant_id": 123,
+            "quantity": 1,
+            "files": [
+              {
+                "type": "front",
+                "url": "https://example.test/local-only-not-fetched.png"
+              }
+            ]
+          }
+        ]
+      },
+      "requestId": "protocol-17",
+      "transport": "response-lost-after-persist",
+      "response": {
+        "id": 1016,
+        "status": "pending",
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printful-lost"
+      },
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printful",
+      "method": "GET",
+      "path": "/printful/orders/%4090545147-e720-406c-af62-9cbe21282499-printful-lost",
+      "input": {},
+      "response": {
+        "code": 200,
+        "result": {
+          "id": 1016,
+          "status": "pending",
+          "external_id": "90545147-e720-406c-af62-9cbe21282499-printful-lost"
+        }
+      },
+      "requestId": "protocol-18",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "POST",
+      "path": "/printify/v1/shops/shop-local/orders.json",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify",
+        "line_items": [
+          {
+            "product_id": "existing-shop-product",
+            "variant_id": 123,
+            "quantity": 1
+          }
+        ],
+        "shipping_method": 1,
+        "send_shipping_notification": false,
+        "address_to": {
+          "first_name": "Protocol",
+          "last_name": "Local",
+          "email": "local@example.test",
+          "country": "US",
+          "region": "TX",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "zip": "78701"
+        }
+      },
+      "response": {
+        "id": "printify-1018",
+        "status": "pending",
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify"
+      },
+      "requestId": "protocol-19",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "GET",
+      "path": "/printify/v1/shops/shop-local/orders/printify-1018.json",
+      "input": {},
+      "response": {
+        "id": "printify-1018",
+        "status": "unrecognized-provider-status",
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify"
+      },
+      "requestId": "protocol-20",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "GET",
+      "path": "/printify/v1/shops/shop-local/orders/printify-1018.json",
+      "input": {},
+      "response": {
+        "id": "printify-1018",
+        "status": "unrecognized-provider-status",
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify"
+      },
+      "requestId": "protocol-21",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "POST",
+      "path": "/printify/v1/shops/shop-local/orders.json",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify-reject",
+        "line_items": [
+          {
+            "product_id": "existing-shop-product",
+            "variant_id": 123,
+            "quantity": 1
+          }
+        ],
+        "shipping_method": 1,
+        "send_shipping_notification": false,
+        "address_to": {
+          "first_name": "Protocol",
+          "last_name": "Local",
+          "email": "local@example.test",
+          "country": "US",
+          "region": "TX",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "zip": "78701"
+        }
+      },
+      "response": {
+        "error": "local rejection; secret must not be persisted"
+      },
+      "requestId": "protocol-22",
+      "status": 422,
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "POST",
+      "input": {
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify-lost",
+        "line_items": [
+          {
+            "product_id": "existing-shop-product",
+            "variant_id": 123,
+            "quantity": 1
+          }
+        ],
+        "shipping_method": 1,
+        "send_shipping_notification": false,
+        "address_to": {
+          "first_name": "Protocol",
+          "last_name": "Local",
+          "email": "local@example.test",
+          "country": "US",
+          "region": "TX",
+          "address1": "1 Test St",
+          "city": "Austin",
+          "zip": "78701"
+        }
+      },
+      "requestId": "protocol-23",
+      "transport": "response-lost-after-persist",
+      "response": {
+        "id": "printify-1022",
+        "status": "pending",
+        "external_id": "90545147-e720-406c-af62-9cbe21282499-printify-lost"
+      },
+      "evidenceClass": "local-protocol-harness"
+    },
+    {
+      "provider": "printify",
+      "method": "GET",
+      "path": "/printify/v1/shops/shop-local/orders.json?limit=100",
+      "input": {},
+      "response": {
+        "data": [
+          {
+            "id": "printify-1018",
+            "status": "unrecognized-provider-status",
+            "external_id": "90545147-e720-406c-af62-9cbe21282499-printify"
+          },
+          {
+            "id": "printify-1022",
+            "status": "pending",
+            "external_id": "90545147-e720-406c-af62-9cbe21282499-printify-lost"
+          }
+        ]
+      },
+      "requestId": "protocol-24",
+      "status": 200,
+      "evidenceClass": "local-protocol-harness",
+      "originalResponseSha256": "c4169d2398c98f519fc25400b52f4f3849f9192c9078103a59c91ec400d56ac6"
+    }
+  ],
+  "projection": "Current run identity only. List responses project current identities and retain original-response hash."
+}

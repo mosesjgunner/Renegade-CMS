@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const fixture = vi.hoisted(() => ({
   payload: { auth: vi.fn(), findByID: vi.fn(), find: vi.fn(), update: vi.fn(), create: vi.fn() },
@@ -20,7 +20,7 @@ import { POST } from '../../src/app/(frontend)/api/admin/fulfillment/route'
 const request = (body: Record<string, unknown>) =>
   new Request('http://localhost/api/admin/fulfillment', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', origin: 'http://localhost' },
     body: JSON.stringify(body),
   })
 const job = {
@@ -34,19 +34,51 @@ const job = {
   itemsSnapshot: [],
   attemptCount: 0,
 }
+const paidOrder = {
+  id: 'order-a',
+  site: 'site-a',
+  merchantConnection: 'merchant-a',
+  checkoutSession: 'session-a',
+  state: 'paid',
+  receipt: { state: 'issued' },
+  amountMinor: '500',
+  currency: 'USD',
+  transitionLog: [],
+}
+const paidPayment = {
+  site: 'site-a',
+  merchantConnection: 'merchant-a',
+  state: 'paid',
+  amountMinor: '500',
+  currency: 'USD',
+  financialEvents: [{ kind: 'succeeded', resultingState: 'succeeded' }],
+}
 
 describe('fulfillment provider, tenant and completion boundaries', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
+  })
   beforeEach(() => {
     vi.clearAllMocks()
     fixture.payload.auth.mockResolvedValue({ user: { id: 'operator-a', role: 'administrator' } })
     fixture.payload.update.mockImplementation(async ({ id, data }) => ({ id, ...data }))
+    fixture.payload.find.mockResolvedValue({ docs: [paidPayment] })
   })
 
   it('rejects an unconfigured Printful connection without submitting to an emulator', async () => {
     fixture.payload.findByID.mockImplementation(async ({ collection }) =>
-      collection === 'pod-jobs'
-        ? job
-        : { id: 'connection-a', site: 'site-a', providerKey: 'printful', status: 'active' },
+      collection === 'orders'
+        ? paidOrder
+        : collection === 'pod-jobs'
+          ? job
+          : {
+              id: 'connection-a',
+              site: 'site-a',
+              merchantConnection: 'merchant-a',
+              providerKey: 'printful',
+              status: 'active',
+            },
     )
     const res = await POST(request({ action: 'submit-pod-job', jobId: job.id }))
     expect(res.status).toBe(503)
@@ -56,9 +88,11 @@ describe('fulfillment provider, tenant and completion boundaries', () => {
 
   it('rejects a foreign provider connection even when the job belongs to the actor site', async () => {
     fixture.payload.findByID.mockImplementation(async ({ collection }) =>
-      collection === 'pod-jobs'
-        ? job
-        : { id: 'connection-a', site: 'site-b', providerKey: 'printful', status: 'active' },
+      collection === 'orders'
+        ? paidOrder
+        : collection === 'pod-jobs'
+          ? job
+          : { id: 'connection-a', site: 'site-b', providerKey: 'printful', status: 'active' },
     )
     const res = await POST(request({ action: 'submit-pod-job', jobId: job.id }))
     expect(res.status).toBe(403)
@@ -89,10 +123,24 @@ describe('fulfillment provider, tenant and completion boundaries', () => {
   })
 
   it('reports submission failure as a failed HTTP operation while retaining its durable attempt', async () => {
+    vi.stubEnv('RENEGADE_POD_SIMULATOR_ENABLED', 'true')
+    vi.stubEnv('RENEGADE_POD_SIMULATOR_URL', 'http://127.0.0.1:39026')
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response(JSON.stringify({ ready: true, health: 'healthy' }))),
+    )
     fixture.payload.findByID.mockImplementation(async ({ collection }) =>
-      collection === 'pod-jobs'
-        ? { ...job, providerKey: 'pod-emulator' }
-        : { id: 'connection-a', site: 'site-a', providerKey: 'pod-emulator', status: 'active' },
+      collection === 'orders'
+        ? paidOrder
+        : collection === 'pod-jobs'
+          ? { ...job, providerKey: 'pod-emulator' }
+          : {
+              id: 'connection-a',
+              site: 'site-a',
+              merchantConnection: 'merchant-a',
+              providerKey: 'pod-emulator',
+              status: 'active',
+            },
     )
     fixture.submit.mockResolvedValue({
       success: false,
@@ -113,19 +161,25 @@ describe('fulfillment provider, tenant and completion boundaries', () => {
   })
 
   it('keeps an order open when a sibling POD job failed', async () => {
-    fixture.payload.findByID.mockResolvedValue({
-      id: 'package-a',
-      site: 'site-a',
-      order: 'order-a',
-      status: 'acknowledged',
-      auditTrail: [],
-      approvedLines: [],
-    })
+    fixture.payload.findByID.mockImplementation(async ({ collection }) =>
+      collection === 'orders'
+        ? paidOrder
+        : {
+            id: 'package-a',
+            site: 'site-a',
+            order: 'order-a',
+            status: 'acknowledged',
+            auditTrail: [],
+            approvedLines: [],
+          },
+    )
     fixture.payload.find.mockImplementation(async ({ collection }) => ({
       docs:
-        collection === 'pod-jobs'
-          ? [{ id: 'failed-job', state: 'failed' }]
-          : [{ id: 'package-a', status: 'acknowledged' }],
+        collection === 'payment-intents'
+          ? [paidPayment]
+          : collection === 'pod-jobs'
+            ? [{ id: 'failed-job', state: 'failed' }]
+            : [{ id: 'package-a', status: 'acknowledged' }],
     }))
     const res = await POST(
       request({
@@ -143,7 +197,7 @@ describe('fulfillment provider, tenant and completion boundaries', () => {
   it('completes a failed POD package only after its persisted manual handoff ships', async () => {
     fixture.payload.findByID.mockImplementation(async ({ collection }) =>
       collection === 'orders'
-        ? { id: 'order-a', transitionLog: [] }
+        ? paidOrder
         : {
             id: 'package-a',
             site: 'site-a',
@@ -157,16 +211,18 @@ describe('fulfillment provider, tenant and completion boundaries', () => {
     )
     fixture.payload.find.mockImplementation(async ({ collection }) => ({
       docs:
-        collection === 'pod-jobs'
-          ? [{ id: 'failed-job', state: 'failed', packageIndex: 2 }]
-          : [
-              {
-                id: 'package-a',
-                source: 'pod-submission-exhausted',
-                packageIndex: 2,
-                status: 'acknowledged',
-              },
-            ],
+        collection === 'payment-intents'
+          ? [paidPayment]
+          : collection === 'pod-jobs'
+            ? [{ id: 'failed-job', state: 'failed', packageIndex: 2 }]
+            : [
+                {
+                  id: 'package-a',
+                  source: 'pod-submission-exhausted',
+                  packageIndex: 2,
+                  status: 'acknowledged',
+                },
+              ],
     }))
     const res = await POST(
       request({

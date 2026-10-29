@@ -9689,6 +9689,7 @@ export interface PodConnection {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
   providerKey: string;
   label: string;
   remoteStoreId?: string | null;
@@ -14679,6 +14680,7 @@ export interface PodConnectionsSelect<T extends boolean = true> {
   publication?: T;
   space?: T;
   owner?: T;
+  merchantConnection?: T;
   providerKey?: T;
   label?: T;
   remoteStoreId?: T;

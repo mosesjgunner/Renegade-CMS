@@ -35,13 +35,37 @@ export type PrintfulAdapterConfig = Readonly<{
   fetchFn?: typeof fetch
 }>
 
+/** Unknown provider vocabulary must never imply acceptance or shipment. */
+export function normalizePrintfulOrderState(status: string): PodOrderResult['state'] {
+  switch (status) {
+    case 'draft':
+      return 'created'
+    case 'pending':
+      return 'submitted'
+    case 'onhold':
+      return 'on_hold'
+    case 'inprocess':
+      return 'in_production'
+    case 'partial':
+      return 'partially_shipped'
+    case 'fulfilled':
+      return 'shipped'
+    case 'canceled':
+      return 'cancelled'
+    case 'failed':
+      return 'failed'
+    default:
+      return 'exception'
+  }
+}
+
 export class PrintfulPodAdapter implements PodProviderAdapter {
-  readonly key = 'printful'
+  readonly key: string = 'printful'
   readonly contractVersion = POD_ADAPTER_CONTRACT_VERSION
   readonly capabilities = PRINTFUL_CAPABILITIES
   readonly metadata = {
     implementationVersion: '1.0.0',
-    providerApiVersion: 'v2',
+    providerApiVersion: 'v1-orders/v2-catalog',
     mode: 'live-configured' as const,
     liveCreationOptInRequired: true,
   }
@@ -89,7 +113,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
   }> {
     const start = Date.now()
     try {
-      const res = await this.fetch(`${this.apiBaseUrl}/v2/store`, {
+      const res = await this.fetch(`${this.apiBaseUrl}/stores`, {
         headers: this.headers(),
       })
       const latencyMs = Date.now() - start
@@ -114,7 +138,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
       return {
         ready: false,
         health: 'unavailable',
-        reason: (err as Error).message ?? 'Network unreachable for Printful.',
+        reason: 'Printful connection unavailable.',
         latencyMs: Date.now() - start,
       }
     }
@@ -147,7 +171,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
       if (err instanceof PodProviderError) throw err
       throw new PodProviderError(
         'provider-unavailable',
-        `Network failure connecting to Printful catalog: ${(err as Error).message}`,
+        'Printful catalog unavailable.',
         true,
         false,
       )
@@ -157,7 +181,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
   async getVariants(remoteProductId: string): Promise<readonly PodVariant[]> {
     try {
       const res = await this.fetch(
-        `${this.apiBaseUrl}/v2/catalog-products/${remoteProductId}/variants`,
+        `${this.apiBaseUrl}/v2/catalog-products/${encodeURIComponent(remoteProductId)}/catalog-variants`,
         { headers: this.headers() },
       )
       if (!res.ok) {
@@ -195,7 +219,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
       if (err instanceof PodProviderError) throw err
       throw new PodProviderError(
         'provider-unavailable',
-        `Network error fetching variants: ${(err as Error).message}`,
+        'Printful variant lookup unavailable.',
         true,
         false,
       )
@@ -284,7 +308,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
     }
 
     const body = {
-      external_id: input.orderId,
+      external_id: input.idempotencyKey,
       recipient: {
         name: input.recipient.name,
         address1: input.recipient.address1,
@@ -297,8 +321,7 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
         email: input.recipient.email,
       },
       items: input.items.map((item) => ({
-        sync_variant_id: item.variantId,
-        external_variant_id: item.externalVariantSku,
+        variant_id: Number(item.variantId),
         quantity: item.quantity,
         files: item.printAreas.map((pa) => ({
           type: pa.area,
@@ -308,33 +331,45 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
     }
 
     try {
-      const res = await this.fetch(`${this.apiBaseUrl}/v2/orders`, {
+      const res = await this.fetch(`${this.apiBaseUrl}/orders`, {
         method: 'POST',
         headers: this.headers(),
         body: JSON.stringify(body),
       })
 
       if (!res.ok) {
-        const errText = await res.text()
+        await res.body?.cancel()
         throw new PodProviderError(
           'invalid-request',
-          `Printful rejected order creation (${res.status}): ${errText}`,
+          `Printful rejected order creation (HTTP ${res.status}).`,
           res.status >= 500,
-          false,
+          res.status < 500,
+          res.headers.get('x-request-id') ?? undefined,
+          res.status,
         )
       }
 
-      const data = (await res.json()) as { data: { id: number; status: string } }
+      const raw = (await res.json()) as { result: { id: number; status: string } }
+      if (!raw.result?.id || !raw.result.status)
+        throw new PodProviderError(
+          'unknown-outcome',
+          'Printful response lacks order identity/status.',
+          false,
+          false,
+        )
+      const data = { data: raw.result }
       return {
         externalOrderId: String(data.data.id),
-        state: 'submitted',
+        state: normalizePrintfulOrderState(data.data.status),
+        providerStatus: data.data.status,
+        requestId: res.headers.get('x-request-id') ?? undefined,
         createdAt: new Date().toISOString(),
       }
     } catch (err) {
       if (err instanceof PodProviderError) throw err
       throw new PodProviderError(
         'provider-unavailable',
-        `Network error submitting Printful order: ${(err as Error).message}`,
+        'Printful submission response was lost; reconcile before retrying.',
         true,
         false,
       )
@@ -343,19 +378,24 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
 
   async getOrder(externalOrderId: string): Promise<PodOrderResult> {
     try {
-      const res = await this.fetch(`${this.apiBaseUrl}/v2/orders/${externalOrderId}`, {
-        headers: this.headers(),
-      })
+      const res = await this.fetch(
+        `${this.apiBaseUrl}/orders/${encodeURIComponent(externalOrderId)}`,
+        {
+          headers: this.headers(),
+        },
+      )
       if (!res.ok) {
         throw new PodProviderError(
-          'not-found',
-          `Order ${externalOrderId} not found on Printful.`,
-          false,
-          true,
+          res.status === 404 ? 'not-found' : 'provider-unavailable',
+          `Printful lookup returned HTTP ${res.status}.`,
+          res.status >= 500 || res.status === 429,
+          res.status === 404,
+          res.headers.get('x-request-id') ?? undefined,
+          res.status,
         )
       }
-      const data = (await res.json()) as {
-        data: {
+      const raw = (await res.json()) as {
+        result: {
           id: number
           status: string
           costs?: { total: string; currency: string }
@@ -369,25 +409,29 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
         }
       }
 
+      if (!raw.result?.id || !raw.result.status)
+        throw new PodProviderError(
+          'unknown-outcome',
+          'Printful response lacks order identity/status.',
+          false,
+          false,
+        )
+      const data = { data: raw.result }
       const fulfillments = (data.data.shipments ?? []).map((s) => ({
         fulfillmentId: String(s.id),
         status: 'shipped' as const,
-        lineIndices: [0], // Printful default
+        lineIndices: [], // Provider shipment-to-local-line mapping is not available; do not invent it.
         carrier: s.carrier,
         trackingNumber: s.tracking_number,
         trackingUrl: s.tracking_url,
         shippedAt: s.ship_date,
       }))
 
-      let state: PodOrderResult['state'] = 'submitted'
-      if (data.data.status === 'inprocess') state = 'in_production'
-      else if (data.data.status === 'fulfilled') state = 'shipped'
-      else if (data.data.status === 'canceled') state = 'cancelled'
-      else if (data.data.status === 'failed') state = 'failed'
-
       return {
         externalOrderId: String(data.data.id),
-        state,
+        state: normalizePrintfulOrderState(data.data.status),
+        providerStatus: data.data.status,
+        requestId: res.headers.get('x-request-id') ?? undefined,
         costMinor: data.data.costs
           ? Math.round(parseFloat(data.data.costs.total) * 100).toString()
           : undefined,
@@ -398,10 +442,19 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
       if (err instanceof PodProviderError) throw err
       throw new PodProviderError(
         'provider-unavailable',
-        `Failed to retrieve Printful order: ${(err as Error).message}`,
+        'Printful order lookup unavailable.',
         true,
         false,
       )
+    }
+  }
+
+  async findOrderByIdempotencyKey(key: string): Promise<PodOrderResult | null> {
+    try {
+      return await this.getOrder(`@${key}`)
+    } catch (error) {
+      if (error instanceof PodProviderError && error.code === 'not-found') return null
+      throw error
     }
   }
 
@@ -410,22 +463,25 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
     reason?: string,
   ): Promise<{ cancelled: boolean; reason?: string }> {
     try {
-      const res = await this.fetch(`${this.apiBaseUrl}/v2/orders/${externalOrderId}`, {
-        method: 'DELETE',
-        headers: this.headers(),
-      })
+      const res = await this.fetch(
+        `${this.apiBaseUrl}/orders/${encodeURIComponent(externalOrderId)}`,
+        {
+          method: 'DELETE',
+          headers: this.headers(),
+        },
+      )
       if (!res.ok) {
-        const text = await res.text()
+        await res.body?.cancel()
         return {
           cancelled: false,
-          reason: `Printful rejected cancellation: ${text}`,
+          reason: `Printful rejected cancellation (HTTP ${res.status}).`,
         }
       }
       return { cancelled: true, reason }
     } catch (err) {
       return {
         cancelled: false,
-        reason: `Network error attempting to cancel Printful order: ${(err as Error).message}`,
+        reason: 'Printful cancellation response unavailable; reconcile before any further action.',
       }
     }
   }
@@ -460,6 +516,15 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
       }
 
       const externalOrderId = String(payload.data?.order?.id ?? '')
+      if (
+        !externalOrderId ||
+        !['package_shipped', 'order_canceled', 'order_failed', 'order_created'].includes(
+          payload.type,
+        ) ||
+        !Number.isFinite(payload.created) ||
+        payload.created <= 0
+      )
+        return null
       const occurredAt = new Date((payload.created || Date.now() / 1000) * 1000).toISOString()
 
       let kind: NormalizedPodEvent['kind'] = 'order_created'

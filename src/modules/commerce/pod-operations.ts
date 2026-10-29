@@ -12,6 +12,7 @@ import type {
   PodRecipientAddress,
 } from './pod-contract'
 import { PodProviderError } from './pod-contract'
+import { loadConfig } from '../core/config'
 import { signPrivatePrintAssetUrl } from './print-renditions'
 
 export const MAX_POD_SUBMIT_ATTEMPTS = 3
@@ -222,7 +223,7 @@ export async function submitPodJobWithRetry(input: {
       job,
       retryable: false,
       handoffRequired: false,
-      error: `Job is currently on hold until ${job.holdExpiresAt}`,
+      error: `Job is not eligible for submission (state ${job.state}; provider order ${job.externalOrderId ? 'already exists' : 'not confirmed'}).`,
     }
   }
 
@@ -244,13 +245,14 @@ export async function submitPodJobWithRetry(input: {
         area: rendition.printArea,
         artworkId: rendition.renditionId,
         artworkHash: rendition.hash,
-        artworkUrl: signedUrl,
+        artworkUrl: new URL(signedUrl, process.env.APP_URL ?? loadConfig().appUrl).href,
         placement: rendition.placement,
       }
     })
 
     return {
       variantId: item.podMapping?.remoteVariantId ?? item.variantSku,
+      remoteProductId: item.podMapping?.remoteProductId,
       externalVariantSku: item.variantSku,
       quantity: item.quantity,
       printAreas,
@@ -280,6 +282,9 @@ export async function submitPodJobWithRetry(input: {
         attempt,
         externalOrderId: result.externalOrderId,
         costMinor: result.costMinor,
+        providerStatus: result.providerStatus,
+        requestId: result.requestId,
+        idempotencyKey: job.idempotencyKey,
       },
     }
 
@@ -295,19 +300,24 @@ export async function submitPodJobWithRetry(input: {
     return { success: true, job: updatedJob }
   } catch (err: unknown) {
     const isProviderErr = err instanceof PodProviderError
-    const retryable = isProviderErr ? err.retryable : false
-    const errMsg = (err as Error).message ?? 'Unknown provider submission error'
+    const outcomeKnown = isProviderErr && err.outcomeKnown
+    const retryable = outcomeKnown && err.retryable
+    const errMsg = isProviderErr
+      ? `POD submission ${err.code}; ${outcomeKnown ? 'provider rejected the request' : 'outcome unknown; reconcile before retrying'}.`
+      : 'POD submission outcome unknown; reconcile before retrying.'
 
     const maxExhausted = attempt >= MAX_POD_SUBMIT_ATTEMPTS
-    const handoffRequired = !retryable || maxExhausted
+    const handoffRequired = outcomeKnown && (!retryable || maxExhausted)
 
-    const targetState = handoffRequired ? 'failed' : 'submitting'
+    const targetState = !outcomeKnown ? 'exception' : handoffRequired ? 'failed' : 'submitting'
 
     const audit: PodJobAuditRecord = {
       timestamp: now,
-      action: handoffRequired
-        ? 'job_submission_failed_terminal'
-        : 'job_submission_retryable_failure',
+      action: !outcomeKnown
+        ? 'job_submission_outcome_unknown'
+        : handoffRequired
+          ? 'job_submission_failed_terminal'
+          : 'job_submission_retryable_failure',
       actor,
       previousState: job.state,
       newState: targetState,
@@ -315,6 +325,10 @@ export async function submitPodJobWithRetry(input: {
         attempt,
         error: errMsg,
         retryable,
+        outcomeKnown,
+        requestId: isProviderErr ? err.requestId : undefined,
+        httpStatus: isProviderErr ? err.httpStatus : undefined,
+        idempotencyKey: job.idempotencyKey,
         handoffRequired,
       },
     }

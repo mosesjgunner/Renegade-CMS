@@ -957,5 +957,13 @@ export async function recoverStaleCommerceJobs(
     }
   }
 
+  try {
+    const { reconcileOutstandingFulfillmentOrders } = await import('./fulfillment-operator')
+    const fulfillmentRecovery = await reconcileOutstandingFulfillmentOrders(payload)
+    recoveredCount += fulfillmentRecovery.reconciledJobsCount
+  } catch {
+    // Non-fatal during commerce recovery sweep
+  }
+
   return recoveredCount
 }

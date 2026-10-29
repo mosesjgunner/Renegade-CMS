@@ -745,6 +745,7 @@ describe('SHOP-03 Print-on-Demand & Fulfillment Contracts', () => {
         podMapping: {
           ...sampleMapping,
           variantSku: 'MUG-BLK',
+          productId: 'prod-mug',
           optionValues: { size: 'standard', color: 'black' },
           remoteProductId: 'emu-mug-202',
           remoteVariantId: 'emu-mug-blk',

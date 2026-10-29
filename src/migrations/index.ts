@@ -1,3 +1,4 @@
+import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
 import * as rc1ReferralLifecycle from './20261029_120000_rc1_referral_lifecycle'
 import * as rc1DeliverySuppressions from './20261021_090000_rc1_delivery_suppressions'
 import * as rc1DiscussionPins from './20261026_100000_rc1_discussion_pins'
@@ -749,6 +750,11 @@ export const migrations = [
     up: rc1ReferralLifecycle.up,
     down: rc1ReferralLifecycle.down,
     name: '20261029_120000_rc1_referral_lifecycle',
+  },
+  {
+    up: rc1FulfillmentBinding.up,
+    down: rc1FulfillmentBinding.down,
+    name: '20261029_130000_rc1_fulfillment_binding',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

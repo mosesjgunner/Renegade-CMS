@@ -238,6 +238,34 @@ export async function reconcilePodJobWithProvider(
   }
 
   const orderResult = await adapter.getOrder(job.externalOrderId)
+  if (orderResult.externalOrderId !== job.externalOrderId)
+    throw new Error('Provider returned another order identity.')
+
+  // Unrecognized or non-accepted provider states are observations, never order-created events.
+  if (['created', 'on_hold', 'submitting', 'exception'].includes(orderResult.state)) {
+    return {
+      ...job,
+      lastReconciledAt: now,
+      lastError:
+        'Provider has not confirmed an accepted fulfillment state; operator reconciliation required.',
+      auditTrail: [
+        ...job.auditTrail,
+        {
+          timestamp: now,
+          action: 'provider_state_unresolved',
+          actor: `provider:${adapter.key}`,
+          previousState: job.state,
+          newState: job.state,
+          details: {
+            externalOrderId: orderResult.externalOrderId,
+            providerStatus: orderResult.providerStatus,
+            requestId: orderResult.requestId,
+            observedState: orderResult.state,
+          },
+        },
+      ],
+    }
+  }
 
   let eventKind: NormalizedPodEvent['kind'] = 'order_created'
   if (orderResult.state === 'in_production') eventKind = 'in_production'
@@ -258,6 +286,34 @@ export async function reconcilePodJobWithProvider(
     rawEvidence: orderResult as unknown as Record<string, unknown>,
   }
 
-  const reconciled = applyNormalizedPodEvent(job, normalizedEvent, now)
-  return { ...reconciled, lastReconciledAt: now }
+  const reconciled = applyNormalizedPodEvent(
+    job.state === 'exception' ? { ...job, state: 'submitting' } : job,
+    normalizedEvent,
+    now,
+  )
+  return {
+    ...reconciled,
+    lastError: undefined,
+    lastReconciledAt: now,
+    auditTrail: [
+      ...reconciled.auditTrail,
+      {
+        timestamp: now,
+        action: 'provider_poll_observed',
+        actor: `provider:${adapter.key}`,
+        previousState: job.state,
+        newState: reconciled.state,
+        details: {
+          providerStatus: orderResult.providerStatus,
+          requestId: orderResult.requestId,
+          externalOrderId: orderResult.externalOrderId,
+          reconciledAt: now,
+          fulfillments:
+            (reconciled as PODJob & { fulfillments?: readonly PodLineFulfillment[] })
+              .fulfillments ?? [],
+          evidenceClass: adapter.metadata.mode,
+        },
+      },
+    ],
+  }
 }

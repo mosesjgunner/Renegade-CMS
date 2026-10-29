@@ -1,0 +1,1 @@
+PASS: 3 orders / 3 plans / 3 POD jobs / 4 manual packages / 4 processed callbacks; exact order-intent site/merchant/amount/currency and issued receipts; planned errors cleared; provider attempts=0, external IDs absent; job connection/site/merchant bindings match.

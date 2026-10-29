@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from '@payload-config'
+import { freezeFulfillmentLines } from '@/modules/commerce/fulfillment-mapping'
 import { bindCheckoutReferral } from '@/modules/commerce/referral-lifecycle'
 import { createHash } from 'node:crypto'
 import { getPayload } from 'payload'
@@ -379,6 +380,26 @@ async function initiateCheckout(
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Invalid checkout quote.' },
+      { status: 409 },
+    )
+  }
+  try {
+    const address = proposal?.shippingAddress?.normalized ?? proposal?.shippingAddress
+    await freezeFulfillmentLines(payload, quotedLines, products, {
+      siteId: String(id(session.site)),
+      merchantId: String(id(session.merchantConnection)),
+      currency: String(session.currency),
+      shipping: address
+        ? {
+            ...address,
+            address1: address.address1 ?? address.line1,
+            address2: address.address2 ?? address.line2,
+          }
+        : undefined,
+    })
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Fulfillment preflight unavailable.' },
       { status: 409 },
     )
   }

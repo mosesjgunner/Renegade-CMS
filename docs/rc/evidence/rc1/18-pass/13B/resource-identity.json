@@ -1,0 +1,12 @@
+﻿{
+    "container":  "rc113b-20261029",
+    "containerId":  "93e9e737710fbabc4a3eb33a56889703d5449095312545d2fc4b4fb1b33f4bc0",
+    "databaseImageId":  "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+    "label":  "rc1.scope=13b",
+    "database":  "rc113b_release_acceptance",
+    "loopbackPort":  5469,
+    "applicationImage":  "none; development runtime",
+    "sourceTreeSha256":  "6aae9249b42ddc0a8ea87d4c6105d8606ea2471c9ce6e1ed332ce0682ad796aa",
+    "operatorScreenshotSha256":  "5242dd73acb3f770017c7528ad6e6c2f5c3e712fd1c6bd8943bca60f477805dc",
+    "restartScreenshotSha256":  "48c5a5c43daf1480d78b302b1392d844215e4ad976b007cfea130d887358ab86"
+}

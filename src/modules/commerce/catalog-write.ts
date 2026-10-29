@@ -24,6 +24,7 @@ export function validateCatalogWrite(
     'digitalDelivery',
     'optionDimensions',
     'slug',
+    'podMappings',
     'canonicalPath',
   ]
   const withoutStock = (value: unknown) =>

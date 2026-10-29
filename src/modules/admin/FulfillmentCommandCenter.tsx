@@ -2,6 +2,7 @@
 
 import { type FC, useState } from 'react'
 import Link from 'next/link'
+import { FulfillmentPlanningPanel } from './FulfillmentPlanningPanel'
 import type { PODJob } from '../commerce/fulfillment-plan'
 import type { ManualFulfillmentPackage } from '../commerce/manual-fulfillment'
 import type { PublicPodConnectionProjection } from '../commerce/pod-connection'
@@ -29,6 +30,7 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
     initialTab,
   )
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
+  const [repairReasons, setRepairReasons] = useState<Record<string, string>>({})
   const [feedback, setFeedback] = useState<string | null>(null)
   const [carrierInputs, setCarrierInputs] = useState<
     Record<string, { carrier: string; trackingNumber: string }>
@@ -48,6 +50,16 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
         body: JSON.stringify(payload),
       })
       const data = await res.json()
+      if (data.job)
+        setJobs((prev) =>
+          prev.map((job) => (job.id === data.job.id ? { ...job, ...data.job } : job)),
+        )
+      if (data.connection)
+        setProviders((prev) =>
+          prev.map((conn) =>
+            conn.id === data.connection.id ? { ...conn, ...data.connection } : conn,
+          ),
+        )
       if (!res.ok || data.success === false) {
         setFeedback(`Error: ${data.error ?? 'Action failed'}`)
         return
@@ -85,7 +97,25 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
   return (
     <main className="gutter--left gutter--right">
       <h1>POD &amp; Fulfillment</h1>
-      <p>Saved fulfillment state. Operator mutations execute through verified worker paths.</p>
+      <FulfillmentPlanningPanel />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+        <p style={{ margin: 0 }}>Saved fulfillment state. Operator mutations execute through verified worker paths.</p>
+        {siteId && (
+          <button
+            type="button"
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.875rem' }}
+            disabled={loadingAction !== null}
+            onClick={() =>
+              executeAction(
+                { action: 'reconcile-outstanding', siteId },
+                'Reconcile outstanding fulfillment orders',
+              )
+            }
+          >
+            Reconcile Outstanding Orders
+          </button>
+        )}
+      </div>
 
       {feedback && (
         <aside
@@ -337,15 +367,92 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
               {job.state === 'failed' && (
                 <>
                   <p style={{ color: '#b91c1c', fontWeight: 'bold' }}>
-                    FAILED WORKER / SUBMISSION - Handoff required
+                    Provider rejected the request. Repair and retry, or review manual fulfillment.
                   </p>
                   <Link href="/admin/collections/manual-fulfillment-packages">
                     View in Manual Queue
                   </Link>
+                  {!job.externalOrderId && (
+                    <div>
+                      <label>
+                        Repair reason
+                        <input
+                          aria-label={`Repair reason ${job.id}`}
+                          value={repairReasons[job.id] ?? ''}
+                          onChange={(e) =>
+                            setRepairReasons((prev) => ({ ...prev, [job.id]: e.target.value }))
+                          }
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        disabled={loadingAction !== null || !repairReasons[job.id]?.trim()}
+                        onClick={() =>
+                          executeAction(
+                            {
+                              action: 'retry-pod-job',
+                              jobId: job.id,
+                              reason: repairReasons[job.id],
+                            },
+                            `Retry repaired ${job.id}`,
+                          )
+                        }
+                      >
+                        Retry known rejected request
+                      </button>
+                    </div>
+                  )}
                 </>
               )}
               {job.holdExpiresAt && <p>Hold expires at: {job.holdExpiresAt}</p>}
-              <p>Attempts: {job.attemptCount}</p>
+              <p>
+                Attempts: {job.attemptCount} | Provider order:{' '}
+                {job.externalOrderId ?? 'not confirmed'}
+              </p>
+              {job.auditTrail
+                .filter((a) =>
+                  [
+                    'provider_poll_observed',
+                    'job_submitted_success',
+                    'provider_state_unresolved',
+                  ].includes(a.action),
+                )
+                .slice(-1)
+                .map((a) => (
+                  <p key={a.timestamp}>
+                    Provider status: {String(a.details?.providerStatus ?? 'unknown')} | Request:{' '}
+                    {String(a.details?.requestId ?? 'not returned')} | Evidence:{' '}
+                    {job.auditTrail.some(
+                      (entry) => entry.details?.evidenceClass === 'deterministic-emulator',
+                    )
+                      ? 'Local simulator'
+                      : 'Provider response'}
+                  </p>
+                ))}
+              {(job as any).fulfillments && (job as any).fulfillments.length > 0 && (
+                <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#f8fafc', borderRadius: '4px' }}>
+                  <p style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold' }}>Tracking &amp; Shipments:</p>
+                  {((job as any).fulfillments as any[]).map((f: any, idx: number) => (
+                    <p key={f.fulfillmentId ?? idx} style={{ margin: '0.25rem 0' }}>
+                      Shipment: <strong>{f.status}</strong> | Carrier: <strong>{f.carrier ?? 'USPS'}</strong> | #{' '}
+                      <strong>{f.trackingNumber ?? 'None'}</strong>
+                      {f.trackingUrl && (
+                        <a
+                          href={f.trackingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ marginLeft: '0.5rem', textDecoration: 'underline' }}
+                        >
+                          Track package
+                        </a>
+                      )}
+                    </p>
+                  ))}
+                </div>
+              )}
+              {job.state === 'exception' && (
+                <p>Outcome unknown. Reconcile before retrying or arranging manual fulfillment.</p>
+              )}
               {job.lastError && <p style={{ color: '#b91c1c' }}>Error: {job.lastError}</p>}
               <p>
                 Reconciliation Age:{' '}
@@ -355,6 +462,20 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
               </p>
 
               <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                {(job.externalOrderId || job.state === 'exception') && (
+                  <button
+                    type="button"
+                    disabled={loadingAction !== null}
+                    onClick={() =>
+                      executeAction(
+                        { action: 'reconcile-pod-job', jobId: job.id },
+                        `Reconcile ${job.id}`,
+                      )
+                    }
+                  >
+                    Reconcile provider
+                  </button>
+                )}
                 {job.state === 'on_hold' && (
                   <button
                     type="button"
@@ -370,20 +491,21 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
                   </button>
                 )}
 
-                {(job.state === 'created' || job.state === 'submitting') && (
-                  <button
-                    type="button"
-                    disabled={loadingAction !== null}
-                    onClick={() =>
-                      executeAction(
-                        { action: 'submit-pod-job', jobId: job.id },
-                        `Submit job ${job.id} to provider`,
-                      )
-                    }
-                  >
-                    Submit to Provider
-                  </button>
-                )}
+                {!job.externalOrderId &&
+                  (job.state === 'created' || job.state === 'submitting') && (
+                    <button
+                      type="button"
+                      disabled={loadingAction !== null}
+                      onClick={() =>
+                        executeAction(
+                          { action: 'submit-pod-job', jobId: job.id },
+                          `Submit job ${job.id} to provider`,
+                        )
+                      }
+                    >
+                      Submit to Provider
+                    </button>
+                  )}
 
                 {job.state !== 'shipped' &&
                   job.state !== 'cancelled' &&

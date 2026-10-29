@@ -18,6 +18,7 @@ export type DetailedPodMapping = Readonly<{
   variantSku: string
   optionValues: Readonly<Record<string, string>>
   providerKey: string
+  connectionId?: string
   remoteProductId: string
   remoteVariantId: string
   printAreas: readonly PodPrintAreaConfig[]

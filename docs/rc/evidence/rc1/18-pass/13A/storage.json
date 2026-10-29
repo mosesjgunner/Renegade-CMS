@@ -1,0 +1,1410 @@
+{
+    "orders": [
+        {
+            "id": "5f07bbde-f14d-43da-9dd6-140c683ffce8",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "items": [
+                {
+                    "kind": "physical",
+                    "title": "Print",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "lineAmountMinor": "1000",
+                    "unitAmountMinor": "1000",
+                    "fulfillmentSnapshot": {
+                        "id": "d0072fd9-964c-411c-890e-d13f56dedc6a",
+                        "mode": "manual",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 1,
+                        "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                        "reviewedAt": "2026-10-29T20:53:58.675Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "MANUAL",
+                        "optionValues": {
+                            "edition": "print"
+                        },
+                        "reviewStatus": "approved",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7"
+                    }
+                },
+                {
+                    "kind": "pod",
+                    "title": "M black",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                    "variantSku": "POD-M",
+                    "lineAmountMinor": "2000",
+                    "unitAmountMinor": "2000",
+                    "fulfillmentSnapshot": {
+                        "id": "65f310c0-1ba8-42d2-a7b2-f3c8d728b815",
+                        "mode": "pod",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 1,
+                        "snapshot": {
+                            "currency": "USD",
+                            "available": true,
+                            "costMinor": "1250",
+                            "observedAt": "2026-10-29T20:53:59.601Z"
+                        },
+                        "createdAt": "2026-10-29T20:53:59.601Z",
+                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                        "updatedAt": "2026-10-29T20:53:59.601Z",
+                        "printAreas": [
+                            {
+                                "area": "front",
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 100,
+                                    "heightMm": 100
+                                },
+                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "artworkRevision": 1,
+                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "reviewedAt": "2026-10-29T20:53:59.579Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "POD-M",
+                        "providerKey": "pod-emulator",
+                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                        "optionValues": {
+                            "size": "m",
+                            "color": "black"
+                        },
+                        "providerMode": "deterministic-emulator",
+                        "reviewStatus": "approved",
+                        "soldRenditions": [
+                            {
+                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "frozenAt": "2026-10-29T20:53:59.601Z",
+                                "revision": 1,
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 100,
+                                    "heightMm": 100
+                                },
+                                "printArea": "front",
+                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "effectiveDpi": 406,
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "integritySignature": "e3f24ce059cb7b063dea10bfc251b528b9a19fb3bab7c91565567d2c7198b9e3",
+                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                            }
+                        ],
+                        "artworkEvidence": [
+                            {
+                                "width": 1600,
+                                "height": 1600,
+                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "antivirus": "not-claimed",
+                                "sizeBytes": 53757,
+                                "inspection": "decoded-private-png",
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "remoteProductId": "emu-tee-101",
+                        "remoteVariantId": "emu-tee-m-blk",
+                        "mockupProvenance": {
+                            "source": "publisher",
+                            "generatedAt": "2026-10-29T20:53:59.601Z"
+                        },
+                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                        "providerCapabilities": {
+                            "supportedPrintAreas": [
+                                "front",
+                                "back",
+                                "sleeve_left",
+                                "sleeve_right",
+                                "all_over"
+                            ],
+                            "supportsCancellation": true,
+                            "supportsLivePreflight": true,
+                            "supportsPoBoxDelivery": false,
+                            "supportsReturnRouting": true,
+                            "supportsAutomaticReprint": true,
+                            "supportsPartialShipments": true,
+                            "supportsLiveCostEstimation": true
+                        }
+                    }
+                }
+            ],
+            "state": "refunded",
+            "receipt": {
+                "state": "issued",
+                "currency": "USD",
+                "verifiedAt": "2026-10-29T20:54:40.490Z",
+                "amountMinor": "3687",
+                "providerKey": "deterministic-test",
+                "receiptNumber": "receipt_5f07bbde-f14d-43da-9dd6-140c683ffce8",
+                "paymentIntentId": "e24948a5-a2e2-40dc-9316-e874ac3c0260"
+            },
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "fulfillment": {
+                "plan": {
+                    "id": "plan_3673ee0520256fe1",
+                    "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                    "orderId": "5f07bbde-f14d-43da-9dd6-140c683ffce8",
+                    "currency": "USD",
+                    "createdAt": "2026-10-29T20:54:41.758Z",
+                    "providerJobs": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "pod",
+                                    "title": "M black",
+                                    "lineId": "line_1",
+                                    "quantity": 1,
+                                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                    "podMapping": {
+                                        "id": "65f310c0-1ba8-42d2-a7b2-f3c8d728b815",
+                                        "mode": "pod",
+                                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                                        "version": 1,
+                                        "snapshot": {
+                                            "currency": "USD",
+                                            "available": true,
+                                            "costMinor": "1250",
+                                            "observedAt": "2026-10-29T20:53:59.601Z"
+                                        },
+                                        "createdAt": "2026-10-29T20:53:59.601Z",
+                                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                        "updatedAt": "2026-10-29T20:53:59.601Z",
+                                        "printAreas": [
+                                            {
+                                                "area": "front",
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 100,
+                                                    "heightMm": 100
+                                                },
+                                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "artworkRevision": 1,
+                                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "reviewedAt": "2026-10-29T20:53:59.579Z",
+                                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                                        "variantSku": "POD-M",
+                                        "providerKey": "pod-emulator",
+                                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                                        "optionValues": {
+                                            "size": "m",
+                                            "color": "black"
+                                        },
+                                        "providerMode": "deterministic-emulator",
+                                        "reviewStatus": "approved",
+                                        "soldRenditions": [
+                                            {
+                                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "frozenAt": "2026-10-29T20:53:59.601Z",
+                                                "revision": 1,
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 100,
+                                                    "heightMm": 100
+                                                },
+                                                "printArea": "front",
+                                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "effectiveDpi": 406,
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "integritySignature": "e3f24ce059cb7b063dea10bfc251b528b9a19fb3bab7c91565567d2c7198b9e3",
+                                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                            }
+                                        ],
+                                        "artworkEvidence": [
+                                            {
+                                                "width": 1600,
+                                                "height": 1600,
+                                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "antivirus": "not-claimed",
+                                                "sizeBytes": 53757,
+                                                "inspection": "decoded-private-png",
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "remoteProductId": "emu-tee-101",
+                                        "remoteVariantId": "emu-tee-m-blk",
+                                        "mockupProvenance": {
+                                            "source": "publisher",
+                                            "generatedAt": "2026-10-29T20:53:59.601Z"
+                                        },
+                                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                                        "providerCapabilities": {
+                                            "supportedPrintAreas": [
+                                                "front",
+                                                "back",
+                                                "sleeve_left",
+                                                "sleeve_right",
+                                                "all_over"
+                                            ],
+                                            "supportsCancellation": true,
+                                            "supportsLivePreflight": true,
+                                            "supportsPoBoxDelivery": false,
+                                            "supportsReturnRouting": true,
+                                            "supportsAutomaticReprint": true,
+                                            "supportsPartialShipments": true,
+                                            "supportsLiveCostEstimation": true
+                                        }
+                                    },
+                                    "variantSku": "POD-M",
+                                    "soldRenditions": [
+                                        {
+                                            "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                            "frozenAt": "2026-10-29T20:53:59.601Z",
+                                            "revision": 1,
+                                            "placement": {
+                                                "topMm": 50,
+                                                "leftMm": 50,
+                                                "widthMm": 100,
+                                                "heightMm": 100
+                                            },
+                                            "printArea": "front",
+                                            "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "effectiveDpi": 406,
+                                            "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "integritySignature": "e3f24ce059cb7b063dea10bfc251b528b9a19fb3bab7c91565567d2c7198b9e3",
+                                            "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                        }
+                                    ],
+                                    "unitPriceMinor": "2000",
+                                    "lineAmountMinor": "2000"
+                                }
+                            ],
+                            "providerKey": "pod-emulator",
+                            "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                            "packageIndex": 0,
+                            "estimatedCostMinor": "1250"
+                        }
+                    ],
+                    "digitalGrants": [
+                    ],
+                    "manualPackages": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "physical",
+                                    "title": "Print",
+                                    "lineId": "line_0",
+                                    "quantity": 1,
+                                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                                    "variantSku": "MANUAL",
+                                    "unitPriceMinor": "1000",
+                                    "lineAmountMinor": "1000"
+                                }
+                            ],
+                            "reason": "explicit-manual",
+                            "packageIndex": 1
+                        }
+                    ],
+                    "recipientAddress": {
+                        "city": "Austin",
+                        "name": "Local recipient",
+                        "state": "TX",
+                        "country": "US",
+                        "address1": "100 Main St",
+                        "postalCode": "78701"
+                    }
+                },
+                "error": null,
+                "planId": "plan_3673ee0520256fe1",
+                "status": "planned",
+                "downloads": [
+                ],
+                "podJobsCount": 1,
+                "activePodJobsCount": 1,
+                "manualPackagesCount": 1,
+                "activeManualPackagesCount": 1
+            },
+            "checkoutSession": "60751d6a-1337-496f-8b8b-7cec3f9d1a7f"
+        },
+        {
+            "id": "ed529450-6b71-4610-93c4-dc99bed13abe",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "items": [
+                {
+                    "kind": "physical",
+                    "title": "Print",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "lineAmountMinor": "1000",
+                    "unitAmountMinor": "1000",
+                    "fulfillmentSnapshot": {
+                        "id": "d0072fd9-964c-411c-890e-d13f56dedc6a",
+                        "mode": "manual",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 1,
+                        "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                        "reviewedAt": "2026-10-29T20:53:58.675Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "MANUAL",
+                        "optionValues": {
+                            "edition": "print"
+                        },
+                        "reviewStatus": "approved",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7"
+                    }
+                },
+                {
+                    "kind": "pod",
+                    "title": "M black",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                    "variantSku": "POD-M",
+                    "lineAmountMinor": "2000",
+                    "unitAmountMinor": "2000",
+                    "fulfillmentSnapshot": {
+                        "id": "1931f534-5bd7-4d5d-97f4-8d0e2e1ff24e",
+                        "mode": "pod",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 2,
+                        "snapshot": {
+                            "currency": "USD",
+                            "available": true,
+                            "costMinor": "1250",
+                            "observedAt": "2026-10-29T20:54:49.350Z"
+                        },
+                        "createdAt": "2026-10-29T20:54:49.350Z",
+                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                        "updatedAt": "2026-10-29T20:54:49.350Z",
+                        "printAreas": [
+                            {
+                                "area": "front",
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 120,
+                                    "heightMm": 100
+                                },
+                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "artworkRevision": 1,
+                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "reviewedAt": "2026-10-29T20:54:49.328Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "POD-M",
+                        "providerKey": "pod-emulator",
+                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                        "optionValues": {
+                            "size": "m",
+                            "color": "black"
+                        },
+                        "providerMode": "deterministic-emulator",
+                        "reviewStatus": "approved",
+                        "soldRenditions": [
+                            {
+                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "frozenAt": "2026-10-29T20:54:49.349Z",
+                                "revision": 1,
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 120,
+                                    "heightMm": 100
+                                },
+                                "printArea": "front",
+                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "effectiveDpi": 339,
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                            }
+                        ],
+                        "artworkEvidence": [
+                            {
+                                "width": 1600,
+                                "height": 1600,
+                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "antivirus": "not-claimed",
+                                "sizeBytes": 53757,
+                                "inspection": "decoded-private-png",
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "remoteProductId": "emu-tee-101",
+                        "remoteVariantId": "emu-tee-m-blk",
+                        "mockupProvenance": {
+                            "source": "publisher",
+                            "generatedAt": "2026-10-29T20:54:49.350Z"
+                        },
+                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                        "providerCapabilities": {
+                            "supportedPrintAreas": [
+                                "front",
+                                "back",
+                                "sleeve_left",
+                                "sleeve_right",
+                                "all_over"
+                            ],
+                            "supportsCancellation": true,
+                            "supportsLivePreflight": true,
+                            "supportsPoBoxDelivery": false,
+                            "supportsReturnRouting": true,
+                            "supportsAutomaticReprint": true,
+                            "supportsPartialShipments": true,
+                            "supportsLiveCostEstimation": true
+                        }
+                    }
+                }
+            ],
+            "state": "paid",
+            "receipt": {
+                "state": "issued",
+                "currency": "USD",
+                "verifiedAt": "2026-10-29T20:55:29.763Z",
+                "amountMinor": "3687",
+                "providerKey": "deterministic-test",
+                "receiptNumber": "receipt_ed529450-6b71-4610-93c4-dc99bed13abe",
+                "paymentIntentId": "b0517816-91ea-417c-b0b7-f90a1fd55ec2"
+            },
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "fulfillment": {
+                "plan": {
+                    "id": "plan_1969c0a873e88d96",
+                    "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                    "orderId": "ed529450-6b71-4610-93c4-dc99bed13abe",
+                    "currency": "USD",
+                    "createdAt": "2026-10-29T20:55:33.036Z",
+                    "providerJobs": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "pod",
+                                    "title": "M black",
+                                    "lineId": "line_1",
+                                    "quantity": 1,
+                                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                    "podMapping": {
+                                        "id": "1931f534-5bd7-4d5d-97f4-8d0e2e1ff24e",
+                                        "mode": "pod",
+                                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                                        "version": 2,
+                                        "snapshot": {
+                                            "currency": "USD",
+                                            "available": true,
+                                            "costMinor": "1250",
+                                            "observedAt": "2026-10-29T20:54:49.350Z"
+                                        },
+                                        "createdAt": "2026-10-29T20:54:49.350Z",
+                                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                        "updatedAt": "2026-10-29T20:54:49.350Z",
+                                        "printAreas": [
+                                            {
+                                                "area": "front",
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 120,
+                                                    "heightMm": 100
+                                                },
+                                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "artworkRevision": 1,
+                                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "reviewedAt": "2026-10-29T20:54:49.328Z",
+                                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                                        "variantSku": "POD-M",
+                                        "providerKey": "pod-emulator",
+                                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                                        "optionValues": {
+                                            "size": "m",
+                                            "color": "black"
+                                        },
+                                        "providerMode": "deterministic-emulator",
+                                        "reviewStatus": "approved",
+                                        "soldRenditions": [
+                                            {
+                                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "frozenAt": "2026-10-29T20:54:49.349Z",
+                                                "revision": 1,
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 120,
+                                                    "heightMm": 100
+                                                },
+                                                "printArea": "front",
+                                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "effectiveDpi": 339,
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                            }
+                                        ],
+                                        "artworkEvidence": [
+                                            {
+                                                "width": 1600,
+                                                "height": 1600,
+                                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "antivirus": "not-claimed",
+                                                "sizeBytes": 53757,
+                                                "inspection": "decoded-private-png",
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "remoteProductId": "emu-tee-101",
+                                        "remoteVariantId": "emu-tee-m-blk",
+                                        "mockupProvenance": {
+                                            "source": "publisher",
+                                            "generatedAt": "2026-10-29T20:54:49.350Z"
+                                        },
+                                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                                        "providerCapabilities": {
+                                            "supportedPrintAreas": [
+                                                "front",
+                                                "back",
+                                                "sleeve_left",
+                                                "sleeve_right",
+                                                "all_over"
+                                            ],
+                                            "supportsCancellation": true,
+                                            "supportsLivePreflight": true,
+                                            "supportsPoBoxDelivery": false,
+                                            "supportsReturnRouting": true,
+                                            "supportsAutomaticReprint": true,
+                                            "supportsPartialShipments": true,
+                                            "supportsLiveCostEstimation": true
+                                        }
+                                    },
+                                    "variantSku": "POD-M",
+                                    "soldRenditions": [
+                                        {
+                                            "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                            "frozenAt": "2026-10-29T20:54:49.349Z",
+                                            "revision": 1,
+                                            "placement": {
+                                                "topMm": 50,
+                                                "leftMm": 50,
+                                                "widthMm": 120,
+                                                "heightMm": 100
+                                            },
+                                            "printArea": "front",
+                                            "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "effectiveDpi": 339,
+                                            "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                            "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                        }
+                                    ],
+                                    "unitPriceMinor": "2000",
+                                    "lineAmountMinor": "2000"
+                                }
+                            ],
+                            "providerKey": "pod-emulator",
+                            "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                            "packageIndex": 0,
+                            "estimatedCostMinor": "1250"
+                        }
+                    ],
+                    "digitalGrants": [
+                    ],
+                    "manualPackages": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "physical",
+                                    "title": "Print",
+                                    "lineId": "line_0",
+                                    "quantity": 1,
+                                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                                    "variantSku": "MANUAL",
+                                    "unitPriceMinor": "1000",
+                                    "lineAmountMinor": "1000"
+                                }
+                            ],
+                            "reason": "explicit-manual",
+                            "packageIndex": 1
+                        }
+                    ],
+                    "recipientAddress": {
+                        "city": "Austin",
+                        "name": "Local recipient",
+                        "state": "TX",
+                        "country": "US",
+                        "address1": "100 Main St",
+                        "postalCode": "78701"
+                    }
+                },
+                "error": null,
+                "planId": "plan_1969c0a873e88d96",
+                "status": "planned",
+                "downloads": [
+                ],
+                "overrides": [
+                    {
+                        "actor": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "jobId": "01a18972-51c0-7f1a-817d-7ec92ad0a0d8",
+                        "reason": "Local operator chooses manual production",
+                        "manualPackageId": "01a18972-5bf2-7504-82d7-08eab95c8449"
+                    }
+                ],
+                "podJobsCount": 1,
+                "activePodJobsCount": 0,
+                "manualPackagesCount": 1,
+                "activeManualPackagesCount": 2
+            },
+            "checkoutSession": "1c35eb75-fb6f-495e-b5ca-0b96bea8affa"
+        },
+        {
+            "id": "0f58550b-366e-4c0a-b308-f5d66f00b673",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "items": [
+                {
+                    "kind": "physical",
+                    "title": "Print",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "lineAmountMinor": "1000",
+                    "unitAmountMinor": "1000",
+                    "fulfillmentSnapshot": {
+                        "id": "d0072fd9-964c-411c-890e-d13f56dedc6a",
+                        "mode": "manual",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 1,
+                        "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                        "reviewedAt": "2026-10-29T20:53:58.675Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "MANUAL",
+                        "optionValues": {
+                            "edition": "print"
+                        },
+                        "reviewStatus": "approved",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7"
+                    }
+                },
+                {
+                    "kind": "pod",
+                    "title": "M black",
+                    "currency": "USD",
+                    "quantity": 1,
+                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                    "variantSku": "POD-M",
+                    "lineAmountMinor": "2000",
+                    "unitAmountMinor": "2000",
+                    "fulfillmentSnapshot": {
+                        "id": "1931f534-5bd7-4d5d-97f4-8d0e2e1ff24e",
+                        "mode": "pod",
+                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                        "version": 2,
+                        "snapshot": {
+                            "currency": "USD",
+                            "available": true,
+                            "costMinor": "1250",
+                            "observedAt": "2026-10-29T20:54:49.350Z"
+                        },
+                        "createdAt": "2026-10-29T20:54:49.350Z",
+                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                        "updatedAt": "2026-10-29T20:54:49.350Z",
+                        "printAreas": [
+                            {
+                                "area": "front",
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 120,
+                                    "heightMm": 100
+                                },
+                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "artworkRevision": 1,
+                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "reviewedAt": "2026-10-29T20:54:49.328Z",
+                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                        "variantSku": "POD-M",
+                        "providerKey": "pod-emulator",
+                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                        "optionValues": {
+                            "size": "m",
+                            "color": "black"
+                        },
+                        "providerMode": "deterministic-emulator",
+                        "reviewStatus": "approved",
+                        "soldRenditions": [
+                            {
+                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "frozenAt": "2026-10-29T20:54:49.349Z",
+                                "revision": 1,
+                                "placement": {
+                                    "topMm": 50,
+                                    "leftMm": 50,
+                                    "widthMm": 120,
+                                    "heightMm": 100
+                                },
+                                "printArea": "front",
+                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "effectiveDpi": 339,
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                            }
+                        ],
+                        "artworkEvidence": [
+                            {
+                                "width": 1600,
+                                "height": 1600,
+                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                "antivirus": "not-claimed",
+                                "sizeBytes": 53757,
+                                "inspection": "decoded-private-png",
+                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                            }
+                        ],
+                        "remoteProductId": "emu-tee-101",
+                        "remoteVariantId": "emu-tee-m-blk",
+                        "mockupProvenance": {
+                            "source": "publisher",
+                            "generatedAt": "2026-10-29T20:54:49.350Z"
+                        },
+                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                        "providerCapabilities": {
+                            "supportedPrintAreas": [
+                                "front",
+                                "back",
+                                "sleeve_left",
+                                "sleeve_right",
+                                "all_over"
+                            ],
+                            "supportsCancellation": true,
+                            "supportsLivePreflight": true,
+                            "supportsPoBoxDelivery": false,
+                            "supportsReturnRouting": true,
+                            "supportsAutomaticReprint": true,
+                            "supportsPartialShipments": true,
+                            "supportsLiveCostEstimation": true
+                        }
+                    }
+                }
+            ],
+            "state": "paid",
+            "receipt": {
+                "state": "issued",
+                "currency": "USD",
+                "verifiedAt": "2026-10-29T20:55:53.944Z",
+                "amountMinor": "3687",
+                "providerKey": "deterministic-test",
+                "receiptNumber": "receipt_0f58550b-366e-4c0a-b308-f5d66f00b673",
+                "paymentIntentId": "c482581c-378e-46b7-a6d0-70cd9d420728"
+            },
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "fulfillment": {
+                "plan": {
+                    "id": "plan_9a6d29e89015555e",
+                    "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                    "orderId": "0f58550b-366e-4c0a-b308-f5d66f00b673",
+                    "currency": "USD",
+                    "createdAt": "2026-10-29T20:56:25.293Z",
+                    "providerJobs": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "pod",
+                                    "title": "M black",
+                                    "lineId": "line_1",
+                                    "quantity": 1,
+                                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                    "podMapping": {
+                                        "id": "1931f534-5bd7-4d5d-97f4-8d0e2e1ff24e",
+                                        "mode": "pod",
+                                        "siteId": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+                                        "version": 2,
+                                        "snapshot": {
+                                            "currency": "USD",
+                                            "available": true,
+                                            "costMinor": "1250",
+                                            "observedAt": "2026-10-29T20:54:49.350Z"
+                                        },
+                                        "createdAt": "2026-10-29T20:54:49.350Z",
+                                        "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                                        "updatedAt": "2026-10-29T20:54:49.350Z",
+                                        "printAreas": [
+                                            {
+                                                "area": "front",
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 120,
+                                                    "heightMm": 100
+                                                },
+                                                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "artworkRevision": 1,
+                                                "artworkRenditionId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "reviewedAt": "2026-10-29T20:54:49.328Z",
+                                        "reviewedBy": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                                        "variantSku": "POD-M",
+                                        "providerKey": "pod-emulator",
+                                        "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                                        "optionValues": {
+                                            "size": "m",
+                                            "color": "black"
+                                        },
+                                        "providerMode": "deterministic-emulator",
+                                        "reviewStatus": "approved",
+                                        "soldRenditions": [
+                                            {
+                                                "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "frozenAt": "2026-10-29T20:54:49.349Z",
+                                                "revision": 1,
+                                                "placement": {
+                                                    "topMm": 50,
+                                                    "leftMm": 50,
+                                                    "widthMm": 120,
+                                                    "heightMm": 100
+                                                },
+                                                "printArea": "front",
+                                                "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "effectiveDpi": 339,
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                                "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                                "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                            }
+                                        ],
+                                        "artworkEvidence": [
+                                            {
+                                                "width": 1600,
+                                                "height": 1600,
+                                                "checksum": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                                "antivirus": "not-claimed",
+                                                "sizeBytes": 53757,
+                                                "inspection": "decoded-private-png",
+                                                "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97"
+                                            }
+                                        ],
+                                        "remoteProductId": "emu-tee-101",
+                                        "remoteVariantId": "emu-tee-m-blk",
+                                        "mockupProvenance": {
+                                            "source": "publisher",
+                                            "generatedAt": "2026-10-29T20:54:49.350Z"
+                                        },
+                                        "artworkRevisionId": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                        "pinnedArtworkHash": "228be46a86b58f8954cada68a5ca5e2545c115813d6835887cd1744662dc6dee",
+                                        "availabilityEvidence": "deterministic-emulator-catalog-and-template",
+                                        "merchantConnectionId": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+                                        "providerCapabilities": {
+                                            "supportedPrintAreas": [
+                                                "front",
+                                                "back",
+                                                "sleeve_left",
+                                                "sleeve_right",
+                                                "all_over"
+                                            ],
+                                            "supportsCancellation": true,
+                                            "supportsLivePreflight": true,
+                                            "supportsPoBoxDelivery": false,
+                                            "supportsReturnRouting": true,
+                                            "supportsAutomaticReprint": true,
+                                            "supportsPartialShipments": true,
+                                            "supportsLiveCostEstimation": true
+                                        }
+                                    },
+                                    "variantSku": "POD-M",
+                                    "soldRenditions": [
+                                        {
+                                            "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                                            "frozenAt": "2026-10-29T20:54:49.349Z",
+                                            "revision": 1,
+                                            "placement": {
+                                                "topMm": 50,
+                                                "leftMm": 50,
+                                                "widthMm": 120,
+                                                "heightMm": 100
+                                            },
+                                            "printArea": "front",
+                                            "renditionId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "effectiveDpi": 339,
+                                            "mediaAssetId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                                            "integritySignature": "34c361c0bd1e76c1157d082ee623011f8d8aec95aa15c385d5524729af0961f3",
+                                            "colorFidelityDisclaimer": "No color-fidelity promise: Screen previews are approximations (sRGB); print results may vary based on garment color, fabric substrate, and direct-to-garment (DTG) ink absorption."
+                                        }
+                                    ],
+                                    "unitPriceMinor": "2000",
+                                    "lineAmountMinor": "2000"
+                                }
+                            ],
+                            "providerKey": "pod-emulator",
+                            "connectionId": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+                            "packageIndex": 0,
+                            "estimatedCostMinor": "1250"
+                        }
+                    ],
+                    "digitalGrants": [
+                    ],
+                    "manualPackages": [
+                        {
+                            "items": [
+                                {
+                                    "kind": "physical",
+                                    "title": "Print",
+                                    "lineId": "line_0",
+                                    "quantity": 1,
+                                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                                    "variantSku": "MANUAL",
+                                    "unitPriceMinor": "1000",
+                                    "lineAmountMinor": "1000"
+                                }
+                            ],
+                            "reason": "explicit-manual",
+                            "packageIndex": 1
+                        }
+                    ],
+                    "recipientAddress": {
+                        "city": "Austin",
+                        "name": "Local recipient",
+                        "state": "TX",
+                        "country": "US",
+                        "address1": "100 Main St",
+                        "postalCode": "78701"
+                    }
+                },
+                "error": null,
+                "planId": "plan_9a6d29e89015555e",
+                "status": "planned",
+                "downloads": [
+                ],
+                "podJobsCount": 1,
+                "activePodJobsCount": 1,
+                "manualPackagesCount": 1,
+                "activeManualPackagesCount": 1
+            },
+            "checkoutSession": "964ffe41-d28f-498e-a8c1-79a378dd2e89"
+        }
+    ],
+    "podJobs": [
+        {
+            "id": "01a18971-896e-77c0-85fc-00543f8f7d58",
+            "cost": {
+                "basis": "observed-item-estimate",
+                "currency": "USD",
+                "shipping": "unquoted",
+                "providerMode": "deterministic-emulator",
+                "providerQuote": false,
+                "estimatedCostMinor": "1250"
+            },
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_settlement",
+                    "action": "job_created",
+                    "details": {
+                        "payloadHash": "d09c4adcf1daa588ce11445ee0ca6c11685cc77de11879de23990e6c5bd58286",
+                        "holdExpiresAt": "2026-10-29T22:54:41.759Z",
+                        "estimatedCostMinor": "1250"
+                    },
+                    "newState": "on_hold",
+                    "timestamp": "2026-10-29T20:54:41.759Z"
+                }
+            ],
+            "order": "5f07bbde-f14d-43da-9dd6-140c683ffce8",
+            "state": "on_hold",
+            "connection": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+            "attemptCount": 0,
+            "packageIndex": 0,
+            "externalOrderId": null
+        },
+        {
+            "id": "01a18972-51c0-7f1a-817d-7ec92ad0a0d8",
+            "cost": {
+                "basis": "observed-item-estimate",
+                "currency": "USD",
+                "shipping": "unquoted",
+                "providerMode": "deterministic-emulator",
+                "providerQuote": false,
+                "estimatedCostMinor": "1250"
+            },
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_settlement",
+                    "action": "job_created",
+                    "details": {
+                        "payloadHash": "02a427cd82e7aa960a919c34eae193f8714a13bc89636a67e3847923be166f05",
+                        "holdExpiresAt": "2026-10-29T22:55:33.036Z",
+                        "estimatedCostMinor": "1250"
+                    },
+                    "newState": "on_hold",
+                    "timestamp": "2026-10-29T20:55:33.036Z"
+                },
+                {
+                    "actor": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                    "action": "manual_override",
+                    "details": {
+                        "reason": "Local operator chooses manual production",
+                        "manualPackageId": "01a18972-5bf2-7504-82d7-08eab95c8449"
+                    },
+                    "newState": "cancelled",
+                    "timestamp": "2026-10-29T20:55:35.679Z"
+                }
+            ],
+            "order": "ed529450-6b71-4610-93c4-dc99bed13abe",
+            "state": "cancelled",
+            "connection": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+            "attemptCount": 0,
+            "packageIndex": 0,
+            "externalOrderId": null
+        },
+        {
+            "id": "01a18973-1ddc-7b7e-8e18-1b9ba5625849",
+            "cost": {
+                "basis": "observed-item-estimate",
+                "currency": "USD",
+                "shipping": "unquoted",
+                "providerMode": "deterministic-emulator",
+                "providerQuote": false,
+                "estimatedCostMinor": "1250"
+            },
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_settlement",
+                    "action": "job_created",
+                    "details": {
+                        "payloadHash": "325f0e120b03e5c926ee231d9af55312e95623d46af3609bb7f9a5aaf92e3de9",
+                        "holdExpiresAt": "2026-10-29T22:56:25.294Z",
+                        "estimatedCostMinor": "1250"
+                    },
+                    "newState": "on_hold",
+                    "timestamp": "2026-10-29T20:56:25.294Z"
+                }
+            ],
+            "order": "0f58550b-366e-4c0a-b308-f5d66f00b673",
+            "state": "on_hold",
+            "connection": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+            "attemptCount": 0,
+            "packageIndex": 0,
+            "externalOrderId": null
+        }
+    ],
+    "callbacks": [
+        {
+            "id": "4aa8f221-2705-42f1-855b-d9418e890f25",
+            "processingState": "processed",
+            "providerEventId": "local-test-paid:01a18971-2022-765d-8eee-528769730561"
+        },
+        {
+            "id": "bc9da4cc-d7d5-4ecb-8d6a-c0b609fbc3ae",
+            "processingState": "processed",
+            "providerEventId": "local-test-paid:01a18972-1886-70d5-8edd-c8c9b9825698"
+        },
+        {
+            "id": "8736dcf6-c713-4310-beca-6fb16f5873ed",
+            "processingState": "processed",
+            "providerEventId": "13a-cancelled-unpaid"
+        },
+        {
+            "id": "7a96dbae-0365-474a-9d7d-d97ffe5c33c1",
+            "processingState": "processed",
+            "providerEventId": "local-test-paid:01a18972-9771-7356-8b82-4ceed4475ad3"
+        }
+    ],
+    "connections": [
+        {
+            "id": "01a18970-b16e-7206-8b74-d811fe325b65",
+            "site": "64c2e78a-67b2-4c89-9d84-7d1e4c03896b",
+            "status": "active",
+            "merchant": "9e22c679-001d-46f6-a68d-4d79f9f73e3a",
+            "provider": "pod-emulator"
+        },
+        {
+            "id": "01a18970-b1d9-7059-82d5-ee1966da828b",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "status": "active",
+            "merchant": "9f8d836a-a4fb-4a24-aefb-5a07288513d3",
+            "provider": "pod-emulator"
+        },
+        {
+            "id": "01a18970-b247-75e0-894c-badc1b78092a",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "status": "active",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "provider": "printful"
+        },
+        {
+            "id": "01a18970-b11c-7bbb-87b7-08c6ff76ae43",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "status": "active",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "provider": "pod-emulator"
+        }
+    ],
+    "manualPackages": [
+        {
+            "id": "01a18971-898c-7262-84cc-c5a2666235a7",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_router",
+                    "action": "package_created",
+                    "details": {
+                        "source": "explicit-manual-product",
+                        "linesCount": 1
+                    },
+                    "timestamp": "2026-10-29T20:54:41.800Z"
+                }
+            ],
+            "lines": [
+                {
+                    "title": "Print",
+                    "lineId": "line_0",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "artworkSpecs": [
+                    ]
+                }
+            ],
+            "order": "5f07bbde-f14d-43da-9dd6-140c683ffce8",
+            "source": "explicit-manual-product",
+            "status": "pending_acknowledgement",
+            "packageIndex": 1
+        },
+        {
+            "id": "01a18972-51f4-7e05-84ac-f41a43df9303",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_router",
+                    "action": "package_created",
+                    "details": {
+                        "source": "explicit-manual-product",
+                        "linesCount": 1
+                    },
+                    "timestamp": "2026-10-29T20:55:33.103Z"
+                }
+            ],
+            "lines": [
+                {
+                    "title": "Print",
+                    "lineId": "line_0",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "artworkSpecs": [
+                    ]
+                }
+            ],
+            "order": "ed529450-6b71-4610-93c4-dc99bed13abe",
+            "source": "explicit-manual-product",
+            "status": "pending_acknowledgement",
+            "packageIndex": 1
+        },
+        {
+            "id": "01a18972-5bf2-7504-82d7-08eab95c8449",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                    "action": "package_created",
+                    "details": {
+                        "source": "pod-provider-fallback",
+                        "linesCount": 1
+                    },
+                    "timestamp": "2026-10-29T20:55:35.660Z"
+                },
+                {
+                    "actor": "5b50b75f-245c-4610-aa02-886af911dfbc",
+                    "action": "operator_override",
+                    "details": {
+                        "jobId": "01a18972-51c0-7f1a-817d-7ec92ad0a0d8",
+                        "reason": "Local operator chooses manual production"
+                    },
+                    "timestamp": "2026-10-29T20:55:35.660Z"
+                }
+            ],
+            "lines": [
+                {
+                    "title": "M black",
+                    "lineId": "line_1",
+                    "quantity": 1,
+                    "productId": "b79d1514-8051-439d-be96-534b83d98adf",
+                    "variantSku": "POD-M",
+                    "artworkSpecs": [
+                        {
+                            "area": "front",
+                            "artworkId": "7383d4b1-01d7-470e-ba08-a201a279df97",
+                            "placement": {
+                                "topMm": 50,
+                                "leftMm": 50,
+                                "widthMm": 120,
+                                "heightMm": 100
+                            },
+                            "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                            "downloadUrl": ""
+                        }
+                    ]
+                }
+            ],
+            "order": "ed529450-6b71-4610-93c4-dc99bed13abe",
+            "source": "pod-provider-fallback",
+            "status": "pending_acknowledgement",
+            "packageIndex": 0
+        },
+        {
+            "id": "01a18973-1ded-7472-80e9-d18f5c0f8bb4",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "audit": [
+                {
+                    "actor": "commerce_router",
+                    "action": "package_created",
+                    "details": {
+                        "source": "explicit-manual-product",
+                        "linesCount": 1
+                    },
+                    "timestamp": "2026-10-29T20:56:25.322Z"
+                }
+            ],
+            "lines": [
+                {
+                    "title": "Print",
+                    "lineId": "line_0",
+                    "quantity": 1,
+                    "productId": "18413471-cfb5-4419-bfe9-48cacc406e7e",
+                    "variantSku": "MANUAL",
+                    "artworkSpecs": [
+                    ]
+                }
+            ],
+            "order": "0f58550b-366e-4c0a-b308-f5d66f00b673",
+            "source": "explicit-manual-product",
+            "status": "pending_acknowledgement",
+            "packageIndex": 1
+        }
+    ],
+    "paymentIntents": [
+        {
+            "id": "e24948a5-a2e2-40dc-9316-e874ac3c0260",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "state": "refunded",
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "checkoutSession": "60751d6a-1337-496f-8b8b-7cec3f9d1a7f",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a18971-2022-765d-8eee-528769730561",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T20:54:40.397Z",
+                    "verifiedAt": "2026-10-29T20:54:40.490Z",
+                    "amountMinor": "3687",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_ebc12b31ecc9c0ee5aa1e750"
+                },
+                {
+                    "kind": "refunded",
+                    "currency": "USD",
+                    "refundId": "01a18972-6e31-70b9-82c3-649d125d1306",
+                    "occurredAt": "2026-10-29T20:55:40.534Z",
+                    "amountMinor": "100",
+                    "providerReference": "det_re_refund:5f07bbde-f14d-43da-9dd6-140c683ffce8:1:100"
+                },
+                {
+                    "kind": "refunded",
+                    "currency": "USD",
+                    "refundId": "01a18972-7957-7b6d-80fa-9631689c0f1c",
+                    "occurredAt": "2026-10-29T20:55:44.548Z",
+                    "amountMinor": "3587",
+                    "providerReference": "det_re_refund:5f07bbde-f14d-43da-9dd6-140c683ffce8:2:3587"
+                }
+            ]
+        },
+        {
+            "id": "b0517816-91ea-417c-b0b7-f90a1fd55ec2",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "state": "paid",
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "checkoutSession": "1c35eb75-fb6f-495e-b5ca-0b96bea8affa",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a18972-1886-70d5-8edd-c8c9b9825698",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T20:55:29.711Z",
+                    "verifiedAt": "2026-10-29T20:55:29.763Z",
+                    "amountMinor": "3687",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_17c5fcf93e4a17f9149d1ae8"
+                }
+            ]
+        },
+        {
+            "id": "b900aec5-d114-4db1-9aae-f0d6d0be6cc3",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "state": "cancelled",
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "checkoutSession": "b449203e-079a-4076-b05e-a3db3b1515bb",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:13a-cancelled-unpaid",
+                    "kind": "cancelled",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T20:55:47.316Z",
+                    "verifiedAt": "2026-10-29T20:55:47.393Z",
+                    "amountMinor": "3687",
+                    "resultingState": "cancelled",
+                    "providerReference": "det_cs_2418d70f527cb8e80840a31e"
+                }
+            ]
+        },
+        {
+            "id": "c482581c-378e-46b7-a6d0-70cd9d420728",
+            "site": "74d2bb5b-42d8-4abe-be53-38a4cabd368a",
+            "state": "paid",
+            "currency": "USD",
+            "merchant": "242a6218-5edc-4abc-aab7-b3f5a59518b7",
+            "amountMinor": "3687",
+            "checkoutSession": "964ffe41-d28f-498e-a8c1-79a378dd2e89",
+            "financialEvents": [
+                {
+                    "id": "provider:deterministic-test:local-test-paid:01a18972-9771-7356-8b82-4ceed4475ad3",
+                    "kind": "succeeded",
+                    "currency": "USD",
+                    "occurredAt": "2026-10-29T20:55:53.893Z",
+                    "verifiedAt": "2026-10-29T20:55:53.944Z",
+                    "amountMinor": "3687",
+                    "resultingState": "succeeded",
+                    "providerReference": "det_cs_c16b25d757f5c1f63b443f9c"
+                }
+            ]
+        }
+    ]
+}

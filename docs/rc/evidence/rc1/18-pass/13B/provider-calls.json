@@ -1,0 +1,1402 @@
+{
+  "evidenceClass": "local-simulator",
+  "scopeConnections": [
+    "01a189ce-c7c9-71d4-8bbe-7442f23641b5",
+    "01a189d0-5e91-71e9-894f-477ec94cd19e"
+  ],
+  "sourceStateSha256": "0c3fa69b530e798b6d289b2151bdbc4cc96f9fd1d1317469b8132986196024b2",
+  "orders": {
+    "printful:01a189ce-c7c9-71d4-8bbe-7442f23641b5:pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:8593172e-f212-4571-ae26-8e4d91cbffc7:0:717f0822978a3835": {
+      "input": {
+        "orderId": "8593172e-f212-4571-ae26-8e4d91cbffc7",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:8593172e-f212-4571-ae26-8e4d91cbffc7:0:717f0822978a3835",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399864907&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189cf-ae77-7036-851b-02e5ce1317df",
+          "attempt": "1"
+        }
+      },
+      "result": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "shipped",
+        "providerStatus": "simulated:shipped",
+        "requestId": "sim-request-49",
+        "fulfillments": [
+          {
+            "fulfillmentId": "sim-shipment-sim-9089dcb47fd4da62fd14",
+            "status": "shipped",
+            "lineIndices": [
+              0
+            ],
+            "carrier": "USPS",
+            "trackingNumber": "SIMULATOR123456",
+            "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction?tLabels=SIMULATOR123456",
+            "shippedAt": "2026-10-29T22:37:49.747Z"
+          }
+        ],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "provider": "printful",
+      "connection": "01a189ce-c7c9-71d4-8bbe-7442f23641b5",
+      "evidenceClass": "local-simulator"
+    },
+    "printify:01a189d0-5e91-71e9-894f-477ec94cd19e:pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:f4fad8fb-27c0-4e53-af3c-efc5dc9bd649:0:ab55d37b5cd58b43": {
+      "input": {
+        "orderId": "f4fad8fb-27c0-4e53-af3c-efc5dc9bd649",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:f4fad8fb-27c0-4e53-af3c-efc5dc9bd649:0:ab55d37b5cd58b43",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399914768&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189d0-8ab0-7a1c-87e9-11783d065da4",
+          "attempt": "1"
+        }
+      },
+      "result": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-56",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "provider": "printify",
+      "connection": "01a189d0-5e91-71e9-894f-477ec94cd19e",
+      "evidenceClass": "local-simulator"
+    },
+    "printify:01a189d0-5e91-71e9-894f-477ec94cd19e:pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:92623fef-db47-4973-8550-91975ecff93f:0:21130e2ccdaa06ad": {
+      "input": {
+        "orderId": "92623fef-db47-4973-8550-91975ecff93f",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:92623fef-db47-4973-8550-91975ecff93f:0:21130e2ccdaa06ad",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399940640&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189d0-db56-71c8-8e3e-9ff1a7360183",
+          "attempt": "2"
+        }
+      },
+      "result": {
+        "externalOrderId": "sim-8f0360aa359601cac018",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-63",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:39:00.716Z"
+      },
+      "provider": "printify",
+      "connection": "01a189d0-5e91-71e9-894f-477ec94cd19e",
+      "evidenceClass": "local-simulator"
+    }
+  },
+  "calls": [
+    {
+      "requestId": "sim-request-36",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/variants",
+      "inputHash": "55de114f0bf96932a30a0ca63c92f75dc1d58b7c95b081cde0f3611b23608f22",
+      "input": {
+        "productId": "emu-tee-101"
+      },
+      "response": [
+        {
+          "id": "emu-tee-s-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - S / Black",
+          "sku": "EMU-TEE-S-BLK",
+          "color": "black",
+          "size": "s",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 200,
+          "dimensionsMm": {
+            "length": 280,
+            "width": 200,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / Black",
+          "sku": "EMU-TEE-M-BLK",
+          "color": "black",
+          "size": "m",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-l-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - L / Black",
+          "sku": "EMU-TEE-L-BLK",
+          "color": "black",
+          "size": "l",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 240,
+          "dimensionsMm": {
+            "length": 300,
+            "width": 220,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-wht",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / White",
+          "sku": "EMU-TEE-M-WHT",
+          "color": "white",
+          "size": "m",
+          "costMinor": "1150",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-37",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/variants",
+      "inputHash": "55de114f0bf96932a30a0ca63c92f75dc1d58b7c95b081cde0f3611b23608f22",
+      "input": {
+        "productId": "emu-tee-101"
+      },
+      "response": [
+        {
+          "id": "emu-tee-s-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - S / Black",
+          "sku": "EMU-TEE-S-BLK",
+          "color": "black",
+          "size": "s",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 200,
+          "dimensionsMm": {
+            "length": 280,
+            "width": 200,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / Black",
+          "sku": "EMU-TEE-M-BLK",
+          "color": "black",
+          "size": "m",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-l-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - L / Black",
+          "sku": "EMU-TEE-L-BLK",
+          "color": "black",
+          "size": "l",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 240,
+          "dimensionsMm": {
+            "length": 300,
+            "width": 220,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-wht",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / White",
+          "sku": "EMU-TEE-M-WHT",
+          "color": "white",
+          "size": "m",
+          "costMinor": "1150",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-38",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/templates",
+      "inputHash": "4bea16686345104a586e60d3c924ebeb3b84b053e7efe3cee0af8a4c0fa47ebb",
+      "input": {
+        "variantId": "emu-tee-m-blk"
+      },
+      "response": [
+        {
+          "id": "tpl-emu-tee-m-blk-front",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "front",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        },
+        {
+          "id": "tpl-emu-tee-m-blk-back",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "back",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-39",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/variants",
+      "inputHash": "55de114f0bf96932a30a0ca63c92f75dc1d58b7c95b081cde0f3611b23608f22",
+      "input": {
+        "productId": "emu-tee-101"
+      },
+      "response": [
+        {
+          "id": "emu-tee-s-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - S / Black",
+          "sku": "EMU-TEE-S-BLK",
+          "color": "black",
+          "size": "s",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 200,
+          "dimensionsMm": {
+            "length": 280,
+            "width": 200,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / Black",
+          "sku": "EMU-TEE-M-BLK",
+          "color": "black",
+          "size": "m",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-l-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - L / Black",
+          "sku": "EMU-TEE-L-BLK",
+          "color": "black",
+          "size": "l",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 240,
+          "dimensionsMm": {
+            "length": 300,
+            "width": 220,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-wht",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / White",
+          "sku": "EMU-TEE-M-WHT",
+          "color": "white",
+          "size": "m",
+          "costMinor": "1150",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-40",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/templates",
+      "inputHash": "4bea16686345104a586e60d3c924ebeb3b84b053e7efe3cee0af8a4c0fa47ebb",
+      "input": {
+        "variantId": "emu-tee-m-blk"
+      },
+      "response": [
+        {
+          "id": "tpl-emu-tee-m-blk-front",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "front",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        },
+        {
+          "id": "tpl-emu-tee-m-blk-back",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "back",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-41",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/preflight",
+      "inputHash": "c242216ff807c7fbcecc80e8376660603872df67f29486df64554e3b1e71c536",
+      "input": {
+        "variantId": "emu-tee-m-blk",
+        "printArea": "front",
+        "artwork": {
+          "id": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+          "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+          "mimeType": "image/png",
+          "widthPx": 1600,
+          "heightPx": 1600,
+          "dpi": 406
+        },
+        "placement": {
+          "topMm": 50,
+          "leftMm": 50,
+          "widthMm": 100,
+          "heightMm": 100
+        }
+      },
+      "response": {
+        "passed": true,
+        "effectiveDpi": 406,
+        "issues": [],
+        "provenance": {
+          "source": "publisher",
+          "generatedAt": "2026-10-29T22:36:47.155Z",
+          "hash": "f49a437a74bad20d425d733f51240d6274a834643f033c263cc7d8d9087282ca"
+        },
+        "evidenceClass": "local-simulator"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-42",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/variants",
+      "inputHash": "55de114f0bf96932a30a0ca63c92f75dc1d58b7c95b081cde0f3611b23608f22",
+      "input": {
+        "productId": "emu-tee-101"
+      },
+      "response": [
+        {
+          "id": "emu-tee-s-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - S / Black",
+          "sku": "EMU-TEE-S-BLK",
+          "color": "black",
+          "size": "s",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 200,
+          "dimensionsMm": {
+            "length": 280,
+            "width": 200,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / Black",
+          "sku": "EMU-TEE-M-BLK",
+          "color": "black",
+          "size": "m",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-l-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - L / Black",
+          "sku": "EMU-TEE-L-BLK",
+          "color": "black",
+          "size": "l",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 240,
+          "dimensionsMm": {
+            "length": 300,
+            "width": 220,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-wht",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / White",
+          "sku": "EMU-TEE-M-WHT",
+          "color": "white",
+          "size": "m",
+          "costMinor": "1150",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-43",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/templates",
+      "inputHash": "4bea16686345104a586e60d3c924ebeb3b84b053e7efe3cee0af8a4c0fa47ebb",
+      "input": {
+        "variantId": "emu-tee-m-blk"
+      },
+      "response": [
+        {
+          "id": "tpl-emu-tee-m-blk-front",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "front",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        },
+        {
+          "id": "tpl-emu-tee-m-blk-back",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "back",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-44",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/preflight",
+      "inputHash": "c242216ff807c7fbcecc80e8376660603872df67f29486df64554e3b1e71c536",
+      "input": {
+        "variantId": "emu-tee-m-blk",
+        "printArea": "front",
+        "artwork": {
+          "id": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+          "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+          "mimeType": "image/png",
+          "widthPx": 1600,
+          "heightPx": 1600,
+          "dpi": 406
+        },
+        "placement": {
+          "topMm": 50,
+          "leftMm": 50,
+          "widthMm": 100,
+          "heightMm": 100
+        }
+      },
+      "response": {
+        "passed": true,
+        "effectiveDpi": 406,
+        "issues": [],
+        "provenance": {
+          "source": "publisher",
+          "generatedAt": "2026-10-29T22:36:48.090Z",
+          "hash": "f49a437a74bad20d425d733f51240d6274a834643f033c263cc7d8d9087282ca"
+        },
+        "evidenceClass": "local-simulator"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-45",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/health",
+      "inputHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "input": {},
+      "response": {
+        "ready": true,
+        "health": "healthy",
+        "latencyMs": 0
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-46",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/create",
+      "inputHash": "22cfc34d0a6c358ce5e878f7c390ce66d935cd6a561140c7a01634bc143ed93f",
+      "input": {
+        "orderId": "8593172e-f212-4571-ae26-8e4d91cbffc7",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:8593172e-f212-4571-ae26-8e4d91cbffc7:0:717f0822978a3835",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399864907&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189cf-ae77-7036-851b-02e5ce1317df",
+          "attempt": "1"
+        }
+      },
+      "response": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-46",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-48",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/get",
+      "inputHash": "ac0a6f7a72f4777bdb9eca6f35a9f1805006da06faf753d587f96852524d0ced",
+      "input": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14"
+      },
+      "response": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "in_production",
+        "providerStatus": "simulated:in_production",
+        "requestId": "sim-request-48",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-50",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/get",
+      "inputHash": "ac0a6f7a72f4777bdb9eca6f35a9f1805006da06faf753d587f96852524d0ced",
+      "input": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14"
+      },
+      "response": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "shipped",
+        "providerStatus": "simulated:shipped",
+        "requestId": "sim-request-50",
+        "fulfillments": [
+          {
+            "fulfillmentId": "sim-shipment-sim-9089dcb47fd4da62fd14",
+            "status": "shipped",
+            "lineIndices": [
+              0
+            ],
+            "carrier": "USPS",
+            "trackingNumber": "SIMULATOR123456",
+            "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction?tLabels=SIMULATOR123456",
+            "shippedAt": "2026-10-29T22:37:49.747Z"
+          }
+        ],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-51",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/variants",
+      "inputHash": "55de114f0bf96932a30a0ca63c92f75dc1d58b7c95b081cde0f3611b23608f22",
+      "input": {
+        "productId": "emu-tee-101"
+      },
+      "response": [
+        {
+          "id": "emu-tee-s-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - S / Black",
+          "sku": "EMU-TEE-S-BLK",
+          "color": "black",
+          "size": "s",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 200,
+          "dimensionsMm": {
+            "length": 280,
+            "width": 200,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / Black",
+          "sku": "EMU-TEE-M-BLK",
+          "color": "black",
+          "size": "m",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-l-blk",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - L / Black",
+          "sku": "EMU-TEE-L-BLK",
+          "color": "black",
+          "size": "l",
+          "costMinor": "1250",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 240,
+          "dimensionsMm": {
+            "length": 300,
+            "width": 220,
+            "height": 15
+          }
+        },
+        {
+          "id": "emu-tee-m-wht",
+          "productId": "emu-tee-101",
+          "name": "Heavyweight Cotton Tee - M / White",
+          "sku": "EMU-TEE-M-WHT",
+          "color": "white",
+          "size": "m",
+          "costMinor": "1150",
+          "currency": "USD",
+          "available": true,
+          "weightGrams": 220,
+          "dimensionsMm": {
+            "length": 290,
+            "width": 210,
+            "height": 15
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-52",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/templates",
+      "inputHash": "4bea16686345104a586e60d3c924ebeb3b84b053e7efe3cee0af8a4c0fa47ebb",
+      "input": {
+        "variantId": "emu-tee-m-blk"
+      },
+      "response": [
+        {
+          "id": "tpl-emu-tee-m-blk-front",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "front",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        },
+        {
+          "id": "tpl-emu-tee-m-blk-back",
+          "variantId": "emu-tee-m-blk",
+          "printArea": "back",
+          "templateWidthMm": 300,
+          "templateHeightMm": 400,
+          "minDpi": 150,
+          "recommendedDpi": 300,
+          "printAreaBounds": {
+            "topMm": 50,
+            "leftMm": 50,
+            "widthMm": 280,
+            "heightMm": 380
+          },
+          "formatRequirements": {
+            "allowedMimeTypes": [
+              "image/png",
+              "image/tiff",
+              "application/pdf"
+            ],
+            "maxSizeBytes": 52428800
+          }
+        }
+      ],
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-53",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/preflight",
+      "inputHash": "c242216ff807c7fbcecc80e8376660603872df67f29486df64554e3b1e71c536",
+      "input": {
+        "variantId": "emu-tee-m-blk",
+        "printArea": "front",
+        "artwork": {
+          "id": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+          "hash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+          "mimeType": "image/png",
+          "widthPx": 1600,
+          "heightPx": 1600,
+          "dpi": 406
+        },
+        "placement": {
+          "topMm": 50,
+          "leftMm": 50,
+          "widthMm": 100,
+          "heightMm": 100
+        }
+      },
+      "response": {
+        "passed": true,
+        "effectiveDpi": 406,
+        "issues": [],
+        "provenance": {
+          "source": "publisher",
+          "generatedAt": "2026-10-29T22:38:18.881Z",
+          "hash": "f49a437a74bad20d425d733f51240d6274a834643f033c263cc7d8d9087282ca"
+        },
+        "evidenceClass": "local-simulator"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-55",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/health",
+      "inputHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "input": {},
+      "response": {
+        "ready": true,
+        "health": "healthy",
+        "latencyMs": 0
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-56",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/create",
+      "input": {
+        "orderId": "f4fad8fb-27c0-4e53-af3c-efc5dc9bd649",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:f4fad8fb-27c0-4e53-af3c-efc5dc9bd649:0:ab55d37b5cd58b43",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399914768&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189d0-8ab0-7a1c-87e9-11783d065da4",
+          "attempt": "1"
+        }
+      },
+      "inputHash": "84aa88744a7a48e57c04ab1ee15d298618f3aa815d174d51afe476fb549fdb1b",
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-56",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "transport": "response-lost-after-persist",
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-57",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/find",
+      "inputHash": "d9c7ffee4d742ab23d2561be045622e9332eecf24180ca505faf4f8583e697bf",
+      "input": {
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:f4fad8fb-27c0-4e53-af3c-efc5dc9bd649:0:ab55d37b5cd58b43"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-56",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-58",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/get",
+      "inputHash": "3ad7b0032763084aa94825b2940dedd54726f3032f339c5b269edd68f60fcfff",
+      "input": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-58",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-60",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/health",
+      "inputHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "input": {},
+      "response": {
+        "ready": true,
+        "health": "healthy",
+        "latencyMs": 0
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-61",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/create",
+      "inputHash": "77cd9e74a3c60217609f4b43b11f853760697c7c08a0b386c5a264e97a8513b2",
+      "input": {
+        "orderId": "92623fef-db47-4973-8550-91975ecff93f",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:92623fef-db47-4973-8550-91975ecff93f:0:21130e2ccdaa06ad",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399933411&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189d0-db56-71c8-8e3e-9ff1a7360183",
+          "attempt": "1"
+        }
+      },
+      "response": {
+        "code": "invalid-request",
+        "retryable": false,
+        "outcomeKnown": true
+      },
+      "status": 422,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-62",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/health",
+      "inputHash": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "input": {},
+      "response": {
+        "ready": true,
+        "health": "healthy",
+        "latencyMs": 0
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-63",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/create",
+      "inputHash": "1f5ce31a2d5189204c35f1083f872a0b950cd7ac7b6fb95dfa5a8050c13d5386",
+      "input": {
+        "orderId": "92623fef-db47-4973-8550-91975ecff93f",
+        "idempotencyKey": "pod_job:ba79ab11-8c9f-4fa6-83e9-eada010e50a3:92623fef-db47-4973-8550-91975ecff93f:0:21130e2ccdaa06ad",
+        "recipient": {
+          "city": "Austin",
+          "name": "Local recipient",
+          "state": "TX",
+          "country": "US",
+          "address1": "100 Main St",
+          "postalCode": "78701"
+        },
+        "items": [
+          {
+            "variantId": "emu-tee-m-blk",
+            "remoteProductId": "emu-tee-101",
+            "externalVariantSku": "POD-M",
+            "quantity": 1,
+            "printAreas": [
+              {
+                "area": "front",
+                "artworkId": "6c9fabd3-c9a4-45dd-aeb9-91d822c12058",
+                "artworkHash": "sha256:0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40",
+                "artworkUrl": "http://localhost:39025/api/commerce/pod/assets/6c9fabd3-c9a4-45dd-aeb9-91d822c12058?site=ba79ab11-8c9f-4fa6-83e9-eada010e50a3&hash=sha256%3A0039d24cf473e1b47489ada05a897e979809cda480ae379bfbe9b64391c7fa40&exp=1793399940640&sig=REDACTED",
+                "placement": {
+                  "topMm": 50,
+                  "leftMm": 50,
+                  "widthMm": 100,
+                  "heightMm": 100
+                }
+              }
+            ]
+          }
+        ],
+        "metadata": {
+          "siteId": "ba79ab11-8c9f-4fa6-83e9-eada010e50a3",
+          "jobId": "01a189d0-db56-71c8-8e3e-9ff1a7360183",
+          "attempt": "2"
+        }
+      },
+      "response": {
+        "externalOrderId": "sim-8f0360aa359601cac018",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-63",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:39:00.716Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-64",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/get",
+      "inputHash": "ac0a6f7a72f4777bdb9eca6f35a9f1805006da06faf753d587f96852524d0ced",
+      "input": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14"
+      },
+      "response": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "shipped",
+        "providerStatus": "simulated:shipped",
+        "requestId": "sim-request-64",
+        "fulfillments": [
+          {
+            "fulfillmentId": "sim-shipment-sim-9089dcb47fd4da62fd14",
+            "status": "shipped",
+            "lineIndices": [
+              0
+            ],
+            "carrier": "USPS",
+            "trackingNumber": "SIMULATOR123456",
+            "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction?tLabels=SIMULATOR123456",
+            "shippedAt": "2026-10-29T22:37:49.747Z"
+          }
+        ],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-65",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/get",
+      "inputHash": "3ad7b0032763084aa94825b2940dedd54726f3032f339c5b269edd68f60fcfff",
+      "input": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-65",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-66",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/get",
+      "inputHash": "3ad7b0032763084aa94825b2940dedd54726f3032f339c5b269edd68f60fcfff",
+      "input": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-66",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-67",
+      "path": "/adapter/printful/01a189ce-c7c9-71d4-8bbe-7442f23641b5/get",
+      "inputHash": "ac0a6f7a72f4777bdb9eca6f35a9f1805006da06faf753d587f96852524d0ced",
+      "input": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14"
+      },
+      "response": {
+        "externalOrderId": "sim-9089dcb47fd4da62fd14",
+        "state": "shipped",
+        "providerStatus": "simulated:shipped",
+        "requestId": "sim-request-67",
+        "fulfillments": [
+          {
+            "fulfillmentId": "sim-shipment-sim-9089dcb47fd4da62fd14",
+            "status": "shipped",
+            "lineIndices": [
+              0
+            ],
+            "carrier": "USPS",
+            "trackingNumber": "SIMULATOR123456",
+            "trackingUrl": "https://tools.usps.com/go/TrackConfirmAction?tLabels=SIMULATOR123456",
+            "shippedAt": "2026-10-29T22:37:49.747Z"
+          }
+        ],
+        "createdAt": "2026-10-29T22:37:48.147Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-68",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/get",
+      "inputHash": "3ad7b0032763084aa94825b2940dedd54726f3032f339c5b269edd68f60fcfff",
+      "input": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-68",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    },
+    {
+      "requestId": "sim-request-69",
+      "path": "/adapter/printify/01a189d0-5e91-71e9-894f-477ec94cd19e/get",
+      "inputHash": "3ad7b0032763084aa94825b2940dedd54726f3032f339c5b269edd68f60fcfff",
+      "input": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c"
+      },
+      "response": {
+        "externalOrderId": "sim-86180c74f5a7ae5bdb3c",
+        "state": "submitted",
+        "providerStatus": "simulated:submitted",
+        "requestId": "sim-request-69",
+        "fulfillments": [],
+        "createdAt": "2026-10-29T22:38:34.858Z"
+      },
+      "status": 200,
+      "evidenceClass": "local-simulator"
+    }
+  ],
+  "projection": "Exact current connection IDs. Original inputHash precedes bearer-query redaction. Prior development namespaces retained only in scratch."
+}

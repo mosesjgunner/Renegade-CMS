@@ -1,0 +1,4 @@
+PASS: 3 paid/receipted orders and plans; 3 processed callbacks; 3 jobs and 3 pending manual packages.
+PASS: job states shipped/submitted/submitted; attempts 1/1/2; exact order/site/merchant/provider binding.
+PASS: 3 unique current provider IDs; 4 actual create calls including 1 known rejection and 1 lost response; no duplicate provider creation.
+PASS: each job retains its pre-I/O reservation; no live-configured provider outcome is claimed.

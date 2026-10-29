@@ -190,5 +190,5 @@ export function signPrivatePrintAssetUrl(
   const token = createHmac('sha256', secret)
     .update(`${input.siteId}:${input.renditionId}:${input.hash}:${input.expiresAtEpochMs}`)
     .digest('base64url')
-  return `/api/commerce/pod/assets/${input.renditionId}?exp=${input.expiresAtEpochMs}&sig=${token}`
+  return `/api/commerce/pod/assets/${input.renditionId}?site=${encodeURIComponent(input.siteId)}&hash=${encodeURIComponent(input.hash)}&exp=${input.expiresAtEpochMs}&sig=${token}`
 }
