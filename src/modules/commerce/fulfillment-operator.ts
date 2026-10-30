@@ -47,7 +47,7 @@ export async function reconcileFulfillmentPlan(
         fulfillmentId(job.order) !== orderId ||
         fulfillmentId(job.site) !== fulfillmentId(order.site) ||
         job.externalOrderId ||
-        !['on_hold', 'created', 'cancelled'].includes(job.state)
+        !['on_hold', 'created', 'cancelled', 'failed'].includes(job.state)
       )
         throw new Error('Only an unsubmitted matching held job can be overridden.')
       const packages = await db.find({
@@ -164,17 +164,17 @@ export async function reconcileFulfillmentPlan(
       }
       result = { package: manual, replay: Boolean(packages.docs[0]) }
     } else
-        result = {
-          order: await persistOrderFulfillment(db, { order, session, lines: order.items ?? [] }),
-          replay: Boolean(order.fulfillmentExtension?.planId),
-        }
-      await payload.db.commitTransaction(tx)
-      return result
-    } catch (error) {
-      await payload.db.rollbackTransaction(tx)
-      throw error
-    }
+      result = {
+        order: await persistOrderFulfillment(db, { order, session, lines: order.items ?? [] }),
+        replay: Boolean(order.fulfillmentExtension?.planId),
+      }
+    await payload.db.commitTransaction(tx)
+    return result
+  } catch (error) {
+    await payload.db.rollbackTransaction(tx)
+    throw error
   }
+}
 
 export async function checkAndCompleteOrderFulfillment(
   payload: any,
@@ -209,11 +209,13 @@ export async function checkAndCompleteOrderFulfillment(
   }
 
   const allManualShippedOrCancelled = manualDocs.every(
-    (m: any) => m.id === options?.shippedPackageId || m.status === 'shipped' || m.status === 'cancelled',
+    (m: any) =>
+      m.id === options?.shippedPackageId || m.status === 'shipped' || m.status === 'cancelled',
   )
   const allPodShippedOrCancelled = podDocs.every(
     (p: any) =>
-      p.id === options?.shippedJobId || p.state === 'shipped' ||
+      p.id === options?.shippedJobId ||
+      p.state === 'shipped' ||
       p.state === 'delivered' ||
       p.state === 'cancelled' ||
       (p.state === 'failed' &&
@@ -221,7 +223,9 @@ export async function checkAndCompleteOrderFulfillment(
           (m: any) =>
             (m.source === 'pod-submission-exhausted' || m.source === 'pod-provider-fallback') &&
             m.packageIndex === p.packageIndex &&
-            (m.id === options?.shippedPackageId || m.status === 'shipped' || m.status === 'cancelled'),
+            (m.id === options?.shippedPackageId ||
+              m.status === 'shipped' ||
+              m.status === 'cancelled'),
         )),
   )
 
@@ -412,18 +416,22 @@ export async function checkAndCompleteOrderFulfillment(
 
 export async function reconcileOutstandingFulfillmentOrders(
   payload: any,
-  options?: { siteId?: string; actor?: string },
+  options?: { siteId?: string; actor?: string; olderThanMs?: number },
 ): Promise<{ reconciledJobsCount: number; completedOrdersCount: number; errors: string[] }> {
   const { adapterForPodConnection } = await import('./pod-adapters')
   const { reconcilePodJobWithProvider } = await import('./pod-reconciliation')
   const { withExecutionLock } = await import('../operations/execution-lock')
   const actor = options?.actor ?? 'worker_fulfillment_reconciliation'
   const siteFilter = options?.siteId ? { site: { equals: options.siteId } } : {}
+  const ageFilter = options?.olderThanMs
+    ? { updatedAt: { less_than_equal: new Date(Date.now() - options.olderThanMs).toISOString() } }
+    : {}
   const outstandingJobs = await payload.find({
     collection: 'pod-jobs',
     where: {
       and: [
         siteFilter,
+        ageFilter,
         {
           state: {
             in: ['exception', 'submitting', 'submitted', 'in_production', 'partially_shipped'],
@@ -493,7 +501,6 @@ export async function reconcileOutstandingFulfillmentOrders(
                 attemptCount: updated.attemptCount,
                 lastError: updated.lastError ?? null,
                 auditTrail: updated.auditTrail,
-                fulfillments: (updated as any).fulfillments ?? [],
               },
               overrideAccess: true,
             })

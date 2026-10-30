@@ -1,0 +1,30 @@
+{
+  "passed": 23,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "mapping pins verified artwork bytes and simulator variant",
+    "review/approve/publish persisted f63ac3ed-96b7-45ab-b8f3-6f174dfabc55",
+    "review/approve/publish persisted 897b126b-d61b-4af5-8a83-4e93eea282a4",
+    "preflight against simulator validates actual artwork bytes and dimensions",
+    "POD job submitted successfully to simulator",
+    "double-submit on already submitted job is denied with HTTP 409",
+    "provider signed webhook delivered and applied shipped state",
+    "duplicate webhook delivery detected and acknowledged as replay without duplicate application",
+    "order transitions to fulfilled once all packages/jobs are shipped",
+    "order transitionLog records order-fulfilled",
+    "cross-checked: activity-event emitted for order shipment",
+    "cross-checked: inventory reservations are consumed on fulfillment",
+    "lost response persists exception state and reserves attempt count",
+    "submitting or cancelling job in exception state is denied before reconciliation",
+    "reconcile-pod-job recovers provider order identity from lost-response by idempotency key",
+    "actual provider HTTP 422 rejection persists failed state and error diagnostic",
+    "retry without owner/admin role or missing reason is denied",
+    "audited retry increments attempt count to exactly 2 and submits",
+    "manual override cancels failed POD job and creates manual fallback package",
+    "order fulfillment status becomes cancelled when all packages/jobs are cancelled",
+    "negative: operator scoped to foreign site cannot view Alpha fulfillment",
+    "negative: forged or unsigned webhook signature rejected with HTTP 401",
+    "negative: webhook for disabled connection rejected with HTTP 403"
+  ]
+}

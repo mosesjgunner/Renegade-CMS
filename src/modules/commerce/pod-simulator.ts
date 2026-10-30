@@ -1,5 +1,12 @@
 import { PodEmulatorAdapter } from './pod-emulator'
-import { PodProviderError, type PodProviderAdapter, type PodOrderResult } from './pod-contract'
+import {
+  PodProviderError,
+  type PodProviderAdapter,
+  type PodOrderResult,
+  type NormalizedPodEvent,
+} from './pod-contract'
+import { PrintfulPodAdapter } from './pod-real-provider'
+import { PrintifyPodAdapter } from './pod-printify'
 
 /** Explicit local adapter contract harness. Never selected from browser input or in production. */
 export class PodSimulatorAdapter extends PodEmulatorAdapter {
@@ -96,5 +103,22 @@ export class PodSimulatorAdapter extends PodEmulatorAdapter {
   }
   override cancelOrder(externalOrderId: string, reason?: string) {
     return this.call<{ cancelled: boolean; reason?: string }>('cancel', { externalOrderId, reason })
+  }
+  override verifyWebhook(
+    rawBody: string,
+    signature: string,
+    secret: string,
+  ): NormalizedPodEvent | null {
+    if (this.key === 'printful') {
+      const adapter = new PrintfulPodAdapter({ apiKey: 'simulator-test-token-valid' })
+      const verified = adapter.verifyWebhook(rawBody, signature, secret)
+      if (verified) return verified
+    }
+    if (this.key === 'printify') {
+      const adapter = new PrintifyPodAdapter({ apiKey: 'simulator-test-token-valid' })
+      const verified = adapter.verifyWebhook(rawBody, signature, secret)
+      if (verified) return verified
+    }
+    return super.verifyWebhook(rawBody, signature, secret)
   }
 }

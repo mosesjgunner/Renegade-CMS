@@ -959,7 +959,9 @@ export async function recoverStaleCommerceJobs(
 
   try {
     const { reconcileOutstandingFulfillmentOrders } = await import('./fulfillment-operator')
-    const fulfillmentRecovery = await reconcileOutstandingFulfillmentOrders(payload)
+    const fulfillmentRecovery = await reconcileOutstandingFulfillmentOrders(payload, {
+      olderThanMs: maxAgeMs,
+    })
     recoveredCount += fulfillmentRecovery.reconciledJobsCount
   } catch {
     // Non-fatal during commerce recovery sweep

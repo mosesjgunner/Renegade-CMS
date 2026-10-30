@@ -346,7 +346,7 @@ export async function freezeFulfillmentLines(
 
 export async function assertFulfillmentOrderEligible(payload: any, order: any) {
   if (
-    order.state !== 'paid' ||
+    !['paid', 'fulfilling', 'fulfilled'].includes(order.state) ||
     !order.receipt ||
     order.receipt.state !== 'issued' ||
     BigInt(order.refundExtension?.refundedAmountMinor ?? '0') > 0n

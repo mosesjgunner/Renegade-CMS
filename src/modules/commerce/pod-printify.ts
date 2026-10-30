@@ -47,11 +47,18 @@ export class PrintifyPodAdapter extends PrintfulPodAdapter {
     mode: 'live-configured' as const,
     liveCreationOptInRequired: true,
   }
-  constructor(options: { apiKey: string; shopId?: string; baseUrl?: string; fetchFn?: typeof fetch }) {
+  constructor(options: {
+    apiKey: string
+    shopId?: string
+    baseUrl?: string
+    fetchFn?: typeof fetch
+    allowLiveCreation?: boolean
+  }) {
     super({
       apiKey: options.apiKey,
       apiBaseUrl: options.baseUrl ?? 'https://api.printify.com/v1',
       fetchFn: options.fetchFn,
+      allowLiveCreation: options.allowLiveCreation,
     })
     this.shopId = options.shopId
     this.printifyApiKey = options.apiKey
@@ -120,7 +127,10 @@ export class PrintifyPodAdapter extends PrintfulPodAdapter {
     }
   }
   override async createOrder(input: PodCreateOrderInput): Promise<PodOrderResult> {
-    if (this.metadata.liveCreationOptInRequired && process.env.RENEGADE_POD_ALLOW_LIVE_CREATION !== 'true')
+    if (
+      this.metadata.liveCreationOptInRequired &&
+      process.env.RENEGADE_POD_ALLOW_LIVE_CREATION !== 'true'
+    )
       throw new PodProviderError(
         'configuration',
         'Live Printify creation is disabled. Set RENEGADE_POD_ALLOW_LIVE_CREATION=true to authorize external orders.',
@@ -128,12 +138,7 @@ export class PrintifyPodAdapter extends PrintfulPodAdapter {
         true,
       )
     if (!this.shopId)
-      throw new PodProviderError(
-        'configuration',
-        'Printify shopId is required.',
-        false,
-        true,
-      )
+      throw new PodProviderError('configuration', 'Printify shopId is required.', false, true)
     const lineItems = input.items.map((item) => {
       const parts = item.variantId.split(':')
       const blueprintId = Number(parts[0])
@@ -268,11 +273,18 @@ export class PrintifyPodAdapter extends PrintfulPodAdapter {
         'Cancel through the Printify operator dashboard, then reconcile. Automatic cancellation is unavailable.',
     }
   }
-  override verifyWebhook(rawBody: string, signature: string, secret: string): NormalizedPodEvent | null {
+  override verifyWebhook(
+    rawBody: string,
+    signature: string,
+    secret: string,
+  ): NormalizedPodEvent | null {
     if (!signature || !secret) return null
     const cleanSig = signature.replace(/^sha256=/, '')
     const expected = createHmac('sha256', secret).update(rawBody).digest('hex')
-    if (cleanSig.length !== expected.length || !timingSafeEqual(Buffer.from(cleanSig), Buffer.from(expected))) {
+    if (
+      cleanSig.length !== expected.length ||
+      !timingSafeEqual(Buffer.from(cleanSig), Buffer.from(expected))
+    ) {
       return null
     }
     try {

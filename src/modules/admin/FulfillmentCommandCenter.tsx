@@ -13,6 +13,7 @@ export interface FulfillmentCommandCenterProps {
   initialManualPackages?: ManualFulfillmentPackage[]
   initialTab?: 'jobs' | 'manual' | 'providers' | 'mappings'
   initialProviderFilter?: string | null
+  siteId?: string
 }
 
 export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
@@ -21,6 +22,7 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
   initialManualPackages = [],
   initialTab = 'jobs',
   initialProviderFilter,
+  siteId,
 }) => {
   const [jobs, setJobs] = useState<PODJob[]>(initialJobs)
   const [manualPackages, setManualPackages] =
@@ -99,7 +101,9 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
       <h1>POD &amp; Fulfillment</h1>
       <FulfillmentPlanningPanel />
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-        <p style={{ margin: 0 }}>Saved fulfillment state. Operator mutations execute through verified worker paths.</p>
+        <p style={{ margin: 0 }}>
+          Saved fulfillment state. Operator mutations execute through verified worker paths.
+        </p>
         {siteId && (
           <button
             type="button"
@@ -430,11 +434,21 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
                   </p>
                 ))}
               {(job as any).fulfillments && (job as any).fulfillments.length > 0 && (
-                <div style={{ marginTop: '0.5rem', padding: '0.5rem', background: '#f8fafc', borderRadius: '4px' }}>
-                  <p style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold' }}>Tracking &amp; Shipments:</p>
+                <div
+                  style={{
+                    marginTop: '0.5rem',
+                    padding: '0.5rem',
+                    background: '#f8fafc',
+                    borderRadius: '4px',
+                  }}
+                >
+                  <p style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold' }}>
+                    Tracking &amp; Shipments:
+                  </p>
                   {((job as any).fulfillments as any[]).map((f: any, idx: number) => (
                     <p key={f.fulfillmentId ?? idx} style={{ margin: '0.25rem 0' }}>
-                      Shipment: <strong>{f.status}</strong> | Carrier: <strong>{f.carrier ?? 'USPS'}</strong> | #{' '}
+                      Shipment: <strong>{f.status}</strong> | Carrier:{' '}
+                      <strong>{f.carrier ?? 'USPS'}</strong> | #{' '}
                       <strong>{f.trackingNumber ?? 'None'}</strong>
                       {f.trackingUrl && (
                         <a

@@ -1,0 +1,14 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "separate commerce worker restarts and records fresh heartbeat",
+    "restarted state: job 1 retains shipped state, tracking and externalOrderId",
+    "restarted state: recovered job 2 retains submitted state and single attempt",
+    "restarted state: retried job 3 retains exactly two attempts",
+    "bulk reconcile-outstanding runs safely without creating duplicate provider orders",
+    "double-submission blocked across process restart",
+    "browser UI refetches saved provider output with tracking details"
+  ]
+}

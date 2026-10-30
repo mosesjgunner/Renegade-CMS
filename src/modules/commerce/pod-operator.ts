@@ -167,6 +167,9 @@ export async function executePodOperatorAction(
       success = outcome.success
       retryable = !outcome.success && outcome.retryable
     } else if (action === 'cancel-pod-job') {
+      if (job.state === 'exception') {
+        throw new Error('Job is in exception state. Reconcile with provider before cancelling.')
+      }
       updated = await cancelPodJob(job, adapter, 'Operator cancellation', actor)
     } else if (action === 'release-pod-hold') {
       await assertFulfillmentOrderEligible(payload, order)
@@ -224,7 +227,6 @@ export async function executePodOperatorAction(
         attemptCount: updated.attemptCount,
         lastError: success ? null : updated.lastError,
         auditTrail: updated.auditTrail,
-        fulfillments: (updated as any).fulfillments ?? [],
       },
       overrideAccess: true,
     })

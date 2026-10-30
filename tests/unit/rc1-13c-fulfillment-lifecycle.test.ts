@@ -24,9 +24,9 @@ import {
 import {
   PodProviderError,
   type PodProviderAdapter,
-  type PODJob,
   type NormalizedPodEvent,
 } from '../../src/modules/commerce/pod-contract'
+import { type PODJob } from '../../src/modules/commerce/fulfillment-plan'
 import { PodEmulatorAdapter } from '../../src/modules/commerce/pod-emulator'
 import { PrintifyPodAdapter } from '../../src/modules/commerce/pod-printify'
 
@@ -59,10 +59,13 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         variantSku: 'SHIRT-BLK-M',
         title: 'Renegade Tee',
         quantity: 1,
+        unitPriceMinor: '2000',
+        lineAmountMinor: '2000',
+        kind: 'pod',
         soldRenditions: [],
       },
     ],
-    costSnapshot: { basis: 'observed-item-estimate', shipping: 'unquoted', providerQuote: false },
+    costSnapshot: { estimatedCostMinor: '1000', currency: 'USD' },
     attemptCount: 0,
     auditTrail: [],
     createdAt: '2026-10-29T12:00:00Z',
@@ -71,7 +74,11 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
 
   describe('POD Job State Transitions & Exception Queues', () => {
     it('releases hold and transitions to created state with timestamp', () => {
-      const heldJob: PODJob = { ...baseJob, state: 'on_hold', holdExpiresAt: '2026-10-29T14:00:00Z' }
+      const heldJob: PODJob = {
+        ...baseJob,
+        state: 'on_hold',
+        holdExpiresAt: '2026-10-29T14:00:00Z',
+      }
       const released = releasePodJobHold(heldJob, 'operator-01')
       expect(released.state).toBe('created')
       expect(released.releasedAt).toBeDefined()
@@ -83,7 +90,12 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         key: 'printful',
         contractVersion: 'shop-03.v1',
         capabilities: {} as any,
-        metadata: { mode: 'deterministic-emulator', implementationVersion: '1.0', providerApiVersion: 'v1', liveCreationOptInRequired: false },
+        metadata: {
+          mode: 'deterministic-emulator',
+          implementationVersion: '1.0',
+          providerApiVersion: 'v1',
+          liveCreationOptInRequired: false,
+        },
         health: vi.fn(),
         getCatalog: vi.fn(),
         getVariants: vi.fn(),
@@ -92,15 +104,17 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         uploadPrintFile: vi.fn(),
         preflight: vi.fn(),
         estimateCost: vi.fn(),
-        createOrder: vi.fn().mockRejectedValue(
-          new PodProviderError(
-            'unknown-outcome',
-            'Connection timed out; outcome unknown.',
-            false,
-            false,
-            'req-timeout',
+        createOrder: vi
+          .fn()
+          .mockRejectedValue(
+            new PodProviderError(
+              'unknown-outcome',
+              'Connection timed out; outcome unknown.',
+              false,
+              false,
+              'req-timeout',
+            ),
           ),
-        ),
         getOrder: vi.fn(),
         cancelOrder: vi.fn(),
         verifyWebhook: vi.fn(),
@@ -124,7 +138,12 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         key: 'printful',
         contractVersion: 'shop-03.v1',
         capabilities: {} as any,
-        metadata: { mode: 'deterministic-emulator', implementationVersion: '1.0', providerApiVersion: 'v1', liveCreationOptInRequired: false },
+        metadata: {
+          mode: 'deterministic-emulator',
+          implementationVersion: '1.0',
+          providerApiVersion: 'v1',
+          liveCreationOptInRequired: false,
+        },
         health: vi.fn(),
         getCatalog: vi.fn(),
         getVariants: vi.fn(),
@@ -146,7 +165,9 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
       })
 
       expect(outcome.success).toBe(false)
-      expect(outcome.error).toContain('Job is not eligible for submission')
+      if (!outcome.success) {
+        expect(outcome.error).toContain('Job is not eligible for submission')
+      }
       expect(mockAdapter.createOrder).not.toHaveBeenCalled()
     })
 
@@ -155,7 +176,12 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         key: 'printful',
         contractVersion: 'shop-03.v1',
         capabilities: {} as any,
-        metadata: { mode: 'deterministic-emulator', implementationVersion: '1.0', providerApiVersion: 'v1', liveCreationOptInRequired: false },
+        metadata: {
+          mode: 'deterministic-emulator',
+          implementationVersion: '1.0',
+          providerApiVersion: 'v1',
+          liveCreationOptInRequired: false,
+        },
         health: vi.fn(),
         getCatalog: vi.fn(),
         getVariants: vi.fn(),
@@ -203,7 +229,12 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         key: 'printful',
         contractVersion: 'shop-03.v1',
         capabilities: {} as any,
-        metadata: { mode: 'deterministic-emulator', implementationVersion: '1.0', providerApiVersion: 'v1', liveCreationOptInRequired: false },
+        metadata: {
+          mode: 'deterministic-emulator',
+          implementationVersion: '1.0',
+          providerApiVersion: 'v1',
+          liveCreationOptInRequired: false,
+        },
         health: vi.fn(),
         getCatalog: vi.fn(),
         getVariants: vi.fn(),
@@ -239,7 +270,14 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         packageIndex: 0,
         source: 'explicit-manual-product',
         approvedLines: [
-          { lineId: 'l1', productId: 'p1', variantSku: 'SKU1', title: 'Sticker', quantity: 2, artworkSpecs: [] },
+          {
+            lineId: 'l1',
+            productId: 'p1',
+            variantSku: 'SKU1',
+            title: 'Sticker',
+            quantity: 2,
+            artworkSpecs: [],
+          },
         ],
         permissionedAddressManifest: sampleAddress,
       })
@@ -254,7 +292,11 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
 
       const shipped = shipManualFulfillmentPackage(
         prod,
-        { carrier: 'FedEx', trackingNumber: '9988776655', trackingUrl: 'https://www.fedex.com/fedextrack/?trknbr=9988776655' },
+        {
+          carrier: 'FedEx',
+          trackingNumber: '9988776655',
+          trackingUrl: 'https://www.fedex.com/fedextrack/?trknbr=9988776655',
+        },
         'operator-01',
       )
       expect(shipped.status).toBe('shipped')
@@ -282,7 +324,8 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         tracking: {
           carrier: 'USPS',
           trackingNumber: '9400111899562537682144',
-          trackingUrl: 'https://tools.usps.com/go/TrackConfirmAction?tLabels=9400111899562537682144',
+          trackingUrl:
+            'https://tools.usps.com/go/TrackConfirmAction?tLabels=9400111899562537682144',
         },
         rawEvidence: {},
       }
@@ -292,7 +335,11 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
       expect(verified).not.toBeNull()
       expect(verified?.kind).toBe('shipped')
 
-      const submittedJob: PODJob = { ...baseJob, state: 'submitted', externalOrderId: 'pf-order-999' }
+      const submittedJob: PODJob = {
+        ...baseJob,
+        state: 'submitted',
+        externalOrderId: 'pf-order-999',
+      }
       const updated = applyNormalizedPodEvent(submittedJob, verified!)
 
       expect(updated.state).toBe('shipped')
@@ -302,7 +349,9 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
       // Duplicate webhook delivery: applying the same event again is a no-op
       const replayed = applyNormalizedPodEvent(updated, verified!)
       expect(replayed).toBe(updated) // Exact object identity returned
-      expect(replayed.auditTrail.filter((a) => a.details?.providerEventId === 'evt-ship-001')).toHaveLength(1)
+      expect(
+        replayed.auditTrail.filter((a) => a.details?.providerEventId === 'evt-ship-001'),
+      ).toHaveLength(1)
     })
 
     it('absorbs out-of-order webhook events without regressing terminal state', () => {
@@ -310,7 +359,15 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
         ...baseJob,
         state: 'shipped',
         externalOrderId: 'pf-order-999',
-        auditTrail: [{ timestamp: '2026-10-29T15:00:00Z', action: 'event_shipped', actor: 'provider', previousState: 'submitted', newState: 'shipped' }],
+        auditTrail: [
+          {
+            timestamp: '2026-10-29T15:00:00Z',
+            action: 'event_shipped',
+            actor: 'provider',
+            previousState: 'submitted',
+            newState: 'shipped',
+          },
+        ],
       }
 
       const delayedEvent: NormalizedPodEvent = {
@@ -366,9 +423,12 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
             if (where?.and) {
               return where.and.every((clause: any) => {
                 if (clause.type?.equals) return d.type === clause.type.equals
-                if (clause['object.orderId']?.equals) return d.object?.orderId === clause['object.orderId'].equals
-                if (clause.activityEvent?.equals) return d.activityEvent === clause.activityEvent.equals
-                if (clause.recipientMember?.equals) return d.recipientMember === clause.recipientMember.equals
+                if (clause['object.orderId']?.equals)
+                  return d.object?.orderId === clause['object.orderId'].equals
+                if (clause.activityEvent?.equals)
+                  return d.activityEvent === clause.activityEvent.equals
+                if (clause.recipientMember?.equals)
+                  return d.recipientMember === clause.recipientMember.equals
                 if (clause.proposal?.equals) return d.proposal === clause.proposal.equals
                 if (clause.status?.equals) return d.status === clause.status.equals
                 if (clause.state?.in) return clause.state.in.includes(d.state)
@@ -393,7 +453,8 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
               if (where.proposal?.equals && doc.proposal !== where.proposal.equals) matches = false
               if (where.and) {
                 for (const clause of where.and) {
-                  if (clause.proposal?.equals && doc.proposal !== clause.proposal.equals) matches = false
+                  if (clause.proposal?.equals && doc.proposal !== clause.proposal.equals)
+                    matches = false
                   if (clause.status?.equals && doc.status !== clause.status.equals) matches = false
                   if (clause.status?.in && !clause.status.in.includes(doc.status)) matches = false
                 }
@@ -416,11 +477,13 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
       mockDb['manual-fulfillment-packages'] = [
         { id: 'man-1', order: 'ord-100', status: 'shipped', packageIndex: 0 },
       ]
-      mockDb['pod-jobs'] = [
-        { id: 'pod-1', order: 'ord-100', state: 'shipped', packageIndex: 1 },
-      ]
+      mockDb['pod-jobs'] = [{ id: 'pod-1', order: 'ord-100', state: 'shipped', packageIndex: 1 }]
 
-      const completion = await checkAndCompleteOrderFulfillment(mockPayload, 'ord-100', 'operator-audit')
+      const completion = await checkAndCompleteOrderFulfillment(
+        mockPayload,
+        'ord-100',
+        'operator-audit',
+      )
 
       expect(completion.fulfilled).toBe(true)
       expect(completion.orderState).toBe('fulfilled')
@@ -448,11 +511,13 @@ describe('13C Tracking, Exception Handling & Restart Recovery Lifecycle', () => 
       mockDb['manual-fulfillment-packages'] = [
         { id: 'man-1', order: 'ord-100', status: 'cancelled', packageIndex: 0 },
       ]
-      mockDb['pod-jobs'] = [
-        { id: 'pod-1', order: 'ord-100', state: 'cancelled', packageIndex: 1 },
-      ]
+      mockDb['pod-jobs'] = [{ id: 'pod-1', order: 'ord-100', state: 'cancelled', packageIndex: 1 }]
 
-      const completion = await checkAndCompleteOrderFulfillment(mockPayload, 'ord-100', 'operator-cancel')
+      const completion = await checkAndCompleteOrderFulfillment(
+        mockPayload,
+        'ord-100',
+        'operator-cancel',
+      )
 
       expect(completion.cancelled).toBe(true)
       const order = mockDb.orders.find((o) => o.id === 'ord-100')

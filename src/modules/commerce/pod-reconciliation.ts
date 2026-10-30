@@ -212,6 +212,8 @@ export function applyNormalizedPodEvent(
       kind: event.kind,
       reason: event.reason,
       fulfillmentsCount: newFulfillments.length,
+      fulfillments: newFulfillments,
+      tracking: event.tracking,
     },
   }
 
