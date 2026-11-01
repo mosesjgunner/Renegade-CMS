@@ -113,12 +113,22 @@ export function reconcileWebhookSubscription(input: {
   const failureCount = Number(subscription.failureCount ?? 0)
   const findings: WebhookReconciliationFinding[] = []
 
-  if (deadLetterIds.length)
+  // A dead-letter record whose event was later redelivered and delivered is
+  // resolved history, not an outstanding action.
+  const deliveredEventIds = new Set(
+    own.filter((doc) => String(doc.state) === 'delivered').map((doc) => String(doc.eventId)),
+  )
+  const outstandingDeadLetterIds = deadLetterIds.filter((deliveryId) => {
+    const doc = own.find((entry) => String(entry.id) === deliveryId)
+    return !doc || !deliveredEventIds.has(String(doc.eventId))
+  })
+
+  if (outstandingDeadLetterIds.length)
     findings.push({
       code: 'dead-letter-awaiting-action',
       severity: 'critical',
-      message: `${deadLetterIds.length} ${deadLetterIds.length === 1 ? 'delivery' : 'deliveries'} exhausted bounded retries and reached dead-letter. Resolve the receiver, re-enable the subscription if needed, and redeliver manually.`,
-      deliveryIds: deadLetterIds,
+      message: `${outstandingDeadLetterIds.length} ${outstandingDeadLetterIds.length === 1 ? 'delivery' : 'deliveries'} exhausted bounded retries and reached dead-letter. Resolve the receiver, re-enable the subscription if needed, and redeliver manually.`,
+      deliveryIds: outstandingDeadLetterIds,
     })
   if (recordedStatus !== 'active' && pendingIds.length)
     findings.push({

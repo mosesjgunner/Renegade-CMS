@@ -137,6 +137,20 @@ describe('16B webhook delivery reconciliation', () => {
     ).toEqual(['del-9'])
   })
 
+  it('treats a dead-letter as resolved once its event is redelivered and delivered', () => {
+    const view = reconcileWebhookSubscription({
+      subscription: sub({ failureCount: 0 }),
+      deliveries: [
+        delivery({ id: 'del-9', state: 'dead-letter', attempts: 5, eventId: 'evt-7' }),
+        delivery({ id: 'del-10', state: 'delivered', attempts: 1, eventId: 'evt-7' }),
+      ],
+      now: NOW,
+    })
+    expect(view.findings.map((f) => f.code)).not.toContain('dead-letter-awaiting-action')
+    expect(view.counts.deadLetter).toBe(1)
+    expect(view.healthy).toBe(true)
+  })
+
   it('flags pending deliveries stranded on a disabled subscription', () => {
     const view = reconcileWebhookSubscription({
       subscription: sub({ status: 'disabled' }),
