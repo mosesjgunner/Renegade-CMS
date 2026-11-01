@@ -313,7 +313,7 @@ export function resolveNextSafeRepairAction(connection: {
       typeof connection.lastError === 'object' && connection.lastError
         ? connection.lastError.message
         : connection.lastError
-    return `Provider is degraded${detail ? `: ${detail}` : ''}. Run safe reconciliation to check capabilities.`
+    return `Provider is degraded${detail ? `: ${detail}` : ''}. Run reconciliation to re-test the provider and record an observed result.`
   }
   if (connection.status === 'unconfigured' || connection.status === 'invalid') {
     return 'Configuration incomplete. Set credential reference or required scopes in Key Vault.'
@@ -324,11 +324,29 @@ export function resolveNextSafeRepairAction(connection: {
       : 'Connection is disabled. Toggle status to resume operations.'
   }
   if (!connection.lastHealthCheckAt) {
-    return 'Health check pending. Click Reconcile to verify provider without making external calls.'
+    return 'Health has not been verified by a live probe. Run a provider test or reconciliation to record an observed result.'
   }
   return 'Healthy. No repair action required.'
 }
 
+export type ProviderProbeResult = {
+  /** True only when a real provider probe was executed during this reconciliation. */
+  performed: boolean
+  /** Observed probe outcome; only meaningful when `performed` is true. */
+  succeeded?: boolean
+  /** Redacted, actionable failure detail from the probe, when it ran and failed. */
+  error?: string | null
+}
+
+/**
+ * Reconciles stored provider configuration into an operator-facing health view.
+ *
+ * Truthfulness contract: `lastSuccessAt` is set only when a live probe actually
+ * ran during this reconciliation and succeeded (`probe.performed && probe.succeeded`).
+ * A dry-run review of stored fields never fabricates a success timestamp, and a
+ * configured-but-unprobed connection reports `healthState: 'unknown'` instead of
+ * claiming to be healthy.
+ */
 export function reconcileProviderState(input: {
   providerKey: string
   status: string
@@ -336,6 +354,7 @@ export function reconcileProviderState(input: {
   scopes?: readonly string[]
   expiresAt?: string | null
   now?: Date
+  probe?: ProviderProbeResult
 }) {
   const now = input.now ?? new Date()
   const isExpired = input.expiresAt ? new Date(input.expiresAt) <= now : false
@@ -349,12 +368,26 @@ export function reconcileProviderState(input: {
     unconfiguredFeatures.push('Secret Manager Vault Ref')
   }
 
+  const probePerformed = input.probe?.performed === true
+  const observedSuccess = probePerformed && input.probe?.succeeded === true
+
   let status = input.status
-  let healthState: 'healthy' | 'warning' | 'critical' | 'unknown' = 'healthy'
+  let healthState: 'healthy' | 'warning' | 'critical' | 'unknown' = 'unknown'
 
   if (isExpired) {
     status = 'expired'
     healthState = 'warning'
+  } else if (probePerformed) {
+    // An observed probe result dominates stored-field derivation: some
+    // families (AI) keep credentials in a separate vault record, so the
+    // connection row itself carries no credential reference to inspect.
+    if (observedSuccess) {
+      healthState = 'healthy'
+      if (status === 'degraded') status = 'active'
+    } else {
+      status = 'degraded'
+      healthState = 'warning'
+    }
   } else if (!hasCredential) {
     status = 'unconfigured'
     healthState = 'unknown'
@@ -362,19 +395,29 @@ export function reconcileProviderState(input: {
     healthState = 'warning'
   } else if (input.status === 'disabled' || input.status === 'revoked') {
     healthState = 'critical'
+  } else {
+    // Configured but never probed: health is unverified, not healthy.
+    healthState = 'unknown'
   }
+
+  const lastHealthCheckAt = probePerformed ? now.toISOString() : null
 
   return {
     status,
     healthState,
-    lastHealthCheckAt: now.toISOString(),
-    lastSuccessAt: healthState === 'healthy' ? now.toISOString() : null,
-    nextSafeRepairAction: resolveNextSafeRepairAction({
-      status,
-      providerKey: input.providerKey,
-      expiresAt: input.expiresAt,
-      lastHealthCheckAt: now.toISOString(),
-    }),
+    probePerformed,
+    observedSuccess,
+    lastHealthCheckAt,
+    lastSuccessAt: observedSuccess ? now.toISOString() : null,
+    nextSafeRepairAction:
+      probePerformed && !observedSuccess && !isExpired && hasCredential
+        ? `Live probe failed${input.probe?.error ? `: ${input.probe.error}` : ''} Fix the provider or credentials, then re-test.`
+        : resolveNextSafeRepairAction({
+            status,
+            providerKey: input.providerKey,
+            expiresAt: input.expiresAt,
+            lastHealthCheckAt,
+          }),
     unconfiguredFeatures,
   }
 }

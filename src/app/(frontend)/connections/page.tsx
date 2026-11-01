@@ -117,23 +117,25 @@ export default async function ConnectionsPage() {
           externalAccountId: String(doc.merchantCountry || 'default'),
           label: String(doc.label || doc.providerKey || 'Merchant Gateway'),
           status,
-          healthState: status === 'active' ? 'healthy' : 'warning',
+          // No live probe exists for merchant connections: health is
+          // unverified and no success is derived from record timestamps.
+          healthState: status === 'active' ? 'unknown' : 'warning',
           encryptedSecretRef: doc.credentialReference ?? null,
           scopes: ['payments.checkout.one_time', 'payments.subscription.recurring'],
           expiresAt: null,
           refreshMetadata: null,
           capabilities: [],
-          lastHealthCheckAt: String(doc.updatedAt || doc.createdAt),
-          lastSuccessAt: status === 'active' ? String(doc.updatedAt || doc.createdAt) : null,
+          lastHealthCheckAt: null,
+          lastSuccessAt: null,
           lastError: null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
             status,
             providerKey: doc.providerKey || 'merchant',
-            lastHealthCheckAt: String(doc.updatedAt || doc.createdAt),
+            lastHealthCheckAt: null,
           }),
           unconfiguredFeatures: !doc.credentialReference ? ['Vault Credential Missing'] : [],
-          isUnknown: !doc.credentialReference,
+          isUnknown: true,
           canRotateSecret: true,
           canDisconnect: status !== 'disabled',
         })
@@ -177,7 +179,10 @@ export default async function ConnectionsPage() {
           refreshMetadata: null,
           capabilities: [],
           lastHealthCheckAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
-          lastSuccessAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
+          // lastVerifiedAt stamps every test attempt; it is a success only
+          // when the recorded credential health is healthy.
+          lastSuccessAt:
+            health === 'healthy' && doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
           lastError: null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
@@ -274,18 +279,20 @@ export default async function ConnectionsPage() {
           expiresAt: null,
           refreshMetadata: null,
           capabilities: [],
-          lastHealthCheckAt: doc.rotatedAt ? String(doc.rotatedAt) : null,
-          lastSuccessAt: doc.rotatedAt ? String(doc.rotatedAt) : null,
+          // Filled in from real delivery records below (section 6); secret
+          // rotation is not a delivery success and never stamps these.
+          lastHealthCheckAt: null,
+          lastSuccessAt: null,
           lastError: null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
             status,
             providerKey: 'webhook',
             failureCount,
-            lastHealthCheckAt: doc.rotatedAt,
+            lastHealthCheckAt: null,
           }),
           unconfiguredFeatures: !doc.secretRef ? ['Secret Reference Unset'] : [],
-          isUnknown: failureCount === 0 && !doc.rotatedAt,
+          isUnknown: failureCount === 0,
           canRotateSecret: true,
           canDisconnect: doc.status === 'active',
           failureCount,
@@ -326,7 +333,7 @@ export default async function ConnectionsPage() {
           capabilities: [],
           lastHealthCheckAt: doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
           lastSuccessAt:
-            doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt
+            doc.lastHealthStatus === 'healthy' && doc.lastHealthCheckedAt
               ? String(doc.lastHealthCheckedAt)
               : null,
           lastError: doc.lastHealthReason
@@ -360,13 +367,15 @@ export default async function ConnectionsPage() {
       })
       for (const doc of aiConnections.docs as any[]) {
         const status =
-          doc.status === 'ready' || doc.status === 'active'
+          doc.status === 'active'
             ? 'active'
-            : doc.status === 'error'
+            : doc.status === 'degraded'
               ? 'degraded'
               : doc.status === 'disabled'
                 ? 'disabled'
-                : 'configured'
+                : doc.status === 'disconnected'
+                  ? 'disconnected'
+                  : 'configured'
         connections.push({
           id: String(doc.id),
           collection: 'ai-connections',
@@ -376,15 +385,19 @@ export default async function ConnectionsPage() {
           externalAccountId: String(doc.model || 'model'),
           label: String(doc.label || 'AI Connection'),
           status,
-          healthState: status === 'active' ? 'healthy' : 'warning',
+          healthState:
+            status === 'active' ? 'healthy' : status === 'disconnected' ? 'critical' : 'warning',
           encryptedSecretRef: doc.credential ? 'credential-set' : null,
           scopes: Array.isArray(doc.allowedTasks) ? doc.allowedTasks.map(String) : [],
           expiresAt: null,
           refreshMetadata: null,
           capabilities: Array.isArray(doc.capabilities) ? doc.capabilities.map(String) : [],
           lastHealthCheckAt: doc.lastTestedAt ? String(doc.lastTestedAt) : null,
+          // lastTestedAt stamps every probe attempt; it counts as a success
+          // only when the probe left the connection active. (The family only
+          // ever writes active/degraded/disabled/disconnected.)
           lastSuccessAt:
-            doc.status === 'ready' && doc.lastTestedAt ? String(doc.lastTestedAt) : null,
+            doc.status === 'active' && doc.lastTestedAt ? String(doc.lastTestedAt) : null,
           lastError: doc.lastError
             ? { code: 'unavailable', message: String(doc.lastError), retryable: true }
             : null,
@@ -398,7 +411,7 @@ export default async function ConnectionsPage() {
           unconfiguredFeatures: [],
           isUnknown: !doc.lastTestedAt,
           canRotateSecret: true,
-          canDisconnect: status !== 'disabled',
+          canDisconnect: status !== 'disabled' && status !== 'disconnected',
         })
       }
     } catch {
@@ -420,6 +433,41 @@ export default async function ConnectionsPage() {
           depth: 0,
           overrideAccess: true,
         })
+        // Webhook health/success come only from observed delivery records.
+        const deliveryTimes = new Map<
+          string,
+          { lastAttemptAt: string | null; lastDeliveredAt: string | null }
+        >()
+        for (const doc of deliveriesRes.docs as any[]) {
+          const subId = String(
+            typeof doc.subscription === 'object' && doc.subscription
+              ? doc.subscription.id
+              : doc.subscription,
+          )
+          const createdAt = doc.createdAt ? String(doc.createdAt) : null
+          if (!createdAt) continue
+          const entry = deliveryTimes.get(subId) ?? {
+            lastAttemptAt: null,
+            lastDeliveredAt: null,
+          }
+          if (!entry.lastAttemptAt || createdAt > entry.lastAttemptAt)
+            entry.lastAttemptAt = createdAt
+          if (
+            doc.state === 'delivered' &&
+            (!entry.lastDeliveredAt || createdAt > entry.lastDeliveredAt)
+          )
+            entry.lastDeliveredAt = createdAt
+          deliveryTimes.set(subId, entry)
+        }
+        for (const conn of connections) {
+          if (conn.collection !== 'webhook-subscriptions') continue
+          const times = deliveryTimes.get(conn.id)
+          if (!times) continue
+          conn.lastSuccessAt = times.lastDeliveredAt
+          conn.lastHealthCheckAt = times.lastAttemptAt
+          if (times.lastAttemptAt) conn.isUnknown = false
+        }
+
         deliveries = (deliveriesRes.docs as any[]).map((doc) => ({
           id: String(doc.id),
           subscriptionId: String(
