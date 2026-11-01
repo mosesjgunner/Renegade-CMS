@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39064",
+    "passed": true
+  },
+  {
+    "name": "database container rc115e-20261101 restarted",
+    "passed": true
+  },
+  {
+    "name": "remote actor and instance records survive restart",
+    "passed": true
+  },
+  {
+    "name": "outbound delivery status (delivered) and 2 delivery attempts survive restart",
+    "passed": true
+  },
+  {
+    "name": "inbound activity record and active follow relationship survive restart",
+    "passed": true
+  },
+  {
+    "name": "operator network access decision (block) survives restart",
+    "passed": true
+  },
+  {
+    "name": "delivery task retry after restart produces zero duplicate attempts",
+    "passed": true
+  },
+  {
+    "name": "public /network renders properly after restart",
+    "passed": true
+  }
+]

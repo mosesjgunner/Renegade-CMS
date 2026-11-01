@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound, permanentRedirect } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import type { Metadata } from 'next'
 
 import { VideoPlayer } from '@/modules/media/VideoPlayer'

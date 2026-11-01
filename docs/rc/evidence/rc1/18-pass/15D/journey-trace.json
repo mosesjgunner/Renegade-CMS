@@ -1,0 +1,82 @@
+[
+  {
+    "name": "1. Next.js web server started cleanly on 39063",
+    "passed": true
+  },
+  {
+    "name": "2. Published event created with local timezone and venue",
+    "passed": true
+  },
+  {
+    "name": "3. Future scheduled event created with future publishedAt",
+    "passed": true
+  },
+  {
+    "name": "4. Cancelled event created with status cancelled",
+    "passed": true
+  },
+  {
+    "name": "5. Cross-site foreign event created on Site Beta",
+    "passed": true
+  },
+  {
+    "name": "6. Published timeline created on Site Alpha",
+    "passed": true
+  },
+  {
+    "name": "7. Timeline membership created linking timeline to published event",
+    "passed": true
+  },
+  {
+    "name": "8. Cross-site timeline membership rejected by tenant boundary hook",
+    "passed": true
+  },
+  {
+    "name": "9. Source bibliography record created with staff credibility notes",
+    "passed": true
+  },
+  {
+    "name": "10. Article updated with structured source citation reference",
+    "passed": true
+  },
+  {
+    "name": "11. Quality policy and media-alt-text rule registered",
+    "passed": true
+  },
+  {
+    "name": "12. Quality scan executed and findings persisted in quality-issues",
+    "passed": true
+  },
+  {
+    "name": "13. Public /events displays published event and excludes scheduled, cancelled, and foreign events",
+    "passed": true
+  },
+  {
+    "name": "14. Public /calendar places published event on April 15th with America/New_York timezone",
+    "passed": true
+  },
+  {
+    "name": "15. /events/feed.ics returns RFC 5545 VCALENDAR feed filtering private/foreign events",
+    "passed": true
+  },
+  {
+    "name": "16. /events/[slug]/ics returns single event VCALENDAR download",
+    "passed": true
+  },
+  {
+    "name": "17. /events/[slug] renders event detail view, ICS link, and Schema.org JSON-LD structured data",
+    "passed": true
+  },
+  {
+    "name": "18. Negative: Scheduled and cancelled event detail pages cleanly return HTTP 404",
+    "passed": true
+  },
+  {
+    "name": "19. Public timeline renders chronological milestones linked to canonical event paths",
+    "passed": true
+  },
+  {
+    "name": "20. All 17 auxiliary route paths verified with truthful working/readonly dispositions",
+    "passed": true
+  }
+]

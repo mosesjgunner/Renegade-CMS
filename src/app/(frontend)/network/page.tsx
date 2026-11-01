@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { loadConfig } from '@/modules/core/config'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
 /** Optional, read-only network surface. Remote material stays attributed and is never local content. */
 export default async function NetworkPage() {

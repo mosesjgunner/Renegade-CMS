@@ -1,3 +1,4 @@
+import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
 import * as rc1ReferralLifecycle from './20261029_120000_rc1_referral_lifecycle'
@@ -761,6 +762,11 @@ export const migrations = [
     up: rc1ExperimentForm.up,
     down: rc1ExperimentForm.down,
     name: '20261101_150000_rc1_experiment_form',
+  },
+  {
+    up: rc1NetworkRelationshipIds.up,
+    down: rc1NetworkRelationshipIds.down,
+    name: '20261101_160000_rc1_network_relationship_ids',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

@@ -1,0 +1,34 @@
+[
+  {
+    "name": "R1. Published event record survives PostgreSQL container restart",
+    "passed": true
+  },
+  {
+    "name": "R2. Timeline record survives container restart",
+    "passed": true
+  },
+  {
+    "name": "R3. Timeline membership query returns active milestone entries after restart",
+    "passed": true
+  },
+  {
+    "name": "R4. Source record survives restart with intact credibility and editorial notes",
+    "passed": true
+  },
+  {
+    "name": "R5. Quality scan and persisted issue findings survive container restart",
+    "passed": true
+  },
+  {
+    "name": "R6. /events/feed.ics serves valid VCALENDAR feed with Summit event after restart",
+    "passed": true
+  },
+  {
+    "name": "R7. Public event detail page renders fully in Chromium browser after restart",
+    "passed": true
+  },
+  {
+    "name": "R8. Month calendar grid displays scheduled event on April 15th after restart",
+    "passed": true
+  }
+]

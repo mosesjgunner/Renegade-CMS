@@ -476,7 +476,6 @@ export default async function ConnectionsPage() {
       connections={connections}
       deliveries={deliveries}
       auditEvents={auditEvents}
-      groupFor={determineGroup}
       isStaff={grant.authorized}
     />
   )

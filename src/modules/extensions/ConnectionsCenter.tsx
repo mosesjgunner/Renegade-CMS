@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { ConnectionGroup, ConnectionRecord } from './contracts'
-import { INTEGRATION_SCOPES, type WebhookDeliveryDiagnosis } from '../integrations/service'
+import { INTEGRATION_SCOPES, type WebhookDeliveryDiagnosis } from '../integrations/contracts'
 
 export type OperationalConnection = Omit<ConnectionRecord, 'status'> & {
   status: ConnectionRecord['status'] | 'unconfigured'

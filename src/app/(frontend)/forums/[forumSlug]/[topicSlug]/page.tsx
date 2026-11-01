@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
@@ -14,6 +15,8 @@ export const dynamic = 'force-dynamic'
 
 async function resolveThread(forumSlug: string, topicSlug: string) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'forums') || !isRegisteredCollection(payload, 'discussions'))
+    return null
   const requestHeaders = await headers()
   const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(
     () => 'default',

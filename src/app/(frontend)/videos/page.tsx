@@ -1,10 +1,13 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
 export const dynamic = 'force-dynamic'
 export default async function VideoArchive() {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'videos')) notFound()
   const videos = await payload.find({
     collection: 'videos' as never,
     where: { and: [{ status: { equals: 'published' } }, { visibility: { equals: 'public' } }] },

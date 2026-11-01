@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
 import { notFound, permanentRedirect, redirect } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import type { Metadata } from 'next'
 
 import { canRenderPodcast } from '@/modules/media/publishing'

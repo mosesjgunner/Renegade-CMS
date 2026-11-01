@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39064",
+    "passed": true
+  },
+  {
+    "name": "independent local peer HTTPS server started on 127.0.0.1:39154",
+    "passed": true
+  },
+  {
+    "name": "reconciles all 17 optional modules with explicit local boundary definitions",
+    "passed": true
+  },
+  {
+    "name": "discovers and persists independent remote peer actor and instance",
+    "passed": true
+  },
+  {
+    "name": "queues outbound delivery with persistent idempotency key",
+    "passed": true
+  },
+  {
+    "name": "outbound delivery attempt 1 records transient failure on peer 503",
+    "passed": true
+  },
+  {
+    "name": "attempt 1 recorded in network-delivery-attempts and delivery remains queued",
+    "passed": true
+  },
+  {
+    "name": "attempt 2 succeeds with 202 and delivery transitions to delivered",
+    "passed": true
+  },
+  {
+    "name": "delivery task is idempotent; running again for delivered item creates zero extra attempts",
+    "passed": true
+  },
+  {
+    "name": "inbound ActivityPub follow activity accepted with HTTP 202",
+    "passed": true
+  },
+  {
+    "name": "inbound activity recorded and active inbound follow relationship persisted",
+    "passed": true
+  },
+  {
+    "name": "duplicate inbound activity returns 202 and produces zero new database records",
+    "passed": true
+  },
+  {
+    "name": "inbound request from policy-blocked remote peer is rejected with HTTP 401",
+    "passed": true
+  },
+  {
+    "name": "outbound delivery to blocked destination transitions to status: blocked",
+    "passed": true
+  },
+  {
+    "name": "inbound activity with forged signature is rejected with HTTP 401",
+    "passed": true
+  },
+  {
+    "name": "WebFinger endpoint resolves publication actor to ActivityPub profile URL",
+    "passed": true
+  },
+  {
+    "name": "public /network page renders Network connections heading and admin link",
+    "passed": true
+  },
+  {
+    "name": "auxiliary module routes return clean 404 for missing items without crashing the application",
+    "passed": true
+  },
+  {
+    "name": "anonymous request to /connections redirects to /login",
+    "passed": true
+  },
+  {
+    "name": "authorized owner views Connections Center with operational connection groups",
+    "passed": true
+  }
+]

@@ -122,7 +122,8 @@ export async function POST(request: Request, context: { params: Promise<{ handle
       })
     }
     return new Response(null, { status: 202 })
-  } catch {
+  } catch (error) {
+    console.error("INBOX VERIFY ERROR:", error)
     try {
       remoteActorId = boundedActivity(body).actor ?? remoteActorId
     } catch {

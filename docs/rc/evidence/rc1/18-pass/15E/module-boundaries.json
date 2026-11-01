@@ -1,0 +1,408 @@
+{
+  "collaboration": {
+    "id": "collaboration",
+    "title": "Team collaboration",
+    "summary": "Team membership, editorial assignments and discussions, and realtime co-editing.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Operational local realtime co-editing; no external provider."
+    },
+    "collections": [
+      "team-memberships",
+      "team-invitations",
+      "team-audit-events",
+      "editorial-assignments",
+      "editorial-discussions",
+      "editorial-comments",
+      "work-conversations",
+      "work-messages",
+      "realtime-events",
+      "realtime-presence"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "community": {
+    "id": "community",
+    "title": "Community & forums",
+    "summary": "Public forums, threaded discussions, and member relationship graph.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local community forums, discussion threads, and moderation; no external community SaaS."
+    },
+    "collections": [
+      "relationships",
+      "forum-sections",
+      "forums",
+      "discussions",
+      "discussion-posts"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "events": {
+    "id": "events",
+    "title": "Events (calendar deferred)",
+    "summary": "Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local event occurrences with local time zones. Interactive external calendar sync and feeds are deferred."
+    },
+    "collections": [
+      "events",
+      "timelines",
+      "timeline-memberships",
+      "calendar-entries"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "sources": {
+    "id": "sources",
+    "title": "Research sources",
+    "summary": "Citation sources and bibliography references for long-form articles.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local citations and bibliography references; no external provider."
+    },
+    "collections": [
+      "sources"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "media-studio": {
+    "id": "media-studio",
+    "title": "Media studio",
+    "summary": "Books, podcasts, video, graphics, photo albums, and the media processing pipeline.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local audio, video, graphics, and podcast metadata. Remote transcription, cloud rendering, and TTS APIs are deferred."
+    },
+    "collections": [
+      "books",
+      "book-parts",
+      "book-chapters",
+      "book-editions",
+      "podcast-shows",
+      "podcast-seasons",
+      "podcast-episodes",
+      "video-channels",
+      "video-playlists",
+      "videos",
+      "video-assets",
+      "video-captions",
+      "interviews",
+      "livestreams",
+      "transcript-revisions",
+      "media-jobs",
+      "tts-outputs",
+      "graphic-documents",
+      "media-derivatives",
+      "edit-sessions",
+      "quick-capture-drafts"
+    ],
+    "globals": [],
+    "tasks": [
+      "media-import",
+      "media-render",
+      "media-transcribe",
+      "media-tts",
+      "media-usage-reconcile",
+      "video-process"
+    ]
+  },
+  "social": {
+    "id": "social",
+    "title": "Social distribution",
+    "summary": "Social accounts, drafts, queues, and cross-network publishing.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-harness",
+      "claim": "Local AT Protocol/Bluesky harness and ActivityPub runtime. Remote production network dispatches are unconfigured."
+    },
+    "collections": [
+      "social-accounts",
+      "social-drafts",
+      "social-network-variants",
+      "social-queue-items",
+      "social-publish-attempts",
+      "external-posts",
+      "campaigns"
+    ],
+    "globals": [],
+    "tasks": [
+      "social-publish"
+    ]
+  },
+  "network": {
+    "id": "network",
+    "title": "Experimental federation (ActivityPub)",
+    "summary": "Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-peer",
+      "claim": "Experimental ActivityPub federation verified with an independent local peer. Remote production federation is deferred."
+    },
+    "collections": [
+      "network-signing-keys",
+      "remote-instances",
+      "remote-actors",
+      "remote-objects",
+      "network-relationships",
+      "inbound-network-activities",
+      "outbound-network-deliveries",
+      "network-delivery-attempts",
+      "network-access-decisions",
+      "network-audit-events"
+    ],
+    "globals": [
+      "network-settings"
+    ],
+    "tasks": [
+      "network-delivery"
+    ]
+  },
+  "integrations": {
+    "id": "integrations",
+    "title": "Integrations & webhooks",
+    "summary": "External API clients, request records, and webhook subscriptions/deliveries.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local API client credential records, webhook subscriptions, and delivery logs; no external integration broker."
+    },
+    "collections": [
+      "api-clients",
+      "api-request-records",
+      "webhook-subscriptions",
+      "webhook-deliveries",
+      "integration-audit-events"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "releases": {
+    "id": "releases",
+    "title": "Content releases",
+    "summary": "Staged, scheduled multi-document content releases.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local staged release coordination and transactional publication execution; no external scheduler."
+    },
+    "collections": [
+      "content-releases"
+    ],
+    "globals": [],
+    "tasks": [
+      "content-release-execute"
+    ]
+  },
+  "forms": {
+    "id": "forms",
+    "title": "Forms",
+    "summary": "Deferred public forms; schemas and records are retained without product access.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local form definitions, schemas, and submissions; no external form SaaS."
+    },
+    "collections": [
+      "form-definitions",
+      "form-schemas",
+      "form-submissions",
+      "submission-attachments"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "crm": {
+    "id": "crm",
+    "title": "CRM",
+    "summary": "Contacts, organizations, deals, interactions, and pipeline workflow.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local contacts, organizations, deals, and relationship notes; no external CRM."
+    },
+    "collections": [
+      "contacts",
+      "organizations",
+      "relationship-records",
+      "contact-tags",
+      "contact-taggings",
+      "interaction-records",
+      "relationship-notes",
+      "deals-opportunities",
+      "owner-assignments",
+      "next-actions",
+      "workflow-items"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "newsletter": {
+    "id": "newsletter",
+    "title": "Newsletter & email",
+    "summary": "Audience lists, subscribers, consent, and transactional/newsletter email delivery.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-sink",
+      "claim": "Local loopback SMTP/MIME sink and telecom test emulation. Remote email/telecom delivery is disabled/unconfigured."
+    },
+    "collections": [
+      "audience-lists",
+      "audience-segments",
+      "audience-memberships",
+      "subscriber-confirmation-tokens",
+      "subscribers",
+      "consent-events",
+      "preferences",
+      "suppressions",
+      "email-messages",
+      "delivery-identities",
+      "email-deliveries",
+      "delivery-receipts",
+      "telecom-messages",
+      "telecom-deliveries",
+      "telecom-delivery-events"
+    ],
+    "globals": [],
+    "tasks": [
+      "audience-email-delivery",
+      "audience-newsletter-dispatch",
+      "audience-telecom-delivery",
+      "audience-telecom-dispatch"
+    ]
+  },
+  "notifications": {
+    "id": "notifications",
+    "title": "Notifications & digests",
+    "summary": "In-app notifications. External digests and automation execution are deferred.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local in-app notifications and activity events. Remote push delivery and external digests are deferred."
+    },
+    "collections": [
+      "activity-events",
+      "notifications",
+      "notification-preferences",
+      "notification-channels",
+      "digest-definitions",
+      "digest-runs",
+      "automation-definitions",
+      "automation-runs",
+      "automation-failures"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "analytics": {
+    "id": "analytics",
+    "title": "Analytics",
+    "summary": "First-party analytics events, rollups, goals, and command-center preferences.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "First-party consented analytics collection, rollup aggregation, and operator reporting. No external telemetry."
+    },
+    "collections": [
+      "analytics-events",
+      "analytics-consent-records",
+      "analytics-rollups",
+      "metric-snapshots",
+      "analytics-goals",
+      "command-center-preferences"
+    ],
+    "globals": [],
+    "tasks": [
+      "analytics-retention-cleanup"
+    ]
+  },
+  "experiences": {
+    "id": "experiences",
+    "title": "Experiments & personalization",
+    "summary": "Experience rules, A/B experiments, variants, and traffic allocation.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local A/B experiment assignment, variant rendering, exposure recording, and human winner selection; no external optimization platform."
+    },
+    "collections": [
+      "experience-rules",
+      "experience-variants",
+      "experiments",
+      "experiment-variants",
+      "traffic-allocations",
+      "experiment-assignments",
+      "conversion-goals",
+      "experiment-events",
+      "experiment-analyses",
+      "experiment-decisions"
+    ],
+    "globals": [],
+    "tasks": []
+  },
+  "quality": {
+    "id": "quality",
+    "title": "Quality scanning",
+    "summary": "Editorial quality policies, rules, scans, issues, and reports.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-only",
+      "claim": "Local editorial quality scanning and issue reporting; no external audit provider."
+    },
+    "collections": [
+      "quality-policies",
+      "quality-rules",
+      "quality-scans",
+      "quality-issues",
+      "quality-exceptions",
+      "quality-waivers",
+      "quality-reports"
+    ],
+    "globals": [],
+    "tasks": [
+      "quality-scan"
+    ]
+  },
+  "commerce": {
+    "id": "commerce",
+    "title": "Commerce",
+    "summary": "Products, carts, checkout, orders, payments, supporters, and entitlements.",
+    "enabledByDefault": false,
+    "providerBoundary": {
+      "type": "local-adapter",
+      "claim": "Local deterministic-test checkout, Stripe-test webhook contract, and POD loopback simulator; zero live charges, payouts, or physical orders."
+    },
+    "collections": [
+      "merchant-connections",
+      "payment-method-capabilities",
+      "products",
+      "carts",
+      "checkout-sessions",
+      "payment-intents",
+      "payment-attempts",
+      "orders",
+      "payment-webhook-events",
+      "commerce-refunds",
+      "commerce-disputes",
+      "commerce-reconciliation-cases",
+      "supporters",
+      "entitlements"
+    ],
+    "globals": [],
+    "tasks": [
+      "commerce-abandon-checkouts",
+      "commerce-process-payment-event",
+      "commerce-reconcile-payments"
+    ]
+  }
+}

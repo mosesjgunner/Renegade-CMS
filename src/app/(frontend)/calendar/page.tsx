@@ -1,12 +1,20 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import config from '@payload-config'
+import { getPayload } from 'payload'
 import { findPublicEvents } from '@/modules/events/public'
 import type { EventOccurrence } from '@/modules/events/contracts'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
+
 export const dynamic = 'force-dynamic'
 export default async function CalendarPage({
   searchParams,
 }: {
   searchParams: Promise<{ month?: string }>
 }) {
+  const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'events')) notFound()
+
   const query = await searchParams
   const month = query.month ?? new Date().toISOString().slice(0, 7)
   if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))

@@ -1,0 +1,104 @@
+[
+  {
+    "path": "/events",
+    "status": 200,
+    "disposition": "working",
+    "description": "Public events list"
+  },
+  {
+    "path": "/events/feed.ics",
+    "status": 200,
+    "disposition": "working",
+    "description": "ICS subscription feed"
+  },
+  {
+    "path": "/events/rc1-community-summit-2027/ics",
+    "status": 200,
+    "disposition": "working",
+    "description": "Event occurrence ICS"
+  },
+  {
+    "path": "/events/rc1-community-summit-2027",
+    "status": 200,
+    "disposition": "working",
+    "description": "Event detail page"
+  },
+  {
+    "path": "/timelines/renegade-milestones",
+    "status": 200,
+    "disposition": "working",
+    "description": "Timeline detail view"
+  },
+  {
+    "path": "/calendar",
+    "status": 200,
+    "disposition": "working",
+    "description": "Month event calendar"
+  },
+  {
+    "path": "/forums",
+    "status": 200,
+    "disposition": "working",
+    "description": "Community discussion forums"
+  },
+  {
+    "path": "/store",
+    "status": 200,
+    "disposition": "working",
+    "description": "Commerce store showcase"
+  },
+  {
+    "path": "/network",
+    "status": 200,
+    "disposition": "working",
+    "description": "Network connections overview"
+  },
+  {
+    "path": "/connections",
+    "status": 307,
+    "disposition": "working",
+    "description": "Operator connections center (auth-gated redirect)"
+  },
+  {
+    "path": "/moderation",
+    "status": 200,
+    "disposition": "working",
+    "description": "Community moderation center"
+  },
+  {
+    "path": "/notifications",
+    "status": 200,
+    "disposition": "working",
+    "description": "In-app notification center"
+  },
+  {
+    "path": "/subscribe",
+    "status": 200,
+    "disposition": "working",
+    "description": "Newsletter subscription form"
+  },
+  {
+    "path": "/unsubscribe",
+    "status": 200,
+    "disposition": "working",
+    "description": "Newsletter unsubscribe form"
+  },
+  {
+    "path": "/preferences",
+    "status": 200,
+    "disposition": "working",
+    "description": "Subscriber preference center"
+  },
+  {
+    "path": "/podcasts/missing-show",
+    "status": 404,
+    "disposition": "readonly-unpopulated",
+    "description": "Media studio unpopulated route"
+  },
+  {
+    "path": "/videos",
+    "status": 200,
+    "disposition": "working",
+    "description": "Video channel directory"
+  }
+]

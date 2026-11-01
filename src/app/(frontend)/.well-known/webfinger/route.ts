@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
 import { webfinger } from '@/modules/social/activitypub'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
 export const dynamic = 'force-dynamic'
 

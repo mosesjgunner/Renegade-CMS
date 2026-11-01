@@ -46,7 +46,18 @@ export type ModuleId =
   | 'quality'
   | 'commerce'
 
+export type ProviderBoundaryType =
+  | 'local-only'
+  | 'local-harness'
+  | 'local-peer'
+  | 'local-sink'
+  | 'local-adapter'
+
 export type ModuleManifestEntry = {
+  providerBoundary: {
+    type: ProviderBoundaryType
+    claim: string
+  }
   id: ModuleId
   title: string
   summary: string
@@ -66,6 +77,11 @@ export type ModuleManifestEntry = {
 export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   {
     id: 'collaboration',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim: 'Operational local realtime co-editing; no external provider.',
+    },
     title: 'Team collaboration',
     summary: 'Team membership, editorial assignments and discussions, and realtime co-editing.',
     collections: [
@@ -83,12 +99,24 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'community',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local community forums, discussion threads, and moderation; no external community SaaS.',
+    },
     title: 'Community & forums',
     summary: 'Public forums, threaded discussions, and member relationship graph.',
     collections: ['relationships', 'forum-sections', 'forums', 'discussions', 'discussion-posts'],
   },
   {
     id: 'events',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local event occurrences with local time zones. Interactive external calendar sync and feeds are deferred.',
+    },
     title: 'Events (calendar deferred)',
     summary:
       'Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.',
@@ -96,12 +124,23 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'sources',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim: 'Local citations and bibliography references; no external provider.',
+    },
     title: 'Research sources',
     summary: 'Citation sources and bibliography references for long-form articles.',
     collections: ['sources'],
   },
   {
     id: 'media-studio',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local audio, video, graphics, and podcast metadata. Remote transcription, cloud rendering, and TTS APIs are deferred.',
+    },
     title: 'Media studio',
     summary: 'Books, podcasts, video, graphics, photo albums, and the media processing pipeline.',
     collections: [
@@ -138,6 +177,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'social',
+
+    providerBoundary: {
+      type: 'local-harness',
+      claim:
+        'Local AT Protocol/Bluesky harness and ActivityPub runtime. Remote production network dispatches are unconfigured.',
+    },
     title: 'Social distribution',
     summary: 'Social accounts, drafts, queues, and cross-network publishing.',
     collections: [
@@ -153,6 +198,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'network',
+
+    providerBoundary: {
+      type: 'local-peer',
+      claim:
+        'Experimental ActivityPub federation verified with an independent local peer. Remote production federation is deferred.',
+    },
     title: 'Experimental federation (ActivityPub)',
     summary:
       'Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.',
@@ -173,6 +224,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'integrations',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local API client credential records, webhook subscriptions, and delivery logs; no external integration broker.',
+    },
     title: 'Integrations & webhooks',
     summary: 'External API clients, request records, and webhook subscriptions/deliveries.',
     collections: [
@@ -185,6 +242,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'releases',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local staged release coordination and transactional publication execution; no external scheduler.',
+    },
     title: 'Content releases',
     summary: 'Staged, scheduled multi-document content releases.',
     collections: ['content-releases'],
@@ -192,12 +255,22 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'forms',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim: 'Local form definitions, schemas, and submissions; no external form SaaS.',
+    },
     title: 'Forms',
     summary: 'Deferred public forms; schemas and records are retained without product access.',
     collections: ['form-definitions', 'form-schemas', 'form-submissions', 'submission-attachments'],
   },
   {
     id: 'crm',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim: 'Local contacts, organizations, deals, and relationship notes; no external CRM.',
+    },
     title: 'CRM',
     summary: 'Contacts, organizations, deals, interactions, and pipeline workflow.',
     collections: [
@@ -216,6 +289,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'newsletter',
+
+    providerBoundary: {
+      type: 'local-sink',
+      claim:
+        'Local loopback SMTP/MIME sink and telecom test emulation. Remote email/telecom delivery is disabled/unconfigured.',
+    },
     title: 'Newsletter & email',
     summary: 'Audience lists, subscribers, consent, and transactional/newsletter email delivery.',
     collections: [
@@ -244,6 +323,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'notifications',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local in-app notifications and activity events. Remote push delivery and external digests are deferred.',
+    },
     title: 'Notifications & digests',
     summary: 'In-app notifications. External digests and automation execution are deferred.',
     collections: [
@@ -260,6 +345,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'analytics',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'First-party consented analytics collection, rollup aggregation, and operator reporting. No external telemetry.',
+    },
     title: 'Analytics',
     summary: 'First-party analytics events, rollups, goals, and command-center preferences.',
     collections: [
@@ -274,6 +365,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'experiences',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim:
+        'Local A/B experiment assignment, variant rendering, exposure recording, and human winner selection; no external optimization platform.',
+    },
     title: 'Experiments & personalization',
     summary: 'Experience rules, A/B experiments, variants, and traffic allocation.',
     collections: [
@@ -291,6 +388,11 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'quality',
+
+    providerBoundary: {
+      type: 'local-only',
+      claim: 'Local editorial quality scanning and issue reporting; no external audit provider.',
+    },
     title: 'Quality scanning',
     summary: 'Editorial quality policies, rules, scans, issues, and reports.',
     collections: [
@@ -306,6 +408,12 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'commerce',
+
+    providerBoundary: {
+      type: 'local-adapter',
+      claim:
+        'Local deterministic-test checkout, Stripe-test webhook contract, and POD loopback simulator; zero live charges, payouts, or physical orders.',
+    },
     title: 'Commerce',
     summary: 'Products, carts, checkout, orders, payments, supporters, and entitlements.',
     collections: [
@@ -591,4 +699,35 @@ export function gatePayloadRegistrations(
 export function floorCollectionSlugs(full: PayloadRegistrations): string[] {
   const owned = buildOwnership().collections
   return full.collections.map((c) => c.slug).filter((slug) => !owned.has(slug))
+}
+
+export type ModuleBoundaryRecord = {
+  id: ModuleId
+  title: string
+  summary: string
+  enabledByDefault: boolean
+  providerBoundary: {
+    type: ProviderBoundaryType
+    claim: string
+  }
+  collections: readonly string[]
+  globals: readonly string[]
+  tasks: readonly string[]
+}
+
+export function getModuleBoundaryRecords(): Record<ModuleId, ModuleBoundaryRecord> {
+  const result = {} as Record<ModuleId, ModuleBoundaryRecord>
+  for (const entry of OPTIONAL_MODULES) {
+    result[entry.id] = {
+      id: entry.id,
+      title: entry.title,
+      summary: entry.summary,
+      enabledByDefault: false,
+      providerBoundary: entry.providerBoundary,
+      collections: entry.collections,
+      globals: entry.globals ?? [],
+      tasks: entry.tasks ?? [],
+    }
+  }
+  return result
 }

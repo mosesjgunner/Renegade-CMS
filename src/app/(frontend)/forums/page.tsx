@@ -5,6 +5,8 @@ import { headers } from 'next/headers'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
+import { notFound } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,6 +17,11 @@ export const metadata: Metadata = {
 
 export default async function ForumsIndexPage() {
   const payload = await getPayload({ config })
+  if (
+    !isRegisteredCollection(payload, 'forum-sections') ||
+    !isRegisteredCollection(payload, 'forums')
+  )
+    notFound()
   const requestHeaders = await headers()
   const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(
     () => 'default',

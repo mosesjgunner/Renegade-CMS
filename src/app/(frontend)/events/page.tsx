@@ -1,5 +1,9 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import config from '@payload-config'
+import { getPayload } from 'payload'
 import { findPublicEvents } from '@/modules/events/public'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
 export const dynamic = 'force-dynamic'
 const date = (value: string, timeZone: string) =>
@@ -11,6 +15,9 @@ export default async function EventsPage({
 }: {
   searchParams: Promise<{ from?: string; to?: string; category?: string; page?: string }>
 }) {
+  const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'events')) notFound()
+
   const query = await searchParams
   const from = query.from ? new Date(query.from) : new Date()
   const to = query.to ? new Date(query.to) : new Date(from.getTime() + 90 * 86_400_000)

@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import { ProductDetail } from '@/modules/commerce/ProductView'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 
@@ -11,7 +12,7 @@ export const dynamic = 'force-dynamic'
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
   const siteId = await catalogSiteForHost(payload, (await headers()).get('host')).catch(() => null)
-  if (!siteId) notFound()
+  if (!siteId || !isRegisteredCollection(payload, 'products')) notFound()
   const { slug } = await params
   const products = await (payload as any).find({
     collection: 'products',
