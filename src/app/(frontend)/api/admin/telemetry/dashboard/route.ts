@@ -1,13 +1,10 @@
+import { loadOperatorReport, reportWindow } from '@/modules/analytics/operator-report'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { TELEMETRY_METRIC_DEFINITIONS } from '@/modules/analytics/definitions'
 import { TELEMETRY_EVENT_INVENTORY } from '@/modules/analytics/inventory'
-import {
-  maskSuppressedIdentity,
-  attributeCampaignFunnel,
-  type FirstPartyEvent,
-} from '@/modules/analytics/contracts'
+import { maskSuppressedIdentity, type FirstPartyEvent } from '@/modules/analytics/contracts'
 import { analyzeExperiment } from '@/modules/experiences/contracts'
 import { getActivePublicExperiment } from '@/modules/experiences/public-experiment'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
@@ -31,14 +28,12 @@ export async function GET(request: Request) {
     (siteIdParam && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteIdParam))
   )
     return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
-  const startDateParam = url.searchParams.get('startDate')
-  const endDateParam = url.searchParams.get('endDate')
-
   // 1. Fetch available sites
   const sitesRes = await payload.find({
     collection: 'sites',
     ...(grant.isGlobalOwner ? {} : { where: { id: { in: grant.authorizedSiteIds } } }),
-    limit: 50,
+    pagination: false,
+    limit: 0,
     depth: 0,
     overrideAccess: true,
   } as never)
@@ -54,87 +49,45 @@ export async function GET(request: Request) {
   if (!activeSiteId || !sites.some((site) => site.id === activeSiteId))
     return NextResponse.json({ error: 'Choose an available site.' }, { status: 400 })
 
-  // 2. Compute date window (default last 30 days)
   const now = new Date()
-  const endWindow = endDateParam ? new Date(endDateParam) : now
-  const startWindow = startDateParam
-    ? new Date(startDateParam)
-    : new Date(endWindow.getTime() - 30 * 86_400_000)
-
-  const startIso = startWindow.toISOString()
-  const endIso = endWindow.toISOString()
-
+  let window
+  try {
+    window = reportWindow(url.searchParams, now)
+  } catch (error) {
+    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
+  }
+  const startIso = window.start
+  const endIso = window.end
+  const report = await loadOperatorReport(payload, activeSiteId, window)
   // 3. Query canonical records in parallel
-  const [eventsRes, consentRes, ordersRes, snapshotsRes, suppressionsRes, activeExperiment] =
-    await Promise.all([
-      payload.find({
-        collection: 'analytics-events',
-        where: {
-          and: [
-            ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-            { occurredAt: { greater_than_equal: startIso } },
-            { occurredAt: { less_than_equal: endIso } },
-          ],
-        },
-        limit: 1000,
-        sort: '-occurredAt',
+  const [consentRes, suppressionsRes, activeExperiment] = await Promise.all([
+    payload.find({
+      collection: 'analytics-consent-records',
+      where: {
+        and: [
+          ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
+          { occurredAt: { greater_than_equal: startIso } },
+          { occurredAt: { less_than: endIso } },
+        ],
+      },
+      pagination: false,
+      limit: 0,
+      sort: '-occurredAt',
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    payload
+      .find({
+        collection: 'suppressions',
+        where: { site: { equals: activeSiteId } },
+        pagination: false,
+        limit: 0,
         depth: 0,
         overrideAccess: true,
-      } as never),
-      payload.find({
-        collection: 'analytics-consent-records',
-        where: {
-          and: [
-            ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-            { occurredAt: { greater_than_equal: startIso } },
-            { occurredAt: { less_than_equal: endIso } },
-          ],
-        },
-        limit: 500,
-        sort: '-occurredAt',
-        depth: 0,
-        overrideAccess: true,
-      } as never),
-      payload
-        .find({
-          collection: 'orders',
-          where: {
-            and: [
-              ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-              { createdAt: { greater_than_equal: startIso } },
-              { createdAt: { less_than_equal: endIso } },
-            ],
-          },
-          limit: 500,
-          depth: 1,
-          overrideAccess: true,
-        } as never)
-        .catch(() => ({ docs: [], totalDocs: 0 })),
-      payload
-        .find({
-          collection: 'metric-snapshots',
-          where: {
-            and: [
-              ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-              { windowStart: { greater_than_equal: startIso } },
-            ],
-          },
-          limit: 500,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        .catch(() => ({ docs: [], totalDocs: 0 })),
-      payload
-        .find({
-          collection: 'suppressions',
-          where: { site: { equals: activeSiteId } },
-          limit: 1000,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        .catch(() => ({ docs: [], totalDocs: 0 })),
-      getActivePublicExperiment(payload, activeSiteId),
-    ])
+      } as never)
+      .catch(() => ({ docs: [], totalDocs: 0 })),
+    getActivePublicExperiment(payload, activeSiteId),
+  ])
 
   // Build suppression set for privacy masking
   const suppressionSet = new Set<string>()
@@ -143,8 +96,8 @@ export async function GET(request: Request) {
     if (typeof raw.emailHash === 'string') suppressionSet.add(raw.emailHash)
   }
 
-  const rawEvents = eventsRes.docs as unknown as Array<Record<string, unknown>>
-  const totalEventsCount = eventsRes.totalDocs
+  const rawEvents = report.events
+  const totalEventsCount = rawEvents.length
 
   // Map into FirstPartyEvent representation
   const domainEvents: FirstPartyEvent[] = rawEvents.map((r) => ({
@@ -158,7 +111,7 @@ export async function GET(request: Request) {
       memberId: r.member ? String(r.member) : undefined,
     },
     context: (r.context as never) ?? { siteId: activeSiteId },
-    consentBasis: (r.consentBasis as never) ?? 'analytics-consent',
+    consentBasis: (r.consentBasis as never) ?? 'denied',
     schemaVersion: Number(r.schemaVersion ?? 1),
     trusted: Boolean(r.trusted),
     dedupeKey: String(r.dedupeKey ?? ''),
@@ -166,7 +119,7 @@ export async function GET(request: Request) {
   }))
 
   // 4. Source Freshness & Health
-  const lastEvent = domainEvents[0]
+  const lastEvent = [...domainEvents].sort((a, b) => b.receivedAt.localeCompare(a.receivedAt))[0]
   const lastEventReceivedAt = lastEvent ? lastEvent.receivedAt : null
   const freshnessMinutes = lastEventReceivedAt
     ? Math.max(0, Math.floor((now.getTime() - new Date(lastEventReceivedAt).getTime()) / 60000))
@@ -194,7 +147,7 @@ export async function GET(request: Request) {
   }
 
   const consentRate =
-    totalConsentRecords > 0 ? Math.round((analyticsGrantedCount / totalConsentRecords) * 100) : 100
+    totalConsentRecords > 0 ? Math.round((analyticsGrantedCount / totalConsentRecords) * 100) : null
 
   // 6. Aggregate Metrics
   const pageViews = domainEvents.filter((e) => e.eventType === 'page_view').length
@@ -204,169 +157,12 @@ export async function GET(request: Request) {
   const uniqueVisitors = uniqueVisitorHashes.size
 
   // 7. Uncertainty & Missing Data State
-  const unconsentedEventsCount = domainEvents.filter(
-    (e) => e.consentBasis === 'denied' || e.consentBasis === 'necessary',
-  ).length
+  const unconsentedEventsCount = null
   const missingUtmCount = domainEvents.filter(
     (e) => e.eventType === 'page_view' && !e.context.utm?.utm_campaign,
   ).length
 
-  // Estimated unconsented traffic percentage based on consent grants
-  const estimatedUnconsentedTrafficPct =
-    totalConsentRecords > 0 ? Math.max(0, 100 - consentRate) : 0
-
-  // 8. Currency-Separated Financial Views
-  const currencyViews: Record<
-    string,
-    {
-      presentmentCurrency: string
-      settlementCurrency: string
-      grossMinor: bigint
-      feeMinor: bigint
-      netMinor: bigint
-      reconciledMinor: bigint
-      unreconciledMinor: bigint
-      providerReportedMinor: bigint
-      estimatedMinor: bigint
-      orderCount: number
-    }
-  > = {}
-
-  // Aggregate from metric snapshots
-  const snapshots = snapshotsRes.docs as unknown as Array<Record<string, unknown>>
-  for (const snap of snapshots) {
-    const cur = String(snap.settlementCurrency ?? snap.presentmentCurrency ?? 'USD').toUpperCase()
-    if (!currencyViews[cur]) {
-      currencyViews[cur] = {
-        presentmentCurrency: cur,
-        settlementCurrency: cur,
-        grossMinor: 0n,
-        feeMinor: 0n,
-        netMinor: 0n,
-        reconciledMinor: 0n,
-        unreconciledMinor: 0n,
-        providerReportedMinor: 0n,
-        estimatedMinor: 0n,
-        orderCount: 0,
-      }
-    }
-    const val = BigInt(String(snap.value ?? '0'))
-    const recStatus = String(snap.reconciliationStatus ?? 'reconciled')
-    currencyViews[cur].grossMinor += val
-    currencyViews[cur].netMinor += val
-    if (recStatus === 'reconciled') currencyViews[cur].reconciledMinor += val
-    else if (recStatus === 'provider-reported') currencyViews[cur].providerReportedMinor += val
-    else if (recStatus === 'estimated') currencyViews[cur].estimatedMinor += val
-    else currencyViews[cur].unreconciledMinor += val
-  }
-
-  // Aggregate from canonical orders
-  const orders = ordersRes.docs as unknown as Array<Record<string, unknown>>
-  for (const o of orders) {
-    const cur = String(o.currency ?? 'USD').toUpperCase()
-    if (!currencyViews[cur]) {
-      currencyViews[cur] = {
-        presentmentCurrency: cur,
-        settlementCurrency: cur,
-        grossMinor: 0n,
-        feeMinor: 0n,
-        netMinor: 0n,
-        reconciledMinor: 0n,
-        unreconciledMinor: 0n,
-        providerReportedMinor: 0n,
-        estimatedMinor: 0n,
-        orderCount: 0,
-      }
-    }
-    const amount = BigInt(String(o.totalMinor ?? o.amount ?? '0'))
-    currencyViews[cur].grossMinor += amount
-    currencyViews[cur].netMinor += amount
-    currencyViews[cur].reconciledMinor += amount
-    currencyViews[cur].orderCount++
-  }
-
-  // Format financial views for JSON output
-  const financialSummary = Object.entries(currencyViews).map(([cur, view]) => ({
-    currency: cur,
-    grossFormatted: (Number(view.grossMinor) / 100).toFixed(2),
-    feeFormatted: (Number(view.feeMinor) / 100).toFixed(2),
-    netFormatted: (Number(view.netMinor) / 100).toFixed(2),
-    grossMinor: view.grossMinor.toString(),
-    reconciledMinor: view.reconciledMinor.toString(),
-    unreconciledMinor: view.unreconciledMinor.toString(),
-    providerReportedMinor: view.providerReportedMinor.toString(),
-    estimatedMinor: view.estimatedMinor.toString(),
-    orderCount: view.orderCount,
-    reconciliationRatePct:
-      view.grossMinor > 0n
-        ? Math.round((Number(view.reconciledMinor) / Number(view.grossMinor)) * 100)
-        : 100,
-  }))
-
-  // 9. Campaign Funnels & Attribution
-  // Discover campaign IDs from events
-  const campaignMap = new Map<string, FirstPartyEvent[]>()
-  for (const e of domainEvents) {
-    const camp = e.context.campaignId ?? e.context.utm?.utm_campaign
-    if (camp) {
-      if (!campaignMap.has(camp)) campaignMap.set(camp, [])
-      campaignMap.get(camp)!.push(e)
-    }
-  }
-
-  const campaignFunnels = Array.from(campaignMap.entries()).map(([campName, campEvents]) => {
-    const impressions = campEvents.filter(
-      (e) => e.eventType === 'page_view' || e.eventType === 'event_view',
-    ).length
-    const landings = campEvents.filter((e) => e.eventType === 'page_view').length
-    const engagements = campEvents.filter(
-      (e) => e.eventType === 'read_depth' || e.eventType === 'click_internal',
-    ).length
-    const conversions = campEvents.filter(
-      (e) =>
-        e.eventType === 'signup' ||
-        e.eventType === 'form_submit' ||
-        e.eventType === 'payment_completed' ||
-        e.eventType === 'experiment_conversion',
-    ).length
-
-    const conversionRate = landings > 0 ? ((conversions / landings) * 100).toFixed(1) : '0.0'
-
-    // Compute attribution models
-    const sampleConversion = campEvents.find(
-      (e) => e.eventType === 'signup' || e.eventType === 'experiment_conversion',
-    )
-    let attributionSample = null
-    if (sampleConversion) {
-      try {
-        attributionSample = attributeCampaignFunnel(domainEvents, sampleConversion.id)
-      } catch {
-        // Fallback
-      }
-    }
-
-    return {
-      campaign: campName,
-      impressions,
-      landings,
-      engagements,
-      conversions,
-      conversionRate,
-      disclosedLinksCount: campEvents.filter((e) => e.context.utm?.utm_source).length,
-      channelsBreakdown: {
-        newsletter: campEvents.filter(
-          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'email',
-        ).length,
-        social_disclosed: campEvents.filter(
-          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'social',
-        ).length,
-        referral: campEvents.filter(
-          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'referral',
-        ).length,
-      },
-      attributionSample,
-    }
-  })
+  const { financialSummary, campaignFunnels } = report
 
   // 10. Live Public Experiment Statistical Analysis
   const expExposures = domainEvents.filter(
@@ -404,7 +200,7 @@ export async function GET(request: Request) {
       eventType: e.eventType,
       occurredAt: e.occurredAt,
       consentBasis: e.consentBasis,
-      channel: e.context.channel ?? e.context.utm?.utm_medium ?? 'direct',
+      channel: e.context.channel ?? e.context.utm?.utm_medium ?? null,
       campaign: e.context.campaignId ?? e.context.utm?.utm_campaign,
       path: e.context.path,
       // Suppression protection: masked if on suppressions ledger
@@ -421,23 +217,28 @@ export async function GET(request: Request) {
   return NextResponse.json({
     activeSiteId,
     sites,
-    dateWindow: { start: startIso, end: endIso },
+    dateWindow: window,
+    domainMetrics: report.domainMetrics,
+    sourceStatus: report.sourceStatus,
+    sourceFreshnessByCollection: report.sourceFreshnessByCollection,
+    reportingDefinitions: report.definitions,
+    unattributedConversions: report.unattributedConversions,
     sourceFreshness: {
       lastEventReceivedAt,
       freshnessMinutes,
       status: pipelineStatus,
       rawEventsCount: totalEventsCount,
-      deduplicatedCount: Math.round(totalEventsCount * 0.08),
-      botFilteredCount: Math.round(totalEventsCount * 0.12),
+      sampleTruncated: false,
+      countBasis: 'All retained current-consent events in selected window; not total site traffic.',
+      deduplicatedCount: null,
+      botFilteredCount: null,
     },
     uncertaintyAndMissingData: {
-      unconsentedTrafficEstimatePct: estimatedUnconsentedTrafficPct,
+      unconsentedTrafficEstimatePct: null,
       unconsentedEventsCount,
       missingUtmCount,
       disclosureStatement:
-        estimatedUnconsentedTrafficPct > 0
-          ? `${estimatedUnconsentedTrafficPct}% of visitors engaged with tracking off or DNT/GPC privacy signals. These journeys are strictly omitted from tracking rather than misattributed.`
-          : 'All recorded visitor telemetry strictly respects first-party analytics consent.',
+        'Unconsented traffic is not collected; its volume and rejected or duplicate request counts are unknown.',
       suppressionExclusionsCount: suppressionSet.size,
     },
     privacyConsent: {

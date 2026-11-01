@@ -1,0 +1,67 @@
+[
+  {
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15c/run.ps1 migrate",
+    "exit": 0,
+    "assertion": "130 migrations applied, second migration invocation adds none"
+  },
+  {
+    "argv": [
+      "npx.cmd",
+      "vitest",
+      "run",
+      "tests/unit/experiments-15c.test.ts",
+      "tests/unit/public-experiment-configuration.test.ts",
+      "tests/unit/analytics-attribution-experiments.test.ts",
+      "tests/unit/network-experience.test.ts"
+    ],
+    "exit": 0,
+    "passed": 31,
+    "failed": 0,
+    "skipped": 0
+  },
+  {
+    "argv": [
+      "npx.cmd",
+      "eslint",
+      "src/modules/experiences",
+      "src/modules/audience/PublicForm.tsx",
+      "src/collections/Experiences.ts",
+      "src/migrations/20261101_150000_rc1_experiment_form.ts",
+      "src/migrations/index.ts",
+      "src/modules/admin/TelemetryCommandCenter.tsx",
+      "src/modules/analytics/ConsentManager.tsx",
+      "src/app/(frontend)/api/experiences",
+      "src/app/(frontend)/api/admin/telemetry/experiment/winner/route.ts",
+      "tests/unit/experiments-15c.test.ts",
+      "tests/unit/public-experiment-configuration.test.ts",
+      "tests/rc1-15c",
+      "--max-warnings=0"
+    ],
+    "exit": 0
+  },
+  {
+    "argv": [
+      "npx.cmd",
+      "prettier",
+      "--check",
+      "src/modules/experiences",
+      "src/modules/audience/PublicForm.tsx",
+      "src/collections/Experiences.ts",
+      "src/migrations/20261101_150000_rc1_experiment_form.ts",
+      "src/migrations/index.ts",
+      "src/modules/admin/TelemetryCommandCenter.tsx",
+      "src/modules/analytics/ConsentManager.tsx",
+      "src/app/(frontend)/api/experiences",
+      "src/app/(frontend)/api/admin/telemetry/experiment/winner/route.ts",
+      "tests/unit/experiments-15c.test.ts",
+      "tests/unit/public-experiment-configuration.test.ts",
+      "tests/rc1-15c/journey.ts",
+      "tests/rc1-15c/provenance.ts"
+    ],
+    "exit": 0
+  },
+  {
+    "command": "npm.cmd run typecheck",
+    "exit": 0
+  }
+]

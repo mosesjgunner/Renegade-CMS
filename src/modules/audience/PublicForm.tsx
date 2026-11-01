@@ -3,9 +3,14 @@
 import { useRef, useState } from 'react'
 import type { FormField } from './contracts'
 
-type Props = { formId: string; fields: readonly FormField[]; consentText?: string }
+type Props = {
+  formId: string
+  fields: readonly FormField[]
+  consentText?: string
+  onSubmitted?: (submissionId: string) => Promise<void>
+}
 
-export function PublicForm({ formId, fields, consentText }: Props) {
+export function PublicForm({ formId, fields, consentText, onSubmitted }: Props) {
   const [message, setMessage] = useState('')
   const [pending, setPending] = useState(false)
   const requestKey = useRef<string | null>(null)
@@ -34,7 +39,10 @@ export function PublicForm({ formId, fields, consentText }: Props) {
         }),
       })
       const body = await response.json()
-      if (response.ok) requestKey.current = null
+      if (response.ok) {
+        requestKey.current = null
+        if (body.submissionId) await onSubmitted?.(String(body.submissionId))
+      }
       setMessage(
         body.error ??
           (body.errors

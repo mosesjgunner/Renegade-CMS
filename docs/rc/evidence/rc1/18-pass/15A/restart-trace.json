@@ -1,0 +1,35 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "PostgreSQL restart retains only nonwithdrawn event",
+      "passed": true
+    },
+    {
+      "name": "duplicate retry after web and database restart adds no event",
+      "passed": true
+    },
+    {
+      "name": "persisted withdrawal blocks old cookie after restart",
+      "passed": true
+    },
+    {
+      "name": "canonical opted-in form submission survives withdrawal and restart",
+      "passed": true
+    },
+    {
+      "name": "authorized report reconciles exact retained event count after restart",
+      "passed": true
+    },
+    {
+      "name": "foreign operator remains denied after restart",
+      "passed": true
+    }
+  ]
+}

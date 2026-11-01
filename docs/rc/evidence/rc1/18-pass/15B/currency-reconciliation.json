@@ -1,0 +1,93 @@
+{
+  "financialSummary": [
+    {
+      "currency": "EUR",
+      "grossMinor": "2731",
+      "grossFormatted": "2731 minor units",
+      "feeFormatted": "Unknown",
+      "netFormatted": "Unknown",
+      "reconciledMinor": "2731",
+      "unreconciledMinor": "0",
+      "providerReportedMinor": "0",
+      "estimatedMinor": "0",
+      "orderCount": 1,
+      "reconciliationRatePct": 100
+    },
+    {
+      "currency": "USD",
+      "grossMinor": "2359",
+      "grossFormatted": "2359 minor units",
+      "feeFormatted": "Unknown",
+      "netFormatted": "Unknown",
+      "reconciledMinor": "2359",
+      "unreconciledMinor": "0",
+      "providerReportedMinor": "0",
+      "estimatedMinor": "0",
+      "orderCount": 1,
+      "reconciliationRatePct": 100
+    }
+  ],
+  "domainMetrics": {
+    "acquisition": {
+      "dispatch": 2
+    },
+    "contentViews": [
+      {
+        "path": "/events",
+        "views": 2
+      }
+    ],
+    "audience": {
+      "newSubscribers": 0,
+      "formSubmissions": 1
+    },
+    "community": {
+      "newPosts": 0,
+      "newDiscussions": 0
+    },
+    "commerce": {
+      "createdOrders": 2,
+      "paidOrders": 2
+    }
+  },
+  "unconsentedEuroOrder": {
+    "id": "8f0add0b-d1ce-4887-ad12-f32d468b895a",
+    "orderNumber": "order_e7f05588-6414-4255-a67f-eb1e50e2ce27",
+    "state": "paid",
+    "amountMinor": "2731",
+    "currency": "EUR",
+    "receiptNumber": "receipt_8f0add0b-d1ce-4887-ad12-f32d468b895a",
+    "history": [
+      {
+        "kind": "inventory-applied",
+        "at": "2026-11-01T18:27:08.685Z",
+        "amountMinor": null
+      },
+      {
+        "kind": "payment-confirmed",
+        "at": "2026-11-01T18:27:08.685Z",
+        "amountMinor": null
+      }
+    ],
+    "refund": null,
+    "items": [
+      {
+        "productId": "ca3b01fa-f902-408d-97f8-fd4b357c8912",
+        "variantSku": "15B-EUR",
+        "title": "Standard",
+        "quantity": 1,
+        "unitAmountMinor": "2100",
+        "lineAmountMinor": "2100",
+        "currency": "EUR"
+      }
+    ],
+    "totalsSnapshot": {
+      "subtotalMinor": "2100",
+      "adjustmentsTotalMinor": "0",
+      "netShippingMinor": "500",
+      "taxTotalMinor": "131",
+      "grandTotalMinor": "2731",
+      "currency": "EUR"
+    }
+  }
+}

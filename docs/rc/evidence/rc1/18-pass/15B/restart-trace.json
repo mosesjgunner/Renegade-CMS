@@ -1,0 +1,27 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "web and PostgreSQL restart preserve canonical financial amount",
+      "passed": true
+    },
+    {
+      "name": "restart preserves suppression and removes attributed conversions",
+      "passed": true
+    },
+    {
+      "name": "withdrawn visitor order-status retry cannot resurrect payment analytics",
+      "passed": true
+    },
+    {
+      "name": "wrong site remains denied after restart",
+      "passed": true
+    }
+  ]
+}

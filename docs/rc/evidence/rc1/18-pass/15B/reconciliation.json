@@ -1,0 +1,1157 @@
+{
+  "order": {
+    "id": "6dfc583c-a4e0-4556-b8de-868f14abdd5a",
+    "state": "paid",
+    "amountMinor": "2359",
+    "currency": "USD",
+    "receipt": "receipt_6dfc583c-a4e0-4556-b8de-868f14abdd5a"
+  },
+  "dashboard": {
+    "activeSiteId": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+    "sites": [
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+        "name": "15B alpha"
+      }
+    ],
+    "dateWindow": {
+      "start": "2026-10-02T18:26:52.683Z",
+      "end": "2026-11-01T18:26:52.683Z",
+      "timezone": "UTC",
+      "boundaries": "[start, end)"
+    },
+    "domainMetrics": {
+      "acquisition": {
+        "dispatch": 2
+      },
+      "contentViews": [
+        {
+          "path": "/events",
+          "views": 2
+        }
+      ],
+      "audience": {
+        "newSubscribers": 0,
+        "formSubmissions": 1
+      },
+      "community": {
+        "newPosts": 0,
+        "newDiscussions": 0
+      },
+      "commerce": {
+        "createdOrders": 1,
+        "paidOrders": 1
+      }
+    },
+    "sourceStatus": {
+      "analytics-events": "available",
+      "orders": "available",
+      "form-submissions": "available",
+      "subscribers": "available",
+      "discussion-posts": "available",
+      "discussions": "available"
+    },
+    "sourceFreshnessByCollection": {
+      "analytics-events": {
+        "recordsInWindow": 4,
+        "latestTimestamp": "2026-11-01T18:26:50.679Z"
+      },
+      "orders": {
+        "recordsInWindow": 1,
+        "latestTimestamp": "2026-11-01T18:26:48.953Z"
+      },
+      "form-submissions": {
+        "recordsInWindow": 1,
+        "latestTimestamp": "2026-11-01T18:26:33.345Z"
+      },
+      "subscribers": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      },
+      "discussion-posts": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      },
+      "discussions": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      }
+    },
+    "reportingDefinitions": {
+      "window": "UTC instants, start inclusive and end exclusive; canonical outcomes by creation time.",
+      "unique": "Distinct current-consent site subject hashes, never people, email or member identities.",
+      "attribution": "Within selected window, same consent subject and earlier observed campaign landing; last non-direct credit, first-touch comparison. Labels are self-reported, not proof of an external dispatch or causation. One canonical outcome counts once.",
+      "finance": "Paid/fulfilling/fulfilled orders with receipt; gross presentment amountMinor by currency. No snapshot addition, FX, provider payout, fees or net claim; refunds excluded.",
+      "freshness": "Latest eligible receivedAt in selected window; not a pipeline uptime guarantee.",
+      "uncertainty": "Unconsented, withdrawn, expired, blocked and unlinked traffic is unknown. No identity inference. Empty arrays mean no eligible records in this window."
+    },
+    "unattributedConversions": 0,
+    "sourceFreshness": {
+      "lastEventReceivedAt": "2026-11-01T18:26:50.679Z",
+      "freshnessMinutes": 0,
+      "status": "healthy",
+      "rawEventsCount": 4,
+      "sampleTruncated": false,
+      "countBasis": "All retained current-consent events in selected window; not total site traffic.",
+      "deduplicatedCount": null,
+      "botFilteredCount": null
+    },
+    "uncertaintyAndMissingData": {
+      "unconsentedTrafficEstimatePct": null,
+      "unconsentedEventsCount": null,
+      "missingUtmCount": 0,
+      "disclosureStatement": "Unconsented traffic is not collected; its volume and rejected or duplicate request counts are unknown.",
+      "suppressionExclusionsCount": 0
+    },
+    "privacyConsent": {
+      "totalRecords": 1,
+      "analyticsGrantedCount": 1,
+      "personalizationGrantedCount": 0,
+      "marketingGrantedCount": 0,
+      "withdrawalCount": 0,
+      "consentRatePct": 100
+    },
+    "coreMetrics": {
+      "pageViews": 2,
+      "uniqueVisitors": 1,
+      "totalEvents": 4
+    },
+    "financialSummary": [
+      {
+        "currency": "USD",
+        "grossMinor": "2359",
+        "grossFormatted": "2359 minor units",
+        "feeFormatted": "Unknown",
+        "netFormatted": "Unknown",
+        "reconciledMinor": "2359",
+        "unreconciledMinor": "0",
+        "providerReportedMinor": "0",
+        "estimatedMinor": "0",
+        "orderCount": 1,
+        "reconciliationRatePct": 100
+      }
+    ],
+    "campaignFunnels": [
+      {
+        "campaign": "launch",
+        "impressions": 2,
+        "landings": 2,
+        "uniqueVisitors": 1,
+        "engagements": 0,
+        "conversions": 2,
+        "convertedSubjects": 1,
+        "conversionRate": "100.0",
+        "disclosedLinksCount": 2,
+        "conversionAmounts": {
+          "USD": "2359"
+        },
+        "channelsBreakdown": {
+          "email": 2
+        },
+        "attributionSample": null,
+        "attribution": [
+          {
+            "source": "orders:6dfc583c-a4e0-4556-b8de-868f14abdd5a",
+            "firstTouch": "launch",
+            "lastNonDirect": "launch"
+          },
+          {
+            "source": "form-submissions:cc90f338-9e44-4a4f-ae46-05e2f9b4cc06",
+            "firstTouch": "launch",
+            "lastNonDirect": "launch"
+          }
+        ]
+      }
+    ],
+    "experiment": {
+      "definition": {
+        "id": "exp-homepage-hero-cta",
+        "name": "Homepage Hero CTA & Reader Onboarding Optimization",
+        "description": "Testing Sovereign Dispatch CTA (Control) vs. Free Reader Network CTA (Treatment) for reader conversion.",
+        "state": "draft",
+        "assignmentSalt": "renegade-hero-experiment-salt-2026",
+        "collectionEnabled": false,
+        "goalKey": "newsletter-member-signup",
+        "variants": [
+          {
+            "id": "variant-control",
+            "name": "Sovereign Dispatch (Control)",
+            "isControl": true,
+            "allocation": 50,
+            "registeredComponent": "publisher.newsletter-cta",
+            "headline": "Subscribe to Sovereign Dispatch",
+            "tagline": "Independent journalism, unfiltered dispatches, zero corporate tracking.",
+            "ctaText": "Subscribe to Dispatch",
+            "badge": "Control (Standard)"
+          },
+          {
+            "id": "variant-treatment",
+            "name": "Free Reader Network (Treatment)",
+            "isControl": false,
+            "allocation": 50,
+            "registeredComponent": "publisher.cta",
+            "headline": "Join the Sovereign Reader Network",
+            "tagline": "Full access to decentralised analysis, community discussions, and verified member feeds.",
+            "ctaText": "Join Reader Network",
+            "badge": "Treatment (Community Focus)"
+          }
+        ],
+        "dbId": null,
+        "siteId": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+        "configurationStatus": "unconfigured",
+        "configurationIssue": "No persisted experiment is configured.",
+        "winnerDecision": null
+      },
+      "variantStats": [
+        {
+          "id": "variant-control",
+          "name": "Sovereign Dispatch (Control)",
+          "isControl": true,
+          "allocation": 50,
+          "registeredComponent": "publisher.newsletter-cta",
+          "headline": "Subscribe to Sovereign Dispatch",
+          "badge": "Control (Standard)",
+          "exposures": 0,
+          "conversions": 0
+        },
+        {
+          "id": "variant-treatment",
+          "name": "Free Reader Network (Treatment)",
+          "isControl": false,
+          "allocation": 50,
+          "registeredComponent": "publisher.cta",
+          "headline": "Join the Sovereign Reader Network",
+          "badge": "Treatment (Community Focus)",
+          "exposures": 0,
+          "conversions": 0
+        }
+      ],
+      "statisticalAnalysis": {
+        "controlId": "variant-control",
+        "results": [
+          {
+            "id": "variant-control",
+            "name": "Sovereign Dispatch (Control)",
+            "isControl": true,
+            "allocation": 50,
+            "registeredComponent": "publisher.newsletter-cta",
+            "headline": "Subscribe to Sovereign Dispatch",
+            "badge": "Control (Standard)",
+            "exposures": 0,
+            "conversions": 0,
+            "conversionRate": 0,
+            "practicalEffect": 0,
+            "uncertainty95": 0
+          },
+          {
+            "id": "variant-treatment",
+            "name": "Free Reader Network (Treatment)",
+            "isControl": false,
+            "allocation": 50,
+            "registeredComponent": "publisher.cta",
+            "headline": "Join the Sovereign Reader Network",
+            "badge": "Treatment (Community Focus)",
+            "exposures": 0,
+            "conversions": 0,
+            "conversionRate": 0,
+            "practicalEffect": 0,
+            "uncertainty95": 0
+          }
+        ],
+        "warnings": [
+          "Tiny sample: fewer than 100 exposures in at least one variant.",
+          "Insufficient evidence: do not select a winner or stop early."
+        ]
+      },
+      "isWinnerApproved": false
+    },
+    "inspectableEvents": [
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b:source:orders:6dfc583c-a4e0-4556-b8de-868f14abdd5a",
+        "eventType": "payment_completed",
+        "occurredAt": "2026-11-01T18:26:50.679Z",
+        "consentBasis": "analytics-consent",
+        "channel": null,
+        "anonymousIdMasked": "3a29d3f33f22fbd4…",
+        "reconciledRecord": "orders:6dfc583c-a4e0-4556-b8de-868f14abdd5a",
+        "trusted": true
+      },
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b:source:form-submissions:cc90f338-9e44-4a4f-ae46-05e2f9b4cc06",
+        "eventType": "form_submit",
+        "occurredAt": "2026-11-01T18:26:33.403Z",
+        "consentBasis": "analytics-consent",
+        "channel": null,
+        "anonymousIdMasked": "3a29d3f33f22fbd4…",
+        "reconciledRecord": "form-submissions:cc90f338-9e44-4a4f-ae46-05e2f9b4cc06",
+        "trusted": true
+      },
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b:source:launch-landing-2",
+        "eventType": "page_view",
+        "occurredAt": "2026-11-01T18:26:28.260Z",
+        "consentBasis": "analytics-consent",
+        "channel": "email",
+        "campaign": "launch",
+        "path": "/events",
+        "anonymousIdMasked": "3a29d3f33f22fbd4…",
+        "reconciledRecord": "launch-landing-2",
+        "trusted": false
+      },
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b:source:launch-landing-1",
+        "eventType": "page_view",
+        "occurredAt": "2026-11-01T18:26:28.038Z",
+        "consentBasis": "analytics-consent",
+        "channel": "email",
+        "campaign": "launch",
+        "path": "/events",
+        "anonymousIdMasked": "3a29d3f33f22fbd4…",
+        "reconciledRecord": "launch-landing-1",
+        "trusted": false
+      }
+    ],
+    "metricDictionary": {
+      "page_views": {
+        "key": "page_views",
+        "label": "Consented Page Views",
+        "grain": "Raw event (analytics-events)",
+        "formula": "COUNT(analytics_events WHERE eventType = \"page_view\" AND consentBasis = \"analytics-consent\")",
+        "source": "First-party client beacon (/api/analytics/collect)",
+        "definition": "Total successful page view beacons received from consented visitor sessions.",
+        "caveats": [
+          "Excludes unconsented visitors, bot/crawler user agents, and requests marked internal.",
+          "Subject to ad-blockers and privacy shields; treat as lower bound of client observations."
+        ],
+        "uncertaintyDisclosure": "Represents consented client observations only. Unconsented traffic is reported separately as missing data."
+      },
+      "unique_visitors": {
+        "key": "unique_visitors",
+        "label": "Estimated Unique Visitors",
+        "grain": "Site-scoped consent subject over retained events",
+        "formula": "COUNT(DISTINCT anonymousHash)",
+        "source": "Server-derived site-scoped consent subject hash",
+        "definition": "Distinct consent subjects represented in retained accepted events; not a count of people.",
+        "caveats": [
+          "Subject hashes are site-scoped and linked events are purged on withdrawal.",
+          "Multiple browsers and cleared consent cookies can count one person more than once."
+        ],
+        "uncertaintyDisclosure": "Consent subjects do not establish unique human identity."
+      },
+      "disclosed_campaign_clicks": {
+        "key": "disclosed_campaign_clicks",
+        "label": "Disclosed Campaign & Referral Touchpoints",
+        "grain": "Raw event (analytics-events)",
+        "formula": "COUNT(current_consent_page_views WHERE utm_campaign IS NOT NULL)",
+        "source": "Observed minimal UTM campaign labels on consented page views",
+        "definition": "Observed campaign landings with self-reported UTM labels; not proof of external link clicks.",
+        "caveats": [
+          "Only recorded when the visitor grants analytics consent upon landing.",
+          "Stripped or truncated UTM parameters by privacy proxies may result in direct classification."
+        ],
+        "uncertaintyDisclosure": "Unconsented arrivals via campaigns cannot be tracked or credited without violating privacy."
+      },
+      "conversions": {
+        "key": "conversions",
+        "label": "Verified Goal Conversions",
+        "grain": "Raw event reconciled against canonical collection",
+        "formula": "COUNT(DISTINCT canonical sourceEventId with same-subject prior campaign landing)",
+        "source": "Canonical form submissions and authorized observations of paid order receipts",
+        "definition": "Persisted form submissions and paid order receipt observations linked to current analytics consent.",
+        "caveats": [
+          "Reconciled against canonical business records in PostgreSQL.",
+          "Failed payments, abandoned carts, and unverified double opt-in signups are excluded."
+        ],
+        "uncertaintyDisclosure": "Only persisted canonical outcomes are verified; browser observations alone cannot establish a business conversion."
+      },
+      "conversion_rate": {
+        "key": "conversion_rate",
+        "label": "Consented Conversion Rate (CR)",
+        "grain": "Calculated ratio",
+        "formula": "(Distinct converted consent subjects / Distinct landing consent subjects) * 100",
+        "source": "Aggregated analytics stream",
+        "definition": "Percentage of consented visitors who completed the specified goal.",
+        "caveats": [
+          "Calculated over consented sessions only; unconsented visitors are excluded from both numerator and denominator."
+        ],
+        "uncertaintyDisclosure": "Descriptive same-subject linkage, not evidence of causation or cross-device identity."
+      },
+      "experiment_exposures": {
+        "key": "experiment_exposures",
+        "label": "Experiment Variant Exposures",
+        "grain": "Raw event (experiment-events & analytics-events)",
+        "formula": "COUNT(analytics_events WHERE eventType = \"experiment_exposure\")",
+        "source": "PublicExperiment component render beacon",
+        "definition": "Unique verified visitor encounters with a specific experiment variant.",
+        "caveats": [
+          "Deduped per assignment key; repeat pageviews within the same session do not inflate exposures.",
+          "Unconsented visitors receive default control without recording an exposure event."
+        ],
+        "uncertaintyDisclosure": "Zero exposure telemetry recorded for privacy-shielded or unconsented traffic."
+      },
+      "practical_effect": {
+        "key": "practical_effect",
+        "label": "Practical Effect (Lift)",
+        "grain": "Statistical delta",
+        "formula": "Treatment CR - Control CR",
+        "source": "Variant analysis formula",
+        "definition": "Absolute difference in conversion rate between the treatment variant and the control baseline.",
+        "caveats": [
+          "Must be interpreted in conjunction with sample size and 95% confidence bounds.",
+          "Early stopping on small sample sizes (< 100) produces false positive results."
+        ],
+        "uncertaintyDisclosure": "Tiny samples (< 100 per variant) are explicitly flagged with insufficient evidence warnings."
+      },
+      "financial_gross": {
+        "key": "financial_gross",
+        "label": "Currency-Separated Gross Volume",
+        "grain": "Canonical order created within selected window",
+        "formula": "SUM(orders.amountMinor WHERE paid state AND receipt) GROUP BY currency",
+        "source": "Canonical orders and settled payment records",
+        "definition": "Gross presentment value of paid, fulfilling or fulfilled receipted orders; refunded orders excluded.",
+        "caveats": [
+          "Never merged across distinct currencies without explicit historical exchange rates.",
+          "Reported in minor units (e.g., cents, pence) to prevent floating point inaccuracies."
+        ],
+        "uncertaintyDisclosure": "Provider payout, fees and net settlement unknown; snapshots never added to canonical orders."
+      }
+    },
+    "eventInventory": [
+      {
+        "id": "web-client-telemetry",
+        "name": "First-Party Client Web Telemetry",
+        "collection": "analytics-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "daily-rollup",
+          "campaign-rollup",
+          "content-rollup",
+          "goal-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": 90,
+        "suppressionBehavior": "Persisted consent withdrawal blocks collection and purges linked raw events; browser consent subjects are never joined to email suppression hashes.",
+        "reconciliationTarget": "canonical-content",
+        "canonicalCollections": [
+          "content",
+          "publications",
+          "page-layouts"
+        ],
+        "uncertaintyDisclosures": [
+          "Filtered when DNT/GPC headers are present or consent is not granted.",
+          "Unique counts describe site-scoped consent subjects, not distinct people.",
+          "Client-side ad-blockers may prevent beacon delivery; treat as lower-bound baseline."
+        ]
+      },
+      {
+        "id": "consent-lifecycle",
+        "name": "Consent & Privacy Preference Evidence",
+        "collection": "analytics-consent-records",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "daily-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Email suppressions remain separate; browser withdrawals generate immutable records and purge linked analytics events.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "consent-events",
+          "subscribers",
+          "suppressions"
+        ],
+        "uncertaintyDisclosures": [
+          "Reflects verified browser storage; does not imply email or telecom marketing consent.",
+          "Withdrawals immediately purge active session and anonymous tracking cookies."
+        ]
+      },
+      {
+        "id": "audience-crm",
+        "name": "Audience & Form Interactions",
+        "collection": "form-submissions",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "campaign-rollup",
+          "goal-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": 730,
+        "suppressionBehavior": "Suppressed emails blocked from campaigns and masked with < 5 privacy floor in reports.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "form-definitions",
+          "contacts",
+          "subscribers",
+          "audience-lists"
+        ],
+        "uncertaintyDisclosures": [
+          "Submissions require double opt-in confirmation before inclusion in verified audience reach.",
+          "Honeypot, challenge, and rate-limited entries are isolated from conversion metrics."
+        ]
+      },
+      {
+        "id": "community-interactions",
+        "name": "Community & Discussion Telemetry",
+        "collection": "activity-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "content-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": 365,
+        "suppressionBehavior": "Blocked members and quarantined posts scrubbed from public projections.",
+        "reconciliationTarget": "canonical-community",
+        "canonicalCollections": [
+          "members",
+          "comments",
+          "forum_discussions",
+          "community_reports"
+        ],
+        "uncertaintyDisclosures": [
+          "Public engagement metrics reflect non-quarantined content only.",
+          "Direct message metadata excludes message body content for end-to-end privacy."
+        ]
+      },
+      {
+        "id": "commerce-financial",
+        "name": "Commerce, Orders & Payment Snapshots",
+        "collection": "metric-snapshots",
+        "primaryGrain": "order-snapshot",
+        "supportedGrains": [
+          "order-snapshot",
+          "daily-rollup",
+          "campaign-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Suppression does not delete financial audit records required by legal or tax regulations.",
+        "reconciliationTarget": "canonical-commerce",
+        "canonicalCollections": [
+          "orders",
+          "contributions",
+          "affiliate-referrals",
+          "subscriptions"
+        ],
+        "uncertaintyDisclosures": [
+          "Currency separation is strictly enforced: distinct presentment/settlement currencies are never summed without provenance-tagged exchange rates.",
+          "Distinguishes reconciled canonical payments, provider-reported webhooks, and estimated affiliate commissions."
+        ]
+      },
+      {
+        "id": "experiment-lifecycle",
+        "name": "Experience Experiments & Variant Outcomes",
+        "collection": "experiment-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "goal-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": 90,
+        "suppressionBehavior": "Suppressed visitors receive deterministic control and generate zero experiment telemetry.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "experiments",
+          "experiment-variants",
+          "experiment-decisions",
+          "conversion-goals"
+        ],
+        "uncertaintyDisclosures": [
+          "Unconsented or privacy-controlled visitors are served the control variant with isDefault: true.",
+          "Early stopping prohibited: statistical significance requires sample size >= 100 per variant.",
+          "Winner selection requires explicit human operator approval and recorded rationale."
+        ]
+      },
+      {
+        "id": "suppression-ledger",
+        "name": "Suppression & Right-to-be-Forgotten Ledger",
+        "collection": "suppressions",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event"
+        ],
+        "identityLinkage": "suppressed-masked",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Authoritative barrier: hashed emails are permanently blocked from outbound dispatch and masked in reports.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "subscribers",
+          "contacts",
+          "telecom-deliveries"
+        ],
+        "uncertaintyDisclosures": [
+          "One-way SHA-256 hashed emails prevent re-identification while preserving compliance audit proof.",
+          "Never exposed in cleartext in operator reporting surfaces."
+        ]
+      }
+    ]
+  },
+  "funnel": {
+    "siteId": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+    "dateWindow": {
+      "start": "2026-10-02T18:26:54.418Z",
+      "end": "2026-11-01T18:26:54.418Z",
+      "timezone": "UTC",
+      "boundaries": "[start, end)"
+    },
+    "campaigns": [
+      {
+        "campaign": "launch",
+        "impressions": 2,
+        "landings": 2,
+        "uniqueVisitors": 1,
+        "engagements": 0,
+        "conversions": 2,
+        "convertedSubjects": 1,
+        "conversionRate": "100.0",
+        "disclosedLinksCount": 2,
+        "conversionAmounts": {
+          "USD": "2359"
+        },
+        "channelsBreakdown": {
+          "email": 2
+        },
+        "attributionSample": null,
+        "attribution": [
+          {
+            "source": "orders:6dfc583c-a4e0-4556-b8de-868f14abdd5a",
+            "firstTouch": "launch",
+            "lastNonDirect": "launch"
+          },
+          {
+            "source": "form-submissions:cc90f338-9e44-4a4f-ae46-05e2f9b4cc06",
+            "firstTouch": "launch",
+            "lastNonDirect": "launch"
+          }
+        ]
+      }
+    ],
+    "unattributedConversions": 0,
+    "definitions": {
+      "window": "UTC instants, start inclusive and end exclusive; canonical outcomes by creation time.",
+      "unique": "Distinct current-consent site subject hashes, never people, email or member identities.",
+      "attribution": "Within selected window, same consent subject and earlier observed campaign landing; last non-direct credit, first-touch comparison. Labels are self-reported, not proof of an external dispatch or causation. One canonical outcome counts once.",
+      "finance": "Paid/fulfilling/fulfilled orders with receipt; gross presentment amountMinor by currency. No snapshot addition, FX, provider payout, fees or net claim; refunds excluded.",
+      "freshness": "Latest eligible receivedAt in selected window; not a pipeline uptime guarantee.",
+      "uncertainty": "Unconsented, withdrawn, expired, blocked and unlinked traffic is unknown. No identity inference. Empty arrays mean no eligible records in this window."
+    }
+  },
+  "afterWithdrawal": {
+    "activeSiteId": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+    "sites": [
+      {
+        "id": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+        "name": "15B alpha"
+      }
+    ],
+    "dateWindow": {
+      "start": "2026-10-02T18:28:34.143Z",
+      "end": "2026-11-01T18:28:34.143Z",
+      "timezone": "UTC",
+      "boundaries": "[start, end)"
+    },
+    "domainMetrics": {
+      "acquisition": {},
+      "contentViews": [],
+      "audience": {
+        "newSubscribers": 0,
+        "formSubmissions": 1
+      },
+      "community": {
+        "newPosts": 0,
+        "newDiscussions": 0
+      },
+      "commerce": {
+        "createdOrders": 2,
+        "paidOrders": 2
+      }
+    },
+    "sourceStatus": {
+      "analytics-events": "available",
+      "orders": "available",
+      "form-submissions": "available",
+      "subscribers": "available",
+      "discussion-posts": "available",
+      "discussions": "available"
+    },
+    "sourceFreshnessByCollection": {
+      "analytics-events": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      },
+      "orders": {
+        "recordsInWindow": 2,
+        "latestTimestamp": "2026-11-01T18:27:08.869Z"
+      },
+      "form-submissions": {
+        "recordsInWindow": 1,
+        "latestTimestamp": "2026-11-01T18:26:33.345Z"
+      },
+      "subscribers": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      },
+      "discussion-posts": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      },
+      "discussions": {
+        "recordsInWindow": 0,
+        "latestTimestamp": null
+      }
+    },
+    "reportingDefinitions": {
+      "window": "UTC instants, start inclusive and end exclusive; canonical outcomes by creation time.",
+      "unique": "Distinct current-consent site subject hashes, never people, email or member identities.",
+      "attribution": "Within selected window, same consent subject and earlier observed campaign landing; last non-direct credit, first-touch comparison. Labels are self-reported, not proof of an external dispatch or causation. One canonical outcome counts once.",
+      "finance": "Paid/fulfilling/fulfilled orders with receipt; gross presentment amountMinor by currency. No snapshot addition, FX, provider payout, fees or net claim; refunds excluded.",
+      "freshness": "Latest eligible receivedAt in selected window; not a pipeline uptime guarantee.",
+      "uncertainty": "Unconsented, withdrawn, expired, blocked and unlinked traffic is unknown. No identity inference. Empty arrays mean no eligible records in this window."
+    },
+    "unattributedConversions": 0,
+    "sourceFreshness": {
+      "lastEventReceivedAt": null,
+      "freshnessMinutes": null,
+      "status": "inactive",
+      "rawEventsCount": 0,
+      "sampleTruncated": false,
+      "countBasis": "All retained current-consent events in selected window; not total site traffic.",
+      "deduplicatedCount": null,
+      "botFilteredCount": null
+    },
+    "uncertaintyAndMissingData": {
+      "unconsentedTrafficEstimatePct": null,
+      "unconsentedEventsCount": null,
+      "missingUtmCount": 0,
+      "disclosureStatement": "Unconsented traffic is not collected; its volume and rejected or duplicate request counts are unknown.",
+      "suppressionExclusionsCount": 0
+    },
+    "privacyConsent": {
+      "totalRecords": 3,
+      "analyticsGrantedCount": 1,
+      "personalizationGrantedCount": 0,
+      "marketingGrantedCount": 0,
+      "withdrawalCount": 2,
+      "consentRatePct": 33
+    },
+    "coreMetrics": {
+      "pageViews": 0,
+      "uniqueVisitors": 0,
+      "totalEvents": 0
+    },
+    "financialSummary": [
+      {
+        "currency": "EUR",
+        "grossMinor": "2731",
+        "grossFormatted": "2731 minor units",
+        "feeFormatted": "Unknown",
+        "netFormatted": "Unknown",
+        "reconciledMinor": "2731",
+        "unreconciledMinor": "0",
+        "providerReportedMinor": "0",
+        "estimatedMinor": "0",
+        "orderCount": 1,
+        "reconciliationRatePct": 100
+      },
+      {
+        "currency": "USD",
+        "grossMinor": "2359",
+        "grossFormatted": "2359 minor units",
+        "feeFormatted": "Unknown",
+        "netFormatted": "Unknown",
+        "reconciledMinor": "2359",
+        "unreconciledMinor": "0",
+        "providerReportedMinor": "0",
+        "estimatedMinor": "0",
+        "orderCount": 1,
+        "reconciliationRatePct": 100
+      }
+    ],
+    "campaignFunnels": [],
+    "experiment": {
+      "definition": {
+        "id": "exp-homepage-hero-cta",
+        "name": "Homepage Hero CTA & Reader Onboarding Optimization",
+        "description": "Testing Sovereign Dispatch CTA (Control) vs. Free Reader Network CTA (Treatment) for reader conversion.",
+        "state": "draft",
+        "assignmentSalt": "renegade-hero-experiment-salt-2026",
+        "collectionEnabled": false,
+        "goalKey": "newsletter-member-signup",
+        "variants": [
+          {
+            "id": "variant-control",
+            "name": "Sovereign Dispatch (Control)",
+            "isControl": true,
+            "allocation": 50,
+            "registeredComponent": "publisher.newsletter-cta",
+            "headline": "Subscribe to Sovereign Dispatch",
+            "tagline": "Independent journalism, unfiltered dispatches, zero corporate tracking.",
+            "ctaText": "Subscribe to Dispatch",
+            "badge": "Control (Standard)"
+          },
+          {
+            "id": "variant-treatment",
+            "name": "Free Reader Network (Treatment)",
+            "isControl": false,
+            "allocation": 50,
+            "registeredComponent": "publisher.cta",
+            "headline": "Join the Sovereign Reader Network",
+            "tagline": "Full access to decentralised analysis, community discussions, and verified member feeds.",
+            "ctaText": "Join Reader Network",
+            "badge": "Treatment (Community Focus)"
+          }
+        ],
+        "dbId": null,
+        "siteId": "f8f1f2dd-0955-4ed4-a2f5-a749d7b1055b",
+        "configurationStatus": "unconfigured",
+        "configurationIssue": "No persisted experiment is configured.",
+        "winnerDecision": null
+      },
+      "variantStats": [
+        {
+          "id": "variant-control",
+          "name": "Sovereign Dispatch (Control)",
+          "isControl": true,
+          "allocation": 50,
+          "registeredComponent": "publisher.newsletter-cta",
+          "headline": "Subscribe to Sovereign Dispatch",
+          "badge": "Control (Standard)",
+          "exposures": 0,
+          "conversions": 0
+        },
+        {
+          "id": "variant-treatment",
+          "name": "Free Reader Network (Treatment)",
+          "isControl": false,
+          "allocation": 50,
+          "registeredComponent": "publisher.cta",
+          "headline": "Join the Sovereign Reader Network",
+          "badge": "Treatment (Community Focus)",
+          "exposures": 0,
+          "conversions": 0
+        }
+      ],
+      "statisticalAnalysis": {
+        "controlId": "variant-control",
+        "results": [
+          {
+            "id": "variant-control",
+            "name": "Sovereign Dispatch (Control)",
+            "isControl": true,
+            "allocation": 50,
+            "registeredComponent": "publisher.newsletter-cta",
+            "headline": "Subscribe to Sovereign Dispatch",
+            "badge": "Control (Standard)",
+            "exposures": 0,
+            "conversions": 0,
+            "conversionRate": 0,
+            "practicalEffect": 0,
+            "uncertainty95": 0
+          },
+          {
+            "id": "variant-treatment",
+            "name": "Free Reader Network (Treatment)",
+            "isControl": false,
+            "allocation": 50,
+            "registeredComponent": "publisher.cta",
+            "headline": "Join the Sovereign Reader Network",
+            "badge": "Treatment (Community Focus)",
+            "exposures": 0,
+            "conversions": 0,
+            "conversionRate": 0,
+            "practicalEffect": 0,
+            "uncertainty95": 0
+          }
+        ],
+        "warnings": [
+          "Tiny sample: fewer than 100 exposures in at least one variant.",
+          "Insufficient evidence: do not select a winner or stop early."
+        ]
+      },
+      "isWinnerApproved": false
+    },
+    "inspectableEvents": [],
+    "metricDictionary": {
+      "page_views": {
+        "key": "page_views",
+        "label": "Consented Page Views",
+        "grain": "Raw event (analytics-events)",
+        "formula": "COUNT(analytics_events WHERE eventType = \"page_view\" AND consentBasis = \"analytics-consent\")",
+        "source": "First-party client beacon (/api/analytics/collect)",
+        "definition": "Total successful page view beacons received from consented visitor sessions.",
+        "caveats": [
+          "Excludes unconsented visitors, bot/crawler user agents, and requests marked internal.",
+          "Subject to ad-blockers and privacy shields; treat as lower bound of client observations."
+        ],
+        "uncertaintyDisclosure": "Represents consented client observations only. Unconsented traffic is reported separately as missing data."
+      },
+      "unique_visitors": {
+        "key": "unique_visitors",
+        "label": "Estimated Unique Visitors",
+        "grain": "Site-scoped consent subject over retained events",
+        "formula": "COUNT(DISTINCT anonymousHash)",
+        "source": "Server-derived site-scoped consent subject hash",
+        "definition": "Distinct consent subjects represented in retained accepted events; not a count of people.",
+        "caveats": [
+          "Subject hashes are site-scoped and linked events are purged on withdrawal.",
+          "Multiple browsers and cleared consent cookies can count one person more than once."
+        ],
+        "uncertaintyDisclosure": "Consent subjects do not establish unique human identity."
+      },
+      "disclosed_campaign_clicks": {
+        "key": "disclosed_campaign_clicks",
+        "label": "Disclosed Campaign & Referral Touchpoints",
+        "grain": "Raw event (analytics-events)",
+        "formula": "COUNT(current_consent_page_views WHERE utm_campaign IS NOT NULL)",
+        "source": "Observed minimal UTM campaign labels on consented page views",
+        "definition": "Observed campaign landings with self-reported UTM labels; not proof of external link clicks.",
+        "caveats": [
+          "Only recorded when the visitor grants analytics consent upon landing.",
+          "Stripped or truncated UTM parameters by privacy proxies may result in direct classification."
+        ],
+        "uncertaintyDisclosure": "Unconsented arrivals via campaigns cannot be tracked or credited without violating privacy."
+      },
+      "conversions": {
+        "key": "conversions",
+        "label": "Verified Goal Conversions",
+        "grain": "Raw event reconciled against canonical collection",
+        "formula": "COUNT(DISTINCT canonical sourceEventId with same-subject prior campaign landing)",
+        "source": "Canonical form submissions and authorized observations of paid order receipts",
+        "definition": "Persisted form submissions and paid order receipt observations linked to current analytics consent.",
+        "caveats": [
+          "Reconciled against canonical business records in PostgreSQL.",
+          "Failed payments, abandoned carts, and unverified double opt-in signups are excluded."
+        ],
+        "uncertaintyDisclosure": "Only persisted canonical outcomes are verified; browser observations alone cannot establish a business conversion."
+      },
+      "conversion_rate": {
+        "key": "conversion_rate",
+        "label": "Consented Conversion Rate (CR)",
+        "grain": "Calculated ratio",
+        "formula": "(Distinct converted consent subjects / Distinct landing consent subjects) * 100",
+        "source": "Aggregated analytics stream",
+        "definition": "Percentage of consented visitors who completed the specified goal.",
+        "caveats": [
+          "Calculated over consented sessions only; unconsented visitors are excluded from both numerator and denominator."
+        ],
+        "uncertaintyDisclosure": "Descriptive same-subject linkage, not evidence of causation or cross-device identity."
+      },
+      "experiment_exposures": {
+        "key": "experiment_exposures",
+        "label": "Experiment Variant Exposures",
+        "grain": "Raw event (experiment-events & analytics-events)",
+        "formula": "COUNT(analytics_events WHERE eventType = \"experiment_exposure\")",
+        "source": "PublicExperiment component render beacon",
+        "definition": "Unique verified visitor encounters with a specific experiment variant.",
+        "caveats": [
+          "Deduped per assignment key; repeat pageviews within the same session do not inflate exposures.",
+          "Unconsented visitors receive default control without recording an exposure event."
+        ],
+        "uncertaintyDisclosure": "Zero exposure telemetry recorded for privacy-shielded or unconsented traffic."
+      },
+      "practical_effect": {
+        "key": "practical_effect",
+        "label": "Practical Effect (Lift)",
+        "grain": "Statistical delta",
+        "formula": "Treatment CR - Control CR",
+        "source": "Variant analysis formula",
+        "definition": "Absolute difference in conversion rate between the treatment variant and the control baseline.",
+        "caveats": [
+          "Must be interpreted in conjunction with sample size and 95% confidence bounds.",
+          "Early stopping on small sample sizes (< 100) produces false positive results."
+        ],
+        "uncertaintyDisclosure": "Tiny samples (< 100 per variant) are explicitly flagged with insufficient evidence warnings."
+      },
+      "financial_gross": {
+        "key": "financial_gross",
+        "label": "Currency-Separated Gross Volume",
+        "grain": "Canonical order created within selected window",
+        "formula": "SUM(orders.amountMinor WHERE paid state AND receipt) GROUP BY currency",
+        "source": "Canonical orders and settled payment records",
+        "definition": "Gross presentment value of paid, fulfilling or fulfilled receipted orders; refunded orders excluded.",
+        "caveats": [
+          "Never merged across distinct currencies without explicit historical exchange rates.",
+          "Reported in minor units (e.g., cents, pence) to prevent floating point inaccuracies."
+        ],
+        "uncertaintyDisclosure": "Provider payout, fees and net settlement unknown; snapshots never added to canonical orders."
+      }
+    },
+    "eventInventory": [
+      {
+        "id": "web-client-telemetry",
+        "name": "First-Party Client Web Telemetry",
+        "collection": "analytics-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "daily-rollup",
+          "campaign-rollup",
+          "content-rollup",
+          "goal-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": 90,
+        "suppressionBehavior": "Persisted consent withdrawal blocks collection and purges linked raw events; browser consent subjects are never joined to email suppression hashes.",
+        "reconciliationTarget": "canonical-content",
+        "canonicalCollections": [
+          "content",
+          "publications",
+          "page-layouts"
+        ],
+        "uncertaintyDisclosures": [
+          "Filtered when DNT/GPC headers are present or consent is not granted.",
+          "Unique counts describe site-scoped consent subjects, not distinct people.",
+          "Client-side ad-blockers may prevent beacon delivery; treat as lower-bound baseline."
+        ]
+      },
+      {
+        "id": "consent-lifecycle",
+        "name": "Consent & Privacy Preference Evidence",
+        "collection": "analytics-consent-records",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "daily-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Email suppressions remain separate; browser withdrawals generate immutable records and purge linked analytics events.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "consent-events",
+          "subscribers",
+          "suppressions"
+        ],
+        "uncertaintyDisclosures": [
+          "Reflects verified browser storage; does not imply email or telecom marketing consent.",
+          "Withdrawals immediately purge active session and anonymous tracking cookies."
+        ]
+      },
+      {
+        "id": "audience-crm",
+        "name": "Audience & Form Interactions",
+        "collection": "form-submissions",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "campaign-rollup",
+          "goal-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": 730,
+        "suppressionBehavior": "Suppressed emails blocked from campaigns and masked with < 5 privacy floor in reports.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "form-definitions",
+          "contacts",
+          "subscribers",
+          "audience-lists"
+        ],
+        "uncertaintyDisclosures": [
+          "Submissions require double opt-in confirmation before inclusion in verified audience reach.",
+          "Honeypot, challenge, and rate-limited entries are isolated from conversion metrics."
+        ]
+      },
+      {
+        "id": "community-interactions",
+        "name": "Community & Discussion Telemetry",
+        "collection": "activity-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "content-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": 365,
+        "suppressionBehavior": "Blocked members and quarantined posts scrubbed from public projections.",
+        "reconciliationTarget": "canonical-community",
+        "canonicalCollections": [
+          "members",
+          "comments",
+          "forum_discussions",
+          "community_reports"
+        ],
+        "uncertaintyDisclosures": [
+          "Public engagement metrics reflect non-quarantined content only.",
+          "Direct message metadata excludes message body content for end-to-end privacy."
+        ]
+      },
+      {
+        "id": "commerce-financial",
+        "name": "Commerce, Orders & Payment Snapshots",
+        "collection": "metric-snapshots",
+        "primaryGrain": "order-snapshot",
+        "supportedGrains": [
+          "order-snapshot",
+          "daily-rollup",
+          "campaign-rollup"
+        ],
+        "identityLinkage": "member-authenticated",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Suppression does not delete financial audit records required by legal or tax regulations.",
+        "reconciliationTarget": "canonical-commerce",
+        "canonicalCollections": [
+          "orders",
+          "contributions",
+          "affiliate-referrals",
+          "subscriptions"
+        ],
+        "uncertaintyDisclosures": [
+          "Currency separation is strictly enforced: distinct presentment/settlement currencies are never summed without provenance-tagged exchange rates.",
+          "Distinguishes reconciled canonical payments, provider-reported webhooks, and estimated affiliate commissions."
+        ]
+      },
+      {
+        "id": "experiment-lifecycle",
+        "name": "Experience Experiments & Variant Outcomes",
+        "collection": "experiment-events",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event",
+          "goal-rollup"
+        ],
+        "identityLinkage": "consented-salted-hash",
+        "retentionDays": 90,
+        "suppressionBehavior": "Suppressed visitors receive deterministic control and generate zero experiment telemetry.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "experiments",
+          "experiment-variants",
+          "experiment-decisions",
+          "conversion-goals"
+        ],
+        "uncertaintyDisclosures": [
+          "Unconsented or privacy-controlled visitors are served the control variant with isDefault: true.",
+          "Early stopping prohibited: statistical significance requires sample size >= 100 per variant.",
+          "Winner selection requires explicit human operator approval and recorded rationale."
+        ]
+      },
+      {
+        "id": "suppression-ledger",
+        "name": "Suppression & Right-to-be-Forgotten Ledger",
+        "collection": "suppressions",
+        "primaryGrain": "raw-event",
+        "supportedGrains": [
+          "raw-event"
+        ],
+        "identityLinkage": "suppressed-masked",
+        "retentionDays": "permanent",
+        "suppressionBehavior": "Authoritative barrier: hashed emails are permanently blocked from outbound dispatch and masked in reports.",
+        "reconciliationTarget": "canonical-audience",
+        "canonicalCollections": [
+          "subscribers",
+          "contacts",
+          "telecom-deliveries"
+        ],
+        "uncertaintyDisclosures": [
+          "One-way SHA-256 hashed emails prevent re-identification while preserving compliance audit proof.",
+          "Never exposed in cleartext in operator reporting surfaces."
+        ]
+      }
+    ]
+  }
+}

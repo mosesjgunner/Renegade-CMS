@@ -1,0 +1,108 @@
+{
+  "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+  "accepted": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15b/run.ps1 migrate",
+      "exit": 0,
+      "result": "129 fresh migrations; guarded isolated schema reset"
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/analytics-15b.test.ts tests/unit/analytics-15a.test.ts tests/unit/analytics-contracts.test.ts tests/unit/analytics-attribution-experiments.test.ts tests/unit/analytics-privacy-runtime.test.ts",
+      "exit": 0,
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npx.cmd eslint src/modules/analytics/operator-report.ts src/modules/admin/TelemetryCommandCenter.tsx src/modules/analytics/definitions.ts 'src/app/(frontend)/api/admin/telemetry/dashboard/route.ts' 'src/app/(frontend)/api/admin/telemetry/funnel/route.ts' 'src/app/(frontend)/api/commerce/checkout/status/route.ts' 'src/app/(frontend)/api/analytics/collect/route.ts' src/modules/analytics/ConsentManager.tsx tests/rc1-15b tests/unit/analytics-15b.test.ts --max-warnings=0",
+      "exit": 0
+    },
+    {
+      "command": "npx.cmd prettier --check src/modules/analytics/operator-report.ts src/modules/admin/TelemetryCommandCenter.tsx src/modules/analytics/definitions.ts 'src/app/(frontend)/api/admin/telemetry/dashboard/route.ts' 'src/app/(frontend)/api/admin/telemetry/funnel/route.ts' 'src/app/(frontend)/api/commerce/checkout/status/route.ts' 'src/app/(frontend)/api/analytics/collect/route.ts' src/modules/analytics/ConsentManager.tsx tests/rc1-15b/journey.ts tests/rc1-15b/provenance.ts tests/rc1-15b/tsconfig.json tests/unit/analytics-15b.test.ts",
+      "exit": 0
+    },
+    {
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-15b/tsconfig.json",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15b/run.ps1 journey",
+      "exit": 0,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "docker restart rc115b-20261101",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15b/run.ps1 restart",
+      "exit": 0,
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "node --import tsx tests/rc1-15b/provenance.ts --check",
+      "exit": 0,
+      "phase": "runtime, before restoring generated configuration"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    },
+    {
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-15b/tsconfig.json",
+      "exit": 0,
+      "phase": "handoff after restoring prior generated configuration"
+    },
+    {
+      "command": "docker stop rc115b-20261101",
+      "exit": 0
+    }
+  ],
+  "historicalFailures": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15b/run.ps1 journey",
+      "exit": 1,
+      "attempts": [
+        {
+          "log": "attempt1.log",
+          "failure": "Verifier sent unsupported cart action field; corrected to canonical purchase-choice payload."
+        },
+        {
+          "log": "attempt2.log",
+          "failure": "Default headless user agent correctly suppressed payment analytics; positive fixture now uses standard desktop UA and GPC negative remains."
+        },
+        {
+          "log": "attempt3.log",
+          "failure": "Owner initial site was empty beta; verifier now explicitly selects campaign alpha."
+        },
+        {
+          "log": "attempt4.log",
+          "failure": "Verifier expected rolling start to anchor to custom end; corrected to current-time rolling-window definition."
+        }
+      ]
+    },
+    {
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-15b/tsconfig.json",
+      "exit": 2,
+      "failure": "Verifier reference at(-1) required non-null assertion; fixed before accepted run."
+    }
+  ],
+  "counts": {
+    "passed": 67,
+    "failed": 0,
+    "skipped": 0,
+    "mandatoryScopedGroupsUnexecuted": 0
+  },
+  "unexecutedClaimBoundaries": [
+    "full repository suite",
+    "production application build/image",
+    "genuine passkey enrollment/login",
+    "remote sandbox/live payment or payout",
+    "external dispatch click verification",
+    "positive nonzero subscriber/community workflow (zero canonical records observed)"
+  ]
+}

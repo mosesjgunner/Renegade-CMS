@@ -1,0 +1,99 @@
+{
+  "passed": 23,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "two observed campaign landings persist; duplicate retry adds none; arbitrary query is discarded",
+      "passed": true
+    },
+    {
+      "name": "supported form conversion persists canonical submission with no duplicate analytics",
+      "passed": true
+    },
+    {
+      "name": "ordinary cart, quote and local checkout persist without manufacturing an order",
+      "passed": true
+    },
+    {
+      "name": "signed local adapter event and real commerce worker produce paid canonical order and receipt",
+      "passed": true
+    },
+    {
+      "name": "authorized order status observes one consent-linked payment event across retry",
+      "passed": true
+    },
+    {
+      "name": "campaign totals reconcile two landings, one distinct subject and two canonical conversions",
+      "passed": true
+    },
+    {
+      "name": "campaign and financial amount equal persisted order in USD minor units",
+      "passed": true
+    },
+    {
+      "name": "content audience community commerce metrics reconcile exact canonical records",
+      "passed": true
+    },
+    {
+      "name": "funnel endpoint and dashboard use identical definitions and totals",
+      "passed": true
+    },
+    {
+      "name": "actual PostgreSQL timestamp filter includes start and excludes end",
+      "passed": true
+    },
+    {
+      "name": "DST repeated-hour offsets select distinct UTC instants",
+      "passed": true
+    },
+    {
+      "name": "both reporting APIs deny wrong-site and anonymous role and reject malformed dates",
+      "passed": true
+    },
+    {
+      "name": "GPC suppresses an otherwise consented observation",
+      "passed": true
+    },
+    {
+      "name": "two ordinary locally settled orders remain separated as exact USD and EUR canonical amounts",
+      "passed": true
+    },
+    {
+      "name": "unconsented EUR order contributes canonical commerce but never inferred campaign credit",
+      "passed": true
+    },
+    {
+      "name": "empty other site exposes no campaign, content, order or financial data",
+      "passed": true
+    },
+    {
+      "name": "admin site selector renders isolated empty site then restores actual campaign",
+      "passed": true
+    },
+    {
+      "name": "admin custom date filters show no data then recover canonical campaign after clearing",
+      "passed": true
+    },
+    {
+      "name": "actual admin UI renders observed campaign and definitions with fixture operator session",
+      "passed": true
+    },
+    {
+      "name": "real browser URL campaign reaches canonical collector without arbitrary identity inference",
+      "passed": true
+    },
+    {
+      "name": "withdrawal suppresses linked visitor and conversions while canonical commerce remains",
+      "passed": true
+    },
+    {
+      "name": "old consent and anonymous traffic remain excluded after suppression",
+      "passed": true
+    }
+  ]
+}

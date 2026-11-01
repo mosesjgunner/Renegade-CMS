@@ -19,6 +19,12 @@ const base = (slug: string, title: string): CollectionConfig => ({
 })
 export const AnalyticsEvents: CollectionConfig = {
   ...base('analytics-events', 'eventId'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+  },
   fields: [
     ...ownerFields(),
     { name: 'eventId', type: 'text', required: true, unique: true },
@@ -46,6 +52,12 @@ export const AnalyticsEvents: CollectionConfig = {
 /** Immutable evidence of a browser's versioned choices. This is separate from email consent. */
 export const AnalyticsConsentRecords: CollectionConfig = {
   ...base('analytics-consent-records', 'occurredAt'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+  },
   fields: [
     ...ownerFields(),
     { name: 'subjectHash', type: 'text', required: true, index: true },

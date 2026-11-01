@@ -1,0 +1,28 @@
+{
+    "container":  "/rc115b-20261101",
+    "image":  "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "labels":  {
+                   "rc1.scope":  "15b"
+               },
+    "ports":  {
+                  "5432/tcp":  [
+                                   {
+                                       "HostIp":  "127.0.0.1",
+                                       "HostPort":  "5476"
+                                   }
+                               ]
+              },
+    "status":  "exited",
+    "database":  "rc115b_release_acceptance",
+    "web":  "http://localhost:39062",
+    "modules":  "all",
+    "testAuth":  false,
+    "testRoutes":  false,
+    "provider":  "local deterministic-test adapter only",
+    "email":  "disabled",
+    "telecom":  "disabled",
+    "applicationImage":  "none; Next 16.3.8 development/webpack source",
+    "node":  "24.19.0",
+    "payload":  "3.90.2",
+    "postgres":  "17.11"
+}

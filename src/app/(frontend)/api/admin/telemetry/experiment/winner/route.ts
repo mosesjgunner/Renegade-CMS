@@ -1,3 +1,5 @@
+import { samePublicOrigin } from '@/modules/public/site-scope'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 import config from '@payload-config'
 import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -9,8 +11,10 @@ import { transactionPayload } from '@/modules/core/transaction-payload'
 const isOperator = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
-export async function POST(request: Request) {
+async function decide(request: Request) {
   const payload = await getPayload({ config })
+  if (!(await samePublicOrigin(payload, request)))
+    return NextResponse.json({ error: 'Origin denied.' }, { status: 403 })
   const auth = await payload.auth({ headers: request.headers })
 
   if (!auth.user || !isOperator(auth.user)) {
@@ -21,6 +25,7 @@ export async function POST(request: Request) {
   }
 
   const body = (await request.json().catch(() => ({}))) as {
+    action?: 'approve' | 'rollback'
     experimentId?: string
     selectedVariantId?: string
     reason?: string
@@ -62,13 +67,43 @@ export async function POST(request: Request) {
     )
   }
 
+  const rollback = body.action === 'rollback'
+  if (rollback && experiment.state !== 'winner-selected')
+    return NextResponse.json({ error: 'No winner to roll back.' }, { status: 409 })
+  if (!rollback) {
+    const measured = await payload.find({
+      collection: 'analytics-events',
+      where: {
+        and: [
+          { site: { equals: body.siteId } },
+          { eventType: { equals: 'experiment_conversion' } },
+        ],
+      },
+      pagination: false,
+      limit: 0,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (
+      !measured.docs.some((event) => {
+        const props = event.properties as Record<string, unknown> | null
+        return props?.experimentId === experiment.id && props.variantId === body.selectedVariantId
+      })
+    )
+      return NextResponse.json(
+        { error: 'Measured conversions for this variant are required before approval.' },
+        { status: 409 },
+      )
+  }
+
   // Contract validation: requires human approval and valid state
   try {
-    approveWinner({
-      state: experiment.state,
-      selectedVariantId: body.selectedVariantId,
-      humanApproved: true,
-    })
+    if (!rollback)
+      approveWinner({
+        state: experiment.state,
+        selectedVariantId: body.selectedVariantId,
+        humanApproved: true,
+      })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Invalid experiment decision.' },
@@ -87,6 +122,7 @@ export async function POST(request: Request) {
     )
   const req = await createLocalReq({ user: auth.user }, payload)
   req.transactionID = transactionID
+  req.context = { ...req.context, experimentDecision: true }
   const store = transactionPayload(payload, req)
   try {
     // Persist the human decision and resulting state in the same transaction.
@@ -96,7 +132,7 @@ export async function POST(request: Request) {
         site: body.siteId,
         experiment: experiment.dbId,
         selectedVariant: body.selectedVariantId,
-        decision: 'winner-selected',
+        decision: rollback ? 'pause' : 'winner-selected',
         reason: body.reason.trim(),
         actor: actorId,
         decidedAt: now,
@@ -111,7 +147,7 @@ export async function POST(request: Request) {
       collection: 'experiments',
       id: experiment.dbId,
       data: {
-        state: 'winner-selected',
+        state: rollback ? 'paused' : 'winner-selected',
         stoppedAt: now,
       },
       overrideAccess: true,
@@ -127,11 +163,16 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     success: true,
-    state: 'winner-selected',
+    state: rollback ? 'paused' : 'winner-selected',
     experimentId: body.experimentId,
     selectedVariantId: body.selectedVariantId,
     approvedBy: actorId,
     decidedAt: now,
     reason: body.reason.trim(),
   })
+}
+
+export async function POST(request: Request) {
+  const payload = await getPayload({ config })
+  return withExecutionLock(payload, 'public-experiment-decision', () => decide(request))
 }

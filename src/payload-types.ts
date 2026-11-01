@@ -7985,6 +7985,7 @@ export interface Experiment {
   description?: string | null;
   rule?: (string | null) | ExperienceRule;
   conversionGoal?: (string | null) | ConversionGoal;
+  conversionForm?: (string | null) | FormDefinition;
   state: 'draft' | 'approved' | 'running' | 'paused' | 'stopped' | 'inconclusive' | 'winner-selected';
   assignmentSalt: string;
   collectionEnabled?: boolean | null;
@@ -13662,6 +13663,7 @@ export interface ExperimentsSelect<T extends boolean = true> {
   description?: T;
   rule?: T;
   conversionGoal?: T;
+  conversionForm?: T;
   state?: T;
   assignmentSalt?: T;
   collectionEnabled?: T;

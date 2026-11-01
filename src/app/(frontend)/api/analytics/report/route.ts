@@ -1,3 +1,4 @@
+import { reportableAnalyticsRows } from '@/modules/analytics/reporting'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -18,7 +19,12 @@ export async function GET(request: Request) {
   const [events, consent] = await Promise.all([
     payload.find({
       collection: 'analytics-events',
-      where: { site: { equals: siteId } },
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { retentionExpiresAt: { greater_than: new Date().toISOString() } },
+        ],
+      },
       limit: 20,
       sort: '-occurredAt',
       depth: 0,
@@ -33,12 +39,20 @@ export async function GET(request: Request) {
       overrideAccess: true,
     } as never),
   ])
-  const recentEvents = events.docs.map((event) => {
+  const eligible = await reportableAnalyticsRows(payload, siteId, events.docs)
+  const recentEvents = eligible.map((event) => {
     const value = event as unknown as Record<string, unknown>
     return {
       eventType: value.eventType,
       occurredAt: value.occurredAt,
       consentBasis: value.consentBasis,
+      eventId: value.eventId,
+      receivedAt: value.receivedAt,
+      context: value.context,
+      provenance: value.properties ?? null,
+      trusted: value.trusted === true,
+      expiresAt: value.retentionExpiresAt,
+      identityLinkage: value.anonymousHash ? 'consent-subject' : 'unknown',
     }
   })
   const recentConsent = consent.docs.map((record) => {
@@ -51,7 +65,10 @@ export async function GET(request: Request) {
   })
   return NextResponse.json({
     siteId,
-    eventCount: events.totalDocs,
+    eventCount: events.hasNextPage ? null : eligible.length,
+    sampleTruncated: events.hasNextPage,
+    countBasis:
+      'Retained events with current site-scoped consent; legacy or unlinked records excluded.',
     consentRecordCount: consent.totalDocs,
     recentEvents,
     recentConsent,

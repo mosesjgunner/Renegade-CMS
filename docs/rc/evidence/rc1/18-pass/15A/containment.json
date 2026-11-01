@@ -1,0 +1,29 @@
+{
+  "baseCommit": "d83a1cc2539a06d024bec148fa212a7b69c3d40d",
+  "fileCount": 1562,
+  "journeyTreeHash": "a1789e2d0c0b1907bcf7b1070f1c195a4f4e281a1f23a80ec85f67df7c2bd28c",
+  "restartTreeHash": "320876b800b41391c8f5849ca99dd92404d3b398a0c90d288a05de334dd63944",
+  "restartDelta": [
+    {
+      "path": "tests/rc1-15a/journey.ts",
+      "journeySha256": "5e09bbd9a64317f55818084da986cd14b421777038657fd2a1bd4797caab07b7",
+      "restartSha256": "b89d490cc2c5154417e4583f78743cd963bf86dc6aa71fccbb5f2e31d0f7064a"
+    }
+  ],
+  "productionSourceChangesAfterJourney": [],
+  "note": "Only isolated harness pool teardown changed before the accepted restart rerun. All production files are byte-identical.",
+  "handoffTreeHash": "ec1bc3eb5f0981024e376728c1c347ce4e42b43814a4df0c020b67ec52b95a01",
+  "handoffDelta": [
+    {
+      "path": "next-env.d.ts",
+      "restartSha256": "22c41676ce14e528869ee852bdd7c0e4b3ecd3c701995ae0aee776ac8e26aba8",
+      "handoffSha256": "c19c8accee885d3b50288bd45f90512b43189960166df64438ab30198d63cb9a"
+    },
+    {
+      "path": "tsconfig.json",
+      "restartSha256": "95659e3cd415b497285b68625a65952e4f800e0b220b1c3c57a6baa008ecd134",
+      "handoffSha256": "eda9a1e8f2b1bc732a566cd89fe6c055d19944a258b458b2b28b783862cfcc4e"
+    }
+  ],
+  "configurationRestoration": "Next-generated type configuration restored byte-for-byte to retained 14D handoff; HEAD matches after normal Windows CRLF checkout conversion. No production source drift."
+}

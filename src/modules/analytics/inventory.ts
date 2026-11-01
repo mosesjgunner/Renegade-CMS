@@ -68,12 +68,12 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     identityLinkage: 'consented-salted-hash',
     retentionDays: 90,
     suppressionBehavior:
-      'Excluded if subject matches suppression hash; never joined with suppressed visitor identities.',
+      'Persisted consent withdrawal blocks collection and purges linked raw events; browser consent subjects are never joined to email suppression hashes.',
     reconciliationTarget: 'canonical-content',
     canonicalCollections: ['content', 'publications', 'page-layouts'],
     uncertaintyDisclosures: [
       'Filtered when DNT/GPC headers are present or consent is not granted.',
-      'Unique visitor counts are salted daily hashes and approximate across rollup windows.',
+      'Unique counts describe site-scoped consent subjects, not distinct people.',
       'Client-side ad-blockers may prevent beacon delivery; treat as lower-bound baseline.',
     ],
   },
@@ -86,7 +86,7 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     identityLinkage: 'consented-salted-hash',
     retentionDays: 'permanent',
     suppressionBehavior:
-      'Suppression records maintained separately in suppressions collection; withdrawals generate immutable audit records.',
+      'Email suppressions remain separate; browser withdrawals generate immutable records and purge linked analytics events.',
     reconciliationTarget: 'canonical-audience',
     canonicalCollections: ['consent-events', 'subscribers', 'suppressions'],
     uncertaintyDisclosures: [

@@ -148,7 +148,26 @@ export function attributePath(
   const conversion = events.find((event) => event.id === conversionEventId)
   if (!conversion) throw new Error('Conversion event is required for attribution.')
   const path = events
-    .filter((event) => event.occurredAt <= conversion.occurredAt)
+    .filter(
+      (event) =>
+        event.context.siteId === conversion.context.siteId &&
+        event.consentBasis === 'analytics-consent' &&
+        conversion.consentBasis === 'analytics-consent' &&
+        event.occurredAt <= conversion.occurredAt &&
+        (event.id === conversion.id ||
+          Boolean(
+            conversion.identity.anonymousId &&
+              event.identity.anonymousId === conversion.identity.anonymousId,
+          ) ||
+          Boolean(
+            conversion.identity.sessionId &&
+              event.identity.sessionId === conversion.identity.sessionId,
+          ) ||
+          Boolean(
+            conversion.identity.memberId &&
+              event.identity.memberId === conversion.identity.memberId,
+          )),
+    )
     .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
   const channels = path.map((event) => event.context.channel ?? 'direct')
   const first = channels.find((channel) => !direct(channel)) ?? 'direct'
@@ -235,7 +254,7 @@ export function attributeCampaignFunnel(
   const isConsented = conversion.consentBasis === 'analytics-consent'
 
   // If consent is absent or denied, NEVER claim certainty
-  if (!isConsented && !conversion.trusted) {
+  if (!isConsented) {
     return {
       conversionEventId: conversion.id,
       conversionGoal: goal,
@@ -268,7 +287,26 @@ export function attributeCampaignFunnel(
   const conversionMember = conversion.identity.memberId
 
   let priorEvents = events
-    .filter((event) => event.occurredAt <= conversion.occurredAt)
+    .filter(
+      (event) =>
+        event.context.siteId === conversion.context.siteId &&
+        event.consentBasis === 'analytics-consent' &&
+        conversion.consentBasis === 'analytics-consent' &&
+        event.occurredAt <= conversion.occurredAt &&
+        (event.id === conversion.id ||
+          Boolean(
+            conversion.identity.anonymousId &&
+              event.identity.anonymousId === conversion.identity.anonymousId,
+          ) ||
+          Boolean(
+            conversion.identity.sessionId &&
+              event.identity.sessionId === conversion.identity.sessionId,
+          ) ||
+          Boolean(
+            conversion.identity.memberId &&
+              event.identity.memberId === conversion.identity.memberId,
+          )),
+    )
     .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
 
   let confidence: AttributionConfidence = 'observed'

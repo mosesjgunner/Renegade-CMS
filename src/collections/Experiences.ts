@@ -3,7 +3,8 @@ import {
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
 } from '../modules/operations/operator-grants'
-import type { CollectionConfig, Field } from 'payload'
+import { APIError } from 'payload'
+import type { CollectionConfig, Field, PayloadRequest } from 'payload'
 import { ownerFields } from './canonical-shared'
 
 const base = (slug: string, title: string): CollectionConfig => ({
@@ -27,6 +28,27 @@ const select = (name: string, options: string[], defaultValue?: string): Field =
   }) as Field
 const relation = (name: string, relationTo: string, required = false): Field =>
   ({ name, type: 'relationship', relationTo: relationTo as never, required, index: true }) as Field
+
+const relationshipId = (value: unknown): string =>
+  typeof value === 'object' && value
+    ? String((value as { id?: unknown }).id ?? '')
+    : String(value ?? '')
+async function assertUnmeasured(req: PayloadRequest, experiment: unknown) {
+  if (!experiment) return
+  const events = await req.payload.find({
+    collection: 'experiment-events',
+    where: { experiment: { equals: relationshipId(experiment) } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+    req,
+  })
+  if (events.docs.length)
+    throw new APIError(
+      'Measured experiment definitions are immutable. Create a new experiment for a new allocation or form.',
+      400,
+    )
+}
 
 /** Rules are declarative only; renderers may select registered components, never execute arbitrary code. */
 export const ExperienceRules: CollectionConfig = {
@@ -55,12 +77,37 @@ export const ExperienceVariants: CollectionConfig = {
 }
 export const Experiments: CollectionConfig = {
   ...base('experiments', 'name'),
+  hooks: {
+    beforeDelete: [
+      async ({ id, req }) => {
+        await assertUnmeasured(req, id)
+      },
+    ],
+    beforeChange: [
+      async ({ data, originalDoc, req }) => {
+        if (
+          !req.context?.experimentDecision &&
+          (data.state === 'winner-selected' || originalDoc?.state === 'winner-selected')
+        )
+          throw new APIError('Use the reviewed winner approval or rollback action.', 400)
+        if (
+          originalDoc &&
+          ['site', 'assignmentSalt', 'conversionForm', 'name'].some(
+            (key) => key in data && relationshipId(data[key]) !== relationshipId(originalDoc[key]),
+          )
+        )
+          await assertUnmeasured(req, originalDoc.id)
+        return data
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     { name: 'name', type: 'text', required: true },
     { name: 'description', type: 'textarea' },
     relation('rule', 'experience-rules'),
     relation('conversionGoal', 'conversion-goals'),
+    relation('conversionForm', 'form-definitions'),
     select(
       'state',
       ['draft', 'approved', 'running', 'paused', 'stopped', 'inconclusive', 'winner-selected'],
@@ -76,6 +123,26 @@ export const Experiments: CollectionConfig = {
 }
 export const ExperimentVariants: CollectionConfig = {
   ...base('experiment-variants', 'name'),
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc, req }) => {
+        await assertUnmeasured(req, originalDoc?.experiment ?? data.experiment)
+        return data
+      },
+    ],
+    beforeDelete: [
+      async ({ id, req }) => {
+        const variant = await req.payload.findByID({
+          collection: 'experiment-variants',
+          id,
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+        await assertUnmeasured(req, variant.experiment)
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     relation('experiment', 'experiments', true),
@@ -125,6 +192,12 @@ export const ConversionGoals: CollectionConfig = {
 }
 export const ExperimentEvents: CollectionConfig = {
   ...base('experiment-events', 'dedupeKey'),
+  access: {
+    read: operatorSiteReadAccess,
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     ...ownerFields(),
     relation('experiment', 'experiments', true),
@@ -149,6 +222,12 @@ export const ExperimentAnalyses: CollectionConfig = {
 }
 export const ExperimentDecisions: CollectionConfig = {
   ...base('experiment-decisions', 'id'),
+  access: {
+    read: operatorSiteReadAccess,
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     ...ownerFields(),
     relation('experiment', 'experiments', true),

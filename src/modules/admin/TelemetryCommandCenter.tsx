@@ -1,8 +1,22 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 interface DashboardData {
+  sourceFreshnessByCollection: Record<
+    string,
+    { recordsInWindow: number; latestTimestamp: string | null }
+  >
+  sourceStatus: Record<string, string>
+  reportingDefinitions: Record<string, string>
+  domainMetrics: {
+    acquisition: Record<string, number>
+    contentViews: Array<{ path: string; views: number }>
+    audience: { newSubscribers: number; formSubmissions: number }
+    community: { newPosts: number; newDiscussions: number }
+    commerce: { createdOrders: number; paidOrders: number }
+  }
   activeSiteId: string
   sites: Array<{ id: string; name: string }>
   dateWindow: { start: string; end: string }
@@ -11,8 +25,8 @@ interface DashboardData {
     freshnessMinutes: number | null
     status: 'healthy' | 'lagging' | 'inactive'
     rawEventsCount: number
-    deduplicatedCount: number
-    botFilteredCount: number
+    deduplicatedCount: number | null
+    botFilteredCount: number | null
   }
   uncertaintyAndMissingData: {
     unconsentedTrafficEstimatePct: number
@@ -27,7 +41,7 @@ interface DashboardData {
     personalizationGrantedCount: number
     marketingGrantedCount: number
     withdrawalCount: number
-    consentRatePct: number
+    consentRatePct: number | null
   }
   coreMetrics: {
     pageViews: number
@@ -49,6 +63,9 @@ interface DashboardData {
   }>
   campaignFunnels: Array<{
     campaign: string
+    uniqueVisitors: number
+    conversionAmounts: Record<string, string>
+    attribution: Array<{ source: string; firstTouch: string; lastNonDirect: string }>
     impressions: number
     landings: number
     engagements: number
@@ -162,6 +179,9 @@ export function TelemetryCommandCenter() {
   const [selectedSite, setSelectedSite] = useState<string>('')
   const [dateRange, setDateRange] = useState<'24h' | '7d' | '30d' | '90d'>('30d')
 
+  const [customStart, setCustomStart] = useState('')
+  const [customEnd, setCustomEnd] = useState('')
+
   // Winner Approval Modal State
   const [winnerVariantId, setWinnerVariantId] = useState<string>('')
   const [approvalReason, setApprovalReason] = useState<string>('')
@@ -181,8 +201,8 @@ export function TelemetryCommandCenter() {
       const startDate = new Date(now.getTime() - startDays * 86_400_000).toISOString()
       const queryParams = new URLSearchParams()
       if (selectedSite) queryParams.set('siteId', selectedSite)
-      queryParams.set('startDate', startDate)
-      queryParams.set('endDate', now.toISOString())
+      queryParams.set('startDate', customStart || startDate)
+      queryParams.set('endDate', customEnd || now.toISOString())
 
       const res = await fetch(`/api/admin/telemetry/dashboard?${queryParams.toString()}`)
       if (!res.ok) {
@@ -198,17 +218,18 @@ export function TelemetryCommandCenter() {
         setWinnerVariantId(json.experiment.variantStats[0].id)
       }
     } catch (err) {
+      setData(null)
       setError(err instanceof Error ? err.message : 'Failed to load telemetry dashboard')
     } finally {
       setLoading(false)
     }
-  }, [dateRange, selectedSite])
+  }, [dateRange, selectedSite, customStart, customEnd])
 
   useEffect(() => {
     void loadDashboard()
   }, [loadDashboard])
 
-  const handleApproveWinner = async (e: React.FormEvent) => {
+  const handleApproveWinner = async (e: React.FormEvent, rollback = false) => {
     e.preventDefault()
     if (!data || !winnerVariantId || !approvalReason.trim()) return
     setApprovingWinner(true)
@@ -218,6 +239,7 @@ export function TelemetryCommandCenter() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
+          action: rollback ? 'rollback' : 'approve',
           experimentId: data.experiment.definition.id,
           selectedVariantId: winnerVariantId,
           reason: approvalReason.trim(),
@@ -228,7 +250,11 @@ export function TelemetryCommandCenter() {
       if (!res.ok) {
         throw new Error(result.error ?? 'Failed to approve winner')
       }
-      setApprovalSuccess(`Successfully approved variant ${winnerVariantId} as permanent winner!`)
+      setApprovalSuccess(
+        rollback
+          ? 'Winner rolled back; control restored and experiment paused.'
+          : 'Human winner approval recorded.',
+      )
       setApprovalReason('')
       await loadDashboard()
     } catch (err) {
@@ -257,10 +283,20 @@ export function TelemetryCommandCenter() {
           <p className="font-semibold">Unable to load telemetry dashboard</p>
           <p className="text-sm mt-1">{error}</p>
           <button
+            onClick={() => {
+              setCustomStart('')
+              setCustomEnd('')
+              setSelectedSite('')
+              void loadDashboard()
+            }}
+          >
+            Reset filters
+          </button>
+          <button
             onClick={() => void loadDashboard()}
             className="mt-4 rounded bg-red-700 px-4 py-2 text-xs font-semibold text-white hover:bg-red-600"
           >
-            Retry Server Truth
+            Retry
           </button>
         </div>
       </main>
@@ -376,9 +412,11 @@ export function TelemetryCommandCenter() {
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
           <p className="text-[11px] font-semibold uppercase text-stone-400">Deduped Replays</p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
-            {sourceFreshness.deduplicatedCount.toLocaleString()}
+            {sourceFreshness.deduplicatedCount?.toLocaleString() ?? 'Unknown'}
           </p>
-          <p className="text-[10px] text-emerald-600 dark:text-emerald-400">Zero double-counts</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
+            Rejected request counts are not retained
+          </p>
         </div>
 
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
@@ -386,25 +424,33 @@ export function TelemetryCommandCenter() {
             Bot / Crawler Filtered
           </p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
-            {sourceFreshness.botFilteredCount.toLocaleString()}
+            {sourceFreshness.botFilteredCount?.toLocaleString() ?? 'Unknown'}
           </p>
           <p className="text-[10px] text-stone-500">UA & header isolated</p>
         </div>
 
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
-          <p className="text-[11px] font-semibold uppercase text-stone-400">Consent Rate</p>
+          <p className="text-[11px] font-semibold uppercase text-stone-400">
+            Consent Record Grant Rate
+          </p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
-            {privacyConsent.consentRatePct}%
+            {privacyConsent.consentRatePct === null
+              ? 'No consent records'
+              : `${privacyConsent.consentRatePct}%`}
           </p>
           <p className="text-[10px] text-stone-500">{privacyConsent.withdrawalCount} withdrawals</p>
         </div>
 
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
-          <p className="text-[11px] font-semibold uppercase text-stone-400">Suppressed Visitors</p>
+          <p className="text-[11px] font-semibold uppercase text-stone-400">
+            Email Suppression Records
+          </p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
             {uncertaintyAndMissingData.suppressionExclusionsCount}
           </p>
-          <p className="text-[10px] text-indigo-600 dark:text-indigo-400">Strictly masked</p>
+          <p className="text-[10px] text-indigo-600 dark:text-indigo-400">
+            Separate from anonymous consent subjects
+          </p>
         </div>
       </section>
 
@@ -496,6 +542,64 @@ export function TelemetryCommandCenter() {
       {/* 5. Tab Content */}
 
       {/* TAB 1: CAMPAIGN FUNNELS & ATTRIBUTION */}
+      <section aria-label="Reporting definitions" className="my-4 rounded border p-4 text-sm">
+        <h2>Metric definitions and coverage</h2>
+        <p>
+          Source timestamps in selected window: {JSON.stringify(data.sourceFreshnessByCollection)}
+        </p>
+        <p>
+          Observed acquisition page views by source:{' '}
+          {JSON.stringify(data.domainMetrics.acquisition)}
+        </p>
+        <p>Source availability: {JSON.stringify(data.sourceStatus)}</p>
+        <label>
+          Start instant (ISO with timezone)
+          <input
+            aria-label="Start instant (ISO with timezone)"
+            defaultValue={customStart}
+            onBlur={(e) => setCustomStart(e.target.value)}
+            placeholder="2026-11-01T00:00:00-05:00"
+          />
+        </label>
+        <label>
+          End instant, exclusive (ISO with timezone)
+          <input
+            aria-label="End instant, exclusive (ISO with timezone)"
+            defaultValue={customEnd}
+            onBlur={(e) => setCustomEnd(e.target.value)}
+            placeholder="2026-11-02T00:00:00-06:00"
+          />
+        </label>
+        <p>
+          Selected UTC window: {data.dateWindow.start} to {data.dateWindow.end} (end exclusive).
+        </p>
+        {!data.campaignFunnels.length && (
+          <p>No eligible campaign landings or linked conversions in this window.</p>
+        )}
+        {Object.entries(data.reportingDefinitions).map(([key, value]) => (
+          <p key={key}>
+            <strong>{key}: </strong>
+            {value}
+          </p>
+        ))}
+        <p>
+          Audience: {data.domainMetrics.audience.newSubscribers} new subscribers;{' '}
+          {data.domainMetrics.audience.formSubmissions} form submissions. Community:{' '}
+          {data.domainMetrics.community.newPosts} new posts,{' '}
+          {data.domainMetrics.community.newDiscussions} new discussions. Commerce:{' '}
+          {data.domainMetrics.commerce.createdOrders} created orders,{' '}
+          {data.domainMetrics.commerce.paidOrders} paid orders.
+        </p>
+        <p>
+          Content views:{' '}
+          {data.domainMetrics.contentViews.length
+            ? JSON.stringify(data.domainMetrics.contentViews)
+            : 'No eligible content observations.'}
+        </p>
+        {!data.financialSummary.length && (
+          <p>No eligible paid orders in this window. Fees and net settlement unknown.</p>
+        )}
+      </section>
       {activeTab === 'funnels' && (
         <div className="space-y-6">
           {campaignFunnels.map((funnel) => (
@@ -533,12 +637,14 @@ export function TelemetryCommandCenter() {
                     <span>STEP 1</span>
                     <span>100%</span>
                   </div>
-                  <p className="font-bold text-stone-900 dark:text-white">Disclosed Link Clicks</p>
+                  <p className="font-bold text-stone-900 dark:text-white">
+                    Observed Campaign Landings
+                  </p>
                   <p className="text-2xl font-extrabold text-stone-900 dark:text-white mt-2">
                     {funnel.impressions}
                   </p>
                   <p className="text-[11px] text-stone-500 mt-1">
-                    Inbound clicks with UTM or referral parameters
+                    Consented page views carrying campaign labels
                   </p>
                 </div>
 
@@ -559,14 +665,16 @@ export function TelemetryCommandCenter() {
                 <div className="rounded-xl border border-stone-100 bg-stone-50/70 p-4 dark:border-stone-800 dark:bg-stone-800/40">
                   <div className="flex items-center justify-between text-xs text-stone-400 font-semibold mb-1">
                     <span>STEP 3</span>
-                    <span>{Math.round((funnel.engagements / funnel.landings) * 100)}%</span>
+                    <span>
+                      {Math.round((funnel.engagements / Math.max(1, funnel.landings)) * 100)}%
+                    </span>
                   </div>
-                  <p className="font-bold text-stone-900 dark:text-white">Deep Engagement</p>
+                  <p className="font-bold text-stone-900 dark:text-white">Engagement Events</p>
                   <p className="text-2xl font-extrabold text-stone-900 dark:text-white mt-2">
                     {funnel.engagements}
                   </p>
                   <p className="text-[11px] text-stone-500 mt-1">
-                    Read depth ≥ 50% or internal navigation
+                    Observed read-depth or internal navigation events
                   </p>
                 </div>
 
@@ -582,68 +690,22 @@ export function TelemetryCommandCenter() {
                     {funnel.conversions}
                   </p>
                   <p className="text-[11px] text-emerald-800 dark:text-emerald-400 mt-1">
-                    Reconciled newsletter signups & orders
+                    Canonical consent-linked forms and observed paid orders
                   </p>
                 </div>
               </div>
 
-              {/* Attribution Models Comparison */}
-              <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50/50 p-4 dark:border-stone-800 dark:bg-stone-800/30">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 mb-3">
-                  Attribution Model Comparison & Uncertainty Classification
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                  <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
-                    <p className="font-bold text-stone-900 dark:text-white">First-Touch Model</p>
-                    <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Attributed Channel:{' '}
-                      <span className="font-semibold text-stone-900 dark:text-white">
-                        Newsletter (Dispatch #42)
-                      </span>
-                    </p>
-                    <span className="mt-2 inline-block rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                      Confidence: Verified Consented
-                    </span>
-                    <p className="text-[11px] text-stone-500 mt-2">
-                      Credits initial outbound link click on external dispatch.
-                    </p>
-                  </div>
-
-                  <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
-                    <p className="font-bold text-stone-900 dark:text-white">
-                      Last-Non-Direct Model
-                    </p>
-                    <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Attributed Channel:{' '}
-                      <span className="font-semibold text-stone-900 dark:text-white">
-                        Newsletter
-                      </span>
-                    </p>
-                    <span className="mt-2 inline-block rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                      Confidence: Verified Consented
-                    </span>
-                    <p className="text-[11px] text-stone-500 mt-2">
-                      Ignores direct address-bar typing to credit substantive referral.
-                    </p>
-                  </div>
-
-                  <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
-                    <p className="font-bold text-stone-900 dark:text-white">Unconsented Fallback</p>
-                    <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Status:{' '}
-                      <span className="font-semibold text-amber-700 dark:text-amber-400">
-                        Unattributed (Privacy Guard)
-                      </span>
-                    </p>
-                    <span className="mt-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                      Uncertainty: High (No Linkage)
-                    </span>
-                    <p className="text-[11px] text-stone-500 mt-2">
-                      Visitors with DNT/GPC or no consent are strictly excluded from campaign
-                      attribution.
-                    </p>
-                  </div>
-                </div>
+              <div className="mt-4 text-sm">
+                <p>
+                  {funnel.uniqueVisitors} distinct consent subjects; conversion amounts by currency
+                  (minor units): {JSON.stringify(funnel.conversionAmounts)}
+                </p>
+                <p>
+                  Observed first-touch / last non-direct comparison:{' '}
+                  {funnel.attribution.length
+                    ? JSON.stringify(funnel.attribution)
+                    : 'No verified conversion linkage.'}
+                </p>
               </div>
             </div>
           ))}
@@ -668,7 +730,11 @@ export function TelemetryCommandCenter() {
                       ? '★ WINNER SELECTED'
                       : experiment.definition.configurationStatus !== 'configured'
                         ? experiment.definition.configurationStatus.toUpperCase()
-                        : `STATUS: ${experiment.definition.state.toUpperCase()}`}
+                        : !experiment.variantStats.some((variant) => variant.exposures > 0)
+                          ? 'CONFIGURED: NO PUBLIC EXPOSURES'
+                          : !experiment.variantStats.some((variant) => variant.conversions > 0)
+                            ? 'EXPOSED: NO CONVERSIONS'
+                            : `MEASURED: ${experiment.definition.state.toUpperCase()}`}
                   </span>
                   <h2 className="text-xl font-bold text-stone-900 dark:text-white">
                     {experiment.definition.name}
@@ -793,12 +859,36 @@ export function TelemetryCommandCenter() {
                 </div>
               ) : (
                 <p className="text-xs text-stone-600 dark:text-stone-300">
-                  Sample size satisfies statistical power requirements. Winner selection is
-                  permitted under human review.
+                  Review effect size and uncertainty before selection. Human approval remains
+                  required.
                 </p>
               )}
             </div>
 
+            <p>
+              <Link href="/admin/collections/experiments/create">Create experiment</Link> ?{' '}
+              <Link href="/admin/collections/experiment-variants">Configure variants</Link>
+            </p>
+            <p>
+              Use the homepage experiment name shown above, select a published conversion form, and
+              configure two registered variants totaling 100 percent with one control. Configuration
+              alone is not evidence of public exposure.
+            </p>
+            {experiment.isWinnerApproved && (
+              <form onSubmit={(event) => void handleApproveWinner(event, true)}>
+                <label>
+                  Rollback reason
+                  <textarea
+                    required
+                    value={approvalReason}
+                    onChange={(event) => setApprovalReason(event.target.value)}
+                  />
+                </label>
+                <button disabled={approvingWinner || !approvalReason.trim()} type="submit">
+                  Roll back winner to control
+                </button>
+              </form>
+            )}
             {/* Human Winner Approval Workflow */}
             {!experiment.isWinnerApproved &&
               experiment.definition.configurationStatus === 'configured' &&
@@ -858,9 +948,7 @@ export function TelemetryCommandCenter() {
                       disabled={approvingWinner || !approvalReason.trim()}
                       className="rounded-lg bg-stone-900 px-5 py-2 text-xs font-bold text-white shadow hover:bg-stone-800 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
                     >
-                      {approvingWinner
-                        ? 'Recording Audit Approval…'
-                        : 'Approve & Permanently Deploy Winner'}
+                      {approvingWinner ? 'Recording Audit Approval…' : 'Approve Winner'}
                     </button>
                   </form>
                 </div>
@@ -900,7 +988,7 @@ export function TelemetryCommandCenter() {
                   <div>
                     <p className="text-xs font-semibold text-stone-400">Gross Processed Volume</p>
                     <p className="text-3xl font-black text-stone-900 dark:text-white">
-                      ${item.grossFormatted} {item.currency}
+                      {item.grossFormatted} {item.currency}
                     </p>
                     <p className="text-[10px] text-stone-400 font-mono">
                       {item.grossMinor} minor units
@@ -911,13 +999,13 @@ export function TelemetryCommandCenter() {
                     <div>
                       <p className="text-stone-400">Processing Fees</p>
                       <p className="font-bold text-stone-700 dark:text-stone-300">
-                        ${item.feeFormatted}
+                        {item.feeFormatted}
                       </p>
                     </div>
                     <div>
-                      <p className="text-stone-400">Net Settled Volume</p>
+                      <p className="text-stone-400">Net Settlement (Unknown)</p>
                       <p className="font-bold text-emerald-600 dark:text-emerald-400">
-                        ${item.netFormatted}
+                        {item.netFormatted}
                       </p>
                     </div>
                   </div>
@@ -961,7 +1049,7 @@ export function TelemetryCommandCenter() {
                 </p>
               </div>
               <span className="rounded bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                k-anonymity & Suppression Masking Active
+                Current-consent filtering active
               </span>
             </div>
 

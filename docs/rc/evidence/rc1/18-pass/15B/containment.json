@@ -1,0 +1,36 @@
+{
+  "baseCommit": "d83a1cc2539a06d024bec148fa212a7b69c3d40d",
+  "fileCount": 1568,
+  "runtimeTreeHash": "63672dc95fd2fb44c858122b1a50284a8b0fe8a53a465307892de7ba736080a7",
+  "handoffTreeHash": "61fd587f3687d00beaab620afaa9adac7410fa47e4c968706bbfbefdae7a06ed",
+  "handoffDelta": [
+    {
+      "path": "next-env.d.ts",
+      "runtimeSha256": "8b2e69d358cef81328720f6c3c6fa93be3eecaedc2b990d0211806b797ee983e",
+      "handoffSha256": "c19c8accee885d3b50288bd45f90512b43189960166df64438ab30198d63cb9a"
+    },
+    {
+      "path": "tsconfig.json",
+      "runtimeSha256": "4df56ddff5b4e1374aa071bf751bffe961273572a29c54df7078b6f67898d495",
+      "handoffSha256": "eda9a1e8f2b1bc732a566cd89fe6c055d19944a258b458b2b28b783862cfcc4e"
+    }
+  ],
+  "changedPathsFrom15AHandoff": [
+    "src/app/(frontend)/api/admin/telemetry/dashboard/route.ts",
+    "src/app/(frontend)/api/admin/telemetry/funnel/route.ts",
+    "src/app/(frontend)/api/analytics/collect/route.ts",
+    "src/app/(frontend)/api/commerce/checkout/status/route.ts",
+    "src/modules/admin/TelemetryCommandCenter.tsx",
+    "src/modules/analytics/ConsentManager.tsx",
+    "src/modules/analytics/definitions.ts",
+    "src/modules/analytics/operator-report.ts",
+    "tests/rc1-15b/journey.ts",
+    "tests/rc1-15b/provenance.ts",
+    "tests/rc1-15b/run.ps1",
+    "tests/rc1-15b/tsconfig.json",
+    "tests/unit/analytics-15b.test.ts"
+  ],
+  "predecessorHandoffTreeHash": "ec1bc3eb5f0981024e376728c1c347ce4e42b43814a4df0c020b67ec52b95a01",
+  "predecessorReconstruction": "15A/source-tree.json plus its containment.json restartDelta and handoffDelta; hash verified. All predecessor source outside the 13 listed 15B paths is unchanged. Prior receipts retain their original sources.",
+  "note": "All production and verifier files are byte-identical in accepted journey, restart and final handoff. Only Next-generated type configuration is restored to the preexisting checkout bytes. Final manifest is source-tree.json files with the two handoffDelta substitutions."
+}

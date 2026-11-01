@@ -1,0 +1,35 @@
+{
+  "baseCommit": "d83a1cc2539a06d024bec148fa212a7b69c3d40d",
+  "runtimeTreeHash": "943bad2573b82e7c46d1dac0db362250013592afb9a55e88eedcbfed382ca64e",
+  "sourceFileCount": 1574,
+  "changedExistingSourcePathsFrom15BHandoff": [
+    "src/app/(frontend)/api/admin/telemetry/experiment/winner/route.ts",
+    "src/app/(frontend)/api/experiences/active/route.ts",
+    "src/app/(frontend)/api/experiences/conversion/route.ts",
+    "src/app/(frontend)/api/experiences/exposure/route.ts",
+    "src/collections/Experiences.ts",
+    "src/migrations/index.ts",
+    "src/modules/admin/TelemetryCommandCenter.tsx",
+    "src/modules/analytics/ConsentManager.tsx",
+    "src/modules/audience/PublicForm.tsx",
+    "src/modules/experiences/PublicExperiment.tsx",
+    "src/modules/experiences/public-experiment.ts",
+    "src/payload-types.ts",
+    "tests/unit/public-experiment-configuration.test.ts"
+  ],
+  "newSourcePaths": [
+    "src/migrations/20261101_150000_rc1_experiment_form.ts",
+    "src/modules/experiences/event-assignment.ts",
+    "tests/rc1-15c/journey.ts",
+    "tests/rc1-15c/provenance.ts",
+    "tests/rc1-15c/run.ps1",
+    "tests/unit/experiments-15c.test.ts"
+  ],
+  "unrelatedPriorSourceChanges": [],
+  "unchangedPriorSourceFilesAtRuntime": 1553,
+  "generatedConfigurationPathsToRestore": [
+    "next-env.d.ts",
+    "tsconfig.json"
+  ],
+  "priorEvidence": "15B remains bound to its original manifest; no predecessor receipt relabeled as current."
+}

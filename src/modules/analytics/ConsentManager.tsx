@@ -33,6 +33,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
   const [draft, setDraft] = useState<Choices | null>(null)
   const [signals, setSignals] = useState<Signals>({})
   const [editing, setEditing] = useState(false)
+  const [error, setError] = useState('')
   useEffect(() => {
     void fetch('/api/analytics/consent', { credentials: 'same-origin' })
       .then((r) => r.json())
@@ -55,62 +56,31 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
     Boolean(signals.doNotTrack) ||
     (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
   const save = async (next: Choices) => {
-    console.log('Saving consent choices:', next)
-    if (!siteId) {
-      console.log('No siteId, returning early')
-      // Even without siteId, we should still update the UI
-      setChoices(next)
-      setDraft(next)
-      setEditing(false)
-      if (!next.analytics) {
-        cookie('renegade-aid', '')
-        cookie('renegade-sid', '')
-      }
-      return
+    setError('')
+    // Stop tracking locally as soon as withdrawal is requested, including failed network saves.
+    if (!next.analytics) {
+      setChoices(empty)
+      cookie('renegade-aid', '')
+      cookie('renegade-sid', '')
     }
     try {
+      if (!siteId) throw new Error('Publication unavailable.')
       const response = await fetch('/api/analytics/consent', {
         method: 'POST',
         credentials: 'same-origin',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ siteId, choices: next }),
       })
-      console.log('Consent API response:', response)
-      if (!response.ok) {
-        console.error('Failed to save consent choices:', response.statusText)
-        // Still update the UI even if the API call fails
-        setChoices(next)
-        setDraft(next)
-        setEditing(false)
-        if (!next.analytics) {
-          cookie('renegade-aid', '')
-          cookie('renegade-sid', '')
-        }
-        return
-      }
-      const data = await response.json().catch((error) => {
-        console.error('Failed to parse consent response:', error)
-        return {}
-      })
-      console.log('Consent data received:', data)
-      setChoices(next)
-      setDraft(next)
+      if (!response.ok) throw new Error('Consent could not be saved. Please try again.')
+      const data = await response.json()
+      setChoices(data.choices)
+      setDraft(data.choices)
       setEditing(false)
+      window.dispatchEvent(new Event('renegade:consent-changed'))
       if (data.signals) setSignals(data.signals)
-      if (!next.analytics) {
-        cookie('renegade-aid', '')
-        cookie('renegade-sid', '')
-      }
-    } catch (error) {
-      console.error('Failed to save consent choices:', error)
-      // Still update the UI even if the API call fails
-      setChoices(next)
-      setDraft(next)
-      setEditing(false)
-      if (!next.analytics) {
-        cookie('renegade-aid', '')
-        cookie('renegade-sid', '')
-      }
+    } catch {
+      setError('Consent could not be saved. Please try again.')
+      setEditing(true)
     }
   }
   useEffect(() => {
@@ -137,7 +107,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         id: crypto.randomUUID(),
         siteId,
         eventType: 'page_view',
-        path: location.pathname,
+        path: location.pathname + location.search,
         occurredAt: new Date().toISOString(),
         ...identity,
       }),
@@ -163,6 +133,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
       aria-label="Privacy choices"
       className="fixed inset-x-3 bottom-3 z-[9999] mx-auto max-w-xl rounded-lg border bg-white p-4 shadow-xl dark:bg-stone-950"
     >
+      {error && <p role="alert">{error}</p>}
       <p className="font-semibold">Your privacy choices</p>
       <p className="mt-1 text-sm">
         Necessary storage keeps your consent choice. Analytics is off unless you choose it; we honor

@@ -1,0 +1,167 @@
+{
+  "passed": 40,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "unconsented anonymous browsing rejected with inspectable reason",
+      "passed": true
+    },
+    {
+      "name": "anonymous real form conversion persists without analytics identity or event",
+      "passed": true
+    },
+    {
+      "name": "anonymous browser shows consent choices and emits no beacon or identifier",
+      "passed": true
+    },
+    {
+      "name": "failed consent save stays visibly unsaved and emits no analytics",
+      "passed": true
+    },
+    {
+      "name": "ordinary opted-in browser page view reaches PostgreSQL",
+      "passed": true
+    },
+    {
+      "name": "opted-in conversion has persisted canonical form outcome",
+      "passed": true
+    },
+    {
+      "name": "conversion provenance resolves exact saved submission and shares consent identity",
+      "passed": true
+    },
+    {
+      "name": "canonical form retry does not inflate conversion count",
+      "passed": true
+    },
+    {
+      "name": "experiment exposure retry has one canonical analytics record",
+      "passed": true
+    },
+    {
+      "name": "unproven or unrelated experiment conversion denied",
+      "passed": true
+    },
+    {
+      "name": "experiment conversion requires consent-linked canonical form outcome and deduplicates",
+      "passed": true
+    },
+    {
+      "name": "cross-site experiment event cannot leak or inflate data",
+      "passed": true
+    },
+    {
+      "name": "native operator mutation cannot forge analytics or consent evidence",
+      "passed": true
+    },
+    {
+      "name": "concurrent duplicate creates one persisted event",
+      "passed": true
+    },
+    {
+      "name": "native wrong-site lookup conceals event provenance",
+      "passed": true
+    },
+    {
+      "name": "path query and fragment discarded and caller identity ignored",
+      "passed": true
+    },
+    {
+      "name": "every concurrent duplicate returns a successful deduplication outcome",
+      "passed": true
+    },
+    {
+      "name": "privacy or bot exclusion {\"DNT\":\"1\"}",
+      "passed": true
+    },
+    {
+      "name": "privacy or bot exclusion {\"sec-gpc\":\"1\"}",
+      "passed": true
+    },
+    {
+      "name": "privacy or bot exclusion {\"user-agent\":\"Googlebot\"}",
+      "passed": true
+    },
+    {
+      "name": "privacy or bot exclusion {\"x-renegade-internal\":\"1\"}",
+      "passed": true
+    },
+    {
+      "name": "authenticated operator activity excluded from audience events",
+      "passed": true
+    },
+    {
+      "name": "wrong-site event rejected without foreign-site records",
+      "passed": true
+    },
+    {
+      "name": "browser cannot manufacture paid or form conversion events",
+      "passed": true
+    },
+    {
+      "name": "late-event and foreign-origin inputs rejected",
+      "passed": true
+    },
+    {
+      "name": "anonymous and wrong-site operator report denied",
+      "passed": true
+    },
+    {
+      "name": "authorized operator sees exact persisted count and provenance",
+      "passed": true
+    },
+    {
+      "name": "UI withdrawal removes identifiers and linked raw events",
+      "passed": true
+    },
+    {
+      "name": "withdrawal invalidates derived site aggregates but preserves canonical form outcome",
+      "passed": true
+    },
+    {
+      "name": "signed pre-withdrawal cookie cannot restore tracking",
+      "passed": true
+    },
+    {
+      "name": "returning stale cookie receives withdrawn choices",
+      "passed": true
+    },
+    {
+      "name": "withdrawn event count and provenance absent from operator report",
+      "passed": true
+    },
+    {
+      "name": "funnel returns observed empty counts and unknown attribution",
+      "passed": true
+    },
+    {
+      "name": "expired raw event excluded from supported report before worker cleanup",
+      "passed": true
+    },
+    {
+      "name": "retention worker deletes only expired raw event",
+      "passed": true
+    },
+    {
+      "name": "one-site operator cannot disable installation-wide analytics",
+      "passed": true
+    },
+    {
+      "name": "operator analytics-off setting removes existing events from reporting",
+      "passed": true
+    },
+    {
+      "name": "operator analytics-off setting blocks new collection",
+      "passed": true
+    },
+    {
+      "name": "new policy version makes old grants ineligible for collection and reporting",
+      "passed": true
+    }
+  ]
+}

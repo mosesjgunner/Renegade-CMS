@@ -19,34 +19,34 @@ export const TELEMETRY_METRIC_DEFINITIONS: Record<string, TelemetryMetricDefinit
     source: 'First-party client beacon (/api/analytics/collect)',
     definition: 'Total successful page view beacons received from consented visitor sessions.',
     caveats: [
-      'Excludes unconsented visitors, bot/crawler user agents, and internal staff sessions.',
-      'Subject to ad-blockers and privacy shields; treat as conservative verified floor.',
+      'Excludes unconsented visitors, bot/crawler user agents, and requests marked internal.',
+      'Subject to ad-blockers and privacy shields; treat as lower bound of client observations.',
     ],
     uncertaintyDisclosure:
-      'Represents verified consented visits only. Unconsented traffic is reported separately as missing data.',
+      'Represents consented client observations only. Unconsented traffic is reported separately as missing data.',
   },
   unique_visitors: {
     key: 'unique_visitors',
     label: 'Estimated Unique Visitors',
-    grain: 'Daily salted anonymous hash rollup',
+    grain: 'Site-scoped consent subject over retained events',
     formula: 'COUNT(DISTINCT anonymousHash)',
-    source: 'Salted first-party anonymousId cookie (renegade-aid)',
-    definition: 'Cryptographically hashed daily distinct visitors with active analytics consent.',
+    source: 'Server-derived site-scoped consent subject hash',
+    definition:
+      'Distinct consent subjects represented in retained accepted events; not a count of people.',
     caveats: [
-      'Salt rotates across retention windows to prevent long-term cross-window profiling.',
-      'Approximate across multi-day rollups due to privacy-safe daily hash rotation.',
+      'Subject hashes are site-scoped and linked events are purged on withdrawal.',
+      'Multiple browsers and cleared consent cookies can count one person more than once.',
     ],
-    uncertaintyDisclosure: 'Cross-window deduplication is probabilistic by privacy design.',
+    uncertaintyDisclosure: 'Consent subjects do not establish unique human identity.',
   },
   disclosed_campaign_clicks: {
     key: 'disclosed_campaign_clicks',
     label: 'Disclosed Campaign & Referral Touchpoints',
     grain: 'Raw event (analytics-events)',
-    formula:
-      'COUNT(analytics_events WHERE utm_campaign IS NOT NULL OR ref IS NOT NULL OR channel != "direct")',
-    source: 'URL parameters and disclosure-tagged inbound referrals',
+    formula: 'COUNT(current_consent_page_views WHERE utm_campaign IS NOT NULL)',
+    source: 'Observed minimal UTM campaign labels on consented page views',
     definition:
-      'Touchpoints arriving via explicit campaign UTM parameters, partner referral codes, or disclosed affiliate links.',
+      'Observed campaign landings with self-reported UTM labels; not proof of external link clicks.',
     caveats: [
       'Only recorded when the visitor grants analytics consent upon landing.',
       'Stripped or truncated UTM parameters by privacy proxies may result in direct classification.',
@@ -58,29 +58,29 @@ export const TELEMETRY_METRIC_DEFINITIONS: Record<string, TelemetryMetricDefinit
     key: 'conversions',
     label: 'Verified Goal Conversions',
     grain: 'Raw event reconciled against canonical collection',
-    formula: 'COUNT(conversion_events WHERE goalKey MATCHES active_goal)',
-    source: 'Canonical forms, subscriptions, orders, and contributions',
+    formula: 'COUNT(DISTINCT canonical sourceEventId with same-subject prior campaign landing)',
+    source: 'Canonical form submissions and authorized observations of paid order receipts',
     definition:
-      'Completion of a tracked business objective (newsletter signup, purchase, donation, registration).',
+      'Persisted form submissions and paid order receipt observations linked to current analytics consent.',
     caveats: [
       'Reconciled against canonical business records in PostgreSQL.',
       'Failed payments, abandoned carts, and unverified double opt-in signups are excluded.',
     ],
     uncertaintyDisclosure:
-      '100% verified when matching canonical orders; labeled as unlinked when visitor identity is absent.',
+      'Only persisted canonical outcomes are verified; browser observations alone cannot establish a business conversion.',
   },
   conversion_rate: {
     key: 'conversion_rate',
     label: 'Consented Conversion Rate (CR)',
     grain: 'Calculated ratio',
-    formula: '(Verified Conversions / Consented Landings) * 100',
+    formula: '(Distinct converted consent subjects / Distinct landing consent subjects) * 100',
     source: 'Aggregated analytics stream',
     definition: 'Percentage of consented visitors who completed the specified goal.',
     caveats: [
       'Calculated over consented sessions only; unconsented visitors are excluded from both numerator and denominator.',
     ],
     uncertaintyDisclosure:
-      'Standard error and 95% confidence intervals are displayed where applicable.',
+      'Descriptive same-subject linkage, not evidence of causation or cross-device identity.',
   },
   experiment_exposures: {
     key: 'experiment_exposures',
@@ -114,16 +114,16 @@ export const TELEMETRY_METRIC_DEFINITIONS: Record<string, TelemetryMetricDefinit
   financial_gross: {
     key: 'financial_gross',
     label: 'Currency-Separated Gross Volume',
-    grain: 'Order / payment snapshot (metric-snapshots)',
-    formula: 'SUM(grossMinor) GROUP BY settlementCurrency',
+    grain: 'Canonical order created within selected window',
+    formula: 'SUM(orders.amountMinor WHERE paid state AND receipt) GROUP BY currency',
     source: 'Canonical orders and settled payment records',
     definition:
-      'Total monetary value processed before fees and refunds, strictly segregated by ISO currency.',
+      'Gross presentment value of paid, fulfilling or fulfilled receipted orders; refunded orders excluded.',
     caveats: [
       'Never merged across distinct currencies without explicit historical exchange rates.',
       'Reported in minor units (e.g., cents, pence) to prevent floating point inaccuracies.',
     ],
     uncertaintyDisclosure:
-      'Distinguishes between settled payments and provider-reported pending attempts.',
+      'Provider payout, fees and net settlement unknown; snapshots never added to canonical orders.',
   },
 }

@@ -1,0 +1,151 @@
+{
+  "accepted": [
+    {
+      "command": "docker run -d --name rc115a-20261101 --label rc1.scope=15a -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=rc115a_release_acceptance -p 127.0.0.1:5475:5432 postgres:17.6",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15a/run.ps1 migrate",
+      "exit": 0,
+      "migrations": 129,
+      "log": "migrate.log"
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/analytics-15a.test.ts tests/unit/analytics-contracts.test.ts tests/unit/analytics-privacy-runtime.test.ts tests/unit/analytics-attribution-experiments.test.ts tests/unit/network-experience.test.ts tests/unit/audience-contracts.test.ts",
+      "exit": 0,
+      "files": 6,
+      "passed": 33,
+      "failed": 0,
+      "skipped": 0,
+      "log": "unit.log"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "eslint",
+        "src/modules/analytics",
+        "src/collections/Analytics.ts",
+        "src/app/(frontend)/api/analytics",
+        "src/app/(frontend)/api/experiences/exposure/route.ts",
+        "src/app/(frontend)/api/experiences/conversion/route.ts",
+        "src/app/(frontend)/api/admin/telemetry/dashboard/route.ts",
+        "src/app/(frontend)/api/admin/telemetry/funnel/route.ts",
+        "src/app/(frontend)/api/forms/[formId]/route.ts",
+        "tests/rc1-15a",
+        "tests/unit/analytics-15a.test.ts",
+        "--max-warnings=0"
+      ],
+      "exit": 0,
+      "log": "lint.log"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "prettier",
+        "--check",
+        "src/modules/analytics",
+        "src/collections/Analytics.ts",
+        "src/app/(frontend)/api/analytics",
+        "src/app/(frontend)/api/experiences/exposure/route.ts",
+        "src/app/(frontend)/api/experiences/conversion/route.ts",
+        "src/app/(frontend)/api/admin/telemetry/dashboard/route.ts",
+        "src/app/(frontend)/api/admin/telemetry/funnel/route.ts",
+        "src/app/(frontend)/api/forms/[formId]/route.ts",
+        "tests/rc1-15a",
+        "tests/unit/analytics-15a.test.ts"
+      ],
+      "exit": 0,
+      "log": "format.log"
+    },
+    {
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-15a/tsconfig.json",
+      "exit": 0,
+      "errors": 0,
+      "logs": [
+        "types.log",
+        "types-restored.log"
+      ]
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15a/run.ps1 journey",
+      "exit": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "sourceTreeHash": "a1789e2d0c0b1907bcf7b1070f1c195a4f4e281a1f23a80ec85f67df7c2bd28c",
+      "log": "journey.log"
+    },
+    {
+      "command": "docker restart rc115a-20261101",
+      "exit": 0
+    },
+    {
+      "command": "docker exec rc115a-20261101 pg_isready -U postgres -d rc115a_release_acceptance",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-15a/run.ps1 restart",
+      "exit": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "sourceTreeHash": "320876b800b41391c8f5849ca99dd92404d3b398a0c90d288a05de334dd63944",
+      "log": "restart.log"
+    },
+    {
+      "command": "npx.cmd eslint tests/rc1-15a --max-warnings=0",
+      "exit": 0,
+      "log": "harness-lint.log"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "log": "diff-check.log"
+    },
+    {
+      "command": "docker stop rc115a-20261101",
+      "exit": 0,
+      "state": "stopped, data retained"
+    }
+  ],
+  "initialAttemptsNotAcceptance": [
+    {
+      "exit": 1,
+      "reason": "PowerShell script execution policy; rerun with process-scoped ExecutionPolicy Bypass."
+    },
+    {
+      "exit": 1,
+      "log": "initial-headless-rejection.log",
+      "reason": "Headless user agent correctly excluded; desktop UA used for consent UI positive, bots tested separately."
+    },
+    {
+      "exit": 1,
+      "log": "initial-alert-locator.log",
+      "reason": "Test alert locator also matched Next route announcer; scoped to consent region."
+    },
+    {
+      "exit": 1,
+      "log": "initial-withdrawal-wait.log",
+      "reason": "Harness read DB before consent save completed; waited for successful UI save and persisted zero count."
+    },
+    {
+      "exit": 1,
+      "log": "initial-settings-grant.log",
+      "reason": "One-site owner correctly denied installation-wide settings; final owner fixture granted both sites, staff denial retained."
+    },
+    {
+      "exit": -1,
+      "log": "initial-teardown.log",
+      "reason": "Seven restart assertions passed, pool teardown hung; only owned harness PID stopped. Teardown repaired; accepted restart rerun exited 0."
+    },
+    {
+      "exit": 1,
+      "reason": "Initial Prettier check identified a test-file style issue; formatted and final check passed."
+    },
+    {
+      "exit": 2,
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-15a/tsconfig.json",
+      "reason": "Initial checks found closure narrowing and verifier signal/header typing errors; repaired without assertion changes. Final runtime and restored-configuration type checks exited 0."
+    }
+  ]
+}

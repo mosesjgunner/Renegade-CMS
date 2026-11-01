@@ -1,3 +1,4 @@
+import { recordBrowserOutcome } from '@/modules/analytics/browser-events'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { loadPublicForm } from '@/modules/audience/form-runtime'
@@ -96,6 +97,12 @@ export async function POST(request: Request, context: Context) {
       idempotencyKey: body.idempotencyKey,
     })
     if (result.errors) return Response.json({ errors: result.errors }, { status: 422, headers })
+    // Telemetry failure never changes the canonical submission result; an idempotent retry can repair it.
+    await recordBrowserOutcome(payload, request, siteId, {
+      id: String(result.submission.id),
+      eventType: 'form_submit',
+      collection: 'form-submissions',
+    }).catch(() => undefined)
     return Response.json(
       {
         received: true,

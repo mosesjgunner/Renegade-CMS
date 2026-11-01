@@ -1,3 +1,4 @@
+import { loadPublicForm } from '../audience/form-runtime'
 import type { Payload } from 'payload'
 import {
   browserPrivacySignals,
@@ -32,7 +33,7 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
   state: 'running',
   assignmentSalt: 'renegade-hero-experiment-salt-2026',
   collectionEnabled: true,
-  goalKey: 'newsletter-member-signup',
+  goalKey: 'lead-contact-volunteer',
   variants: [
     {
       id: 'variant-control',
@@ -40,8 +41,8 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
       isControl: true,
       allocation: 50,
       registeredComponent: 'publisher.newsletter-cta',
-      headline: 'Subscribe to Sovereign Dispatch',
-      tagline: 'Independent journalism, unfiltered dispatches, zero corporate tracking.',
+      headline: 'Contact the newsroom',
+      tagline: 'Send your questions and feedback to our team.',
       ctaText: 'Subscribe to Dispatch',
       badge: 'Control (Standard)',
     },
@@ -51,9 +52,8 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
       isControl: false,
       allocation: 50,
       registeredComponent: 'publisher.cta',
-      headline: 'Join the Sovereign Reader Network',
-      tagline:
-        'Full access to decentralised analysis, community discussions, and verified member feeds.',
+      headline: 'Join the conversation',
+      tagline: 'Share your ideas and help shape our next story.',
       ctaText: 'Join Reader Network',
       badge: 'Treatment (Community Focus)',
     },
@@ -65,6 +65,7 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
   const empty = {
     ...CANONICAL_PUBLIC_EXPERIMENT,
     dbId: null as string | null,
+    form: null as Awaited<ReturnType<typeof loadPublicForm>>,
     siteId: siteId ?? '',
     state: 'draft' as ExperimentState,
     collectionEnabled: false,
@@ -114,11 +115,23 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
         overrideAccess: true,
       }),
     ])
+    const formId =
+      typeof experiment.conversionForm === 'object'
+        ? experiment.conversionForm?.id
+        : experiment.conversionForm
+    const form = formId ? await loadPublicForm(payload, String(formId), siteId) : null
     const configured =
-      variants.docs.length > 0 &&
+      Boolean(form) &&
+      variants.docs.length >= 2 &&
+      variants.docs.every((v) =>
+        ['publisher.newsletter-cta', 'publisher.cta', 'publisher.hero-action'].includes(
+          v.registeredComponent,
+        ),
+      ) &&
       variants.docs.reduce((sum, variant) => sum + variant.allocation, 0) === 100 &&
       variants.docs.filter((variant) => variant.isControl).length === 1
-    const decision = configured ? decisions.docs[0] : undefined
+    const decision =
+      configured && experiment.state === 'winner-selected' ? decisions.docs[0] : undefined
     const winner =
       typeof decision?.selectedVariant === 'object'
         ? decision.selectedVariant?.id
@@ -126,6 +139,7 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
     return {
       ...empty,
       id: String(experiment.id),
+      form,
       dbId: String(experiment.id),
       name: experiment.name,
       description: experiment.description ?? '',
@@ -139,7 +153,7 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
       configurationStatus: configured ? ('configured' as const) : ('unconfigured' as const),
       configurationIssue: configured
         ? null
-        : 'Configure variants totaling 100 percent with one control.',
+        : 'Select a published site form and configure registered variants totaling 100 percent with one control.',
       variants: configured
         ? variants.docs.map((variant) => ({
             ...CANONICAL_PUBLIC_EXPERIMENT.variants[variant.isControl ? 0 : 1],
@@ -170,7 +184,7 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
 
 /** Evaluates visitor privacy and returns deterministic assignment. */
 export function resolvePublicExperimentVariant(input: {
-  experiment: ReturnType<typeof getActivePublicExperiment> extends Promise<infer T> ? T : never
+  experiment: Omit<Awaited<ReturnType<typeof getActivePublicExperiment>>, 'form'>
   cookieHeader: string | null
   headers: Headers
   secret: string
@@ -180,6 +194,10 @@ export function resolvePublicExperimentVariant(input: {
   const consent = readConsent(input.cookieHeader, input.secret)
   const signals = browserPrivacySignals(input.headers)
   const allowed =
+    consent?.siteId === input.experiment.siteId &&
+    consent.version === input.privacyPolicy.consentVersion &&
+    consent.choices.personalization &&
+    input.experiment.collectionEnabled &&
     consent &&
     analyticsAllowed({ choices: consent.choices, policy: input.privacyPolicy, ...signals })
   const bot = isBotOrInternal({

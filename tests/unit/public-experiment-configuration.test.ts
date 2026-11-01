@@ -9,6 +9,7 @@ const experiment = {
   site: 'site-a',
   name: CANONICAL_PUBLIC_EXPERIMENT.name,
   assignmentSalt: 'persisted-salt',
+  conversionForm: 'form-a',
   state: 'running',
   collectionEnabled: true,
 }
@@ -35,11 +36,27 @@ const store = (
     collect?: boolean
     allocation?: number
     decision?: boolean
+    noForm?: boolean
+    component?: string
     unavailable?: boolean
   } = {},
 ) => ({
+  collections: { 'form-definitions': {} },
+  findByID: async () => ({
+    id: 'schema-a',
+    form: 'form-a',
+    state: 'published',
+    locale: 'en',
+    consentText: 'Contact permission',
+    consentRevision: 'v1',
+    schema: { fields: [{ key: 'email', type: 'email', label: 'Email', required: true }] },
+  }),
   find: async ({ collection }: { collection: string }) => {
     if (options.unavailable) throw new Error('Disconnected fixture store')
+    if (collection === 'form-definitions')
+      return {
+        docs: options.noForm ? [] : [{ id: 'form-a', activeSchema: 'schema-a', actions: [] }],
+      }
     if (collection === 'experiments')
       return {
         docs: options.exists
@@ -56,6 +73,7 @@ const store = (
       return {
         docs: variants.map((v, i) => ({
           ...v,
+          registeredComponent: options.component ?? v.registeredComponent,
           allocation: i === 1 ? (options.allocation ?? v.allocation) : v.allocation,
         })),
       }
@@ -87,7 +105,7 @@ describe('persisted public experiment configuration', () => {
   })
   it('binds the agreement, variants and winner to actual persisted identities', async () => {
     const result = await getActivePublicExperiment(
-      store({ exists: true, decision: true }) as never,
+      store({ exists: true, decision: true, state: 'winner-selected' }) as never,
       'site-a',
     )
     expect(result).toMatchObject({
@@ -102,6 +120,24 @@ describe('persisted public experiment configuration', () => {
       'persisted-control',
       'persisted-treatment',
     ])
+  })
+  it('rejects missing public outcomes and unregistered rendering components', async () => {
+    for (const options of [{ noForm: true }, { component: 'arbitrary.script' }])
+      expect(
+        await getActivePublicExperiment(store({ exists: true, ...options }) as never, 'site-a'),
+      ).toMatchObject({
+        state: 'draft',
+        collectionEnabled: false,
+        configurationStatus: 'unconfigured',
+      })
+  })
+  it('historical approval cannot override a human rollback', async () => {
+    expect(
+      await getActivePublicExperiment(
+        store({ exists: true, decision: true, state: 'paused' }) as never,
+        'site-a',
+      ),
+    ).toMatchObject({ state: 'paused', winnerDecision: null })
   })
   it('preserves configured pause and collection-off decisions', async () => {
     const result = await getActivePublicExperiment(

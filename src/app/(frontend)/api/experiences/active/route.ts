@@ -2,7 +2,12 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { loadConfig } from '@/modules/core/config'
-import { privacyPolicyFromSettings } from '@/modules/analytics/privacy'
+import {
+  hasCurrentAnalyticsConsent,
+  readConsent,
+  browserPrivacySignals,
+  privacyPolicyFromSettings,
+} from '@/modules/analytics/privacy'
 import { publicSiteForHost } from '@/modules/public/site-scope'
 import {
   getActivePublicExperiment,
@@ -22,9 +27,17 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Experience not found for this site.' }, { status: 404 })
 
   const experiment = await getActivePublicExperiment(payload, siteId)
+  const current = await hasCurrentAnalyticsConsent(
+    payload,
+    readConsent(request.headers.get('cookie'), runtime.payloadSecret),
+    siteId,
+    runtime.payloadSecret,
+    policy,
+    browserPrivacySignals(new Headers(request.headers)),
+  )
   const resolution = resolvePublicExperimentVariant({
     experiment,
-    cookieHeader: request.headers.get('cookie'),
+    cookieHeader: current ? request.headers.get('cookie') : null,
     headers: new Headers(request.headers),
     secret: runtime.payloadSecret,
     privacyPolicy: policy,
@@ -41,6 +54,13 @@ export async function GET(request: Request) {
       goalKey: experiment.goalKey,
       winnerDecision: experiment.winnerDecision,
     },
+    form: experiment.form
+      ? {
+          id: experiment.form.form.id,
+          fields: experiment.form.snapshot.fields,
+          consentText: experiment.form.snapshot.consentText,
+        }
+      : null,
     assignedVariant: resolution.variant,
     assignment: resolution.assignment,
     consented: resolution.consented,

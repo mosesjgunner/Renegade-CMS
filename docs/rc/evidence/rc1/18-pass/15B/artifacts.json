@@ -1,0 +1,135 @@
+{
+  "files": [
+    {
+      "path": "admin-dashboard.png",
+      "sha256": "3759c5427b66e503406f8d8d58e61daaede1751ad5a9ddab2a90ccadb790d0b1",
+      "bytes": 289467
+    },
+    {
+      "path": "attempt1.log",
+      "sha256": "8525cd0bf024faf22457a53ed426ec2ea8237c0d923e3b40d799d1f3abeabd0c",
+      "bytes": 2560
+    },
+    {
+      "path": "attempt2.log",
+      "sha256": "bc39a4b83c32d5c9217276fbfa880ecdd601d4bd0603c69314c70d57ab60277d",
+      "bytes": 3332
+    },
+    {
+      "path": "attempt3.log",
+      "sha256": "9fe07efce5dd00eb3a24cde8e77bb346e9bd97b239c1e6fba38e8ddb5cb0fbad",
+      "bytes": 21962
+    },
+    {
+      "path": "attempt4.log",
+      "sha256": "e6712123d4b1810349003151ece0ee3ec5c3db89f61166ab8592b952a4793d9b",
+      "bytes": 53130
+    },
+    {
+      "path": "commands.json",
+      "sha256": "9a2dff5b51e85c588e7bd1982f9e3b58fb576aa6fee50f640b3090e9b86a64c4",
+      "bytes": 4427
+    },
+    {
+      "path": "containment.json",
+      "sha256": "1a63e11b012cd00dd30b942a8cc2d3e4f0f832995a91188e61ea3bb09c000590",
+      "bytes": 2045
+    },
+    {
+      "path": "currency-reconciliation.json",
+      "sha256": "d8238348e12846ed7b8c104a5e72a53406a7f92778b650e06987b8e4628327b7",
+      "bytes": 2223
+    },
+    {
+      "path": "format.log",
+      "sha256": "fbdd37869c73ce85afb11ffefa058e0181874c073fdfee7d7a4b5086b7ea3b1b",
+      "bytes": 138
+    },
+    {
+      "path": "journey-trace.json",
+      "sha256": "148017d77649cd1edc5af0881c3781120acb02110dbebd885a0363c88aaf2da8",
+      "bytes": 3043
+    },
+    {
+      "path": "journey.log",
+      "sha256": "02f5b77e7854af82dd24bdfd8d517e9caf92785bd4c8cede3653d9cf80748acb",
+      "bytes": 4776
+    },
+    {
+      "path": "lint.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "migrations.log",
+      "sha256": "d14171a78eb2eeaba8570c6aadc80109a5d8a12c5db03ff0031cfefdf42acabe",
+      "bytes": 48704
+    },
+    {
+      "path": "NEXT.md",
+      "sha256": "b9ed3016dea66ea439eed9b616abd9c42f11fb3a30eaf5b4cd2f7948e774e3bd",
+      "bytes": 1932
+    },
+    {
+      "path": "persistence.log",
+      "sha256": "4fcde576994049060f265752c71689cf4800765e5e533e1d316711a71d7b07af",
+      "bytes": 1898
+    },
+    {
+      "path": "reconciliation.json",
+      "sha256": "68e7d903a9ddfb2ea65e16d55be5e04f795832311f7405cff50ae1679e785815",
+      "bytes": 47623
+    },
+    {
+      "path": "restart-trace.json",
+      "sha256": "a96c766f6a4073749ab0f2ee3c0db153e45f404934f754b53b558021db751e7c",
+      "bytes": 624
+    },
+    {
+      "path": "restart-web.log",
+      "sha256": "c23fff86296cb4b52126ca0f4297511b73505aaba74211ff6d9a433a8fb25dfa",
+      "bytes": 1100
+    },
+    {
+      "path": "restart.log",
+      "sha256": "780f5b53dfdd3c6b9e19af376c4da6a2fa324bc34527a468ff33a900e621df4d",
+      "bytes": 1012
+    },
+    {
+      "path": "RESULT.md",
+      "sha256": "6ca12a140c97df63934db3a50ed217c3235fa1109d73591d1d968b502bc467dd",
+      "bytes": 7557
+    },
+    {
+      "path": "runtime.json",
+      "sha256": "c37ae8a0a3ed894e0d8d0aa89df0f2e37dbdb9ce263c82eaef056e2a3833be55",
+      "bytes": 970
+    },
+    {
+      "path": "source-tree.json",
+      "sha256": "0962c3af902e8a2e3c3260ae5a0e4030da87619015d6ea4b7165b000a586c3c5",
+      "bytes": 245073
+    },
+    {
+      "path": "types-handoff.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "units.log",
+      "sha256": "b262600a92ffbc0a3a02d4e2db7e382e80fb45092f2f5577da1479d5474f3b8c",
+      "bytes": 1094
+    },
+    {
+      "path": "web.log",
+      "sha256": "c21100e6274fc07b2d0df0c945c36c0c711a3832600cf836e031ab0d398ae0c4",
+      "bytes": 10319
+    }
+  ],
+  "note": "Accepted traces/source/commands are named explicitly in RESULT.md; attempt logs are historical verifier failures, not current success proof."
+}

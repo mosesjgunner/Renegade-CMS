@@ -1,3 +1,5 @@
+import { recordBrowserOutcome } from '@/modules/analytics/browser-events'
+import { paidOrder } from '@/modules/analytics/operator-report'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash } from 'node:crypto'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
@@ -75,6 +77,12 @@ export async function GET(request: Request) {
   })
   const attempt: any = attempts.docs[0]
   const order: any = orders.docs[0]
+  if (order && paidOrder(order))
+    await recordBrowserOutcome(payload, request, siteId, {
+      id: String(order.id),
+      collection: 'orders',
+      eventType: 'payment_completed',
+    })
   const downloads: Array<{ path: string; label: string }> = []
   if (order && ['paid', 'fulfilled'].includes(order.state)) {
     for (const entry of order.fulfillmentExtension?.downloads ?? []) {
