@@ -1,0 +1,82 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39065 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "anonymous requests to AI family and Connections Center APIs are denied 403",
+    "passed": true
+  },
+  {
+    "name": "owner connects AI connection against local Ollama harness: 201, status active, text+structured capabilities from the real probe",
+    "passed": true
+  },
+  {
+    "name": "connect response contains no credential material",
+    "passed": true
+  },
+  {
+    "name": "connection and exactly one v1 credential envelope persist; envelope holds no plaintext secret and decrypts to the saved key",
+    "passed": true
+  },
+  {
+    "name": "harness observed the real probes (model discovery + text + structured generate) with the credential sent only to the provider endpoint",
+    "passed": true
+  },
+  {
+    "name": "foreign-site administrator is denied on AI read (403), AI connect (403), Center reconcile (403) and key rotation (403)",
+    "passed": true
+  },
+  {
+    "name": "foreign attempts persisted nothing (still exactly one Alpha AI connection)",
+    "passed": true
+  },
+  {
+    "name": "Connections Center reports the AI connection active/healthy with lastSuccessAt from the observed probe",
+    "passed": true
+  },
+  {
+    "name": "owner renders /connections page showing the connection label and no credential material",
+    "passed": true
+  },
+  {
+    "name": "Center reconcile runs the live AI probe and records observed success (probePerformed, observedSuccess, healthy, lastSuccessAt set)",
+    "passed": true
+  },
+  {
+    "name": "reconcile audit event records probePerformed=true, dryRun=false, outcome allowed",
+    "passed": true
+  },
+  {
+    "name": "with the harness down, Center reconcile records the observed failure: no success claimed, connection persisted degraded with redacted error",
+    "passed": true
+  },
+  {
+    "name": "failed probe audit event records outcome failed with probePerformed=true",
+    "passed": true
+  },
+  {
+    "name": "family test action re-probes and recovers the connection to active with a fresh lastTestedAt",
+    "passed": true
+  },
+  {
+    "name": "merchant reconcile performs no probe and fabricates nothing: probePerformed=false, observedSuccess=false, health unknown, lastSuccessAt null",
+    "passed": true
+  },
+  {
+    "name": "POD reconcile runs the local emulator adapter health probe and persists the observed healthy result",
+    "passed": true
+  },
+  {
+    "name": "Center POD disconnect purges credentials: key envelope overwritten (decrypts to tombstone, not the saved key), webhook secret cleared, status disabled",
+    "passed": true
+  },
+  {
+    "name": "missing AI credential-encryption configuration fails closed with the actionable error and persists no connection or credential rows (route-handler level, in-process)",
+    "passed": true
+  },
+  {
+    "name": "no canary secret appears in any API/page response body or the web log",
+    "passed": true
+  }
+]

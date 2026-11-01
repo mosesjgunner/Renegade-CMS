@@ -1,0 +1,50 @@
+[
+  {
+    "name": "restart: Next.js web process booted on http://127.0.0.1:39065 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "after web+DB restart the AI connection is still active with the original lastTestedAt and its v1 envelope still decrypts (v1 retained in keyring)",
+    "passed": true
+  },
+  {
+    "name": "owner rotates credential keys through the Center operator action: 1 envelope re-encrypted v1 -> v2, secret intact, no secret in the response",
+    "passed": true
+  },
+  {
+    "name": "rotation audit event recorded with outcome allowed",
+    "passed": true
+  },
+  {
+    "name": "second rotation is idempotent (rotated 0, alreadyCurrent 1)",
+    "passed": true
+  },
+  {
+    "name": "reconcile still probes successfully with the rotated envelope",
+    "passed": true
+  },
+  {
+    "name": "Center still reports the connection active/healthy with an observed lastSuccessAt after restart + rotation",
+    "passed": true
+  },
+  {
+    "name": "owner renders /connections after restart showing the connection label and no credential material",
+    "passed": true
+  },
+  {
+    "name": "Center disconnect purges credentials: envelope rows deleted, connection disconnected with capabilities and models cleared",
+    "passed": true
+  },
+  {
+    "name": "Center health reflects the disconnect: status disconnected, lastSuccessAt null, canDisconnect false",
+    "passed": true
+  },
+  {
+    "name": "family test on a disconnected connection is refused with the reconnect instruction",
+    "passed": true
+  },
+  {
+    "name": "no canary secret appears in any restart-phase response body or the restart web log",
+    "passed": true
+  }
+]
