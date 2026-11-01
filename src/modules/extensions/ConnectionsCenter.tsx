@@ -156,7 +156,9 @@ export function ConnectionsCenter({
     return 'Security'
   }
 
-  // Live reconciliation action (strictly dry-run, no charges/external calls)
+  // Reconciliation action: runs the family's real probe where one exists
+  // (health checks only — no charges, posts, or orders) and records the
+  // observed result; otherwise reports health as unverified.
   const handleReconcile = async (conn: OperationalConnection) => {
     setIsReconciling(conn.id)
     try {
@@ -180,12 +182,14 @@ export function ConnectionsCenter({
           c.id === conn.id
             ? {
                 ...c,
-                lastHealthCheckAt: data.reconciliation.lastHealthCheckAt,
+                lastHealthCheckAt: data.reconciliation.lastHealthCheckAt || c.lastHealthCheckAt,
                 lastSuccessAt: data.reconciliation.lastSuccessAt || c.lastSuccessAt,
                 healthState: data.reconciliation.healthState,
                 nextSafeRepairAction: data.reconciliation.nextSafeRepairAction,
                 unconfiguredFeatures: data.reconciliation.unconfiguredFeatures,
-                isUnknown: false,
+                // Only an executed probe resolves the unknown state; a
+                // configuration-only review leaves it unknown.
+                isUnknown: data.reconciliation.probePerformed ? false : c.isUnknown,
               }
             : c,
         ),
@@ -471,7 +475,7 @@ export function ConnectionsCenter({
 
   const stats = {
     total: connections.length,
-    healthy: connections.filter((c) => c.healthState === 'healthy' || c.status === 'active').length,
+    healthy: connections.filter((c) => c.healthState === 'healthy').length,
     attention: connections.filter(
       (c) =>
         c.healthState === 'warning' ||
@@ -710,7 +714,7 @@ export function ConnectionsCenter({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredConnections.map((conn) => {
                 const group = getEffectiveGroup(conn)
-                const isHealthy = conn.healthState === 'healthy' || conn.status === 'active'
+                const isHealthy = conn.healthState === 'healthy'
                 const isDegraded =
                   conn.healthState === 'warning' ||
                   conn.status === 'degraded' ||

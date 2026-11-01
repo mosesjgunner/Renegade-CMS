@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 import {
   EncryptedCredentialBoundary,
   type CredentialEnvelope,
+  type CredentialKeyring,
 } from '../extensions/connection-runtime'
 import { AI_TASKS, type AiTaskKey } from './contracts'
 import {
@@ -18,13 +19,129 @@ type Doc = Record<string, unknown> & { id: string }
 export const relationId = (value: unknown): string =>
   typeof value === 'string' ? value : String((value as { id?: string } | null)?.id ?? '')
 
+const AI_CREDENTIAL_NOT_CONFIGURED =
+  'AI credential encryption is not configured. Set AI_CREDENTIAL_KEY_BASE64URL to a 32-byte base64url key.'
+
+/**
+ * Builds the AI credential keyring from the environment.
+ *
+ * - `AI_CREDENTIAL_KEY_BASE64URL` remains the original `v1` key (back-compatible).
+ * - `AI_CREDENTIAL_KEYRING_JSON` may add further keys as a JSON object mapping
+ *   key ids to 32-byte base64url keys, e.g. `{"v2": "..."}`.
+ * - `AI_CREDENTIAL_ACTIVE_KEY_ID` selects the key used for new envelopes
+ *   (default `v1`). Envelopes encrypted under any key still present in the
+ *   keyring remain decryptable, which is what makes rotation safe: add the new
+ *   key, flip the active id, then re-encrypt stored envelopes onto it.
+ */
+export function credentialKeyring(
+  env: Record<string, string | undefined> = process.env,
+): CredentialKeyring {
+  const keys: Record<string, string> = {}
+  const primary = env.AI_CREDENTIAL_KEY_BASE64URL
+  if (primary) {
+    if (Buffer.from(primary, 'base64url').length !== 32)
+      throw new Error(AI_CREDENTIAL_NOT_CONFIGURED)
+    keys.v1 = primary
+  }
+  if (env.AI_CREDENTIAL_KEYRING_JSON) {
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(env.AI_CREDENTIAL_KEYRING_JSON)
+    } catch {
+      throw new Error(
+        'Credential encryption keyring is invalid. AI_CREDENTIAL_KEYRING_JSON must be a JSON object mapping key ids to 32-byte base64url keys.',
+      )
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
+      throw new Error(
+        'Credential encryption keyring is invalid. AI_CREDENTIAL_KEYRING_JSON must be a JSON object mapping key ids to 32-byte base64url keys.',
+      )
+    for (const [keyId, encoded] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof encoded !== 'string' || Buffer.from(encoded, 'base64url').length !== 32)
+        throw new Error(
+          `Credential encryption key "${keyId}" in AI_CREDENTIAL_KEYRING_JSON must be a 32-byte base64url key.`,
+        )
+      keys[keyId] = encoded
+    }
+  }
+  const activeKeyId = env.AI_CREDENTIAL_ACTIVE_KEY_ID || 'v1'
+  if (!keys[activeKeyId]) throw new Error(AI_CREDENTIAL_NOT_CONFIGURED)
+  return { activeKeyId, keys }
+}
+
 export function credentialCipher(): EncryptedCredentialBoundary {
-  const key = process.env.AI_CREDENTIAL_KEY_BASE64URL
-  if (!key || Buffer.from(key, 'base64url').length !== 32)
-    throw new Error(
-      'AI credential encryption is not configured. Set AI_CREDENTIAL_KEY_BASE64URL to a 32-byte base64url key.',
-    )
-  return new EncryptedCredentialBoundary({ activeKeyId: 'v1', keys: { v1: key } })
+  return new EncryptedCredentialBoundary(credentialKeyring())
+}
+
+/**
+ * Re-encrypts one stored envelope onto the keyring's active key. Envelopes
+ * already on the active key are returned unchanged; envelopes whose key is no
+ * longer in the keyring fail closed (decrypt throws) rather than being dropped.
+ */
+export function rotateCredentialEnvelope(
+  envelope: CredentialEnvelope,
+  keyring: CredentialKeyring = credentialKeyring(),
+): { envelope: CredentialEnvelope; rotated: boolean } {
+  if (envelope.keyId === keyring.activeKeyId) return { envelope, rotated: false }
+  const cipher = new EncryptedCredentialBoundary(keyring)
+  const value = cipher.decrypt(envelope)
+  return { envelope: cipher.encrypt(value), rotated: true }
+}
+
+export type AiCredentialRotationSummary = {
+  activeKeyId: string
+  scanned: number
+  rotated: number
+  alreadyCurrent: number
+  failed: number
+}
+
+/**
+ * Rotates every stored AI credential envelope onto the active keyring key.
+ * The plaintext value never leaves the encrypted boundary; rows that cannot be
+ * decrypted with the configured keyring are counted as failed and left untouched.
+ */
+export async function rotateAiCredentialEnvelopes(
+  payload: Payload,
+): Promise<AiCredentialRotationSummary> {
+  const keyring = credentialKeyring()
+  const found = await payload.find({
+    collection: 'ai-credentials' as never,
+    limit: 1000,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const summary: AiCredentialRotationSummary = {
+    activeKeyId: keyring.activeKeyId,
+    scanned: found.docs.length,
+    rotated: 0,
+    alreadyCurrent: 0,
+    failed: 0,
+  }
+  for (const doc of found.docs as Doc[]) {
+    const envelope = doc.envelope as CredentialEnvelope | undefined
+    if (!envelope) {
+      summary.failed += 1
+      continue
+    }
+    try {
+      const result = rotateCredentialEnvelope(envelope, keyring)
+      if (!result.rotated) {
+        summary.alreadyCurrent += 1
+        continue
+      }
+      await payload.update({
+        collection: 'ai-credentials' as never,
+        id: doc.id,
+        data: { envelope: result.envelope } as never,
+        overrideAccess: true,
+      })
+      summary.rotated += 1
+    } catch {
+      summary.failed += 1
+    }
+  }
+  return summary
 }
 
 export function publicAiConnection(doc: Doc) {
