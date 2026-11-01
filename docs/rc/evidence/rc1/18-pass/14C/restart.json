@@ -1,0 +1,10 @@
+{
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    "restart retains writer body, SEO metadata and application decisions",
+    "restart replay remains denied",
+    "restart UI refetch displays applied writer revision audit"
+  ]
+}

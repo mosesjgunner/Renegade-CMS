@@ -38,12 +38,13 @@ type Proposal = {
   decidedBy?: string | null
   decidedAt?: string | null
   createdAt?: string
+  application?: { revisionId?: string | null; fields?: string[] }
   failureCode?: string
 }
 const tasks = [
   ['editor.improve-selection', 'Writer revision of one draft text node'],
   ['intelligence.metadata-seo', 'Discovery title and description'],
-  ['media.alt-text', 'Media alt text from metadata'],
+  ['media.alt-text', 'Media alt text, caption and description from metadata'],
   ['distribution.copy-variants', 'Distribution draft copy variants'],
 ] as const
 
@@ -59,6 +60,7 @@ export default function AiStudio() {
   const [siteId, setSiteId] = useState('')
   const [canConfigure, setCanConfigure] = useState(false)
   const [connections, setConnections] = useState<Connection[]>([])
+  const [discoveredModels, setDiscoveredModels] = useState<string[]>([])
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [task, setTask] = useState<string>(tasks[0][0])
   const [targetId, setTargetId] = useState('')
@@ -89,9 +91,7 @@ export default function AiStudio() {
   const refresh = useCallback(async (selected: string) => {
     if (!selected) return
     const [connectionsResult, proposalsResult] = await Promise.all([
-      jsonRequest(`/api/admin/ai/connections?siteId=${encodeURIComponent(selected)}`).catch(() => ({
-        connections: [],
-      })),
+      jsonRequest(`/api/admin/ai/connections?siteId=${encodeURIComponent(selected)}`),
       jsonRequest(`/api/admin/ai/proposals?siteId=${encodeURIComponent(selected)}`),
     ])
     setConnections(connectionsResult.connections)
@@ -138,6 +138,19 @@ export default function AiStudio() {
         `Connection saved as ${result.connection.status}. ${result.connection.lastError || 'Test passed.'}`,
       )
       await refresh(siteId)
+    })
+  const discover = () =>
+    run(async () => {
+      setDiscoveredModels([])
+      const result = await jsonRequest('/api/admin/ai/connections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, siteId, action: 'discover' }),
+      })
+      setDiscoveredModels(result.models)
+      setMessage(
+        `Advertised models: ${result.models.join(', ') || 'none'}. Save and test a selected model to verify capabilities.`,
+      )
     })
   const control = (id: string, action: string) =>
     run(async () => {
@@ -195,6 +208,7 @@ export default function AiStudio() {
       <input
         className="rounded border p-2"
         type={type}
+        list={name === 'model' ? 'ai-advertised-models' : undefined}
         value={form[name]}
         onChange={(event) =>
           setForm((current) => ({
@@ -240,14 +254,16 @@ export default function AiStudio() {
         <section className="space-y-4 rounded border p-5" aria-label="Provider connections">
           <h2 className="text-xl font-semibold">Configure a tested provider</h2>
           <p>
-            OpenAI-compatible means chat completions and JSON proposals only. Ollama uses local text
-            generation. Neither adapter inspects image pixels.
+            OpenAI-compatible uses model discovery and chat completions; local Ollama uses tags and
+            non-streaming generate. Text and JSON capabilities are enabled only after a successful
+            probe of the selected model. Neither adapter inspects image pixels.
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             {input('label')}
             <label className="grid gap-1 text-sm">
               Adapter
               <select
+                aria-label="Adapter"
                 className="rounded border p-2"
                 value={form.providerKey}
                 onChange={(e) =>
@@ -267,6 +283,11 @@ export default function AiStudio() {
             </label>
             {input('endpoint')}
             {input('model')}
+            <datalist id="ai-advertised-models">
+              {discoveredModels.map((model) => (
+                <option key={model} value={model} />
+              ))}
+            </datalist>
             {input('apiKey', 'password')}
             {(
               [
@@ -279,6 +300,13 @@ export default function AiStudio() {
               ] as const
             ).map((name) => input(name, 'number'))}
           </div>
+          <button
+            className="rounded border px-4 py-2"
+            disabled={busy || !siteId}
+            onClick={discover}
+          >
+            Discover models
+          </button>{' '}
           <button
             className="rounded bg-red-700 px-4 py-2 text-white disabled:opacity-50"
             disabled={busy || !siteId}
@@ -311,7 +339,10 @@ export default function AiStudio() {
               {item.lastTestedAt || 'never'}
             </small>
             {item.lastError && <p role="alert">{item.lastError}</p>}
-            {canConfigure && (
+            {item.status === 'disconnected' && (
+              <p>Credentials removed. Save a new connection to reconnect.</p>
+            )}
+            {canConfigure && item.status !== 'disconnected' && (
               <div className="flex gap-2 pt-2">
                 <button
                   className="rounded border px-3 py-1"
@@ -329,6 +360,13 @@ export default function AiStudio() {
                     Disable
                   </button>
                 )}
+                <button
+                  className="rounded border px-3 py-1"
+                  disabled={busy}
+                  onClick={() => control(item.id, 'disconnect')}
+                >
+                  Disconnect and remove credentials
+                </button>
               </div>
             )}
           </div>
@@ -340,6 +378,7 @@ export default function AiStudio() {
           Workflow
           <select
             className="rounded border p-2"
+            aria-label="Workflow"
             value={task}
             onChange={(e) => {
               setTask(e.target.value)
@@ -385,6 +424,7 @@ export default function AiStudio() {
           Provider
           <select
             className="rounded border p-2"
+            aria-label="Provider"
             value={connectionId}
             onChange={(e) => setConnectionId(e.target.value)}
           >
@@ -454,7 +494,7 @@ export default function AiStudio() {
               <summary>Preview and diff</summary>
               <div className="grid gap-2 sm:grid-cols-2">
                 <div>
-                  <strong>Current</strong>
+                  <strong>Original at request</strong>
                   <pre className="overflow-auto whitespace-pre-wrap text-xs">
                     {JSON.stringify(proposal.original, null, 2)}
                   </pre>
@@ -482,6 +522,12 @@ export default function AiStudio() {
             {proposal.decidedBy && (
               <p className="text-xs">
                 Decision by {proposal.decidedBy} at {proposal.decidedAt}
+              </p>
+            )}
+            {proposal.application && (
+              <p className="text-xs">
+                Applied fields: {proposal.application.fields?.join(', ')} / Revision:{' '}
+                {proposal.application.revisionId || 'not applicable'}
               </p>
             )}
             {proposal.failureCode && (

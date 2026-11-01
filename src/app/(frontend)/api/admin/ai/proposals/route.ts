@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     if (!(await checkOperatorSiteAccess(payload, auth.user, body.siteId)))
       return fail('Staff site access required.', 403)
     task = body.task as AiWorkflowTask
-    target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection)
+    target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection, body.siteId)
   } catch (error) {
     return fail(error instanceof Error ? error.message : 'Target could not be loaded.')
   }
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
       const apiKey = await connectionCredential(payload, connection.id)
       adapter =
         connection.providerKey === 'ai.ollama'
-          ? ollamaAdapter(String(connection.endpoint))
+          ? ollamaAdapter(String(connection.endpoint), apiKey)
           : connection.providerKey === 'ai.openai-compatible'
             ? openAiCompatibleAdapter('ai.openai-compatible', String(connection.endpoint), apiKey)
             : null
@@ -190,6 +190,16 @@ export async function POST(request: Request) {
       lease,
       result.status === 'no-budget' && !result.usage ? 0 : (result.usage?.estimatedCostUsd ?? null),
     )
+  result.contextPreview = {
+    ...result.contextPreview,
+    providerKey: record.providerKey,
+    model: connection?.model ?? null,
+    maxInputTokens: connection?.maxInputTokens ?? null,
+    maxOutputTokens: connection?.maxOutputTokens ?? null,
+    targetUpdatedAt: target.updatedAt,
+    dependencyVersion: target.dependencyVersion,
+    controls: { includeArticle: true, includeBrandVoice: false, includeSources: false },
+  }
   const saved = (await payload.create({
     collection: 'ai-proposals' as never,
     data: {
@@ -260,6 +270,7 @@ export async function GET(request: Request) {
       decidedAt: doc.decidedAt,
       createdAt: doc.createdAt,
       failureCode: doc.failureCode,
+      application: doc.application,
     })),
   })
 }

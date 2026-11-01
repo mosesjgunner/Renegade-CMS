@@ -1,0 +1,23 @@
+{
+  "kind": "Next HTTP routes; fixture sessions; local protocol harness",
+  "trace": [
+    "actual PostgreSQL and process restart retain reviewable proposal and history",
+    "draft remains unchanged after restart before human decision",
+    "explicit human decline persists and leaves content unchanged",
+    "declined proposal cannot be applied",
+    "explicit human apply persists only approved metadata and retains draft/body",
+    "human apply cannot replay and decision actor is persisted"
+  ],
+  "calls": 0,
+  "state": {
+    "alpha": "8e283734-8e58-4147-a6d4-577f3010502a",
+    "beta": "93709589-2852-4c1e-adf9-eb411c9e0bf7",
+    "owner": "91a15029-9171-47ee-a06f-4d97573c021e",
+    "staff": "b095e64f-e2e2-414a-ba52-9097d9077798",
+    "administrator": "9085973d-6a5c-4444-add9-23276439e756",
+    "content": "024e1425-fbc3-4897-a608-4d63c8fd7698",
+    "connection": "82651bc8-14a4-4bac-ab52-da3a91936ade",
+    "proposal": "9d0a50d9-ec61-4a70-be89-8360caf9df26",
+    "applyProposal": "d6488799-2ced-4e89-bd80-4c9e1ef6686e"
+  }
+}

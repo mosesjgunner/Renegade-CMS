@@ -8,9 +8,12 @@ import {
   relationId,
   testAiProvider,
   validateConnectionInput,
+  validateDiscoveryInput,
 } from '@/modules/ai/connections'
+import { discoverAiModels } from '@/modules/ai/gateway'
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 
 export const runtime = 'nodejs'
 type Doc = Record<string, unknown> & { id: string }
@@ -48,9 +51,24 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const session = await operator(request)
   if (!session) return errorResponse('Operator access required.', 403)
+  let transactionID: string | number | null = null
   try {
-    credentialCipher()
     const body = (await request.json()) as Record<string, unknown>
+    if (body.action === 'discover') {
+      const input = validateDiscoveryInput(body)
+      if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(input.siteId))
+        return errorResponse('Forbidden. You do not have operator access to this site.', 403)
+      try {
+        const models = await discoverAiModels(input.providerKey, input.endpoint, input.apiKey)
+        return NextResponse.json({ models })
+      } catch {
+        return errorResponse(
+          'Model discovery failed. Check endpoint, credentials, and provider health.',
+          502,
+        )
+      }
+    }
+    credentialCipher()
     const input = validateConnectionInput(body)
     if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(input.siteId)) {
       return errorResponse('Forbidden. You do not have operator access to this site.', 403)
@@ -77,6 +95,10 @@ export async function POST(request: Request) {
           ? error.message
           : 'Connection test failed. Check endpoint, credentials, model, and provider health.'
     }
+    const envelope = credentialCipher().encrypt({ apiKey: input.apiKey })
+    transactionID = await session.payload.db.beginTransaction()
+    if (!transactionID) return errorResponse('Connection storage unavailable.', 503)
+    const req = { transactionID }
     const connection = (await session.payload.create({
       collection: 'ai-connections' as never,
       data: {
@@ -101,17 +123,22 @@ export async function POST(request: Request) {
         createdBy: session.user.id,
       } as never,
       overrideAccess: true,
+      req,
     })) as Doc
     await session.payload.create({
       collection: 'ai-credentials' as never,
       data: {
         connection: connection.id,
-        envelope: credentialCipher().encrypt({ apiKey: input.apiKey }),
+        envelope,
       } as never,
       overrideAccess: true,
+      req,
     })
+    await session.payload.db.commitTransaction(transactionID)
+    transactionID = null
     return NextResponse.json({ connection: publicAiConnection(connection) }, { status: 201 })
   } catch (error) {
+    if (transactionID) await session.payload.db.rollbackTransaction(transactionID)
     const message = error instanceof Error ? error.message : 'AI connection could not be saved.'
     return errorResponse(
       message.includes('Credential') || message.includes('credential encryption')
@@ -127,59 +154,93 @@ export async function PATCH(request: Request) {
   const session = await operator(request)
   if (!session) return errorResponse('Operator access required.', 403)
   const body = (await request.json()) as { id?: string; siteId?: string; action?: string }
-  if (!body.id || !body.siteId || !['disable', 'enable', 'test'].includes(String(body.action)))
+  if (
+    !body.id ||
+    !body.siteId ||
+    !['disable', 'disconnect', 'enable', 'test'].includes(String(body.action))
+  )
     return errorResponse('Connection, site, and action are required.')
   if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(body.siteId)) {
     return errorResponse('Forbidden. You do not have operator access to this site.', 403)
   }
-  let connection: Doc
-  try {
-    connection = (await session.payload.findByID({
-      collection: 'ai-connections' as never,
-      id: body.id,
-      depth: 0,
-      overrideAccess: true,
-    })) as Doc
-  } catch {
-    return errorResponse('Connection not found.', 404)
-  }
-  if (relationId(connection.site) !== body.siteId)
-    return errorResponse('Connection belongs to another site.', 403)
-  if (body.action === 'disable') {
+  const connectionId = body.id
+  return withExecutionLock(session.payload, `ai-connection:${connectionId}`, async () => {
+    let connection: Doc
+    try {
+      connection = (await session.payload.findByID({
+        collection: 'ai-connections' as never,
+        id: connectionId,
+        depth: 0,
+        overrideAccess: true,
+      })) as Doc
+    } catch {
+      return errorResponse('Connection not found.', 404)
+    }
+    if (relationId(connection.site) !== body.siteId)
+      return errorResponse('Connection belongs to another site.', 403)
+    if (body.action === 'disconnect') {
+      const transactionID = await session.payload.db.beginTransaction()
+      if (!transactionID) return errorResponse('Connection storage unavailable.', 503)
+      const req = { transactionID }
+      try {
+        await session.payload.delete({
+          collection: 'ai-credentials' as never,
+          where: { connection: { equals: connection.id } },
+          overrideAccess: true,
+          req,
+        })
+        connection = (await session.payload.update({
+          collection: 'ai-connections' as never,
+          id: connection.id,
+          data: { status: 'disconnected', capabilities: [], models: [], lastError: null } as never,
+          overrideAccess: true,
+          req,
+        })) as Doc
+        await session.payload.db.commitTransaction(transactionID)
+      } catch {
+        await session.payload.db.rollbackTransaction(transactionID)
+        return errorResponse('Connection could not be disconnected.', 503)
+      }
+      return NextResponse.json({ connection: publicAiConnection(connection) })
+    }
+    if (connection.status === 'disconnected')
+      return errorResponse('Connection is disconnected. Save a new connection to reconnect.')
+    if (body.action === 'disable') {
+      connection = (await session.payload.update({
+        collection: 'ai-connections' as never,
+        id: connection.id,
+        data: { status: 'disabled' } as never,
+        overrideAccess: true,
+      })) as Doc
+      return NextResponse.json({ connection: publicAiConnection(connection) })
+    }
+    if (body.action === 'enable') return errorResponse('Test the connection before enabling it.')
+    let test: Awaited<ReturnType<typeof testAiProvider>> | null = null
+    try {
+      const apiKey = await connectionCredential(session.payload, connection.id)
+      test = await testAiProvider({
+        providerKey: connection.providerKey as 'ai.ollama' | 'ai.openai-compatible',
+        endpoint: String(connection.endpoint),
+        apiKey,
+        model: String(connection.model),
+      })
+    } catch {
+      /* Keep a redacted degraded state. */
+    }
     connection = (await session.payload.update({
       collection: 'ai-connections' as never,
       id: connection.id,
-      data: { status: 'disabled' } as never,
+      data: {
+        status: test ? 'active' : 'degraded',
+        models: test?.models ?? [],
+        capabilities: test?.capabilities ?? [],
+        lastError: test
+          ? null
+          : 'Connection test failed. Check endpoint, credentials, model, and provider health.',
+        lastTestedAt: new Date().toISOString(),
+      } as never,
       overrideAccess: true,
     })) as Doc
     return NextResponse.json({ connection: publicAiConnection(connection) })
-  }
-  if (body.action === 'enable') return errorResponse('Test the connection before enabling it.')
-  let test: Awaited<ReturnType<typeof testAiProvider>> | null = null
-  try {
-    const apiKey = await connectionCredential(session.payload, connection.id)
-    test = await testAiProvider({
-      providerKey: connection.providerKey as 'ai.ollama' | 'ai.openai-compatible',
-      endpoint: String(connection.endpoint),
-      apiKey,
-      model: String(connection.model),
-    })
-  } catch {
-    /* Keep a redacted degraded state. */
-  }
-  connection = (await session.payload.update({
-    collection: 'ai-connections' as never,
-    id: connection.id,
-    data: {
-      status: test ? 'active' : 'degraded',
-      models: test?.models ?? [],
-      capabilities: test?.capabilities ?? [],
-      lastError: test
-        ? null
-        : 'Connection test failed. Check endpoint, credentials, model, and provider health.',
-      lastTestedAt: new Date().toISOString(),
-    } as never,
-    overrideAccess: true,
-  })) as Doc
-  return NextResponse.json({ connection: publicAiConnection(connection) })
+  })
 }

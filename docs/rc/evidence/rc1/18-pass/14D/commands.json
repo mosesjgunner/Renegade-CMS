@@ -1,0 +1,218 @@
+{
+  "accepted": [
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "migrate"
+      ],
+      "exit": 0,
+      "migrations": 129,
+      "log": "migrate.log"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "vitest",
+        "run",
+        "tests/unit/ai-workflows.test.ts",
+        "tests/unit/ai-media-metadata.test.ts",
+        "tests/unit/ai-gateway.test.ts",
+        "tests/unit/ai-adapters.test.ts",
+        "tests/unit/ai-egress.test.ts",
+        "tests/unit/ai-writer-review.test.ts"
+      ],
+      "exit": 0,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0,
+      "log": "unit.log"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "tsc",
+        "--noEmit",
+        "-p",
+        "tests/rc1-14d/tsconfig.json"
+      ],
+      "exit": 0,
+      "log": "types.log; types-restored.log (after byte-exact type-config restoration)"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "eslint",
+        "src/modules/ai/workflows.ts",
+        "src/modules/ai/gateway.ts",
+        "src/modules/admin/AiStudio.tsx",
+        "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+        "src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts",
+        "tests/rc1-14d/*.ts",
+        "tests/unit/ai-media-metadata.test.ts",
+        "--max-warnings=0"
+      ],
+      "exit": 0,
+      "log": "lint.log"
+    },
+    {
+      "argv": [
+        "npx.cmd",
+        "prettier",
+        "--check",
+        "src/modules/ai/workflows.ts",
+        "src/modules/ai/gateway.ts",
+        "src/modules/admin/AiStudio.tsx",
+        "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+        "src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts",
+        "tests/rc1-14d/*.ts",
+        "tests/rc1-14d/tsconfig.json",
+        "tests/unit/ai-media-metadata.test.ts"
+      ],
+      "exit": 0,
+      "log": "format.log"
+    },
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "product"
+      ],
+      "exit": 0,
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0,
+      "log": "product.log; product.json"
+    },
+    {
+      "argv": [
+        "docker",
+        "restart",
+        "rc114d-20261101"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "product-restart"
+      ],
+      "exit": 0,
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "log": "restart.log; restart.json"
+    },
+    {
+      "argv": [
+        "node",
+        "--import",
+        "tsx",
+        "tests/rc1-14d/provenance.ts",
+        "--check"
+      ],
+      "exit": 0,
+      "note": "Passed for runtime tree before/after restart and final restored tree."
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "log": "diff-check.log"
+    },
+    {
+      "argv": [
+        "docker",
+        "stop",
+        "rc114d-20261101"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "docker",
+        "exec",
+        "rc114d-20261101",
+        "psql",
+        "-U",
+        "postgres",
+        "-d",
+        "rc114d_release_acceptance",
+        "-P",
+        "pager=off",
+        "-c",
+        "SELECT task,status,count(*) FROM ai_proposals WHERE target_id IN ('9f2eec1d-9fac-4a7f-b999-5d716d56ce74','233ffd86-0542-45f5-bf01-fee8dc22e059','bf2d9571-d06f-4a3c-badf-983336b9d9e7') GROUP BY task,status ORDER BY task,status;\nSELECT id,status,seo_title,seo_description,body FROM content WHERE id='9f2eec1d-9fac-4a7f-b999-5d716d56ce74';\nSELECT id,title,alt_text,caption,description FROM media_assets WHERE id='233ffd86-0542-45f5-bf01-fee8dc22e059';\nSELECT v.id,v.text,v.status AS variant_status,d.status AS draft_status FROM social_network_variants v JOIN social_drafts d ON d.id=v.draft_id WHERE v.id='bf2d9571-d06f-4a3c-badf-983336b9d9e7';\nSELECT count(*) AS social_queue_count FROM social_queue_items;\nSELECT count(*) AS live_budget_leases FROM ai_connections WHERE lease_until > now();"
+      ],
+      "exit": 0,
+      "log": "persistence.log",
+      "note": "Independent PostgreSQL read after successful restart, before owned-container stop."
+    }
+  ],
+  "counts": {
+    "passed": 94,
+    "failed": 0,
+    "skipped": 0,
+    "mandatory14DUnexecuted": 0
+  },
+  "earlierAttempts": [
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "product"
+      ],
+      "exit": 1,
+      "log": "attempt-1.log",
+      "reason": "Unicode heading locator changed to question mark by Windows text conversion; corrected with explicit Unicode escape."
+    },
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "product"
+      ],
+      "exit": 1,
+      "log": "attempt-2.log",
+      "reason": "Harness compared populated decidedBy user with UUID; read depth corrected to zero."
+    },
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "tests/rc1-14d/run.ps1",
+        "product"
+      ],
+      "exit": 1,
+      "log": "attempt-3.log",
+      "reason": "Scoped owner foreign-site denial correctly returned 403; harness expected 400. Correct role expectation and beta administrator used."
+    }
+  ],
+  "externalUnexecuted": "Full release suite/build/image, genuine passkey ceremony, real Ollama/model engine or remote/sandbox inference, public rendered SEO, in-flight crash injection; none claimed."
+}

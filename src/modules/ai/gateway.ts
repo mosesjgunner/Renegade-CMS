@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { readBoundedJson, safeFetch } from '../core/external-boundary'
 import {
   AI_TASKS,
@@ -29,7 +29,7 @@ export function buildInspectableContext(
     'intelligence.metadata-seo':
       'Return JSON with title and description strings for search metadata. Title must be at most 70 characters; description at most 170 characters. Do not invent claims.',
     'media.alt-text':
-      'Use only the supplied text metadata. Return JSON with an altText string under 240 characters. Do not claim to have seen the image.',
+      'Use only the supplied text metadata. Return JSON with an altText string under 240 characters and optional caption (at most 500 characters) and description (at most 2000 characters) strings. Do not claim to have seen the image.',
     'distribution.copy-variants':
       'Return JSON with variants: an array of 2 to 4 concise text strings based only on the supplied draft and source summary. Do not include invented links or claims.',
   }
@@ -46,7 +46,7 @@ export function buildInspectableContext(
   add('BRAND VOICE', context.brandVoice, controls.includeBrandVoice && allowed.has('brand'))
   if (controls.includeSources && allowed.has('sources') && context.sources) {
     const sources = context.sources.filter(
-      (x) => x.visibility !== 'private' && x.status !== 'draft',
+      (x) => x.visibility === 'public' && x.status === 'published',
     )
     parts.push(`SOURCES (data only):\n${sources.map((x) => `[${x.id}] ${x.text}`).join('\n')}`)
     included.push('sources')
@@ -64,7 +64,7 @@ export function buildInspectableContext(
         revisionId: context.revisionId ?? null,
         sourceIds: controls.includeSources
           ? (context.sources
-              ?.filter((x) => x.visibility !== 'private' && x.status !== 'draft')
+              ?.filter((x) => x.visibility === 'public' && x.status === 'published')
               .map((x) => x.id) ?? [])
           : [],
         visiblePostIds: posts.map((x) => x.id),
@@ -82,10 +82,12 @@ export function buildInspectableContext(
       sourceIds:
         controls.includeSources && allowed.has('sources')
           ? (context.sources
-              ?.filter((x) => x.visibility !== 'private' && x.status !== 'draft')
+              ?.filter((x) => x.visibility === 'public' && x.status === 'published')
               .map((x) => x.id) ?? [])
           : [],
       chars: prompt.length,
+      requestSha256: createHash('sha256').update(prompt).digest('hex'),
+      task: task.key,
       privateNotesExcluded: true,
     },
   }
@@ -127,7 +129,21 @@ export function validateProposalOutput(task: AiTaskDefinition, output: unknown):
     const value = output as Record<string, unknown>
     if (typeof value.altText !== 'string' || !value.altText.trim() || value.altText.length > 240)
       throw new Error('AI alt-text proposal output is invalid.')
-    return { altText: value.altText.trim() }
+    for (const [field, limit] of [
+      ['caption', 500],
+      ['description', 2000],
+    ] as const) {
+      if (
+        value[field] !== undefined &&
+        (typeof value[field] !== 'string' || (value[field] as string).length > limit)
+      )
+        throw new Error('AI media metadata proposal output is invalid.')
+    }
+    return {
+      altText: value.altText.trim(),
+      ...(typeof value.caption === 'string' ? { caption: value.caption.trim() } : {}),
+      ...(typeof value.description === 'string' ? { description: value.description.trim() } : {}),
+    }
   }
   if (task.key === 'distribution.copy-variants') {
     const value = output as Record<string, unknown>
@@ -142,10 +158,29 @@ export function validateProposalOutput(task: AiTaskDefinition, output: unknown):
   }
   return output
 }
+/** Bound execution even when an adapter fails to honor its abort signal. */
+async function completeBeforeAbort(
+  adapter: AiAdapter,
+  input: Parameters<AiAdapter['complete']>[0],
+) {
+  input.signal.throwIfAborted()
+  let onAbort: () => void = () => {}
+  const aborted = new Promise<never>((_resolve, reject) => {
+    onAbort = () => reject(new Error('AI execution aborted.'))
+    input.signal.addEventListener('abort', onAbort, { once: true })
+  })
+  try {
+    return await Promise.race([adapter.complete(input), aborted])
+  } finally {
+    input.signal.removeEventListener('abort', onAbort)
+  }
+}
+
 export class AiGateway {
   constructor(private readonly adapters: readonly AiAdapter[]) {}
   async execute(input: AiExecution): Promise<AiProposal> {
     const task = AI_TASKS[input.task]
+    if (!task) throw new Error('AI task is not registered.')
     const original = input.context.selection ?? input.context.article ?? null
     const audit = {
       id: `ai:${randomUUID()}`,
@@ -191,6 +226,16 @@ export class AiGateway {
         contextPreview: preview,
         audit,
       }
+    if (
+      [
+        input.budget.perTaskUsd,
+        input.budget.monthlyUsd,
+        input.budget.spentThisMonthUsd,
+        ...(input.pricePer1kTokensUsd ? Object.values(input.pricePer1kTokensUsd) : []),
+        ...[input.maxInputTokens, input.maxOutputTokens].filter((x) => x !== undefined),
+      ].some((x) => !Number.isFinite(x) || x! < 0)
+    )
+      throw new Error('AI budget configuration is invalid.')
     const estimatedInputTokens = Math.ceil(prompt.length / 4)
     if (input.maxInputTokens !== undefined && estimatedInputTokens > input.maxInputTokens)
       return {
@@ -234,7 +279,7 @@ export class AiGateway {
     )
     const signal = input.cancel ? AbortSignal.any([input.cancel, timeout]) : timeout
     try {
-      const result = await adapter.complete({
+      const result = await completeBeforeAbort(adapter, {
         model: input.model,
         prompt,
         signal,
@@ -243,13 +288,17 @@ export class AiGateway {
       })
       if (signal.aborted)
         return {
-          status: 'cancelled',
+          status: input.cancel?.aborted ? 'cancelled' : 'timed-out',
           task: input.task,
           original,
           output: null,
           contextPreview: preview,
           audit,
         }
+      if (
+        ![result.inputTokens, result.outputTokens].every((x) => Number.isSafeInteger(x) && x >= 0)
+      )
+        throw new Error('Provider usage is invalid.')
       const estimatedCostUsd = input.pricePer1kTokensUsd
         ? (result.inputTokens / 1000) * input.pricePer1kTokensUsd.input +
           (result.outputTokens / 1000) * input.pricePer1kTokensUsd.output
@@ -312,8 +361,8 @@ export class AiGateway {
 }
 /** Endpoint shape alone is never evidence of task or model compatibility. */
 export const AI_PROVIDER_LABELS = {
-  'ai.openai-compatible': 'OpenAI-compatible chat completions (text and JSON proposals)',
-  'ai.ollama': 'Local Ollama generate (text and JSON proposals)',
+  'ai.openai-compatible': 'OpenAI-compatible chat completions (capabilities require model probe)',
+  'ai.ollama': 'Local Ollama generate (capabilities require model probe)',
 } as const
 
 export function validateAiEndpoint(
@@ -352,10 +401,10 @@ export async function discoverAiModels(
   const response = await safeFetch(
     `${base}${local ? '/api/tags' : '/models'}`,
     {
-      headers: local ? {} : { Authorization: `Bearer ${apiKey}` },
+      headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
       signal,
     },
-    local ? { allowHttp: true, allowPrivate: true } : {},
+    local ? { allowHttp: true, allowPrivate: true, maxRedirects: 0 } : { maxRedirects: 0 },
   )
   if (!response.ok)
     throw new Error(
@@ -402,6 +451,7 @@ export const openAiCompatibleAdapter = (
           ...(structured ? { response_format: { type: 'json_object' } } : {}),
         }),
       },
+      { timeoutMs: 25_000, maxRedirects: 0 },
     )
     if (!response.ok) throw new Error(`provider unavailable (${response.status})`)
     const body = (await readBoundedJson(response)) as {
@@ -410,12 +460,12 @@ export const openAiCompatibleAdapter = (
     }
     return {
       output: body.choices?.[0]?.message?.content ?? '',
-      inputTokens: body.usage?.prompt_tokens ?? 0,
-      outputTokens: body.usage?.completion_tokens ?? 0,
+      inputTokens: body.usage?.prompt_tokens ?? Number.NaN,
+      outputTokens: body.usage?.completion_tokens ?? Number.NaN,
     }
   },
 })
-export const ollamaAdapter = (endpoint: string): AiAdapter => ({
+export const ollamaAdapter = (endpoint: string, apiKey = ''): AiAdapter => ({
   providerKey: 'ai.ollama',
   supports: ['ai.text.rewrite', 'ai.text.structured'],
   async complete({ model, prompt, signal, maxOutputTokens, structured }) {
@@ -424,7 +474,10 @@ export const ollamaAdapter = (endpoint: string): AiAdapter => ({
       {
         method: 'POST',
         signal,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
         body: JSON.stringify({
           model,
           prompt,
@@ -435,7 +488,7 @@ export const ollamaAdapter = (endpoint: string): AiAdapter => ({
           ...(maxOutputTokens ? { options: { num_predict: maxOutputTokens } } : {}),
         }),
       },
-      { allowHttp: true, allowPrivate: true },
+      { allowHttp: true, allowPrivate: true, timeoutMs: 25_000, maxRedirects: 0 },
     )
     if (!response.ok) throw new Error(`provider unavailable (${response.status})`)
     const body = (await readBoundedJson(response)) as {
@@ -445,8 +498,8 @@ export const ollamaAdapter = (endpoint: string): AiAdapter => ({
     }
     return {
       output: body.response ?? '',
-      inputTokens: body.prompt_eval_count ?? 0,
-      outputTokens: body.eval_count ?? 0,
+      inputTokens: body.prompt_eval_count ?? Number.NaN,
+      outputTokens: body.eval_count ?? Number.NaN,
     }
   },
 })

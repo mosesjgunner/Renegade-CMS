@@ -1,0 +1,24 @@
+[
+  {
+    "artifact": "browser-trace.zip",
+    "rawSha256": "41931449b767aeace3e968ad6db8baf9094807405990e012bb94cef13e18e596",
+    "retainedSha256": "6718a31287198df123bdbc8993769b0f5922bcdf549db4df89145eb76359c537",
+    "rawBytes": 84949027,
+    "retainedBytes": 2781143,
+    "rawFrames": 2284,
+    "retainedFrameEvents": 60,
+    "preservedNonFrameEvents": 2394,
+    "note": "Only repetitive screencast-frame events and their unretained JPEG resources removed; all actions, DOM snapshots, network records and other resources preserved."
+  },
+  {
+    "artifact": "restart-browser-trace.zip",
+    "rawSha256": "da01e2e82ba4cbbc82c59488f456b08d00d2c4e05dcec338daca7b46ba92bf6a",
+    "retainedSha256": "5ef29203fab8cb8544ab0d5fa533513f8e59a7d8da0657015a4dbdcc9c086705",
+    "rawBytes": 12582934,
+    "retainedBytes": 2469659,
+    "rawFrames": 332,
+    "retainedFrameEvents": 60,
+    "preservedNonFrameEvents": 83,
+    "note": "Only repetitive screencast-frame events and their unretained JPEG resources removed; all actions, DOM snapshots, network records and other resources preserved."
+  }
+]

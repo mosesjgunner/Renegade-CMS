@@ -11,10 +11,96 @@ import {
   ollamaAdapter,
   openAiCompatibleAdapter,
 } from '../../src/modules/ai/gateway'
+import {
+  testAiProvider,
+  validateConnectionInput,
+  validateDiscoveryInput,
+} from '../../src/modules/ai/connections'
 
 beforeEach(() => mocks.safeFetch.mockReset())
 
 describe('tested AI provider HTTP contracts', () => {
+  it('forwards optional local bearer authentication for discovery and generate', async () => {
+    mocks.safeFetch
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [{ name: 'local' }] })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ response: 'proposal' })))
+    await discoverAiModels('ai.ollama', 'http://127.0.0.1:11434', 'local-key')
+    await ollamaAdapter('http://127.0.0.1:11434', 'local-key').complete({
+      model: 'local',
+      prompt: 'data',
+      structured: false,
+      signal: AbortSignal.timeout(1000),
+    })
+    expect(
+      mocks.safeFetch.mock.calls.every(
+        (call) => call[1].headers.Authorization === 'Bearer local-key',
+      ),
+    ).toBe(true)
+    expect(mocks.safeFetch.mock.calls.every((call) => call[2].maxRedirects === 0)).toBe(true)
+    expect(mocks.safeFetch.mock.calls[1][2].timeoutMs).toBe(25_000)
+  })
+  it('requires an explicit supported adapter and rejects prototype task names', () => {
+    expect(() =>
+      validateDiscoveryInput({
+        siteId: 'site',
+        providerKey: 'made-up',
+        endpoint: 'https://provider.example',
+      }),
+    ).toThrow('tested provider')
+    expect(() =>
+      validateConnectionInput({
+        siteId: 'site',
+        providerKey: 'ai.ollama',
+        endpoint: 'http://127.0.0.1:11434',
+        label: 'Local',
+        model: 'local',
+        allowedTasks: ['toString'],
+      }),
+    ).toThrow('registered AI task')
+  })
+  it('does not grant JSON capability when a model ignores JSON mode', async () => {
+    mocks.safeFetch
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [{ name: 'text-only' }] })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ response: 'Text proposal' })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ response: 'Not JSON' })))
+    expect(
+      await testAiProvider({
+        providerKey: 'ai.ollama',
+        endpoint: 'http://127.0.0.1:11434',
+        apiKey: '',
+        model: 'text-only',
+      }),
+    ).toEqual({ models: ['text-only'], capabilities: ['ai.text.rewrite'] })
+  })
+  it('rejects bad credentials before granting any capability and never echoes provider content', async () => {
+    mocks.safeFetch.mockResolvedValue(new Response('secret echoed by upstream', { status: 401 }))
+    await expect(
+      testAiProvider({
+        providerKey: 'ai.openai-compatible',
+        endpoint: 'https://provider.example/v1',
+        apiKey: 'secret',
+        model: 'model',
+      }),
+    ).rejects.toThrow('Model discovery failed (401). Check the endpoint and credentials.')
+    expect(mocks.safeFetch).toHaveBeenCalledTimes(1)
+  })
+  it('does not probe an unadvertised model or accept empty text', async () => {
+    mocks.safeFetch.mockResolvedValueOnce(
+      new Response(JSON.stringify({ models: [{ name: 'other' }] })),
+    )
+    const input = {
+      providerKey: 'ai.ollama' as const,
+      endpoint: 'http://127.0.0.1:11434',
+      apiKey: '',
+      model: 'model',
+    }
+    await expect(testAiProvider(input)).rejects.toThrow('not advertised')
+    expect(mocks.safeFetch).toHaveBeenCalledTimes(1)
+    mocks.safeFetch
+      .mockResolvedValueOnce(new Response(JSON.stringify({ models: [{ name: 'model' }] })))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ response: '' })))
+    await expect(testAiProvider(input)).rejects.toThrow('returned no text')
+  })
   it('uses authenticated OpenAI-compatible chat completions and JSON mode', async () => {
     mocks.safeFetch.mockResolvedValue(
       new Response(
@@ -49,7 +135,7 @@ describe('tested AI provider HTTP contracts', () => {
         { role: 'user', content: 'Data only' },
       ],
     })
-    expect(options).toBeUndefined()
+    expect(options).toEqual({ timeoutMs: 25_000, maxRedirects: 0 })
   })
   it('uses only local Ollama generate with non-streaming JSON mode', async () => {
     mocks.safeFetch.mockResolvedValue(
@@ -87,4 +173,16 @@ describe('tested AI provider HTTP contracts', () => {
     expect(mocks.safeFetch.mock.calls[0][0]).toBe('https://provider.example/v1/models')
     expect(mocks.safeFetch.mock.calls[1][0]).toBe('http://127.0.0.1:11434/api/tags')
   })
+})
+
+it('does not invent free usage when a provider omits its token counters', async () => {
+  mocks.safeFetch.mockResolvedValue(new Response(JSON.stringify({ response: 'proposal' })))
+  const result = await ollamaAdapter('http://127.0.0.1:11434').complete({
+    model: 'local',
+    prompt: 'data',
+    signal: AbortSignal.timeout(1000),
+    structured: false,
+  })
+  expect(Number.isNaN(result.inputTokens)).toBe(true)
+  expect(Number.isNaN(result.outputTokens)).toBe(true)
 })

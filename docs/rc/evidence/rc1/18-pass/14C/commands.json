@@ -1,0 +1,103 @@
+{
+  "accepted": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-14c/run.ps1 migrate",
+      "exit": 0,
+      "result": "129 migrations; migrate.log"
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/ai-gateway.test.ts tests/unit/ai-workflows.test.ts tests/unit/ai-adapters.test.ts tests/unit/ai-egress.test.ts tests/unit/ai-writer-review.test.ts --maxWorkers=1",
+      "exit": 0,
+      "result": "37 passed, 0 failed, 0 skipped; units-final.log"
+    },
+    {
+      "command": "npx.cmd tsc --noEmit --incremental false -p tests/rc1-14c/tsconfig.json",
+      "exit": 0,
+      "result": "types-final-restored.log"
+    },
+    {
+      "command": "npx.cmd eslint 'src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts' 'src/app/(frontend)/api/admin/ai/proposals/route.ts' src/modules/admin/AiStudio.tsx src/modules/ai/workflows.ts tests/rc1-14c/*.ts tests/unit/ai-workflows.test.ts tests/unit/ai-writer-review.test.ts --max-warnings=0",
+      "exit": 0,
+      "result": "lint-final.log"
+    },
+    {
+      "command": "npx.cmd prettier --check 'src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts' 'src/app/(frontend)/api/admin/ai/proposals/route.ts' src/modules/admin/AiStudio.tsx src/modules/ai/workflows.ts tests/rc1-14c tests/unit/ai-workflows.test.ts tests/unit/ai-writer-review.test.ts",
+      "exit": 0,
+      "result": "format.log"
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-14c/run.ps1 product",
+      "exit": 0,
+      "result": "9 passed, 0 failed, 0 skipped; product.json and product.log"
+    },
+    {
+      "command": "docker restart rc114c-20261101",
+      "exit": 0,
+      "result": "actual PostgreSQL restart"
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-14c/run.ps1 product-restart",
+      "exit": 0,
+      "result": "3 passed, 0 failed, 0 skipped; restart.json and restart.log"
+    },
+    {
+      "command": "node --import tsx tests/rc1-14c/provenance.ts",
+      "exit": 0,
+      "result": "1550 files; source-tree.json"
+    },
+    {
+      "command": "docker exec rc114c-20261101 psql -U postgres -d rc114c_release_acceptance -c \"select p.id,p.task,p.status,p.requested_by_id,p.decided_by_id,p.context_preview->>'revisionId' as source_revision,p.application from ai_proposals p where target_id='32e78298-410f-43a4-919d-de6a6d10ddd3' order by created_at; select id,status,seo_title,seo_description from content where id='32e78298-410f-43a4-919d-de6a6d10ddd3'; select r.id,r.sequence,r.created_by_id,r.parent_revision_id from revision_records r join article_family_content a on a.id=r.article_id where a.content_id='32e78298-410f-43a4-919d-de6a6d10ddd3' order by r.sequence; select count(*) as live_ai_leases from ai_connections where lease_id is not null; select count(*) as migrations from payload_migrations;\"",
+      "exit": 0,
+      "result": "persistence.log"
+    },
+    {
+      "command": "docker stop rc114c-20261101",
+      "exit": 0,
+      "result": "Stopped; no listeners remain on 5473/39057/39058"
+    },
+    {
+      "command": "node --import tsx tests/rc1-14c/provenance.ts --check",
+      "exit": 0,
+      "result": "1550-file containment passes"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0,
+      "result": "No whitespace errors"
+    }
+  ],
+  "earlierAttempts": [
+    {
+      "command": "product (three earlier browser attempts)",
+      "exits": [
+        1,
+        1,
+        1
+      ],
+      "logs": [
+        "attempt-1.log",
+        "attempt-2.log",
+        "attempt-3.log"
+      ],
+      "reason": "Ambiguous label, five-second cold-route expectation, then PowerShell Unicode locator corruption; not accepted proof."
+    },
+    {
+      "command": "initial scoped tsc",
+      "exit": 2,
+      "log": "types.log",
+      "repair": "Guard possibly missing database session."
+    },
+    {
+      "command": "initial scoped eslint",
+      "exit": 1,
+      "log": "lint.log",
+      "repair": "Use const for harness mode."
+    }
+  ],
+  "totals": {
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "mandatoryLocalGroupsUnexecuted": 0
+  }
+}

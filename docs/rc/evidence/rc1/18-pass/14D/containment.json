@@ -1,0 +1,26 @@
+{
+  "priorReceipt": "14C/source-tree.json",
+  "priorTreeHash": "0a56c32cce7d437ecd0625fd5e592034dd8fc3ee79f5a5b60598b87f274881bc",
+  "runtimeTreeHash": "766dd35b9979065e1aad93b1e344908602a665818c43970b824bbbb2a02b19b4",
+  "finalTreeHash": "ff94dc1732cfdf061942bac576116429f5a12dc223232b07059a35eddf118f00",
+  "changedFrom14C": [
+    "src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts",
+    "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+    "src/modules/admin/AiStudio.tsx",
+    "src/modules/ai/gateway.ts",
+    "src/modules/ai/workflows.ts"
+  ],
+  "added": [
+    "tests/rc1-14d/journey.ts",
+    "tests/rc1-14d/provenance.ts",
+    "tests/rc1-14d/run.ps1",
+    "tests/rc1-14d/tsconfig.json",
+    "tests/unit/ai-media-metadata.test.ts"
+  ],
+  "removed": [],
+  "runtimeToHandoffDifferences": [
+    "next-env.d.ts",
+    "tsconfig.json"
+  ],
+  "note": "Only the five scoped existing implementation paths differ from 14C, plus five new verifier/test paths. All other prior source hashes match. Runtime and final executable application/test source are identical; Next-generated declaration/configuration restored byte-for-byte to 14C. Historical evidence is preserved at its original source, not relabeled current."
+}

@@ -263,3 +263,46 @@ describe('AI gateway acceptance fixtures', () => {
     ).toEqual({ title: 'A title', description: 'A description' })
   })
 })
+
+describe('14B execution boundaries', () => {
+  it('bounds an adapter that ignores abort and never returns late output', async () => {
+    const stuck: AiAdapter = { ...adapter, complete: async () => new Promise(() => {}) }
+    expect((await new AiGateway([stuck]).execute({ ...input(), timeoutMs: 5 })).status).toBe(
+      'timed-out',
+    )
+    const cancel = new AbortController()
+    const pending = new AiGateway([stuck]).execute({ ...input(), cancel: cancel.signal })
+    cancel.abort()
+    expect((await pending).status).toBe('cancelled')
+  })
+  it('rejects unknown tasks, invalid budgets and dishonest negative usage', async () => {
+    const gateway = new AiGateway([adapter])
+    await expect(
+      gateway.execute({ ...input(), task: 'content.publish' as AiExecution['task'] }),
+    ).rejects.toThrow('not registered')
+    await expect(
+      gateway.execute({ ...input(), budget: { ...input().budget, monthlyUsd: NaN } }),
+    ).rejects.toThrow('configuration')
+    const dishonest: AiAdapter = {
+      ...adapter,
+      complete: async () => ({ output: 'x', inputTokens: -1, outputTokens: 0 }),
+    }
+    expect((await new AiGateway([dishonest]).execute(input())).status).toBe('failed')
+  })
+  it('excludes sources with unknown visibility and fingerprints the exact egress context', () => {
+    const task = AI_TASKS['intelligence.metadata-seo']
+    const controls = { includeArticle: false, includeBrandVoice: false, includeSources: true }
+    const result = buildInspectableContext(
+      task,
+      { sources: [{ id: 'unknown', text: 'private marker' }] },
+      controls,
+    )
+    expect(result.prompt).not.toContain('private marker')
+    expect(result.preview.sourceIds).toEqual([])
+    expect(result.preview.requestSha256).toMatch(/^[a-f0-9]{64}$/)
+    expect(result.preview.requestSha256).not.toBe(
+      buildInspectableContext(task, { article: 'different' }, { ...controls, includeArticle: true })
+        .preview.requestSha256,
+    )
+  })
+})

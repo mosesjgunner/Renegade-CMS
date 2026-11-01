@@ -1,0 +1,18 @@
+{
+  "passed": 11,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    "restart editor.improve-selection attributed application persists",
+    "restart editor.improve-selection UI audit and replay denial",
+    "restart intelligence.metadata-seo attributed application persists",
+    "restart intelligence.metadata-seo UI audit and replay denial",
+    "restart media.alt-text attributed application persists",
+    "restart media.alt-text UI audit and replay denial",
+    "restart distribution.copy-variants attributed application persists",
+    "restart distribution.copy-variants UI audit and replay denial",
+    "restart canonical writer and SEO output persists",
+    "restart canonical media metadata persists",
+    "restart canonical social stays draft with chosen copy"
+  ]
+}

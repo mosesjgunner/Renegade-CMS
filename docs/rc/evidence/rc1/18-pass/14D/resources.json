@@ -1,0 +1,20 @@
+{
+    "name":  "/rc114d-20261101",
+    "image":  "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+    "scope":  "14d",
+    "ports":  {
+                  "5432/tcp":  [
+                                   {
+                                       "HostIp":  "127.0.0.1",
+                                       "HostPort":  "5474"
+                                   }
+                               ]
+              },
+    "state":  "exited",
+    "database":  "rc114d_release_acceptance",
+    "media":  "scratch/rc114d/media",
+    "dist":  ".next-rc114d",
+    "applicationImage":  "none: host Next dev with webpack",
+    "auth":  "canonical fixture sessions; no passkey ceremony; test routes disabled",
+    "provider":  "isolated loopback Ollama protocol harness, not a real model engine"
+}

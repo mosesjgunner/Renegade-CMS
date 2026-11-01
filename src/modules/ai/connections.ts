@@ -71,20 +71,26 @@ export async function connectionCredential(
   return String(value.apiKey ?? '')
 }
 
-export function validateConnectionInput(value: Record<string, unknown>) {
+export function validateDiscoveryInput(value: Record<string, unknown>) {
   const providerKey = value.providerKey
   if (providerKey !== 'ai.openai-compatible' && providerKey !== 'ai.ollama')
     throw new Error('Choose a tested provider adapter.')
   const selectedProvider: AiProviderKey = providerKey
   const endpoint = validateAiEndpoint(selectedProvider, String(value.endpoint ?? ''))
-  const model = String(value.model ?? '').trim()
-  const label = String(value.label ?? '').trim()
   const siteId = String(value.siteId ?? '').trim()
-  if (!siteId || !model || !label || label.length > 100 || model.length > 150)
-    throw new Error('Site, label, and model are required.')
+  if (!siteId) throw new Error('Site is required.')
   const apiKey = String(value.apiKey ?? '')
   if (providerKey === 'ai.openai-compatible' && !apiKey)
     throw new Error('An API key is required for OpenAI-compatible connections.')
+  return { siteId, providerKey: selectedProvider, endpoint, apiKey }
+}
+
+export function validateConnectionInput(value: Record<string, unknown>) {
+  const { siteId, providerKey, endpoint, apiKey } = validateDiscoveryInput(value)
+  const model = String(value.model ?? '').trim()
+  const label = String(value.label ?? '').trim()
+  if (!model || !label || label.length > 100 || model.length > 150)
+    throw new Error('Site, label, and model are required.')
   const number = (name: string, min: number, max: number) => {
     const n = Number(value[name])
     if (!Number.isFinite(n) || n < min || n > max)
@@ -93,7 +99,7 @@ export function validateConnectionInput(value: Record<string, unknown>) {
   }
   const allowedTasks = Array.isArray(value.allowedTasks)
     ? value.allowedTasks.filter(
-        (task): task is AiTaskKey => typeof task === 'string' && task in AI_TASKS,
+        (task): task is AiTaskKey => typeof task === 'string' && Object.hasOwn(AI_TASKS, task),
       )
     : []
   if (!allowedTasks.length) throw new Error('Allow at least one registered AI task.')
@@ -107,7 +113,7 @@ export function validateConnectionInput(value: Record<string, unknown>) {
     siteId,
     publicationId: value.publicationId ? String(value.publicationId) : null,
     label,
-    providerKey: selectedProvider,
+    providerKey,
     endpoint,
     model,
     apiKey,
@@ -134,7 +140,7 @@ export async function testAiProvider(input: {
     )
   const adapter =
     input.providerKey === 'ai.ollama'
-      ? ollamaAdapter(input.endpoint)
+      ? ollamaAdapter(input.endpoint, input.apiKey)
       : openAiCompatibleAdapter(input.providerKey, input.endpoint, input.apiKey)
   const probe = await adapter.complete({
     model: input.model,

@@ -1,0 +1,6 @@
+{
+  "rawTraceSha256": "c798048e3f269237ed48782c2ed418c894df009f57ed49d86135e94cbf94ad9a",
+  "retainedFrames": 62,
+  "omittedRepeatedFrames": 1623,
+  "retention": "All action/DOM/network records and non-frame resources retained; screencast sampled to approximately 60 frames."
+}

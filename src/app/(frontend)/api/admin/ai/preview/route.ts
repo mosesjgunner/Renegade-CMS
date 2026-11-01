@@ -29,7 +29,13 @@ export async function POST(request: Request) {
     if (!(await checkOperatorSiteAccess(payload, auth.user, body.siteId)))
       return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     const task = body.task as AiWorkflowTask
-    const target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection)
+    const target = await loadAiWorkflowTarget(
+      payload,
+      task,
+      body.targetId,
+      body.selection,
+      body.siteId,
+    )
     if (target.siteId !== body.siteId)
       return NextResponse.json({ error: 'Target belongs to another site.' }, { status: 403 })
     const context = buildInspectableContext(AI_TASKS[task], target.context, {

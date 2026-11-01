@@ -1,0 +1,16 @@
+{
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    "UI requests two persisted proposals without changing content",
+    "UI decline persists and leaves content unchanged",
+    "foreign operator and anonymous apply denied",
+    "UI explicit SEO apply refetches canonical discovery fields",
+    "UI writer apply persists immutable canonical revision and editor attribution",
+    "stale revision apply denied after ordinary content save",
+    "no-provider and declined proposals cannot apply",
+    "concurrent review decisions have one winner and one conflict",
+    "newly published content cannot be overwritten by an older proposal"
+  ]
+}

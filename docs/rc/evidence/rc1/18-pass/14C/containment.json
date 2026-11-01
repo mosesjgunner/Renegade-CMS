@@ -1,0 +1,21 @@
+{
+  "priorReceipt": "14B/source-tree.json",
+  "priorTreeHash": "189e0cf379ec8841d6720c99789e7a9a8a5e83760d74dc0c611b7217379c8b2d",
+  "currentTreeHash": "0a56c32cce7d437ecd0625fd5e592034dd8fc3ee79f5a5b60598b87f274881bc",
+  "changed": [
+    "src/app/(frontend)/api/admin/ai/proposals/[id]/route.ts",
+    "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+    "src/modules/admin/AiStudio.tsx",
+    "src/modules/ai/workflows.ts",
+    "tests/unit/ai-workflows.test.ts"
+  ],
+  "added": [
+    "tests/rc1-14c/journey.ts",
+    "tests/rc1-14c/provenance.ts",
+    "tests/rc1-14c/run.ps1",
+    "tests/rc1-14c/tsconfig.json",
+    "tests/unit/ai-writer-review.test.ts"
+  ],
+  "removed": [],
+  "note": "Historical 14A/14B receipts are preserved at their original source. Only these paths differ from the 14B executable manifest. Both generated type configuration files restored byte-for-byte to that manifest. runtime-type-config.json records Next-only configuration during runtime."
+}

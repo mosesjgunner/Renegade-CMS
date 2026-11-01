@@ -1,0 +1,24 @@
+{
+  "baseline": "../14A/source-tree.json",
+  "baselineTreeHash": "ccf169ed05cf1493515e34a4d26aed6b0439c339922802e4e7ec33d4944ccc64",
+  "currentTreeHash": "189e0cf379ec8841d6720c99789e7a9a8a5e83760d74dc0c611b7217379c8b2d",
+  "changedBaselinePaths": [
+    "src/app/(frontend)/api/admin/ai/preview/route.ts",
+    "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+    "src/modules/ai/gateway.ts",
+    "src/modules/ai/workflows.ts",
+    "tests/unit/ai-adapters.test.ts",
+    "tests/unit/ai-gateway.test.ts",
+    "tests/unit/ai-workflows.test.ts",
+    "tsconfig.json"
+  ],
+  "newPaths": [
+    "tests/rc1-14b/journey.ts",
+    "tests/rc1-14b/provenance.ts",
+    "tests/rc1-14b/run.ps1",
+    "tests/rc1-14b/tsconfig.json",
+    "tests/unit/ai-egress.test.ts"
+  ],
+  "removedPaths": [],
+  "note": "14A remains historical NOT READY. Its unchanged executable paths are preserved; scoped changes listed here do not promote its proof. tsconfig retains the same 14A type includes after removing only 14B-generated includes."
+}

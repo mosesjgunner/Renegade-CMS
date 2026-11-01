@@ -49,6 +49,7 @@ const source = { ...content, id: 'source-1', status: 'published' }
 
 function payloadWith(records: Record<string, Record<string, unknown>>): Payload {
   return {
+    find: async () => ({ docs: [{ currentRevision: 'canonical-revision' }] }),
     findByID: async ({ collection }: { collection: string }) => records[collection],
   } as unknown as Payload
 }
@@ -129,4 +130,16 @@ describe('four AI workflow contracts', () => {
       ),
     ).rejects.toThrow('this site')
   })
+})
+
+it('denies a foreign target before inspecting its private draft shape', async () => {
+  await expect(
+    loadAiWorkflowTarget(
+      payloadWith({ content: { ...content, contentType: 'private-marker' } }),
+      'intelligence.metadata-seo',
+      content.id,
+      undefined,
+      'foreign-site',
+    ),
+  ).rejects.toThrow('another site')
 })
