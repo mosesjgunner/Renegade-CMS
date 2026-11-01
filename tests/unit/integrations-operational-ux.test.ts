@@ -401,7 +401,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       expect(authenticatedWithOld).toBeNull()
     })
 
-    it('reconciles provider in safe dry-run mode without external live calls or orders', () => {
+    it('reconciles provider without a probe without fabricating health or success', () => {
       const reconciled = reconcileProviderState({
         providerKey: 'stripe',
         status: 'active',
@@ -410,10 +410,45 @@ describe('Operational UX & Integrations Contract Proofs', () => {
         expiresAt: null,
       })
 
-      expect(reconciled.healthState).toBe('healthy')
-      expect(reconciled.lastHealthCheckAt).toBeDefined()
-      expect(reconciled.lastSuccessAt).toBeDefined()
-      expect(reconciled.nextSafeRepairAction).toContain('Healthy')
+      // Stored fields alone never prove health: no probe ran, so no health
+      // check timestamp and no success may be claimed.
+      expect(reconciled.probePerformed).toBe(false)
+      expect(reconciled.observedSuccess).toBe(false)
+      expect(reconciled.healthState).toBe('unknown')
+      expect(reconciled.lastHealthCheckAt).toBeNull()
+      expect(reconciled.lastSuccessAt).toBeNull()
+      expect(reconciled.nextSafeRepairAction).toContain('not been verified by a live probe')
+    })
+
+    it('records observed success only when a live probe actually succeeded', () => {
+      const probed = reconcileProviderState({
+        providerKey: 'ai.ollama',
+        status: 'degraded',
+        credentialRef: 'enc:v1',
+        scopes: ['ai.text.rewrite'],
+        probe: { performed: true, succeeded: true },
+      })
+      expect(probed.probePerformed).toBe(true)
+      expect(probed.observedSuccess).toBe(true)
+      expect(probed.healthState).toBe('healthy')
+      expect(probed.status).toBe('active')
+      expect(probed.lastSuccessAt).not.toBeNull()
+      expect(probed.lastHealthCheckAt).not.toBeNull()
+
+      const failed = reconcileProviderState({
+        providerKey: 'ai.ollama',
+        status: 'active',
+        credentialRef: 'enc:v1',
+        scopes: ['ai.text.rewrite'],
+        probe: { performed: true, succeeded: false, error: 'Connection test failed.' },
+      })
+      expect(failed.probePerformed).toBe(true)
+      expect(failed.observedSuccess).toBe(false)
+      expect(failed.healthState).toBe('warning')
+      expect(failed.status).toBe('degraded')
+      expect(failed.lastSuccessAt).toBeNull()
+      expect(failed.lastHealthCheckAt).not.toBeNull()
+      expect(failed.nextSafeRepairAction).toContain('Live probe failed')
     })
 
     it('disconnects safely preserving canonical records and returning audit metadata', () => {
@@ -431,15 +466,27 @@ describe('Operational UX & Integrations Contract Proofs', () => {
   // 10. Operational Display & Exit Criterion Proof
   describe('Exit Criterion: Operational Displays', () => {
     it('correctly reports connected, actually succeeded, unknown, and repair actions', () => {
-      // 1. Fully active and succeeded
+      // 1. Actually succeeded: a live probe ran during reconciliation and passed
       const activeConn = reconcileProviderState({
         providerKey: 'merchant',
         status: 'active',
         credentialRef: 'VAULT_REF_OK',
         scopes: ['payments.checkout.one_time'],
+        probe: { performed: true, succeeded: true },
       })
       expect(activeConn.healthState).toBe('healthy')
       expect(activeConn.lastSuccessAt).not.toBeNull()
+
+      // 1b. Configured but never probed: health is unknown, never "healthy"
+      const unverifiedConn = reconcileProviderState({
+        providerKey: 'merchant',
+        status: 'active',
+        credentialRef: 'VAULT_REF_OK',
+        scopes: ['payments.checkout.one_time'],
+      })
+      expect(unverifiedConn.healthState).toBe('unknown')
+      expect(unverifiedConn.lastSuccessAt).toBeNull()
+      expect(unverifiedConn.lastHealthCheckAt).toBeNull()
 
       // 2. Unconfigured / Unknown
       const unknownConn = reconcileProviderState({
@@ -459,7 +506,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
         lastError: { message: 'OAuth refresh token expired' },
       })
       expect(degradedRepair).toContain('OAuth refresh token expired')
-      expect(degradedRepair).toContain('Run safe reconciliation')
+      expect(degradedRepair).toContain('Run reconciliation to re-test')
     })
   })
 })
