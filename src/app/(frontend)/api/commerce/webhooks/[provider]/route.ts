@@ -8,6 +8,7 @@ import { billingDeadline } from '@/modules/commerce/subscription-reconciliation'
 import { settleSubscriptionOrder } from '@/modules/commerce/subscription-order'
 import { NextResponse } from 'next/server'
 import { configuredPaymentProvider, recurringProvider } from '@/modules/commerce/payment-provider'
+import { consumeInboundWebhookRateLimit } from '@/modules/integrations/rate-limit'
 import { applySubscriptionEvent } from '@/modules/commerce/subscription-contract'
 import {
   queueBillingSystemNotice,
@@ -22,6 +23,15 @@ export async function POST(
   { params }: { params: Promise<{ provider: string }> },
 ) {
   const provider = (await params).provider
+  // Flood shedding per provider happens before adapter resolution, signature
+  // verification, or any database work; a rate-limited callback is not
+  // processed at all.
+  const limit = consumeInboundWebhookRateLimit(`commerce-webhook:${provider}`)
+  if (!limit.allowed)
+    return NextResponse.json(
+      { error: 'Too many webhook requests.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } },
+    )
   let adapter
   try {
     adapter = configuredPaymentProvider(provider)

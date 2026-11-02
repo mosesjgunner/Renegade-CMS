@@ -85,6 +85,71 @@ describe('executable portable import', () => {
     ).rejects.toThrow('different portable')
   })
 
+  it('writes records in portable dependency order regardless of manifest order', async () => {
+    const ordered = createPortableManifest({
+      createdAt: '2026-08-29T00:00:00Z',
+      records: [
+        { collection: 'content', id: 'content-1', data: { title: 'Post' } },
+        { collection: 'categories', id: 'category-1', data: { name: 'News' } },
+        { collection: 'publications', id: 'publication-1', data: { name: 'Daily' } },
+        { collection: 'authors', id: 'author-1', data: { displayName: 'Riley' } },
+      ],
+      media: [],
+    })
+    const writeOrder: string[] = []
+    const orderStore: PortableStore = {
+      read: async () => null,
+      write: async (collection, id) => {
+        writeOrder.push(`${collection}/${id}`)
+        return 'created'
+      },
+    }
+    const report = await importPortableManifest(ordered, orderStore, {
+      runId: 'order',
+      dryRun: false,
+    })
+    expect(report.failedRows).toEqual([])
+    expect(writeOrder).toEqual([
+      'authors/author-1',
+      'publications/publication-1',
+      'categories/category-1',
+      'content/content-1',
+    ])
+  })
+
+  it('retries a failed row once after the main pass before reporting it', async () => {
+    const flaky = createPortableManifest({
+      createdAt: '2026-08-29T00:00:00Z',
+      records: [
+        { collection: 'categories', id: 'child', data: { name: 'Child', parent: 'parent' } },
+        { collection: 'categories', id: 'parent', data: { name: 'Parent' } },
+        { collection: 'tags', id: 'tag-1', data: { name: 'Doomed' } },
+      ],
+      media: [],
+    })
+    const written = new Set<string>()
+    const flakyStore: PortableStore = {
+      read: async () => null,
+      write: async (collection, id, data) => {
+        if (collection === 'tags') throw new Error('permanent failure')
+        if (id === 'child' && !written.has('categories/parent'))
+          throw new Error('parent does not exist yet')
+        written.add(`${collection}/${id}`)
+        void data
+        return 'created'
+      },
+    }
+    const report = await importPortableManifest(flaky, flakyStore, {
+      runId: 'retry',
+      dryRun: false,
+    })
+    expect(written.has('categories/child')).toBe(true)
+    expect(report.created).toBe(2)
+    expect(report.failedRows).toEqual([
+      { sourceId: 'tags/tag-1', collection: 'tags', message: 'permanent failure' },
+    ])
+  })
+
   it('rejects an archive that crosses the selected tenant boundary', () => {
     const crossTenant = createPortableManifest({
       createdAt: '2026-08-30T00:00:00Z',
