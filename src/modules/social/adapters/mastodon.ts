@@ -420,8 +420,12 @@ export class MastodonAdapter implements SocialProviderAdapter {
 
     if (!token) throw new Error('Missing token for edit')
 
+    // The instance URL is operator-supplied, so edit/delete/fetch paths
+    // route through the shared dispatch boundary like publish does —
+    // previously they fetched it raw, which let a connection point the
+    // server (and its Bearer token) at arbitrary internal addresses.
     const endpoint = `${instanceUrl}/api/v1/statuses/${remotePostId}`
-    const res = await fetch(endpoint, {
+    const res = await socialFetch(endpoint, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -461,7 +465,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
     if (!token) throw new Error('Missing token for delete')
 
     const endpoint = `${instanceUrl}/api/v1/statuses/${remotePostId}`
-    const res = await fetch(endpoint, {
+    const res = await socialFetch(endpoint, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -478,7 +482,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
 
-    const res = await fetch(`${instanceUrl}/api/v1/statuses/${remotePostId}`, { headers })
+    const res = await socialFetch(`${instanceUrl}/api/v1/statuses/${remotePostId}`, { headers })
     if (!res.ok) throw new Error(`Failed to fetch status: HTTP ${res.status}`)
 
     const data = (await res.json()) as {
@@ -508,7 +512,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
     const headers: Record<string, string> = {}
     if (token) headers.Authorization = `Bearer ${token}`
 
-    const res = await fetch(`${instanceUrl}/api/v1/statuses/${remotePostId}`, { headers })
+    const res = await socialFetch(`${instanceUrl}/api/v1/statuses/${remotePostId}`, { headers })
     if (!res.ok) throw new Error(`Failed to fetch post stats: HTTP ${res.status}`)
 
     const data = (await res.json()) as {

@@ -185,6 +185,52 @@ describe('Discord deletePost dispatch boundary', () => {
   })
 })
 
+describe('Mastodon instance-URL dispatch boundary', () => {
+  const fetchMock = vi.fn(
+    async () =>
+      new Response(
+        JSON.stringify({
+          id: '1',
+          url: 'https://example.social/statuses/1',
+          content: 'x',
+          created_at: '2026-01-01T00:00:00Z',
+        }),
+        {
+          status: 200,
+          headers: { 'content-type': 'application/json' },
+        },
+      ),
+  )
+  beforeEach(() => {
+    fetchMock.mockClear()
+    vi.stubGlobal('fetch', fetchMock)
+  })
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('fetches a post from a public instance through the boundary', async () => {
+    const { MastodonAdapter } = await import('../../src/modules/social/adapters/mastodon')
+    const adapter = new MastodonAdapter()
+    const post = await adapter.fetchPost('99', {
+      credentials: { instanceUrl: 'https://example.social', token: 'tok' },
+    } as never)
+    expect(post.remoteId).toBe('1')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('blocks a metadata-address instance before any request is made', async () => {
+    const { MastodonAdapter } = await import('../../src/modules/social/adapters/mastodon')
+    const adapter = new MastodonAdapter()
+    await expect(
+      adapter.fetchPost('99', {
+        credentials: { instanceUrl: 'https://169.254.169.254', token: 'tok' },
+      } as never),
+    ).rejects.toThrow()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
 describe('secret handling', () => {
   const saved = {
     nodeEnv: process.env.NODE_ENV,
