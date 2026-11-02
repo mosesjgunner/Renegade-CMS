@@ -1,0 +1,1 @@
+{"compilerOptions":{"incremental":false},"exclude":["../../node_modules"],"extends":"../../tsconfig.json","include":["../../src/**/*.ts","../../src/**/*.tsx","../../next-env.d.ts","./*.ts"]}

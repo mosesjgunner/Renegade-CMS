@@ -1,0 +1,150 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39066 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "anonymous (403) and foreign-site administrator (403) are denied the integrations API; the same administrator reads its own site (200)",
+    "passed": true
+  },
+  {
+    "name": "owner creates three webhook subscriptions through the operator API (201 each) after signed endpoint verification",
+    "passed": true
+  },
+  {
+    "name": "receiver observed a signature-valid endpoint-verification POST for each target",
+    "passed": true
+  },
+  {
+    "name": "recording an execution event enqueues exactly one queued delivery for the subscribed event type",
+    "passed": true
+  },
+  {
+    "name": "re-recording the same event (same idempotency key) is a duplicate and enqueues no second delivery",
+    "passed": true
+  },
+  {
+    "name": "dispatch delivers once: receiver got exactly one signature-valid POST and the delivery is delivered",
+    "passed": true
+  },
+  {
+    "name": "reconciliation reports the subscription healthy with one delivered record and a lastDeliveredAt taken from that record; the connection lastSuccessAt agrees",
+    "passed": true
+  },
+  {
+    "name": "Connections page renders for the owner (200) with the webhook subscription present; the reconciliation panel itself renders client-side under the Webhooks tab from the same server-computed prop proven via the API above",
+    "passed": true
+  },
+  {
+    "name": "dispatch does not attempt a delivery whose nextAttemptAt is in the future",
+    "passed": true
+  },
+  {
+    "name": "once due, the same delivery is attempted and delivered",
+    "passed": true
+  },
+  {
+    "name": "five failing attempts move the delivery retrying x4 then dead-letter, with recorded backoff growing ~30/60/120/240s (attempts invoked back-to-back; wall-clock backoff not waited out)",
+    "passed": true
+  },
+  {
+    "name": "at the failure limit the subscription is auto-disabled with failureCount 5, and the receiver saw exactly 5 signature-valid attempts",
+    "passed": true
+  },
+  {
+    "name": "reconciliation flags the dead-letter as critical, reports no delivered success time, and marks the subscription unhealthy",
+    "passed": true
+  },
+  {
+    "name": "foreign-site administrator is denied redelivery (403) and re-enable (403); nothing new is persisted",
+    "passed": true
+  },
+  {
+    "name": "owner redelivers the dead-letter: 202, a NEW delivery row with a fresh idempotency key for the same event, queued",
+    "passed": true
+  },
+  {
+    "name": "after re-enable and receiver recovery the redelivered delivery succeeds; the event effect applied exactly once at the receiver",
+    "passed": true
+  },
+  {
+    "name": "reconciliation now treats the dead-letter as resolved history: subscription healthy again with delivered and dead-letter counts both visible",
+    "passed": true
+  },
+  {
+    "name": "lost response: receiver applied the effect but the dropped answer leaves the delivery retrying with a recorded error",
+    "passed": true
+  },
+  {
+    "name": "retry completes the delivery; receiver saw 2 HTTP attempts but the business effect stayed exactly-once (deduped by event id)",
+    "passed": true
+  },
+  {
+    "name": "valid signed email callback is accepted (200), the delivery status persists as delivered, and one event record exists",
+    "passed": true
+  },
+  {
+    "name": "exact replay of the same provider event is accepted without a second event record or re-applied effect",
+    "passed": true
+  },
+  {
+    "name": "tampered signature is rejected 401 and records nothing",
+    "passed": true
+  },
+  {
+    "name": "a correctly signed callback naming the wrong site for the delivery is rejected 400 and records nothing",
+    "passed": true
+  },
+  {
+    "name": "in-order bounce applies: delivery bounced and a suppression is recorded for the site",
+    "passed": true
+  },
+  {
+    "name": "out-of-order stale callback (delivered, occurred BEFORE the bounce) is recorded for history but does not regress the bounced status",
+    "passed": true
+  },
+  {
+    "name": "a deferred callback never regresses a terminal delivered status, even with a newer timestamp",
+    "passed": true
+  },
+  {
+    "name": "unsigned commerce callback is rejected 401 and no inbox record is created",
+    "passed": true
+  },
+  {
+    "name": "valid signed commerce callback is accepted 202 with exactly one durable inbox record",
+    "passed": true
+  },
+  {
+    "name": "the durable payment job applies the effect exactly once: attempt succeeded with the event id recorded once",
+    "passed": true
+  },
+  {
+    "name": "replayed commerce callback is answered as a replay (200) with no second inbox record and no re-applied effect",
+    "passed": true
+  },
+  {
+    "name": "a valid signed callback for an unknown attempt is accepted as uncorrelated (202) without crashing or applying an effect",
+    "passed": true
+  },
+  {
+    "name": "bad-signature commerce callback is rejected 401",
+    "passed": true
+  },
+  {
+    "name": "email webhook flood is shed with 429 + Retry-After, and a valid callback during the limit window is not processed (no event recorded)",
+    "passed": true
+  },
+  {
+    "name": "commerce webhook flood is shed with 429 + Retry-After on its own per-provider budget, and a valid callback during the window creates no inbox record",
+    "passed": true
+  },
+  {
+    "name": "restart setup persists: one delivery queued untouched, one retrying after a lost response with a future nextAttemptAt",
+    "passed": true
+  },
+  {
+    "name": "no harness secret appears in any journey-phase response body, page HTML, or the web log",
+    "passed": true
+  }
+]
