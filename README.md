@@ -3,7 +3,7 @@
 
 # ⚡ Renegade CMoS
 
-### The Sovereign Content & Media Operating System
+### The Sovereign Content Operating System
 
 [![Release Blocked](https://img.shields.io/badge/Release-Blocked-red.svg?style=for-the-badge)](docs/release/BETA_RELEASE_NOTES.md)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-orange.svg?style=for-the-badge)](LICENSE)
