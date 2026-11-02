@@ -1,0 +1,25 @@
+{
+  "node": "v24.19.0",
+  "packages": {
+    "next": "16.3.8",
+    "payload": "3.90.2",
+    "@simplewebauthn/server": "13.3.3",
+    "@playwright/test": "1.62.1"
+  },
+  "containers": "sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24",
+  "applicationImage": null,
+  "postgresVersion": "17.11",
+  "postgresContainer": "rc117a-20261102",
+  "smtpContainer": "rc117a-mail-20261102",
+  "smtpImage": "sha256:9b3a463be15354c0f0eba91697d80e3e0d8a5623ef0e627cacc836bc17fd5231",
+  "acceptedDatabase": "rc117a_verified_release_acceptance",
+  "acceptedMediaRoot": "scratch/rc117a-verified/media",
+  "retainedInvestigationDatabases": [
+    "rc117a_release_acceptance",
+    "rc117a_final_release_acceptance",
+    "rc117a_confirmation_release_acceptance",
+    "rc117a_delivery_release_acceptance"
+  ],
+  "bootstrapCredentialCeremony": "Chromium virtual CTAP2; no physical-key claim",
+  "credentialsAndRawLogs": "Ignored scratch only; not part of evidence or source manifest"
+}

@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-02",
+  "baseCommit": "c322d2eecd02c1352a6a01c43e7f9057aac83aac",
+  "processEnvironment": {
+    "RC117A_LANE": "verified",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "STORAGE_DRIVER": "local",
+    "EMAIL_MODE": "smtp",
+    "APP_URL": "http://localhost:39170",
+    "RENEGADE_MODULES": "all",
+    "secrets": "[REDACTED disposable process-only values in runner]"
+  },
+  "accepted": [
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-17a/run-isolated.ps1 migrate",
+      "exit": 0,
+      "migrations": 131,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/rc1-17a-user-scope.test.ts tests/unit/security-negative-matrix.test.ts tests/unit/tenant-isolation.test.ts tests/unit/authorization-matrix.test.ts tests/unit/rc06-auth-attacks.test.ts tests/unit/staff-enrollment.test.ts",
+      "exit": 0,
+      "files": 6,
+      "passed": 91,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "command": "npx.cmd tsc --noEmit -p tests/rc1-17a/tsconfig.json",
+      "exit": 0,
+      "errors": 0
+    },
+    {
+      "command": "npx.cmd eslint src/collections/Users.ts src/collections/Identity.ts src/collections/Sites.ts src/modules/operations/operator-grants.ts tests/rc1-17a tests/unit/rc1-17a-user-scope.test.ts --max-warnings=0",
+      "exit": 0,
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "command": "npx.cmd prettier --check src/collections/Users.ts src/collections/Identity.ts src/collections/Sites.ts src/modules/operations/operator-grants.ts tests/rc1-17a tests/unit/rc1-17a-user-scope.test.ts",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-17a/run-isolated.ps1 journey",
+      "exit": 0,
+      "passed": 68,
+      "failed": 0,
+      "skipped": 0,
+      "unexecutedMandatoryGroups": 0
+    },
+    {
+      "command": "docker restart rc117a-20261102",
+      "exit": 0
+    },
+    {
+      "command": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-17a/run-isolated.ps1 restart",
+      "exit": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "unexecutedMandatoryGroups": 0
+    }
+  ],
+  "acceptedAssertionTotals": {
+    "passed": 165,
+    "failed": 0,
+    "skipped": 0,
+    "unexecutedMandatoryGroups": 0,
+    "migrationGateCountedSeparately": true
+  },
+  "diagnostics": [
+    {
+      "command": "npx.cmd vitest run tests/unit/rc1-17a-user-scope.test.ts",
+      "stage": "before user-directory/account repair",
+      "exit": 1,
+      "passed": 5,
+      "failed": 3,
+      "skipped": 0
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/rc1-17a-user-scope.test.ts",
+      "stage": "before final-owner-grant repair",
+      "exit": 1,
+      "passed": 10,
+      "failed": 1,
+      "skipped": 0
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/rc1-17a-user-scope.test.ts",
+      "stage": "before publication read repair",
+      "exit": 1,
+      "passed": 11,
+      "failed": 2,
+      "skipped": 0
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "stage": "workspace-wide; outside scoped gate",
+      "exit": 2,
+      "errors": 2,
+      "preexisting": true
+    },
+    {
+      "command": "./node_modules/.bin/tsc.cmd --noEmit --incremental false -p 'C:/Projects/RENEGADE CMS/rc117a-base-typecheck/tsconfig.json'",
+      "stage": "clean base reproduction",
+      "exit": 2,
+      "errors": 2,
+      "preexisting": true
+    }
+  ],
+  "exploratoryHarnessRuns": "Excluded from accepted totals. Serialization/hydration/navigation, checksum/token encoding, restored virtual counter, preconnect cleanup and framework-lifetime issues were corrected before the final empty-target run. Raw diagnostic outputs remain in ignored scratch; no fixture authentication success is claimed."
+}

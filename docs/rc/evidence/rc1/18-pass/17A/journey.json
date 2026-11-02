@@ -1,0 +1,1192 @@
+[
+  {
+    "name": "ordinary setup API with Chromium CTAP2 creates owner and site",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "persistedSessions": 1
+    }
+  },
+  {
+    "name": "owner supported REST creates second site and observes persisted result",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "siteB": "5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb"
+    }
+  },
+  {
+    "name": "owner invitation, staff browser passkey enrollment and login",
+    "passed": true,
+    "detail": {
+      "persistedPasskeys": 1,
+      "staffId": "104912c2-9139-4de5-8133-6aca7a9c74bb"
+    }
+  },
+  {
+    "name": "staff reads authorized site A",
+    "passed": true
+  },
+  {
+    "name": "staff cannot read foreign operator identity",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/users/5350f9fb-f82d-4d6f-bdc3-c70383e643ea?depth=0",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "Not Found"
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "staff cannot read foreign site",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb?depth=0",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "Not Found"
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "staff cannot mutate foreign site",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "requestPayload": {
+        "name": "hijacked"
+      },
+      "payloadClass": [
+        "name"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "staff cannot escalate own role",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/users/104912c2-9139-4de5-8133-6aca7a9c74bb",
+      "requestPayload": {
+        "role": "owner"
+      },
+      "payloadClass": [
+        "role"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "staff cannot invite operator",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/admin/staff/invite",
+      "requestPayload": {
+        "email": "evil@rc117a.test",
+        "siteId": "8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128"
+      },
+      "payloadClass": [
+        "email",
+        "siteId"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "error": "Forbidden. Owner authority required to invite staff."
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "anonymous cannot enumerate operator site 8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "anonymous cannot enumerate operator site 5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "anonymous cannot mutate foreign site B",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "requestPayload": {
+        "name": "hijacked"
+      },
+      "payloadClass": [
+        "name"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "anonymous cannot read operator",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/users/104912c2-9139-4de5-8133-6aca7a9c74bb",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "anonymous cannot mutate settings",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "requestPayload": {
+        "name": "hijacked"
+      },
+      "payloadClass": [
+        "name"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e",
+      "after": "fed7691b267050be2cf2720a836ba3cd6a4276bbc1ddf0c0a225ce4fee95119e"
+    }
+  },
+  {
+    "name": "owner creates a private draft publication through REST",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "publicationId": "5136c5d6-004f-4a31-8b04-131a1551cdd8"
+    }
+  },
+  {
+    "name": "foreign private publication id substitution",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/publications/5136c5d6-004f-4a31-8b04-131a1551cdd8",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "Not Found"
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "a21dec49372a049b3d46f661790a205f1d561ce6c877656594a1058d3e935955",
+      "after": "a21dec49372a049b3d46f661790a205f1d561ce6c877656594a1058d3e935955"
+    }
+  },
+  {
+    "name": "anonymous private draft publication",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/publications/5136c5d6-004f-4a31-8b04-131a1551cdd8",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "Not Found"
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "a21dec49372a049b3d46f661790a205f1d561ce6c877656594a1058d3e935955",
+      "after": "a21dec49372a049b3d46f661790a205f1d561ce6c877656594a1058d3e935955"
+    }
+  },
+  {
+    "name": "public publication stays available while private draft is omitted",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "visiblePublications": 3,
+      "privateDraftAbsent": true
+    }
+  },
+  {
+    "name": "owner creates protected draft through native REST",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "contentId": "4f24accc-cd47-4958-8fe3-8cde2ad1337e"
+    }
+  },
+  {
+    "name": "foreign draft id read substitution",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/content/4f24accc-cd47-4958-8fe3-8cde2ad1337e",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "Not Found"
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d",
+      "after": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d"
+    }
+  },
+  {
+    "name": "foreign draft write substitution",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/content/4f24accc-cd47-4958-8fe3-8cde2ad1337e",
+      "requestPayload": {
+        "site": "8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+        "title": "hijacked"
+      },
+      "payloadClass": [
+        "site",
+        "title"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d",
+      "after": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d"
+    }
+  },
+  {
+    "name": "anonymous private draft read",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/content/4f24accc-cd47-4958-8fe3-8cde2ad1337e",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d",
+      "after": "650da618793fdbf1faf06e908fd2197245002c25595ac54bb0520070b5f5029d"
+    }
+  },
+  {
+    "name": "owner uploads private original for site A",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "assetId": "90bdacfb-3fde-4e28-9667-2a844d8970e3",
+      "checksum": "sha256:26ac1379fd60f733571b3488cf78331239d03f8310c6f4eb185ed6394835e23c"
+    }
+  },
+  {
+    "name": "owner uploads private original for site B",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "assetId": "cea98b5b-46bc-44bd-9252-c77e4d3c0f0d",
+      "checksum": "sha256:26ac1379fd60f733571b3488cf78331239d03f8310c6f4eb185ed6394835e23c"
+    }
+  },
+  {
+    "name": "foreign private media object with authorized site hint",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/media/cea98b5b-46bc-44bd-9252-c77e4d3c0f0d?siteId=8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "error": "Cross-site media access is not allowed."
+      },
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "foreign private media metadata substitution",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/media/cea98b5b-46bc-44bd-9252-c77e4d3c0f0d",
+      "requestPayload": {
+        "siteId": "8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+        "title": "hijacked"
+      },
+      "payloadClass": [
+        "siteId",
+        "title"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "error": "Cross-site media update is not allowed."
+      },
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "private media cannot be reassigned across sites",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/media-assets/90bdacfb-3fde-4e28-9667-2a844d8970e3",
+      "requestPayload": {
+        "site": "5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb"
+      },
+      "payloadClass": [
+        "site"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "anonymous cannot read private media metadata",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/media/90bdacfb-3fde-4e28-9667-2a844d8970e3?siteId=8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "error": "Staff access is required."
+      },
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "authorized owner retrieves exact private original bytes",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "bytes": 35
+    }
+  },
+  {
+    "name": "foreign private original byte substitution",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/media/cea98b5b-46bc-44bd-9252-c77e4d3c0f0d",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": "Not found",
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "anonymous private original bytes",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/media/cea98b5b-46bc-44bd-9252-c77e4d3c0f0d",
+      "payloadClass": "object-id substitution/read",
+      "status": 404,
+      "serverResponse": "Not found",
+      "sessionsBefore": 2,
+      "before": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a",
+      "after": "f1ef1737ea18aebee7fb86f26d6eac33eabe437083569474dd6d846f7188c39a"
+    }
+  },
+  {
+    "name": "member receives local SMTP link and obtains ordinary member session",
+    "passed": true,
+    "detail": {
+      "localSmtp": true,
+      "status": 200
+    }
+  },
+  {
+    "name": "member cannot read operator site 8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member cannot mutate operator site 8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "requestPayload": {
+        "name": "hijacked"
+      },
+      "payloadClass": [
+        "name"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member cannot read operator site 5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member cannot mutate operator site 5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "requestPayload": {
+        "name": "hijacked"
+      },
+      "payloadClass": [
+        "name"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member cannot substitute foreign private object",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/media/cea98b5b-46bc-44bd-9252-c77e4d3c0f0d?siteId=8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "error": "Staff access is required."
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member profile CSRF token omission",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/member-auth/profile",
+      "requestPayload": {
+        "bio": "hijacked"
+      },
+      "payloadClass": [
+        "bio"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "error": "Invalid CSRF token."
+      },
+      "sessionsBefore": 3,
+      "before": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6",
+      "after": "98c0316dada71e93b2d40f6ee4d2b0aecd4d9ea218690c7a38cce46500923ac6"
+    }
+  },
+  {
+    "name": "member registers a genuine Chromium passkey through supported API",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "persistedIdentities": 1
+    }
+  },
+  {
+    "name": "member WebAuthn wrong origin",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/member-auth/passkey/login/complete",
+      "requestPayload": {
+        "credential": "[REDACTED signed assertion]",
+        "challengeToken": "[REDACTED one-use token]"
+      },
+      "payloadClass": [
+        "challengeToken",
+        "credential"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Passkey sign-in failed."
+      },
+      "sessionsBefore": 3,
+      "before": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329",
+      "after": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329"
+    }
+  },
+  {
+    "name": "member WebAuthn wrong challenge",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/member-auth/passkey/login/complete",
+      "requestPayload": {
+        "credential": "[REDACTED signed assertion]",
+        "challengeToken": "[REDACTED one-use token]"
+      },
+      "payloadClass": [
+        "challengeToken",
+        "credential"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Passkey sign-in failed."
+      },
+      "sessionsBefore": 3,
+      "before": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329",
+      "after": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329"
+    }
+  },
+  {
+    "name": "member WebAuthn expired challenge",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/member-auth/passkey/login/complete",
+      "requestPayload": {
+        "credential": "[REDACTED signed assertion]",
+        "challengeToken": "[REDACTED one-use token]"
+      },
+      "payloadClass": [
+        "challengeToken",
+        "credential"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "This passkey sign-in request has expired."
+      },
+      "sessionsBefore": 3,
+      "before": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329",
+      "after": "6f9644e8c119d684d75cdbfc84dd9349da405ee19df79a87fb84198a74660329"
+    }
+  },
+  {
+    "name": "member signed login creates a persisted passkey session",
+    "passed": true
+  },
+  {
+    "name": "member WebAuthn replay",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/member-auth/passkey/login/complete",
+      "requestPayload": {
+        "credential": "[REDACTED signed assertion]",
+        "challengeToken": "[REDACTED one-use token]"
+      },
+      "payloadClass": [
+        "challengeToken",
+        "credential"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "This sign-in request already completed."
+      },
+      "sessionsBefore": 4,
+      "before": "9bf4896ed62b1ea145111080d67f55e8fed308ccf0e1895e8f57e0c17ae72bfb",
+      "after": "9bf4896ed62b1ea145111080d67f55e8fed308ccf0e1895e8f57e0c17ae72bfb"
+    }
+  },
+  {
+    "name": "member revoke-all persists revocation of genuine sessions",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "replayingPreviouslyIssuedCookie": true
+    }
+  },
+  {
+    "name": "member revoked cookie replay",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/member-auth/me",
+      "payloadClass": "object-id substitution/read",
+      "status": 401,
+      "serverResponse": {
+        "error": "Authentication required."
+      },
+      "sessionsBefore": 4,
+      "before": "9bf4896ed62b1ea145111080d67f55e8fed308ccf0e1895e8f57e0c17ae72bfb",
+      "after": "9bf4896ed62b1ea145111080d67f55e8fed308ccf0e1895e8f57e0c17ae72bfb"
+    }
+  },
+  {
+    "name": "WebAuthn wrong origin",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/auth/passkey/complete",
+      "requestPayload": {
+        "type": "public-key",
+        "clientDataFields": [
+          "type",
+          "challenge",
+          "origin",
+          "crossOrigin"
+        ],
+        "credential": "[REDACTED signed assertion]"
+      },
+      "payloadClass": [
+        "id",
+        "rawId",
+        "type",
+        "clientExtensionResults",
+        "response"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Passkey sign-in could not be verified."
+      },
+      "sessionsBefore": 4,
+      "before": "631299c18c0de43f3efd575b3f5dfc9f96694c9b70c049cfc21b3b805fb4a545",
+      "after": "631299c18c0de43f3efd575b3f5dfc9f96694c9b70c049cfc21b3b805fb4a545"
+    }
+  },
+  {
+    "name": "WebAuthn wrong challenge",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/auth/passkey/complete",
+      "requestPayload": {
+        "type": "public-key",
+        "clientDataFields": [
+          "type",
+          "challenge",
+          "origin",
+          "crossOrigin"
+        ],
+        "credential": "[REDACTED signed assertion]"
+      },
+      "payloadClass": [
+        "id",
+        "rawId",
+        "type",
+        "clientExtensionResults",
+        "response"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Passkey sign-in could not be verified."
+      },
+      "sessionsBefore": 4,
+      "before": "29759fe37444a98a8ffae5a30c181f0bb09a5c43633d93137df490e488f4b630",
+      "after": "29759fe37444a98a8ffae5a30c181f0bb09a5c43633d93137df490e488f4b630"
+    }
+  },
+  {
+    "name": "WebAuthn expired challenge",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/auth/passkey/complete",
+      "requestPayload": {
+        "type": "public-key",
+        "clientDataFields": [
+          "type",
+          "challenge",
+          "origin",
+          "crossOrigin",
+          "other_keys_can_be_added_here"
+        ],
+        "credential": "[REDACTED signed assertion]"
+      },
+      "payloadClass": [
+        "id",
+        "rawId",
+        "type",
+        "clientExtensionResults",
+        "response"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Start passkey sign-in before completing it."
+      },
+      "sessionsBefore": 4,
+      "before": "63ff665477039f865213c3b4d376ab72c1a8d1fd5cb13bbb9ff913688875a8c3",
+      "after": "63ff665477039f865213c3b4d376ab72c1a8d1fd5cb13bbb9ff913688875a8c3"
+    }
+  },
+  {
+    "name": "WebAuthn signed assertion replay",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/auth/passkey/complete",
+      "requestPayload": {
+        "type": "public-key",
+        "clientDataFields": [
+          "type",
+          "challenge",
+          "origin",
+          "crossOrigin",
+          "other_keys_can_be_added_here"
+        ],
+        "credential": "[REDACTED signed assertion]"
+      },
+      "payloadClass": [
+        "id",
+        "rawId",
+        "type",
+        "clientExtensionResults",
+        "response"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "Start passkey sign-in before completing it."
+      },
+      "sessionsBefore": 5,
+      "before": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95",
+      "after": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95"
+    }
+  },
+  {
+    "name": "authenticated cross-origin CSRF leaves state unchanged",
+    "passed": true,
+    "detail": {
+      "status": 403,
+      "before": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95",
+      "after": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95",
+      "payloadClass": "foreign Origin + valid owner cookie"
+    }
+  },
+  {
+    "name": "real cross-origin browser sends owner cookie and is denied",
+    "passed": true,
+    "detail": {
+      "status": 403,
+      "actualOrigin": "http://localhost:39173",
+      "actualCookieTransmitted": true,
+      "before": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95",
+      "after": "ed804e6d92662a27b7db1b04d52128a2ee52e005162089af376fcbafc4a4df95",
+      "payloadClass": "cross-origin same-site browser fetch POST text/plain; credentials include; no-cors"
+    }
+  },
+  {
+    "name": "owner changes staff account to scoped owner through REST",
+    "passed": true
+  },
+  {
+    "name": "scoped owner cannot change foreign global account role",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/users/5350f9fb-f82d-4d6f-bdc3-c70383e643ea",
+      "requestPayload": {
+        "role": "owner"
+      },
+      "payloadClass": [
+        "role"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e",
+      "after": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e"
+    }
+  },
+  {
+    "name": "scoped owner cannot grant self foreign site",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/member-site-roles",
+      "requestPayload": {
+        "member": "acd3e921-f190-4002-8459-01b2735fe552",
+        "site": "5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+        "role": "community-manager"
+      },
+      "payloadClass": [
+        "member",
+        "site",
+        "role"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e",
+      "after": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e"
+    }
+  },
+  {
+    "name": "scoped owner cannot delete foreign site",
+    "passed": true,
+    "detail": {
+      "method": "DELETE",
+      "path": "/api/sites/5a65e95a-9a0f-47fa-b3f2-2b4d71c825eb",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e",
+      "after": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e"
+    }
+  },
+  {
+    "name": "scoped owner cannot provision another tenant",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/sites",
+      "requestPayload": {
+        "name": "hijacked",
+        "slug": "evil-site"
+      },
+      "payloadClass": [
+        "name",
+        "slug"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e",
+      "after": "fc8878dd863216ce08ed12bd84cbdafca4d2633fc8c6ee3994f1b690f2e9080e"
+    }
+  },
+  {
+    "name": "owner revokes final scoped-owner site grant through REST",
+    "passed": true
+  },
+  {
+    "name": "last-grant revocation cannot promote scoped owner to global owner",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "15a703a37b38c6be3e39f043b7db2602b2196b532f6ca07af38326b7d53c6c91",
+      "after": "15a703a37b38c6be3e39f043b7db2602b2196b532f6ca07af38326b7d53c6c91"
+    }
+  },
+  {
+    "name": "revoked scoped owner cannot write global accounts",
+    "passed": true,
+    "detail": {
+      "method": "PATCH",
+      "path": "/api/users/5350f9fb-f82d-4d6f-bdc3-c70383e643ea",
+      "requestPayload": {
+        "role": "owner"
+      },
+      "payloadClass": [
+        "role"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "15a703a37b38c6be3e39f043b7db2602b2196b532f6ca07af38326b7d53c6c91",
+      "after": "15a703a37b38c6be3e39f043b7db2602b2196b532f6ca07af38326b7d53c6c91"
+    }
+  },
+  {
+    "name": "owner regrants only original site and restores staff role through REST",
+    "passed": true
+  },
+  {
+    "name": "owner revokes staff site role through REST",
+    "passed": true
+  },
+  {
+    "name": "existing staff session loses site access immediately",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/sites/8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 5,
+      "before": "5ec1600710d98b5368bdd3dc97dc79a0fed86e6af256aa6270a93988c0b8d156",
+      "after": "5ec1600710d98b5368bdd3dc97dc79a0fed86e6af256aa6270a93988c0b8d156"
+    }
+  },
+  {
+    "name": "owner supported user revocation invalidates all staff sessions",
+    "passed": true
+  },
+  {
+    "name": "revoked session cannot invite staff",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/admin/staff/invite",
+      "requestPayload": {
+        "email": "evil@rc117a.test",
+        "siteId": "8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128"
+      },
+      "payloadClass": [
+        "email",
+        "siteId"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "error": "Forbidden. Owner authority required to invite staff."
+      },
+      "sessionsBefore": 5,
+      "before": "5ec1600710d98b5368bdd3dc97dc79a0fed86e6af256aa6270a93988c0b8d156",
+      "after": "5ec1600710d98b5368bdd3dc97dc79a0fed86e6af256aa6270a93988c0b8d156"
+    }
+  },
+  {
+    "name": "owner deletes staff account through supported REST",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "remainingAccounts": 0
+    }
+  },
+  {
+    "name": "deleted user cookie cannot read identities",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/users",
+      "payloadClass": "object-id substitution/read",
+      "status": 403,
+      "serverResponse": {
+        "errors": [
+          {
+            "message": "You are not allowed to perform this action."
+          }
+        ]
+      },
+      "sessionsBefore": 3,
+      "before": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4",
+      "after": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  },
+  {
+    "name": "deleted user cannot obtain a new login challenge",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/auth/passkey/options",
+      "requestPayload": {
+        "email": "staff@rc117a.test"
+      },
+      "payloadClass": [
+        "email"
+      ],
+      "status": 400,
+      "serverResponse": {
+        "error": "No passkey is registered for this account. Please use your staff enrollment invitation to register your first passkey."
+      },
+      "sessionsBefore": 3,
+      "before": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4",
+      "after": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  }
+]

@@ -1,0 +1,69 @@
+[
+  {
+    "name": "restart preserves protected state",
+    "passed": true,
+    "detail": {
+      "digest": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  },
+  {
+    "name": "owner persisted session reads site A after restart",
+    "passed": true
+  },
+  {
+    "name": "revoked staff session stays denied after restart",
+    "passed": true,
+    "detail": {
+      "method": "POST",
+      "path": "/api/admin/staff/invite",
+      "requestPayload": {
+        "email": "forbidden@rc117a.test",
+        "siteId": "8770e9ae-4ec2-4bf9-af1f-8b69ba4d1128"
+      },
+      "payloadClass": [
+        "email",
+        "siteId"
+      ],
+      "status": 403,
+      "serverResponse": {
+        "error": "Forbidden. Owner authority required to invite staff."
+      },
+      "sessionsBefore": 3,
+      "before": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4",
+      "after": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  },
+  {
+    "name": "post-restart CSRF denial",
+    "passed": true,
+    "detail": {
+      "status": 403,
+      "before": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4",
+      "after": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  },
+  {
+    "name": "member revoked cookie remains denied after restart",
+    "passed": true,
+    "detail": {
+      "method": "GET",
+      "path": "/api/member-auth/me",
+      "payloadClass": "object-id substitution/read",
+      "status": 401,
+      "serverResponse": {
+        "error": "Authentication required."
+      },
+      "sessionsBefore": 3,
+      "before": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4",
+      "after": "0f4237dd3dc77c59c1198f97e21df176ea4dd72c7abb8bf13b8cb90f1fc195a4"
+    }
+  },
+  {
+    "name": "owner real passkey still authenticates after database and web restart",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "freshSignedAssertion": true
+    }
+  }
+]

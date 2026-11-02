@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../src/collections/Users.ts",
+    "../../src/collections/Identity.ts",
+    "../../src/collections/Sites.ts",
+    "../../src/payload.config.ts",
+    "../../next-env.d.ts",
+    "./*.ts",
+    "../unit/rc1-17a-user-scope.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../scratch"]
+}

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "filesScanned": 12,
+  "knownSecretValuesChecked": 7,
+  "matches": 0,
+  "scope": "Disposable secrets, current genuine session/CSRF cookies and bootstrap tokens from retained raw logs; no secret values emitted"
+}

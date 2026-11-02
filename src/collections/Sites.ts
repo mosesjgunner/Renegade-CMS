@@ -7,9 +7,28 @@ export const Sites: CollectionConfig = {
   slug: 'sites',
   admin: { useAsTitle: 'name' },
   access: {
-    create: ({ req }) => req.user?.role === 'owner',
-    delete: ({ req }) => req.user?.role === 'owner',
-    read: () => true,
+    create: async ({ req }) =>
+      req.user?.role === 'owner' &&
+      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+    delete: async ({ req }) => {
+      if (req.user?.role !== 'owner') return false
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      return !grant.authorized
+        ? false
+        : grant.isGlobalOwner
+          ? true
+          : { id: { in: grant.authorizedSiteIds } }
+    },
+    // Public pages use explicit public projections; the native API is the
+    // operator's site/settings directory and must not enumerate other tenants.
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      return !grant.authorized
+        ? false
+        : grant.isGlobalOwner
+          ? true
+          : { id: { in: grant.authorizedSiteIds } }
+    },
     update: async ({ req }) => {
       if (!['owner', 'administrator'].includes(String(req.user?.role))) return false
       const grant = await resolveOperatorGrantContext(req.payload, req.user)

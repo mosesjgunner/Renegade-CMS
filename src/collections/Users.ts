@@ -5,6 +5,16 @@ import { createPasskeyAuthStrategy } from '../modules/operations/passkey-auth'
 
 import { createStaffEnrollmentToken } from '../modules/operations/staff-enrollment'
 import { loadConfig } from '../modules/core/config'
+import {
+  operatorMemberScopeAccess,
+  resolveOperatorGrantContext,
+} from '../modules/operations/operator-grants'
+
+// Accounts are global identities. A tenant owner cannot change the account's
+// role or delete it for every other tenant that shares the same member.
+const globalAccountWrite: NonNullable<CollectionConfig['access']>['update'] = async ({ req }) =>
+  req.user?.role === 'owner' &&
+  (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner
 
 export function createUsersCollection(
   config: Pick<AppConfig, 'payloadSecret' | 'secureCookies'>,
@@ -13,10 +23,10 @@ export function createUsersCollection(
     slug: 'users',
     admin: { useAsTitle: 'email', group: 'Settings' },
     access: {
-      create: ({ req }) => req.user?.role === 'owner',
-      delete: ({ req }) => req.user?.role === 'owner',
-      read: ({ req }) => ['owner', 'administrator', 'staff'].includes(String(req.user?.role)),
-      update: ({ req }) => req.user?.role === 'owner',
+      create: globalAccountWrite,
+      delete: globalAccountWrite,
+      read: operatorMemberScopeAccess('member').read,
+      update: globalAccountWrite,
     },
     auth: {
       disableLocalStrategy: true,
@@ -109,12 +119,12 @@ export function createUsersCollection(
               const targetSites = req.context?.pendingStaffInvitation
                 ? []
                 : explicitSiteId
-                ? sites.docs.filter((s) => String(s.id) === String(explicitSiteId))
-                : req.context?.allSites
-                  ? sites.docs
-                  : sites.docs.length === 1
+                  ? sites.docs.filter((s) => String(s.id) === String(explicitSiteId))
+                  : req.context?.allSites
                     ? sites.docs
-                    : []
+                    : sites.docs.length === 1
+                      ? sites.docs
+                      : []
 
               if (memberId) {
                 for (const site of targetSites) {

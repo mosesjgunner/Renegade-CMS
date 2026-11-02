@@ -1,0 +1,8 @@
+{
+  "actor": "genuine CTAP2 site-A staff session",
+  "method": "GET",
+  "path": "/api/users/04d0678c-bede-47e2-983e-644cd23241c7?depth=0",
+  "status": 200,
+  "exposedForeignEmail": true,
+  "exposedForeignMember": true
+}

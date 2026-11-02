@@ -139,10 +139,10 @@ export const MemberSiteRoles: CollectionConfig = {
   slug: 'member-site-roles',
   admin: { useAsTitle: 'role', group: 'Community', hidden: true },
   access: {
-    create: ({ req }) => req.user?.role === 'owner',
-    delete: ({ req }) => req.user?.role === 'owner',
+    create: async (args) => args.req.user?.role === 'owner' && operatorSiteCreateAccess(args),
+    delete: async (args) => args.req.user?.role === 'owner' && operatorSiteReadAccess(args),
     read: operatorSiteReadAccess,
-    update: ({ req }) => req.user?.role === 'owner',
+    update: async (args) => args.req.user?.role === 'owner' && operatorSiteUpdateAccess(args),
   },
   hooks: {
     afterChange: [
@@ -483,7 +483,10 @@ export const Publications: CollectionConfig = {
   access: {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
-    read: () => true,
+    read: async (args) =>
+      args.req.user
+        ? operatorSiteReadAccess(args)
+        : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
     update: operatorSiteUpdateAccess,
   },
   hooks: {

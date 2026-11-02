@@ -1,0 +1,21 @@
+{
+  "runtimeTreeHash": "da8286261c9c28cf1608f330a07aad02ad4ebdad858687f6f7dc92fbefc06560",
+  "handoffTreeHash": "edfe7a1d46b632a5767e8026265f6fdb1f810036267837f4fb9e57a21b1a4395",
+  "files": 1608,
+  "unchangedFiles": 1606,
+  "changed": [
+    {
+      "path": "next-env.d.ts",
+      "runtime": "872d788bb62c9427562cc24dd2de87b3fee91fa494c0ba4393a20b0e0aaf54f2",
+      "handoff": "629c6b7b55e500571ebd35e839cda714347a4b7402fb1a8b5314e7f6f0d45ae1"
+    },
+    {
+      "path": "tsconfig.json",
+      "runtime": "8a82bf5f96c27c50dc6342083c6ddb488fa480769e1bbb6f0093690bf44fa163",
+      "handoff": "e9a1b54f8112ca74ed77bd1de38b97a47706c696082e376ff0d9ed11e0e28a12"
+    }
+  ],
+  "unexpected": [],
+  "applicationAndVerifierContainment": true,
+  "explanation": "Only agent-owned Next-generated type configuration was restored to HEAD after stopping the tested runtime. No application/policy/test source changed after the accepted run."
+}

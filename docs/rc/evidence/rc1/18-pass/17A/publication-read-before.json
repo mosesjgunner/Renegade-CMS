@@ -1,0 +1,7 @@
+{
+  "method": "GET",
+  "path": "/api/publications/58b1fef4-f374-4914-a2b3-acfbb4d61679?depth=0",
+  "actor": "anonymous",
+  "status": 200,
+  "exposedPrivateDraft": true
+}

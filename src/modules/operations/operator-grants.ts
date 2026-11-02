@@ -319,9 +319,14 @@ export async function resolveOperatorGrantContext(
     }
   }
 
-  // Only platform owners retain the installation fallback. Administrators must
-  // have an explicit site grant, including after their last grant is revoked.
-  if (role === 'owner' && (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false) {
+  // A linked owner is scoped by canonical grants. Revoking their final grant
+  // must not turn an empty scope into platform authority. The legacy installation
+  // fallback applies only before an owner has a canonical member identity.
+  if (
+    role === 'owner' &&
+    !memberId &&
+    (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false
+  ) {
     try {
       const allSites = await payload.find({
         collection: 'sites',
