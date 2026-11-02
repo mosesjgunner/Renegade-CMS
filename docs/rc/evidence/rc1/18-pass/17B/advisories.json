@@ -1,0 +1,589 @@
+{
+  "scan": {
+    "tool": "OSV.dev querybatch over every (name, version) in package-lock.json",
+    "packages_scanned": 995,
+    "npm_audit_attempt": "npm audit --json exited 1 in this environment: the registry audit endpoint returned 403 policy_denied (see audit-attempt.json). The OSV scan is the refreshed advisory source for this candidate.",
+    "lockfile_candidate": "package-lock.json at 17B (after the three upgrades recorded in RESULT.md)",
+    "note": "Scan was executed against the PRE-upgrade lockfile to establish the candidate\u2019s exposure; the three FIXED dispositions were then applied and the lockfile now resolves next 16.4.1, undici 7.30.1, nodemailer 10.1.4."
+  },
+  "packages": [
+    {
+      "package": "@vitest/mocker@3.2.7",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "Dev-only test tooling (lockfile dev flag). Exploitation requires a running Vitest dev/UI surface; never present in the production image (production stage installs --omit=dev). Patches exist in vitest 4.x; upgrading the test framework is out of this subpass\u2019s scope.",
+      "advisories": [
+        {
+          "id": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+          "summary": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "fixed_in": [
+            "4.1.11",
+            "5.0.0-rc.2"
+          ]
+        },
+        {
+          "id": "GHSA-qxg6-89mg-rqv8",
+          "aliases": [
+            "CVE-2026-112949"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N",
+          "summary": "Vitest: Code injection via unauthenticated manual mock registration",
+          "fixed_in": [
+            "4.1.12",
+            "5.0.3"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "deepmerge@4.3.1",
+      "dev_only": false,
+      "disposition": "BOUNDED",
+      "rationale": "Under payload; used for configuration composition from developer-supplied objects, not request data. OSV lists no fixed release. Prototype-poisoning prerequisites (attacker-controlled merge input) are not met by any runtime path found.",
+      "advisories": [
+        {
+          "id": "GHSA-gcqx-w48m-w2h4",
+          "aliases": [
+            "CVE-2026-93753"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "summary": "deepmerge mergeObject() allows prototype poisoning of returned objects",
+          "fixed_in": []
+        }
+      ]
+    },
+    {
+      "package": "dompurify@3.4.16",
+      "dev_only": false,
+      "disposition": "BOUNDED",
+      "rationale": "Not imported by application code (verified: no dompurify reference in src); present only inside the monaco-editor bundle. All three bypasses require non-default DOMPurify modes (PARSER_MEDIA_TYPE application/xhtml+xml, SAFE_FOR_TEMPLATES, IN_PLACE) that neither the app nor monaco\u2019s usage enables. Patch 3.4.17 exists but is only reachable through a monaco-editor upgrade; not force-upgraded. Monitor.",
+      "advisories": [
+        {
+          "id": "GHSA-c6gr-qvv4-5v3f",
+          "aliases": [
+            "CVE-2026-116802"
+          ],
+          "severity": "LOW",
+          "cvss": null,
+          "summary": "DOMPurify: SMIL attributeName=href guard is skipped when PARSER_MEDIA_TYPE is application/xhtml+xml",
+          "fixed_in": [
+            "3.4.17"
+          ]
+        },
+        {
+          "id": "GHSA-cg2g-xh64-v4q7",
+          "aliases": [
+            "CVE-2026-116804"
+          ],
+          "severity": "CRITICAL",
+          "cvss": "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:N/VC:H/VI:H/VA:L/SC:N/SI:N/SA:N",
+          "summary": "DOMPurify SAFE_FOR_TEMPLATES bypass: split template expressions survive in attached shadow root content on DOM output modes",
+          "fixed_in": [
+            "3.4.17"
+          ]
+        },
+        {
+          "id": "GHSA-mrv2-3pqr-j5jr",
+          "aliases": [
+            "CVE-2026-116803"
+          ],
+          "severity": "HIGH",
+          "cvss": "CVSS:4.0/AV:N/AC:H/AT:P/PR:N/UI:P/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N",
+          "summary": "DOMPurify IN_PLACE: hook that removes a parent or sibling leaves the detached subtree's event handlers armed (incomplete fix for GHSA-p98j-92pf-mc4p)",
+          "fixed_in": [
+            "3.4.17"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "fast-uri@3.1.8",
+      "dev_only": false,
+      "disposition": "BOUNDED",
+      "rationale": "Reachable only inside payload\u2019s bundled ajv, validating developer-authored JSON schemas; no attacker-supplied schemas or URIs are resolved at runtime. Patch 3.1.9 exists; the copy is a nested transitive under payload, so no blind override was applied. Monitor via payload updates.",
+      "advisories": [
+        {
+          "id": "GHSA-333x-w4r6-6crp",
+          "aliases": [
+            "CVE-2026-110725"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "summary": "fast-uri vulnerable to scheme injection via an unescaped first-segment colon in suffix references",
+          "fixed_in": [
+            "2.4.8",
+            "3.1.9",
+            "4.2.3"
+          ]
+        },
+        {
+          "id": "GHSA-w74x-v6f9-j3xg",
+          "aliases": [
+            "CVE-2026-110306"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+          "summary": "fast-uri vulnerable to URI scheme spoofing via percent-encoded scheme decoding",
+          "fixed_in": [
+            "2.4.8",
+            "3.1.9",
+            "4.2.3"
+          ]
+        },
+        {
+          "id": "GHSA-wjr9-j795-jxcr",
+          "aliases": [
+            "CVE-2026-110180"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "fast-uri vulnerable to host confusion via unchecked WHATWG host canonicalization",
+          "fixed_in": [
+            "2.4.8",
+            "3.1.9",
+            "4.2.3"
+          ]
+        },
+        {
+          "id": "GHSA-xhq7-xmqj-769h",
+          "aliases": [
+            "CVE-2026-110095"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N",
+          "summary": "fast-uri vulnerable to improper path equivalence in relative reference normalization",
+          "fixed_in": [
+            "2.4.8",
+            "3.1.9",
+            "4.2.3"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "happy-dom@20.11.2",
+      "dev_only": false,
+      "disposition": "BOUNDED",
+      "rationale": "Present via @lexical/headless, @puckeditor/core, @tiptap/html and vitest. Advisories require happy-dom to fetch remote resources or evaluate untrusted JS/imports; this codebase uses DOM emulation only to render structured rich-text JSON server-side, with no resource loading or script evaluation. Two of three are fixed only in the 21.x major line; not force-upgraded mid-RC.",
+      "advisories": [
+        {
+          "id": "GHSA-5fpq-26gf-qwcr",
+          "aliases": [
+            "CVE-2026-118661"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+          "summary": "Happy DOM has cookie scope forgery: no DNS-label boundary on Domain= matching , attacker origin sets victim cookies",
+          "fixed_in": [
+            "20.14.6"
+          ]
+        },
+        {
+          "id": "GHSA-834v-8h66-3h79",
+          "aliases": [
+            "CVE-2026-115895"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+          "summary": "Happy DOM: Incomplete fix for CVE-2026-33943: unsanitized import alias leads to host code execution",
+          "fixed_in": [
+            "21.0.4"
+          ]
+        },
+        {
+          "id": "GHSA-c8p4-j97h-3vg8",
+          "aliases": [
+            "CVE-2026-118660"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N",
+          "summary": "Happy DOM: SSRF via iframe and link stylesheet when parsing untrusted HTML",
+          "fixed_in": [
+            "21.0.0"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "minimatch@10.2.6",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "Dev-only (lockfile dev flag); glob DoS in build/test tooling inputs, which are developer-authored.",
+      "advisories": [
+        {
+          "id": "GHSA-g3hv-75wg-m249",
+          "aliases": [
+            "CVE-2026-118764"
+          ],
+          "severity": "MODERATE",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+          "summary": "minimatch has potential denial of service via globparts amplification",
+          "fixed_in": [
+            "11.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "minimatch@3.1.5",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "Dev-only legacy copy; same advisory as minimatch@10.2.6.",
+      "advisories": [
+        {
+          "id": "GHSA-g3hv-75wg-m249",
+          "aliases": [
+            "CVE-2026-118764"
+          ],
+          "severity": "MODERATE",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+          "summary": "minimatch has potential denial of service via globparts amplification",
+          "fixed_in": [
+            "11.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "next@16.3.8",
+      "dev_only": false,
+      "disposition": "FIXED-IN-THIS-SUBPASS",
+      "rationale": "Upgraded to next 16.4.1 (vendor patch line, within @payloadcms/next peer range >=16.3.3 <17.0.0). Prerequisite audit: GHSA-2464 SVG image-optimizer RCE not reachable as configured (no images.dangerouslyAllowSVG in next.config); GHSA-673q `use cache` RCE not reachable (no `use cache` anywhere in src); GHSA-p3m5 Server Actions DoS WAS reachable (Payload admin server actions exist). Full production build + typecheck re-verified on 16.4.1.",
+      "advisories": [
+        {
+          "id": "GHSA-2464-fhr4-w9xw",
+          "aliases": [],
+          "severity": "CRITICAL",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+          "summary": "Next.js: Unauthenticated Remote Code Execution in Image Optimization API when SVG files are used",
+          "fixed_in": [
+            "15.5.28",
+            "16.4.1"
+          ]
+        },
+        {
+          "id": "GHSA-673q-mjm6-r5xr",
+          "aliases": [],
+          "severity": "CRITICAL",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:N",
+          "summary": "Next.js: Unauthenticated Remote Code Execution in `use cache` functions returning typed arrays",
+          "fixed_in": [
+            "16.4.1"
+          ]
+        },
+        {
+          "id": "GHSA-p3m5-59mp-jv5r",
+          "aliases": [
+            "CVE-2026-94482"
+          ],
+          "severity": "HIGH",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+          "summary": "Next.js: Denial of Service in App Router using Server Actions",
+          "fixed_in": [
+            "15.5.28",
+            "16.4.1"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "nodemailer@10.0.15",
+      "dev_only": false,
+      "disposition": "FIXED-IN-THIS-SUBPASS",
+      "rationale": "Upgraded direct pin to nodemailer 10.1.4. Address-parser recipient-injection (quoted local part / nested comment / group separator) is reachable wherever member- or user-supplied address strings are parsed for outbound mail.",
+      "advisories": [
+        {
+          "id": "GHSA-85x2-q946-cp5h",
+          "aliases": [],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N",
+          "summary": "Nodemailer: A \">\" inside a quoted local part ends an angle-addr early in addressparser, delivering to a domain the header does not name",
+          "fixed_in": [
+            "10.1.4"
+          ]
+        },
+        {
+          "id": "GHSA-8c8m-p3m8-cjg8",
+          "aliases": [],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N",
+          "summary": "Nodemailer: A nested comment ends early in addressparser, releasing the rest of the comment as a recipient",
+          "fixed_in": [
+            "10.1.4"
+          ]
+        },
+        {
+          "id": "GHSA-m943-m63m-w62w",
+          "aliases": [],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:N",
+          "summary": "Nodemailer: A \";\" inside a quoted string or comment ends an address group early in addressparser, turning display text into a recipient",
+          "fixed_in": [
+            "10.1.4"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "undici@7.30.0",
+      "dev_only": false,
+      "disposition": "FIXED-IN-THIS-SUBPASS",
+      "rationale": "Upgraded to undici 7.30.1 via the declared ^7.30.0 range (direct dependency; also dedupes payload\u2019s copy). Runtime-reachable: external-boundary Agent + Node fetch stack.",
+      "advisories": [
+        {
+          "id": "GHSA-2m5v-pch6-74hx",
+          "aliases": [
+            "CVE-2026-109383"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+          "summary": "undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent",
+          "fixed_in": [
+            "6.29.1",
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-4qv8-2p9j-2685",
+          "aliases": [
+            "CVE-2026-109924"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "undici vulnerable to Denial of Service via unbounded memory in the EventSource parser",
+          "fixed_in": [
+            "6.29.1",
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-4w7w-5xrc-9h26",
+          "aliases": [
+            "CVE-2026-109829"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N",
+          "summary": "undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects",
+          "fixed_in": [
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-55wc-3pg8-jfw6",
+          "aliases": [
+            "CVE-2026-87029"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor",
+          "fixed_in": [
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-9fm3-97px-rjf6",
+          "aliases": [
+            "CVE-2026-109932"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering",
+          "fixed_in": [
+            "6.29.1",
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-f72v-6w45-q472",
+          "aliases": [
+            "CVE-2026-109841"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:N",
+          "summary": "undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens",
+          "fixed_in": [
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-qrxm-fqhp-jwvm",
+          "aliases": [
+            "CVE-2026-87018"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation",
+          "fixed_in": [
+            "6.29.1",
+            "7.30.1",
+            "8.12.2"
+          ]
+        },
+        {
+          "id": "GHSA-xjj6-f33q-929c",
+          "aliases": [
+            "CVE-2026-109869"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "undici vulnerable to Denial of Service via unhandled error on excessive content-encodings",
+          "fixed_in": [
+            "6.29.1",
+            "7.30.1",
+            "8.12.2"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "vite@7.3.6",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "Dev-server tooling only; advisories concern the Vite dev server and Windows launch-editor integration. Not in the production runtime path. Patch 7.3.7 recorded.",
+      "advisories": [
+        {
+          "id": "GHSA-587h-7wmj-h5pm",
+          "aliases": [
+            "CVE-2026-112942"
+          ],
+          "severity": "HIGH",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+          "summary": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+          "fixed_in": [
+            "1.1.0",
+            "2.14.2",
+            "6.4.4",
+            "7.3.7",
+            "8.1.6",
+            "8.2.4",
+            "8.3.3"
+          ]
+        },
+        {
+          "id": "GHSA-698v-4r3x-3vcv",
+          "aliases": [
+            "CVE-2026-112943"
+          ],
+          "severity": "MODERATE",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N",
+          "summary": "launch-editor: escapeCmdArgs() omits % escaping on Windows",
+          "fixed_in": [
+            "1.1.0",
+            "2.14.2",
+            "6.4.4",
+            "7.3.7",
+            "8.1.6",
+            "8.2.4",
+            "8.3.3"
+          ]
+        },
+        {
+          "id": "GHSA-9jrq-w75r-8gcw",
+          "aliases": [
+            "CVE-2026-112945"
+          ],
+          "severity": "LOW",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:L/VI:L/VA:N/SC:N/SI:N/SA:N",
+          "summary": "Vite: Cross origin script execution through Vite custom middleware",
+          "fixed_in": [
+            "1.1.0",
+            "6.4.4",
+            "7.3.7",
+            "8.1.6",
+            "8.2.4",
+            "8.3.3"
+          ]
+        },
+        {
+          "id": "GHSA-r825-w8mm-5pxw",
+          "aliases": [
+            "CVE-2026-112944"
+          ],
+          "severity": "MODERATE",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N",
+          "summary": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors",
+          "fixed_in": [
+            "1.1.0",
+            "2.14.2",
+            "6.4.4",
+            "7.3.7",
+            "8.1.6",
+            "8.2.4",
+            "8.3.3"
+          ]
+        },
+        {
+          "id": "GHSA-rq7h-c2jc-7f22",
+          "aliases": [
+            "CVE-2026-112946"
+          ],
+          "severity": "MODERATE",
+          "cvss": "CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N",
+          "summary": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+          "fixed_in": [
+            "1.1.0",
+            "6.4.4",
+            "7.3.7",
+            "8.1.6",
+            "8.2.4",
+            "8.3.3"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "vitest@3.2.7",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "Same instance class as @vitest/mocker above (shared GHSA-82fw). Dev-only.",
+      "advisories": [
+        {
+          "id": "GHSA-82fw-gwwq-j7x9",
+          "aliases": [
+            "CVE-2026-84373"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
+          "summary": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "fixed_in": [
+            "4.1.11",
+            "5.0.0-rc.2"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "zod@4.4.3",
+      "dev_only": true,
+      "disposition": "BOUNDED-DEV-ONLY",
+      "rationale": "This 4.4.3 copy is dev-flagged in the lockfile (parents: eslint-plugin-react-hooks, zod-validation-error); the memory-exhaustion vector needs zod validation of attacker-sized collections, which this copy never performs at runtime.",
+      "advisories": [
+        {
+          "id": "GHSA-mrhx-c7xc-m3w5",
+          "aliases": [
+            "CVE-2023-54404"
+          ],
+          "severity": null,
+          "cvss": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+          "summary": "Zod can exhaust memory while validating oversized constrained collections",
+          "fixed_in": [
+            "4.6.6"
+          ]
+        }
+      ]
+    }
+  ]
+}
