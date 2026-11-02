@@ -10,12 +10,27 @@ import {
   rotateMachineCredential,
   safeDisconnectProviderState,
   type IntegrationScope,
+  type ProviderProbeResult,
 } from '@/modules/integrations/service'
 import {
   redeliverWebhook,
   resolveWebhookSecret,
   verifyWebhookEndpoint,
 } from '@/modules/integrations/webhooks'
+import {
+  connectionCredential,
+  rotateAiCredentialEnvelopes,
+  testAiProvider,
+} from '@/modules/ai/connections'
+import { credentialsForSocialAccount } from '@/modules/social/provider-runtime'
+import { blueskyAdapter } from '@/modules/social/adapters/bluesky'
+import { sanitizeSocialLog } from '@/modules/social/security'
+import { adapterForPodConnection } from '@/modules/commerce/pod-adapters'
+import {
+  encryptCredential,
+  revalidatePodConnection,
+  type PodConnectionRecord,
+} from '@/modules/commerce/pod-connection'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -33,6 +48,14 @@ const ALLOWED_COLLECTIONS = [
 ] as const
 
 type AllowedCollection = (typeof ALLOWED_COLLECTIONS)[number]
+
+/**
+ * Non-secret placeholder encrypted over a POD connection's API key on
+ * disconnect. The field is required and must stay a valid envelope (the
+ * collection hook decrypts it), so the operator's real key is destroyed by
+ * overwriting it with an envelope of this tombstone value.
+ */
+const POD_CREDENTIAL_TOMBSTONE = 'renegade-credential-revoked'
 
 const asId = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : (value ?? ''))
@@ -166,6 +189,7 @@ export async function GET(request: Request) {
         state: doc.state,
         attempts: Number(doc.attempts ?? 0),
         nextAttemptAt: doc.nextAttemptAt ?? null,
+        createdAt: doc.createdAt ? String(doc.createdAt) : null,
         redactedResponse: doc.redactedResponse ?? null,
         lastError: doc.lastError ?? null,
         diagnosis,
@@ -212,7 +236,10 @@ export async function GET(request: Request) {
       const isDeadLetter = failureCount >= 5
       const status = doc.status === 'disabled' ? 'disabled' : isDeadLetter ? 'degraded' : 'active'
       const relatedDeliveries = deliveries.filter((d) => d.subscriptionId === String(doc.id))
+      // Deliveries are sorted newest-first. Success is claimed only from an
+      // actually delivered delivery's timestamp — never from secret rotation.
       const lastDelivered = relatedDeliveries.find((d) => d.state === 'delivered')
+      const lastAttemptAt = relatedDeliveries[0]?.createdAt ?? null
 
       connections.push({
         id: String(doc.id),
@@ -226,20 +253,16 @@ export async function GET(request: Request) {
           status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
         scopes: Array.isArray(doc.events) ? doc.events : [],
         expiresAt: null,
-        lastSuccessAt: lastDelivered
-          ? lastDelivered.eventId
-          : doc.rotatedAt
-            ? String(doc.rotatedAt)
-            : null,
-        lastHealthCheckAt: doc.rotatedAt ? String(doc.rotatedAt) : null,
+        lastSuccessAt: lastDelivered?.createdAt ?? null,
+        lastHealthCheckAt: lastAttemptAt,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
           providerKey: 'webhook',
           failureCount,
-          lastHealthCheckAt: doc.rotatedAt,
+          lastHealthCheckAt: lastAttemptAt,
         }),
         unconfiguredFeatures: !doc.secretRef ? ['Secret Reference Unset'] : [],
-        isUnknown: failureCount === 0 && !lastDelivered && !doc.rotatedAt,
+        isUnknown: relatedDeliveries.length === 0 && failureCount === 0,
         canRotateSecret: true,
         canDisconnect: doc.status === 'active',
         failureCount,
@@ -260,18 +283,20 @@ export async function GET(request: Request) {
         label: String(doc.label || doc.providerKey || 'Merchant Gateway'),
         externalAccountId: String(doc.merchantCountry || 'default'),
         status,
-        healthState: status === 'active' ? 'healthy' : 'warning',
+        // No live probe exists for merchant connections, so health stays
+        // unverified ('unknown') and no success is derived from record edits.
+        healthState: status === 'active' ? 'unknown' : 'warning',
         scopes: ['payments.checkout.one_time', 'payments.subscription.recurring'],
         expiresAt: null,
-        lastSuccessAt: status === 'active' ? String(doc.updatedAt || doc.createdAt) : null,
-        lastHealthCheckAt: String(doc.updatedAt || doc.createdAt),
+        lastSuccessAt: null,
+        lastHealthCheckAt: null,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
           providerKey: doc.providerKey || 'merchant',
-          lastHealthCheckAt: String(doc.updatedAt || doc.createdAt),
+          lastHealthCheckAt: null,
         }),
         unconfiguredFeatures: !doc.credentialReference ? ['Vault Credential Missing'] : [],
-        isUnknown: !doc.credentialReference,
+        isUnknown: true,
         canRotateSecret: true,
         canDisconnect: status !== 'disabled',
       })
@@ -303,7 +328,10 @@ export async function GET(request: Request) {
         capabilityState: doc.capabilityState || 'manual-handoff',
         capabilities: doc.capabilities || {},
         expiresAt: doc.credentialExpiresAt ? String(doc.credentialExpiresAt) : null,
-        lastSuccessAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
+        // lastVerifiedAt stamps every test attempt; it counts as a success
+        // only when the recorded credential health is actually healthy.
+        lastSuccessAt:
+          health === 'healthy' && doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
         lastHealthCheckAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
@@ -334,7 +362,7 @@ export async function GET(request: Request) {
         scopes: ['commerce.orders', 'fulfillment.sync'],
         expiresAt: null,
         lastSuccessAt:
-          doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt
+          doc.lastHealthStatus === 'healthy' && doc.lastHealthCheckedAt
             ? String(doc.lastHealthCheckedAt)
             : null,
         lastHealthCheckAt: doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
@@ -354,7 +382,13 @@ export async function GET(request: Request) {
     // 6. AI Connections
     for (const doc of aiRes.docs as any[]) {
       const status =
-        doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+        doc.status === 'active'
+          ? 'active'
+          : doc.status === 'degraded'
+            ? 'degraded'
+            : doc.status === 'disconnected'
+              ? 'disconnected'
+              : 'disabled'
       connections.push({
         id: String(doc.id),
         collection: 'ai-connections',
@@ -363,10 +397,13 @@ export async function GET(request: Request) {
         label: String(doc.label || 'AI Model Gateway'),
         externalAccountId: String(doc.model || 'model'),
         status,
-        healthState: status === 'active' ? 'healthy' : 'warning',
+        healthState:
+          status === 'active' ? 'healthy' : status === 'disconnected' ? 'critical' : 'warning',
         scopes: Array.isArray(doc.capabilities) ? doc.capabilities : ['ai.text.rewrite'],
         expiresAt: null,
-        lastSuccessAt: doc.lastTestedAt ? String(doc.lastTestedAt) : null,
+        // lastTestedAt stamps every probe attempt; a probe only counts as a
+        // success when it left the connection active.
+        lastSuccessAt: status === 'active' && doc.lastTestedAt ? String(doc.lastTestedAt) : null,
         lastHealthCheckAt: doc.lastTestedAt ? String(doc.lastTestedAt) : null,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
@@ -377,7 +414,7 @@ export async function GET(request: Request) {
         unconfiguredFeatures: !doc.endpoint ? ['Custom Endpoint'] : [],
         isUnknown: !doc.lastTestedAt,
         canRotateSecret: true,
-        canDisconnect: status !== 'disabled',
+        canDisconnect: status !== 'disabled' && status !== 'disconnected',
       })
     }
 
@@ -914,15 +951,210 @@ export async function POST(request: Request) {
           )
         }
 
-        // Dry-run reconciliation: inspects credentials and configuration without sending live external network calls,
-        // charges, emails, or posts.
+        // Reconciliation runs the family's real probe where one exists (AI test,
+        // Bluesky session, POD adapter health) and records the observed result.
+        // Families without a probe are reviewed configuration-only and never
+        // have a success fabricated for them. Probes are read-only health
+        // checks: no charges, emails, posts, or orders are performed.
+        let probe: ProviderProbeResult = { performed: false }
+        let probeMessage: string | null = null
+        let effectiveStatus = String(
+          (existing as any).status || (existing as any).credentialHealth || 'active',
+        )
+        if (body.collection === 'social-accounts') {
+          effectiveStatus =
+            (existing as any).credentialHealth === 'healthy'
+              ? 'active'
+              : (existing as any).credentialHealth === 'revoked'
+                ? 'revoked'
+                : (existing as any).credentialHealth === 'expired'
+                  ? 'expired'
+                  : 'unconfigured'
+        }
+
+        if (body.collection === 'ai-connections') {
+          if ((existing as any).status === 'disconnected') {
+            return NextResponse.json(
+              {
+                error: 'Connection is disconnected. Save a new connection to reconnect it.',
+              },
+              { status: 422 },
+            )
+          }
+          const testedAt = new Date().toISOString()
+          try {
+            const apiKey = await connectionCredential(payload, String(body.connectionId))
+            const result = await testAiProvider({
+              providerKey: (existing as any).providerKey as 'ai.ollama' | 'ai.openai-compatible',
+              endpoint: String((existing as any).endpoint),
+              apiKey,
+              model: String((existing as any).model),
+            })
+            probe = { performed: true, succeeded: true }
+            effectiveStatus = 'active'
+            await payload.update({
+              collection: 'ai-connections' as never,
+              id: body.connectionId,
+              data: {
+                status: 'active',
+                models: result.models,
+                capabilities: result.capabilities,
+                lastError: null,
+                lastTestedAt: testedAt,
+              } as never,
+              overrideAccess: true,
+            })
+          } catch (error) {
+            if (
+              error instanceof Error &&
+              error.message.includes('credential encryption is not configured')
+            ) {
+              return NextResponse.json({ error: error.message }, { status: 500 })
+            }
+            probe = {
+              performed: true,
+              succeeded: false,
+              error:
+                'Connection test failed. Check endpoint, credentials, model, and provider health.',
+            }
+            effectiveStatus = 'degraded'
+            await payload
+              .update({
+                collection: 'ai-connections' as never,
+                id: body.connectionId,
+                data: {
+                  status: 'degraded',
+                  models: [],
+                  capabilities: [],
+                  lastError: probe.error,
+                  lastTestedAt: testedAt,
+                } as never,
+                overrideAccess: true,
+              })
+              .catch(() => null)
+          }
+        } else if (body.collection === 'social-accounts') {
+          const network = String((existing as any).network || '')
+          const resolvedCreds = credentialsForSocialAccount((existing as any).connectionReference)
+          if (!resolvedCreds) {
+            probeMessage =
+              'No stored credentials were found for this account, so no live probe could run.'
+          } else if (network === 'bluesky') {
+            const identifier = resolvedCreds.identifier || resolvedCreds.handle
+            const password = resolvedCreds.appPassword || resolvedCreds.password
+            const service = resolvedCreds.service || 'http://127.0.0.1:3130'
+            if (!identifier || !password) {
+              probeMessage =
+                'Bluesky identifier and app password are required before a live probe can run.'
+            } else {
+              const testedAt = new Date().toISOString()
+              try {
+                await blueskyAdapter.createSession(service, identifier, password)
+                probe = { performed: true, succeeded: true }
+                effectiveStatus = 'active'
+                await payload.update({
+                  collection: 'social-accounts' as never,
+                  id: body.connectionId,
+                  data: {
+                    credentialHealth: 'healthy',
+                    capabilityState: 'available',
+                    lastVerifiedAt: testedAt,
+                    diagnostics: {
+                      ...((existing as any).diagnostics || {}),
+                      testedAt,
+                      status: 'healthy',
+                      lastError: null,
+                    },
+                  } as never,
+                  overrideAccess: true,
+                })
+              } catch (error) {
+                probe = {
+                  performed: true,
+                  succeeded: false,
+                  error: 'Bluesky session probe failed. Credentials were rejected.',
+                }
+                effectiveStatus = 'revoked'
+                await payload
+                  .update({
+                    collection: 'social-accounts' as never,
+                    id: body.connectionId,
+                    data: {
+                      credentialHealth: 'revoked',
+                      capabilityState: 'unavailable',
+                      lastVerifiedAt: testedAt,
+                      diagnostics: {
+                        ...((existing as any).diagnostics || {}),
+                        testedAt,
+                        status: 'revoked',
+                        lastError: sanitizeSocialLog(
+                          error instanceof Error ? error.message : String(error),
+                        ),
+                      },
+                    } as never,
+                    overrideAccess: true,
+                  })
+                  .catch(() => null)
+              }
+            }
+          } else {
+            probeMessage = `No live probe is available for the ${network || 'social'} network; health remains unverified.`
+          }
+        } else if (body.collection === 'pod-connections') {
+          try {
+            const adapter = adapterForPodConnection(existing as any)
+            const revalidated = await revalidatePodConnection(
+              {
+                id: String((existing as any).id),
+                siteId: asId((existing as any).site),
+                providerKey: String((existing as any).providerKey),
+                label: String((existing as any).label || 'Print On Demand'),
+                remoteStoreId: (existing as any).remoteStoreId,
+                remoteStoreName: (existing as any).remoteStoreName,
+                encryptedApiKey: String((existing as any).encryptedApiKey || ''),
+                encryptedWebhookSecret: (existing as any).encryptedWebhookSecret,
+                status: (existing as any).status === 'degraded' ? 'degraded' : 'active',
+                capabilities: ((existing as any).capabilities ||
+                  {}) as PodConnectionRecord['capabilities'],
+                lastHealthCheckedAt: (existing as any).lastHealthCheckedAt,
+                lastHealthStatus: (existing as any).lastHealthStatus,
+                lastHealthReason: (existing as any).lastHealthReason,
+                disabledReason: (existing as any).disabledReason,
+                createdAt: String((existing as any).createdAt),
+                updatedAt: String((existing as any).updatedAt),
+              },
+              adapter,
+            )
+            probe = {
+              performed: true,
+              succeeded: revalidated.lastHealthStatus === 'healthy',
+              error:
+                revalidated.lastHealthStatus === 'healthy'
+                  ? null
+                  : revalidated.lastHealthReason || 'Provider health probe did not report healthy.',
+            }
+            effectiveStatus = revalidated.status
+            await payload.update({
+              collection: 'pod-connections' as never,
+              id: body.connectionId,
+              data: {
+                status: revalidated.status,
+                lastHealthCheckedAt: revalidated.lastHealthCheckedAt,
+                lastHealthStatus: revalidated.lastHealthStatus,
+                lastHealthReason: revalidated.lastHealthReason,
+              } as never,
+              overrideAccess: true,
+            })
+          } catch (error) {
+            probeMessage = `Live POD health probe could not run: ${error instanceof Error ? error.message : 'adapter unavailable.'}`
+          }
+        }
+
         const reconciliation = reconcileProviderState({
           providerKey: String(
             (existing as any).providerKey || (existing as any).network || 'generic',
           ),
-          status: String(
-            (existing as any).status || (existing as any).credentialHealth || 'active',
-          ),
+          status: effectiveStatus,
           credentialRef:
             (existing as any).credentialReference ||
             (existing as any).connectionReference ||
@@ -930,28 +1162,8 @@ export async function POST(request: Request) {
             null,
           scopes: Array.isArray((existing as any).scopes) ? (existing as any).scopes : [],
           expiresAt: (existing as any).expiresAt || (existing as any).credentialExpiresAt || null,
+          probe,
         })
-
-        const updateData: Record<string, any> = {}
-        if (body.collection === 'pod-connections') {
-          updateData.lastHealthCheckedAt = reconciliation.lastHealthCheckAt
-          updateData.lastHealthStatus = reconciliation.healthState === 'healthy' ? 'ok' : 'degraded'
-        } else if (body.collection === 'social-accounts') {
-          updateData.lastVerifiedAt = reconciliation.lastHealthCheckAt
-        } else if (body.collection === 'ai-connections') {
-          updateData.lastTestedAt = reconciliation.lastHealthCheckAt
-        }
-
-        if (Object.keys(updateData).length > 0) {
-          await payload
-            .update({
-              collection: body.collection as never,
-              id: body.connectionId,
-              data: updateData as never,
-              overrideAccess: true,
-            })
-            .catch(() => null)
-        }
 
         await payload
           .create({
@@ -963,10 +1175,18 @@ export async function POST(request: Request) {
                 collection: body.collection,
                 connectionId: body.connectionId,
                 providerKey: (existing as any).providerKey || (existing as any).network,
-                dryRun: true,
+                probePerformed: probe.performed,
+                observedSuccess: reconciliation.observedSuccess,
+                dryRun: !probe.performed,
                 reconciliation,
               },
-              outcome: reconciliation.healthState === 'healthy' ? 'allowed' : 'failed',
+              outcome: probe.performed
+                ? probe.succeeded
+                  ? 'allowed'
+                  : 'failed'
+                : reconciliation.status === 'unconfigured' || reconciliation.status === 'expired'
+                  ? 'failed'
+                  : 'allowed',
               occurredAt: new Date().toISOString(),
             } as never,
             overrideAccess: true,
@@ -975,8 +1195,13 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
           reconciliation,
-          message:
-            'Provider connection reconciled in safe dry-run mode (zero external transactions).',
+          probePerformed: probe.performed,
+          message: probe.performed
+            ? probe.succeeded
+              ? 'Live provider probe succeeded and the observed result was recorded.'
+              : 'Live provider probe failed; the observed failure was recorded and no success was claimed.'
+            : probeMessage ||
+              'Configuration reviewed without a live probe. No success was recorded; health remains unverified.',
         })
       }
 
@@ -1025,19 +1250,46 @@ export async function POST(request: Request) {
           label: String((existing as any).label || (existing as any).displayName || 'Connection'),
         })
 
-        // Preserve all canonical records, orders, audit logs. Only clear active secret references and set status disabled/revoked.
+        // Preserve all canonical records, orders, audit logs. Disconnect always
+        // purges the usable credential, matching the family routes: AI envelope
+        // rows are deleted, the POD API key envelope is overwritten with a
+        // non-secret tombstone, and reference-only families lose their reference.
+        let credentialsPurged = false
         const updateData: Record<string, any> = {}
         if (body.collection === 'merchant-connections') {
           updateData.status = 'disabled'
           updateData.credentialReference = null
+          credentialsPurged = true
         } else if (body.collection === 'social-accounts') {
           updateData.credentialHealth = 'revoked'
           updateData.connectionReference = null
+          credentialsPurged = true
         } else if (body.collection === 'pod-connections') {
           updateData.status = 'disabled'
           updateData.disabledReason = 'Disconnected safely by operator'
+          updateData.encryptedApiKey = encryptCredential(POD_CREDENTIAL_TOMBSTONE)
+          updateData.encryptedWebhookSecret = null
+          credentialsPurged = true
         } else if (body.collection === 'ai-connections') {
-          updateData.status = 'disabled'
+          try {
+            await payload.delete({
+              collection: 'ai-credentials' as never,
+              where: { connection: { equals: body.connectionId } },
+              overrideAccess: true,
+            })
+          } catch {
+            return NextResponse.json(
+              {
+                error: 'Credential purge failed; the connection was not disconnected.',
+              },
+              { status: 500 },
+            )
+          }
+          updateData.status = 'disconnected'
+          updateData.capabilities = []
+          updateData.models = []
+          updateData.lastError = null
+          credentialsPurged = true
         } else if (body.collection === 'api-clients') {
           updateData.revokedAt = safeDisconnect.revokedAt
         } else if (body.collection === 'webhook-subscriptions') {
@@ -1062,6 +1314,7 @@ export async function POST(request: Request) {
                 connectionId: body.connectionId,
                 label: (existing as any).label || (existing as any).displayName,
                 canonicalDataPreserved: true,
+                credentialsPurged,
               },
               outcome: 'allowed',
               occurredAt: safeDisconnect.revokedAt,
@@ -1072,8 +1325,50 @@ export async function POST(request: Request) {
 
         return NextResponse.json({
           success: true,
+          credentialsPurged,
           message: safeDisconnect.message,
         })
+      }
+
+      case 'rotate-credential-keys': {
+        // Key rotation is instance-wide (every AI envelope shares the keyring),
+        // so it is restricted to the global owner.
+        if (!grant.isGlobalOwner) {
+          return NextResponse.json(
+            {
+              error: 'Forbidden. Credential key rotation requires the global owner.',
+            },
+            { status: 403 },
+          )
+        }
+        try {
+          const summary = await rotateAiCredentialEnvelopes(payload)
+          await payload
+            .create({
+              collection: 'integration-audit-events' as never,
+              data: {
+                site: defaultSiteId,
+                action: 'credential_keys.rotated',
+                subject: { family: 'ai-connections', ...summary },
+                outcome: summary.failed > 0 ? 'failed' : 'allowed',
+                occurredAt: new Date().toISOString(),
+              } as never,
+              overrideAccess: true,
+            })
+            .catch(() => null)
+          return NextResponse.json({
+            success: true,
+            ...summary,
+            message: `AI credential key rotation complete: ${summary.rotated} envelope(s) re-encrypted onto key ${summary.activeKeyId}, ${summary.alreadyCurrent} already current, ${summary.failed} failed.`,
+          })
+        } catch (error) {
+          return NextResponse.json(
+            {
+              error: error instanceof Error ? error.message : 'Credential key rotation failed.',
+            },
+            { status: 500 },
+          )
+        }
       }
 
       default:
