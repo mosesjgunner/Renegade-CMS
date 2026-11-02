@@ -17,6 +17,8 @@ import { serializeJsonLd } from '../../src/modules/public/schema'
 import { getEncryptionKey } from '../../src/modules/social/security'
 import { DiscordAdapter } from '../../src/modules/social/adapters/discord'
 
+const env = process.env as Record<string, string | undefined>
+
 const stubLookup =
   (addresses: string[]): Lookup =>
   async () =>
@@ -91,12 +93,12 @@ describe('supportedTarget posture', () => {
   afterEach(() => {
     if (saved.vitest === undefined) delete process.env.VITEST
     else process.env.VITEST = saved.vitest
-    process.env.NODE_ENV = saved.nodeEnv
+    env.NODE_ENV = saved.nodeEnv
   })
 
   it('production posture rejects loopback HTTP, private and metadata targets but accepts public HTTPS', () => {
     delete process.env.VITEST
-    process.env.NODE_ENV = 'development'
+    env.NODE_ENV = 'development'
     expect(() => supportedTarget('http://127.0.0.1:39177/hook')).toThrow()
     expect(() => supportedTarget('https://169.254.169.254/hook')).toThrow()
     expect(() => supportedTarget('https://10.0.0.9/hook')).toThrow()
@@ -237,13 +239,13 @@ describe('secret handling', () => {
     key: process.env.RENEGADE_ENCRYPTION_KEY,
   }
   afterEach(() => {
-    process.env.NODE_ENV = saved.nodeEnv
+    env.NODE_ENV = saved.nodeEnv
     if (saved.key === undefined) delete process.env.RENEGADE_ENCRYPTION_KEY
     else process.env.RENEGADE_ENCRYPTION_KEY = saved.key
   })
 
   it('fails closed in production when no encryption key is configured', () => {
-    process.env.NODE_ENV = 'production'
+    env.NODE_ENV = 'production'
     delete process.env.RENEGADE_ENCRYPTION_KEY
     expect(() => getEncryptionKey()).toThrow(/Production encryption key is required/)
   })
