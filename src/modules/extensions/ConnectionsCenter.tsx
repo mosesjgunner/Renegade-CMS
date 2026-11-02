@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { ConnectionGroup, ConnectionRecord } from './contracts'
 import { INTEGRATION_SCOPES, type WebhookDeliveryDiagnosis } from '../integrations/contracts'
+import type { WebhookSubscriptionReconciliation } from '../integrations/reconciliation'
 
 export type OperationalConnection = Omit<ConnectionRecord, 'status'> & {
   status: ConnectionRecord['status'] | 'unconfigured'
@@ -77,12 +78,14 @@ export function ConnectionsCenter({
   connections: initialConnections,
   deliveries: initialDeliveries = [],
   auditEvents: initialAuditEvents = [],
+  webhookReconciliation = [],
   groupFor,
   isStaff = true,
 }: {
   connections: readonly OperationalConnection[]
   deliveries?: readonly WebhookDeliveryItem[]
   auditEvents?: readonly IntegrationAuditItem[]
+  webhookReconciliation?: readonly WebhookSubscriptionReconciliation[]
   groupFor?: (providerKey: string) => ConnectionGroup
   isStaff?: boolean
 }) {
@@ -866,6 +869,69 @@ export function ConnectionsCenter({
       {/* TAB 2: WEBHOOKS & DELIVERIES HUB */}
       {activeTab === 'webhooks' && (
         <div className="space-y-8">
+          {/* Delivery Reconciliation */}
+          {webhookReconciliation.length > 0 && (
+            <div className="surface-card p-6 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-4">
+              <div className="border-b border-stone-100 dark:border-stone-800 pb-4">
+                <h2 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+                  <span>🧾</span> Delivery Reconciliation
+                </h2>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Recorded subscription state compared with the persisted delivery records.
+                  Timestamps come only from deliveries that actually completed.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {webhookReconciliation.map((entry) => (
+                  <div
+                    key={entry.subscriptionId}
+                    className="rounded-xl border border-stone-100 dark:border-stone-800 p-4 space-y-2"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="text-xs font-mono font-bold text-stone-900 dark:text-stone-100 break-all">
+                        {entry.target || entry.subscriptionId}
+                      </span>
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded font-semibold uppercase ${
+                          entry.healthy
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                            : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                        }`}
+                      >
+                        {entry.healthy ? 'Reconciled' : 'Attention needed'}
+                      </span>
+                    </div>
+
+                    <p className="text-[11px] font-mono text-stone-500">
+                      delivered {entry.counts.delivered} · retrying {entry.counts.retrying} · queued{' '}
+                      {entry.counts.queued} · dead-letter {entry.counts.deadLetter} ·{' '}
+                      {entry.totalAttempts} attempts · last delivered{' '}
+                      {entry.lastDeliveredAt
+                        ? new Date(entry.lastDeliveredAt).toLocaleString()
+                        : 'never'}
+                    </p>
+
+                    {entry.findings
+                      .filter((finding) => finding.severity !== 'info')
+                      .map((finding) => (
+                        <p
+                          key={finding.code}
+                          className={`text-[11px] ${
+                            finding.severity === 'critical'
+                              ? 'text-rose-700 dark:text-rose-300'
+                              : 'text-amber-700 dark:text-amber-300'
+                          }`}
+                        >
+                          {finding.message}
+                        </p>
+                      ))}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Webhook Deliveries Log */}
           <div className="surface-card p-6 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-4">

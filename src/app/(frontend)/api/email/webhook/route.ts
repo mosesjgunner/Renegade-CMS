@@ -2,8 +2,17 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { verifyEmailWebhookSignature } from '@/modules/audience/contracts'
 import { processProviderSuppressionEvent } from '@/modules/audience/service'
+import { consumeInboundWebhookRateLimit } from '@/modules/integrations/rate-limit'
 
 export async function POST(request: Request) {
+  // Flood shedding happens before signature verification or any database
+  // work; a rate-limited callback is not processed at all.
+  const limit = consumeInboundWebhookRateLimit('email-webhook')
+  if (!limit.allowed)
+    return Response.json(
+      { error: 'Too many webhook requests.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfter) } },
+    )
   const raw = await request.text()
   if (
     !verifyEmailWebhookSignature(

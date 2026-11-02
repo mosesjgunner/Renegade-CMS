@@ -17,6 +17,7 @@ import {
   resolveWebhookSecret,
   verifyWebhookEndpoint,
 } from '@/modules/integrations/webhooks'
+import { reconcileWebhookSubscriptions } from '@/modules/integrations/reconciliation'
 import {
   connectionCredential,
   rotateAiCredentialEnvelopes,
@@ -173,6 +174,27 @@ export async function GET(request: Request) {
         overrideAccess: true,
       })
       .catch(() => ({ docs: [] }))
+
+    // Delivery reconciliation compares each subscription's recorded state
+    // with the full persisted delivery pool (not just the recent-100 history
+    // window above), so counts and findings reflect observed records.
+    const reconciliationDeliveriesRes =
+      webhookIds.length > 0
+        ? await payload
+            .find({
+              collection: 'webhook-deliveries' as never,
+              where: deliveriesWhere as never,
+              limit: 1000,
+              sort: 'createdAt',
+              depth: 0,
+              overrideAccess: true,
+            })
+            .catch(() => ({ docs: [] }))
+        : { docs: [] }
+    const webhookReconciliation = reconcileWebhookSubscriptions({
+      subscriptions: webhooksRes.docs as any[],
+      deliveries: reconciliationDeliveriesRes.docs as any[],
+    })
 
     const deliveries = (deliveriesRes.docs as any[]).map((doc) => {
       const diagnosis = diagnoseWebhookDelivery({
@@ -431,6 +453,7 @@ export async function GET(request: Request) {
       connections,
       deliveries: deliveries.slice(0, 50),
       subscriptions: webhooksRes.docs,
+      webhookReconciliation,
       auditEvents: auditEventsRes.docs,
       stats,
     })

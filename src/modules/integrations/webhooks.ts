@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload collection documents are runtime-shaped. */
-import { randomUUID } from 'node:crypto'
+import { randomUUID, timingSafeEqual } from 'node:crypto'
 
 import { isPrivateAddress, readBoundedText, safeFetch } from '../core/external-boundary'
 import type { ExecutionEvent } from '../execution/contracts'
@@ -14,10 +14,24 @@ import {
 export const WEBHOOK_PAYLOAD_VERSION = '2026-08-31'
 export const WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300
 
+/**
+ * The single test-environment condition for webhook delivery. `supportedTarget`
+ * has always allowed HTTP loopback targets under it; the transport must honor
+ * the same condition or that allowance is dead code and no local receiver can
+ * ever be exercised end to end. Any other environment keeps the production
+ * rule: HTTPS to public destinations only, validated again at connection time.
+ */
+export const isWebhookTestEnv = () =>
+  process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
+
 // Injected transports remain available to isolated adapter contract tests. Real
 // production requests validate DNS at connection time and never follow redirects.
 const webhookRequest: typeof fetch = (input, init) =>
-  safeFetch(String(input), init, { maxRedirects: 0, maxBytes: MAX_WEBHOOK_PAYLOAD_BYTES })
+  safeFetch(String(input), init, {
+    maxRedirects: 0,
+    maxBytes: MAX_WEBHOOK_PAYLOAD_BYTES,
+    ...(isWebhookTestEnv() ? { allowHttp: true, allowPrivate: true } : {}),
+  })
 
 type Store = {
   find: (args: any) => Promise<{ docs: Array<Record<string, any>> }>
@@ -38,7 +52,7 @@ const id = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : value)
 export const supportedTarget = (target: string) => {
   const url = new URL(target)
-  const isTest = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
+  const isTest = isWebhookTestEnv()
   if (url.protocol !== 'https:' && !(isTest && url.protocol === 'http:'))
     throw new Error('Webhook targets must use HTTPS.')
   if (
@@ -75,9 +89,14 @@ export function verifyWebhookDeliverySignature(input: {
   )
     return { valid: false, reason: 'stale' as const }
   const expected = webhookDeliverySignature(input.raw, input.secret, String(timestamp))
+  const expectedDigest = expected.slice(expected.indexOf(',v1=') + ',v1='.length)
+  const actualDigest = match[2]
+  const valid =
+    expectedDigest.length === actualDigest.length &&
+    timingSafeEqual(Buffer.from(expectedDigest), Buffer.from(actualDigest))
   return {
-    valid: expected === input.signature,
-    reason: expected === input.signature ? null : ('invalid' as const),
+    valid,
+    reason: valid ? null : ('invalid' as const),
   }
 }
 

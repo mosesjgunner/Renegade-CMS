@@ -1,0 +1,34 @@
+[
+  {
+    "name": "restart: Next.js web process booted on http://127.0.0.1:39066 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "restart: queued and retrying deliveries persisted unchanged across the web + PostgreSQL restart",
+    "passed": true
+  },
+  {
+    "name": "restart: subscription records persisted unchanged (active, truthful failure counts)",
+    "passed": true
+  },
+  {
+    "name": "restart: the retrying delivery reaches its recorded due time",
+    "passed": true
+  },
+  {
+    "name": "restart: dispatch after restart delivers both the queued and the previously retrying delivery",
+    "passed": true
+  },
+  {
+    "name": "restart: receiver history spans the restart — retry event saw 2 HTTP attempts total with the business effect still exactly-once; queued event delivered exactly once",
+    "passed": true
+  },
+  {
+    "name": "restart: reconciliation reflects the drained state truthfully for the flaky subscription",
+    "passed": true
+  },
+  {
+    "name": "no harness secret appears in any restart-phase response body or the restart web log",
+    "passed": true
+  }
+]

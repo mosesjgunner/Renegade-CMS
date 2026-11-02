@@ -14,6 +14,10 @@ import {
   diagnoseWebhookDelivery,
   resolveNextSafeRepairAction,
 } from '@/modules/integrations/service'
+import {
+  reconcileWebhookSubscriptions,
+  type WebhookSubscriptionReconciliation,
+} from '@/modules/integrations/reconciliation'
 
 export const dynamic = 'force-dynamic'
 
@@ -93,7 +97,9 @@ export default async function ConnectionsPage() {
   const connections: OperationalConnection[] = []
   let deliveries: WebhookDeliveryItem[] = []
   let auditEvents: IntegrationAuditItem[] = []
+  let webhookReconciliation: WebhookSubscriptionReconciliation[] = []
   const scopedWebhookIds: string[] = []
+  const webhookSubscriptionDocs: any[] = []
 
   try {
     // 1. Merchant connections
@@ -260,6 +266,7 @@ export default async function ConnectionsPage() {
       })
       for (const doc of webhooks.docs as any[]) {
         scopedWebhookIds.push(String(doc.id))
+        webhookSubscriptionDocs.push(doc)
         const failureCount = Number(doc.failureCount ?? 0)
         const isDeadLetter = failureCount >= 5
         const status = doc.status === 'disabled' ? 'disabled' : isDeadLetter ? 'degraded' : 'active'
@@ -489,6 +496,21 @@ export default async function ConnectionsPage() {
             lastError: doc.lastError,
           }),
         }))
+
+        // Delivery reconciliation over the full persisted pool (the history
+        // list above is a recent-50 window and would undercount).
+        const reconciliationPool = await payload.find({
+          collection: 'webhook-deliveries' as never,
+          where: deliveriesWhere,
+          limit: 1000,
+          sort: 'createdAt',
+          depth: 0,
+          overrideAccess: true,
+        })
+        webhookReconciliation = reconcileWebhookSubscriptions({
+          subscriptions: webhookSubscriptionDocs,
+          deliveries: reconciliationPool.docs as any[],
+        })
       }
     } catch {
       // module might be disabled in current profile
@@ -524,6 +546,7 @@ export default async function ConnectionsPage() {
       connections={connections}
       deliveries={deliveries}
       auditEvents={auditEvents}
+      webhookReconciliation={webhookReconciliation}
       isStaff={grant.authorized}
     />
   )

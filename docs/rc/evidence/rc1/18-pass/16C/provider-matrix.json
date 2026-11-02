@@ -1,0 +1,323 @@
+{
+  "generatedAt": "2026-11-02T03:08:20.074Z",
+  "entries": [
+    {
+      "key": "ai.ollama",
+      "family": "ai",
+      "boundary": "local-only (loopback enforced by validateAiEndpoint)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "model discovery against local Ollama-protocol harness",
+          "outcome": "passed"
+        },
+        {
+          "name": "text completion returns harness output with token counts",
+          "outcome": "passed"
+        },
+        {
+          "name": "harness observed the real probes",
+          "outcome": "passed"
+        },
+        {
+          "name": "provider down produces a failure, never a fabricated success",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Local protocol harness only; no real Ollama or remote AI outcome is claimed."
+    },
+    {
+      "key": "ai.openai-compatible",
+      "family": "ai",
+      "boundary": "remote (HTTPS required; no loopback HTTP path exists by design)",
+      "shipping": true,
+      "verification": "executed-16c (error contracts only)",
+      "checks": [
+        {
+          "name": "plain-HTTP loopback endpoint is rejected (HTTPS required)",
+          "outcome": "passed"
+        },
+        {
+          "name": "unreachable HTTPS endpoint fails discovery with a normalized error",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "No live completion is claimed: the adapter requires an HTTPS endpoint, so no local HTTP harness success is possible or fabricated. Ollama is the locally provable AI path (16A + this run)."
+    },
+    {
+      "key": "social.bluesky",
+      "family": "social",
+      "boundary": "local-harness (module registry: social = local-harness)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "publish succeeds against the XRPC harness with a remote id",
+          "outcome": "passed"
+        },
+        {
+          "name": "replay of the same idempotency key creates no second record",
+          "outcome": "passed"
+        },
+        {
+          "name": "missing credentials fail as reconnect-required",
+          "outcome": "passed"
+        },
+        {
+          "name": "rejected credentials fail as reconnect-required",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Loopback XRPC harness only; no live Bluesky outcome is claimed."
+    },
+    {
+      "key": "social.mastodon+discord",
+      "family": "social",
+      "boundary": "local-harness (loopback instance/webhook endpoints)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "mastodon publish against loopback instance (observed status: published)",
+          "outcome": "passed"
+        },
+        {
+          "name": "discord publish against loopback webhook (observed status: published)",
+          "outcome": "passed"
+        },
+        {
+          "name": "loopback server observed both publish calls",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Loopback endpoints only; no live network outcome is claimed for either."
+    },
+    {
+      "key": "social.capability-truth",
+      "family": "social",
+      "boundary": "per-network (see modes)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "capability truth is reported for every registered network",
+          "outcome": "passed"
+        },
+        {
+          "name": "reported mode never exceeds the adapter class declaration (no upgraded claims)",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Observed modes: bluesky=live, mastodon=live, linkedin=live, facebook=live, instagram=live, threads=live, pinterest=live, youtube=live, tiktok=live, x=live, telegram=live, discord=live, activitypub=live, manual=manual-handoff. These are the adapter classes' own declared modes, reported verbatim by getProviderCapabilityTruth; a declared \"live\" mode means the class implements a real HTTP publish path (executed here only for bluesky, mastodon and discord, against loopback harnesses) — it is not a remote-outcome claim for any network."
+    },
+    {
+      "key": "commerce.deterministic-test",
+      "family": "commerce",
+      "boundary": "local-adapter (module registry: commerce = local-adapter)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "readiness healthy with a configured secret",
+          "outcome": "passed"
+        },
+        {
+          "name": "hosted checkout created in action-required state",
+          "outcome": "passed"
+        },
+        {
+          "name": "idempotent replay returns the same provider reference",
+          "outcome": "passed"
+        },
+        {
+          "name": "state transition to succeeded is retrievable",
+          "outcome": "passed"
+        },
+        {
+          "name": "correctly signed webhook normalizes; wrongly signed webhook is rejected",
+          "outcome": "passed"
+        },
+        {
+          "name": "missing secret reports not-ready instead of fabricating health",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Deterministic local adapter; no live charge or payout is claimed. Live Stripe remains unconfigured in RC1 scope."
+    },
+    {
+      "key": "commerce.pod",
+      "family": "commerce",
+      "boundary": "local-adapter (POD loopback simulator/emulator; live creation opt-in required and off)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "emulator health + catalog available",
+          "outcome": "passed"
+        },
+        {
+          "name": "file validation accepts conforming artwork",
+          "outcome": "passed"
+        },
+        {
+          "name": "upload returns a remote file reference",
+          "outcome": "passed"
+        },
+        {
+          "name": "preflight passes at 300 DPI placement",
+          "outcome": "passed"
+        },
+        {
+          "name": "cost estimate returns minor-unit totals",
+          "outcome": "passed"
+        },
+        {
+          "name": "order creation is idempotent per key",
+          "outcome": "passed"
+        },
+        {
+          "name": "P.O. Box recipient is rejected with a normalized provider error",
+          "outcome": "passed"
+        },
+        {
+          "name": "simulator refuses construction without explicit loopback enablement (fail-safe)",
+          "outcome": "passed"
+        },
+        {
+          "name": "real Printful adapter refuses construction without an API token (no fabricated provider)",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Emulator outcomes are local claims only; no real Printful/Printify order, upload or mockup is claimed (16A named the same bound)."
+    },
+    {
+      "key": "email.development-sink",
+      "family": "email",
+      "boundary": "local-sink (module registry: newsletter = local-sink)",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "development capture adapter accepts and retains the exact envelope",
+          "outcome": "passed"
+        },
+        {
+          "name": "simulated bounce outcome is reported, not hidden",
+          "outcome": "passed"
+        },
+        {
+          "name": "disabled adapter refuses delivery truthfully",
+          "outcome": "passed"
+        },
+        {
+          "name": "EMAIL_MODE=disabled selects the disabled adapter",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Bounce outcome observed as: {\"ok\":false,\"provider\":\"development-capture\",\"failure\":{\"kind\":\"permanent\",\"code\":\"permanent_recipient_error\",\"message\":\"Local sink simulated bounce.\"}}. Local sink only; no SMTP or remote delivery is claimed."
+    },
+    {
+      "key": "extensions.reference-adapters",
+      "family": "extensions",
+      "boundary": "developer reference — NOT shipping (no production caller; verified by source scan in this run)",
+      "shipping": false,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "connection test activates the filesystem reference adapter with its declared capability",
+          "outcome": "passed"
+        },
+        {
+          "name": "capability registry exposes capabilities only from active, unexpired connections",
+          "outcome": "passed"
+        },
+        {
+          "name": "failed connection test marks the connection invalid with the secret redacted",
+          "outcome": "passed"
+        },
+        {
+          "name": "email reference adapter executes only into the development sink",
+          "outcome": "passed"
+        },
+        {
+          "name": "adapter refuses a capability outside its contract",
+          "outcome": "passed"
+        },
+        {
+          "name": "diagnostic redaction strips credential material",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "These adapters prove the provider contract shape only. They are developer reference material (historical PROVIDER_MATRIX: DEFERRED/EXPERIMENTAL) and are not presented as shipping transports."
+    },
+    {
+      "key": "extensions.lifecycle",
+      "family": "extensions",
+      "boundary": "server-only lifecycle; discovery accepts deployed metadata and never downloads or loads code",
+      "shipping": true,
+      "verification": "executed-16c",
+      "checks": [
+        {
+          "name": "in-tree example extension discovers as compatible (contract proof only, no product behavior)",
+          "outcome": "passed"
+        },
+        {
+          "name": "untrusted extension is refused installation",
+          "outcome": "passed"
+        },
+        {
+          "name": "core-incompatible extension is rejected at discovery",
+          "outcome": "passed"
+        },
+        {
+          "name": "extension requesting an ungranted permission cannot install",
+          "outcome": "passed"
+        },
+        {
+          "name": "trusted compatible extension installs, enables and reports healthy",
+          "outcome": "passed"
+        },
+        {
+          "name": "uninstall with export policy requires a completed export first",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "The lifecycle service is a library boundary in RC1: no route or UI loads extension code, and discovery never downloads packages. There is no marketplace in scope."
+    },
+    {
+      "key": "import.adapters",
+      "family": "import",
+      "boundary": "local-export / feed / authorized-api per adapter contract",
+      "shipping": true,
+      "verification": "executed-16c (framework) + source inspection (parsers)",
+      "checks": [
+        {
+          "name": "framework dry-run completes zero records and reports unmapped fields",
+          "outcome": "passed"
+        },
+        {
+          "name": "framework apply completes all records with stable deterministic ids",
+          "outcome": "passed"
+        },
+        {
+          "name": "legacy URL redirects are derived from record pairs",
+          "outcome": "passed"
+        },
+        {
+          "name": "unknown adapter key is rejected",
+          "outcome": "passed"
+        },
+        {
+          "name": "marketing enrollment can never be enabled by an import plan",
+          "outcome": "passed"
+        },
+        {
+          "name": "identity-review mappings block a non-dry run until reviewed",
+          "outcome": "passed"
+        }
+      ],
+      "notes": "Adapter truth (contracts in src/modules/portability/contracts.ts): markdown=implemented-contract, rss=implemented-contract, json-csv=implemented-contract, wordpress-export=implemented-contract, wordpress-api=requires-source-fixture, ghost-export=implemented-contract, medium-export=requires-source-fixture, substack-export=requires-source-fixture, podcast-rss=implemented-contract, youtube-export=requires-source-fixture, event-timeline-map=implemented-contract, legacy-cms-map=implemented-contract, phpbb-export=implemented-contract, bbpress-export=implemented-contract, discourse-export=implemented-contract. Only wordpress-export has a dedicated source parser (src/modules/portability/legacy-migration, proven in earlier passes); the remaining implemented-contract adapters run through this framework on pre-parsed SourceRecords, and requires-source-fixture adapters are not executable imports in RC1. The end-to-end executable import paths are the portable archive (this run) and the legacy WXR pipeline."
+    }
+  ]
+}

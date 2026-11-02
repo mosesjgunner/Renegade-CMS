@@ -919,6 +919,28 @@ export async function processProviderSuppressionEvent(
     overrideAccess: true,
   })
   if (seen.docs[0]) return delivery
+  // Ordering guard: provider callbacks can arrive out of order. Effects are
+  // applied in provider occurredAt order — an event strictly older than the
+  // newest already-applied event is recorded for history but must not regress
+  // the delivery status or re-apply a business effect (suppression). A
+  // 'deferred' callback likewise never regresses a terminal delivery status.
+  // Events without a provider timestamp keep arrival-order behavior.
+  const occurredAtMs = input.occurredAt ? Date.parse(input.occurredAt) : NaN
+  let stale = false
+  if (Number.isFinite(occurredAtMs)) {
+    const prior = await payload.find({
+      collection: 'email-delivery-events',
+      where: { delivery: { equals: delivery.id } },
+      sort: '-occurredAt',
+      limit: 1,
+      overrideAccess: true,
+    })
+    const latest = prior.docs[0] as Doc | undefined
+    if (latest?.occurredAt && occurredAtMs < Date.parse(String(latest.occurredAt))) stale = true
+  }
+  const terminalStatuses = ['delivered', 'bounced', 'complained', 'cancelled']
+  const regressesTerminal =
+    terminalStatuses.includes(String(delivery.status)) && status === 'deferred'
   await payload.create({
     collection: 'email-delivery-events',
     data: {
@@ -932,14 +954,14 @@ export async function processProviderSuppressionEvent(
     },
     overrideAccess: true,
   })
-  if (delivery.status !== status)
+  if (!stale && !regressesTerminal && delivery.status !== status)
     await payload.update({
       collection: 'email-deliveries',
       id: delivery.id,
       data: { status, outcome: { ...(delivery.outcome ?? {}), providerEvent: input.event } },
       overrideAccess: true,
     })
-  if (['bounce', 'complaint', 'unsubscribe', 'suppression'].includes(input.event))
+  if (!stale && ['bounce', 'complaint', 'unsubscribe', 'suppression'].includes(input.event))
     return suppressSubscriber(payload, {
       ...input,
       reason:
