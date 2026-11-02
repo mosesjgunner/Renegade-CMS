@@ -1,0 +1,126 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39067 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "export route denies anonymous (403) and foreign-site administrator (403); owner exports its own site (200)",
+    "passed": true
+  },
+  {
+    "name": "owner export manifest validates and carries the seeded content, media, event and timeline records",
+    "passed": true
+  },
+  {
+    "name": "exported media entry carries the original bytes (base64) with matching checksum",
+    "passed": true
+  },
+  {
+    "name": "exported manifest contains no secret-bearing keys anywhere",
+    "passed": true
+  },
+  {
+    "name": "documented CLI exports an encrypted archive (exit 0, state completed, record count matches the HTTP export)",
+    "passed": true
+  },
+  {
+    "name": "CLI archive file is written with owner-only permissions (0600)",
+    "passed": true
+  },
+  {
+    "name": "CLI refuses a malformed archive key before touching the database",
+    "passed": true
+  },
+  {
+    "name": "CLI import dry-run reports the full plan and writes nothing to the clean target",
+    "passed": true
+  },
+  {
+    "name": "CLI import --apply completes with no failed rows and no validation errors",
+    "passed": true
+  },
+  {
+    "name": "export-vs-export equivalence: every source record is persisted in the target with an identical normalized checksum (ids remapped; target may additionally carry its own auto-provisioned publication)",
+    "passed": true
+  },
+  {
+    "name": "imported media bytes are stored under the target site with identical content",
+    "passed": true
+  },
+  {
+    "name": "re-import with the run checkpoint (--resume) is idempotent: every record skipped, zero created, no duplicates, per-collection counts unchanged",
+    "passed": true
+  },
+  {
+    "name": "tampered archive is rejected (integrity/decrypt failure) and imports nothing",
+    "passed": true
+  },
+  {
+    "name": "import with the wrong archive key fails before any write",
+    "passed": true
+  },
+  {
+    "name": "archive crossing a tenant boundary is rejected whole (no partial import)",
+    "passed": true
+  },
+  {
+    "name": "same-ID record owned by another site fails its row (exit 1) and is never overwritten",
+    "passed": true
+  },
+  {
+    "name": "portable manifest creation refuses secret-bearing records",
+    "passed": true
+  },
+  {
+    "name": "conformance ai.ollama: discovery + completion observed against the local harness; outage fails truthfully",
+    "passed": true
+  },
+  {
+    "name": "conformance ai.openai-compatible: HTTPS-only contract and normalized discovery failure observed",
+    "passed": true
+  },
+  {
+    "name": "conformance social.bluesky: publish + idempotent replay + credential error contracts observed",
+    "passed": true
+  },
+  {
+    "name": "conformance social.mastodon/discord: both adapters executed against loopback endpoints and their outcomes were recorded",
+    "passed": true
+  },
+  {
+    "name": "social capability truth: every network reports a mode and the truth view never upgrades an adapter declaration",
+    "passed": true
+  },
+  {
+    "name": "conformance commerce.deterministic-test: checkout lifecycle, idempotency and signed-webhook contract observed",
+    "passed": true
+  },
+  {
+    "name": "conformance commerce.pod: emulator lifecycle + idempotency + normalized errors + simulator/Printful fail-safes observed",
+    "passed": true
+  },
+  {
+    "name": "conformance email: development sink retains envelopes and reports outcomes; disabled mode refuses truthfully",
+    "passed": true
+  },
+  {
+    "name": "extensions boundary: reference adapters honor the contract, capability gating and redaction — and are not shipping transports",
+    "passed": true
+  },
+  {
+    "name": "source scan: no file outside src/modules/extensions references the developer reference adapters",
+    "passed": true
+  },
+  {
+    "name": "extensions lifecycle: trust, compatibility and permission gates all fail closed; the example extension enables cleanly",
+    "passed": true
+  },
+  {
+    "name": "import framework: dry-run/apply determinism, redirect derivation and safety gates observed",
+    "passed": true
+  },
+  {
+    "name": "no harness secret (archive keys, AI canary, payload secret) appears in any HTTP response or CLI output",
+    "passed": true
+  }
+]
