@@ -99,7 +99,39 @@ export async function importPortableManifest(
     mediaReconciled = 0,
     redirects = 0
   const validationErrors: string[] = []
-  for (const record of manifest.records) {
+  // PORTABLE_COLLECTIONS is dependency-shaped (sites before publications
+  // before taxonomy before content before its satellites), so process records
+  // in that order regardless of manifest order: a record's references can
+  // only resolve once the records it points at have been written.
+  const collectionRank = new Map<string, number>(
+    PORTABLE_COLLECTIONS.map((collection, index) => [collection, index]),
+  )
+  const ordered = [...manifest.records].sort(
+    (a, b) =>
+      (collectionRank.get(a.collection) ?? Number.MAX_SAFE_INTEGER) -
+      (collectionRank.get(b.collection) ?? Number.MAX_SAFE_INTEGER),
+  )
+  const attempt = async (record: PortableRecord): Promise<Error | null> => {
+    try {
+      if (!dryRun) {
+        const existing = await store.read(record.collection, record.id),
+          outcome = await store.write(record.collection, record.id, record.data)
+        if (existing || outcome === 'updated') updated++
+        else created++
+        if (record.collection === 'media-assets') {
+          await store.reconcileMedia?.(record)
+          mediaReconciled++
+        }
+      }
+      if (redirectRecord(record)) redirects++
+      completed.add(`${record.collection}/${record.id}`)
+      return null
+    } catch (error) {
+      return error instanceof Error ? error : new Error('Unknown import error.')
+    }
+  }
+  const retryable: PortableRecord[] = []
+  for (const record of ordered) {
     const sourceId = `${record.collection}/${record.id}`
     if (!isPortableCollection(record.collection)) {
       validationErrors.push(`Unsupported portable collection: ${record.collection}`)
@@ -114,24 +146,19 @@ export async function importPortableManifest(
       skipped++
       continue
     }
-    try {
-      if (!dryRun) {
-        const existing = await store.read(record.collection, record.id),
-          outcome = await store.write(record.collection, record.id, record.data)
-        if (existing || outcome === 'updated') updated++
-        else created++
-        if (record.collection === 'media-assets') {
-          await store.reconcileMedia?.(record)
-          mediaReconciled++
-        }
-      }
-      if (redirectRecord(record)) redirects++
-      completed.add(sourceId)
-    } catch (error) {
+    const failure = await attempt(record)
+    if (failure) retryable.push(record)
+  }
+  // One deferred retry: a row whose dependency lived in the same collection
+  // (a category's parent, a revision's parent) or was written later despite
+  // the ordering gets a second chance before it is reported as failed.
+  for (const record of retryable) {
+    const failure = await attempt(record)
+    if (failure) {
       failedRows.push({
-        sourceId,
+        sourceId: `${record.collection}/${record.id}`,
         collection: record.collection,
-        message: error instanceof Error ? error.message : 'Unknown import error.',
+        message: failure.message,
       })
     }
   }

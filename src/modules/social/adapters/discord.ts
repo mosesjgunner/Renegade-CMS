@@ -12,7 +12,8 @@ import {
   type SocialVariant,
   type ValidationReport,
 } from '../contracts'
-import { sanitizeSocialLog, validateOutboundUrl } from '../security'
+import { assertSocialEndpoint, socialFetch } from '../dispatch-boundary'
+import { sanitizeSocialLog } from '../security'
 
 export interface DiscordEmbedField {
   name: string
@@ -214,13 +215,20 @@ export class DiscordAdapter implements SocialProviderAdapter {
       }
     }
 
-    const ssrfCheck = validateOutboundUrl(destination.url)
-    if (!ssrfCheck.isValid) {
+    // Route through the shared dispatch boundary like the sibling adapters:
+    // it enforces the same outbound policy (HTTPS, or an explicitly
+    // allowlisted loopback origin in local-harness mode) and socialFetch
+    // applies the shared timeout/redirect policy. Previously this adapter
+    // pre-checked with a stricter private rule and fetched directly, so it
+    // had no sanctioned local-harness path at all.
+    try {
+      assertSocialEndpoint(destination.url)
+    } catch (error) {
       return {
         status: 'failed',
         error: normalizeProviderError({
           kind: 'validation',
-          message: `Outbound URL blocked: ${ssrfCheck.reason}`,
+          message: `Outbound URL blocked: ${error instanceof Error ? error.message : 'boundary check failed'}`,
         }),
       }
     }
@@ -253,7 +261,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
       }
 
       if (attachments.length === 0) {
-        res = await fetch(destination.url, {
+        res = await socialFetch(destination.url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -274,7 +282,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
           }
         }
 
-        res = await fetch(destination.url, {
+        res = await socialFetch(destination.url, {
           method: 'POST',
           headers: { ...destination.headers },
           body: formData,
@@ -345,7 +353,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
       editUrl = `https://discord.com/api/v10/channels/${destination.channelId}/messages/${remotePostId}`
     }
 
-    const res = await fetch(editUrl, {
+    const res = await socialFetch(editUrl, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
