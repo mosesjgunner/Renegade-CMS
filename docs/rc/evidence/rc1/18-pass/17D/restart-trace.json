@@ -1,0 +1,14 @@
+[
+  {
+    "name": "restored web reboots after a full PostgreSQL cluster restart and reports ready",
+    "passed": true
+  },
+  {
+    "name": "owner WebAuthn login works again after the restart (restored credential + counter state persist)",
+    "passed": true
+  },
+  {
+    "name": "article, member session and edited media bytes all survive the restart",
+    "passed": true
+  }
+]

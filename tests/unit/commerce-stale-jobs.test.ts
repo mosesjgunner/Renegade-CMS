@@ -53,6 +53,54 @@ describe('Commerce Stale Job Recovery', () => {
     })
   })
 
+  it('releases the orphaned payment-event job lease so the concurrency lane cannot deadlock', async () => {
+    const updates: any[] = []
+    const mockPayload = {
+      collections: {
+        'payment-webhook-events': {},
+        'payload-jobs': {},
+      },
+      find: vi.fn().mockImplementation(async ({ collection }: any) => {
+        if (collection === 'payload-jobs')
+          return {
+            docs: [
+              {
+                id: 'job-orphan',
+                taskSlug: 'commerce-process-payment-event',
+                processing: true,
+                updatedAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
+              },
+            ],
+          }
+        return { docs: [] }
+      }),
+      update: vi.fn().mockImplementation(async (args: any) => {
+        updates.push(args)
+        return { id: args.id, ...args.data }
+      }),
+      jobs: { queue: vi.fn() },
+    }
+
+    const recovered = await recoverStaleCommerceJobs(mockPayload, 10 * 60 * 1000)
+
+    expect(recovered).toBe(1)
+    expect(updates).toEqual([
+      {
+        collection: 'payload-jobs',
+        id: 'job-orphan',
+        data: { processing: false },
+        overrideAccess: true,
+      },
+    ])
+    // The stale-lease query must include the payment-event task; without it a
+    // killed worker's row blocks the whole commerce.payment-events lane.
+    const jobsQuery = mockPayload.find.mock.calls.find(
+      ([args]: any) => args.collection === 'payload-jobs',
+    )?.[0]
+    const slugFilter = JSON.stringify(jobsQuery.where)
+    expect(slugFilter).toContain('commerce-process-payment-event')
+  })
+
   it('ignores when collection is not configured', async () => {
     const mockPayload = {
       collections: {},

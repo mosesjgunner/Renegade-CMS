@@ -1,0 +1,114 @@
+[
+  {
+    "name": "production-posture web booted without the test-env flag (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "SSRF: production posture rejects webhook targets at the cloud metadata address (4xx), loopback HTTP (4xx), an RFC1918 address (4xx) and a credential-embedded URL (4xx); no subscription persisted for any of them",
+    "passed": true
+  },
+  {
+    "name": "SSRF: an AI connection pointed at the cloud metadata address never becomes active, and its response carries no credential material",
+    "passed": true
+  },
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39069 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "control: owner reads the operator API for Alpha (200)",
+    "passed": true
+  },
+  {
+    "name": "owner creates a webhook subscription to the local capture receiver (201)",
+    "passed": true
+  },
+  {
+    "name": "Alpha-scoped staff cannot create a webhook subscription for Beta (403) and none persists",
+    "passed": true
+  },
+  {
+    "name": "the capture receiver observed exactly one signed delivery; the signature verifies against the canary secret, which itself never appears in the delivered body",
+    "passed": true
+  },
+  {
+    "name": "the persisted delivery is marked delivered and its audit record contains no secret material",
+    "passed": true
+  },
+  {
+    "name": "operator reconciliation reports the delivery and the full response body is free of every canary secret",
+    "passed": true
+  },
+  {
+    "name": "owner connects the AI connection against the local Ollama harness (201, active) and the response contains no credential material",
+    "passed": true
+  },
+  {
+    "name": "the credential was really used (the harness saw the Bearer canary) and really stored (it decrypts back through the connection service)",
+    "passed": true
+  },
+  {
+    "name": "AI connection list and a failed-probe connection response are both free of credential material; the failed probe never reports active",
+    "passed": true
+  },
+  {
+    "name": "owner uploads a real PNG through the operator route (201, asset persisted)",
+    "passed": true
+  },
+  {
+    "name": "the uploaded PNG is served back with its sniffed type and X-Content-Type-Options: nosniff",
+    "passed": true
+  },
+  {
+    "name": "content-sniffing rejects executable bytes (415), HTML bytes (415) and a script-bearing SVG (415), whatever their filenames claim",
+    "passed": true
+  },
+  {
+    "name": "a clean SVG uploads (201) and is served with a sandboxing Content-Security-Policy (default-src 'none')",
+    "passed": true
+  },
+  {
+    "name": "an upload beyond the configured size limit is rejected (413)",
+    "passed": true
+  },
+  {
+    "name": "anonymous upload is refused (not 201) and Alpha-scoped staff cannot upload into Beta (403); no Beta media persists",
+    "passed": true
+  },
+  {
+    "name": "a SQLi-shaped list filter is treated literally: 200, zero documents, no error leakage",
+    "passed": true
+  },
+  {
+    "name": "a SQLi-shaped title persists verbatim and the content table is fully intact afterwards",
+    "passed": true
+  },
+  {
+    "name": "Discord delete with an allowlisted loopback webhook reaches the capture server through the dispatch boundary (DELETE observed)",
+    "passed": true
+  },
+  {
+    "name": "Discord delete to the metadata address, a non-allowlisted loopback port and an RFC1918 address are all blocked at the boundary before any request is made",
+    "passed": true
+  },
+  {
+    "name": "outbound boundary: a public HTTPS resolution passes, while the same hostname resolving to a private address (DNS rebinding), plain HTTP and embedded credentials are all rejected before connection",
+    "passed": true
+  },
+  {
+    "name": "webhook target validation without the test-env flag rejects loopback HTTP (the production posture the second web process enforced over HTTP) while still accepting a public HTTPS target — validation only, no egress",
+    "passed": true
+  },
+  {
+    "name": "inbound email webhook: a correctly signed event passes the signature gate into business validation (400 unmatched delivery), while a tampered signature (401) and a missing signature (401) are rejected",
+    "passed": true
+  },
+  {
+    "name": "inbound flood is shed by the rate limiter before signature work: 429 responses appear within 30 rapid requests and carry Retry-After",
+    "passed": true
+  },
+  {
+    "name": "secret canary sweep: no canary (payload secret, webhook secret, AI keys) appears in any response body of the fresh phase",
+    "passed": true
+  }
+]

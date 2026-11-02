@@ -1,0 +1,9 @@
+{
+  "section": "email-dev",
+  "passed": 3,
+  "checks": [
+    "concurrent duplicate dispatch of one delivery sends exactly one message (attempts 1)",
+    "double-queued job plus outbox recovery still produces a single send attempt",
+    "a different provider never reconciles or resends an interrupted SMTP delivery"
+  ]
+}

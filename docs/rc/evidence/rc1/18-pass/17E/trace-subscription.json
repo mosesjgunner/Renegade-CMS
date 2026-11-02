@@ -1,0 +1,13 @@
+{
+  "section": "subscription",
+  "passed": 7,
+  "checks": [
+    "member subscription checkout persists one incomplete subscription",
+    "checkout retry with the same idempotency key replays without a second provider checkout or subscription",
+    "signed subscription-created event grants exactly the two plan entitlements and does not fake payment",
+    "killed mid-grant: the invoice event, order payment and entitlement change all rolled back atomically",
+    "redelivered invoice event settles exactly once: order paid, one event row, grants still exactly two",
+    "third delivery of the same signed event is a replay no-op",
+    "worker subscription reconciliation is idempotent: no version bump, event or duplicate grant on replay"
+  ]
+}

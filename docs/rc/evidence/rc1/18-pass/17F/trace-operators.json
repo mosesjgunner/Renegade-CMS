@@ -1,0 +1,71 @@
+{
+  "phase": "operators",
+  "at": "2026-11-02T21:32:09.234Z",
+  "checks": [
+    {
+      "name": "every `npm run …` command referenced by the operator docs exists in package.json",
+      "ok": true,
+      "detail": "19 commands verified"
+    },
+    {
+      "name": "production Compose defines the one-shot migrate service and gates app services on it",
+      "ok": true
+    },
+    {
+      "name": "multi-instance guard module ships (operations execution lock)",
+      "ok": true
+    }
+  ],
+  "observations": {
+    "operatorCommandsVerified": [
+      "backup:operational",
+      "db:migrate",
+      "dev",
+      "format:check",
+      "jobs:worker",
+      "lint",
+      "maintenance:operational",
+      "restore:operational",
+      "restore:prepare-env",
+      "restore:rehearsal",
+      "rollback:operational",
+      "status:operational",
+      "test",
+      "test:integration",
+      "test:migrations:fresh",
+      "test:migrations:upgrade",
+      "typecheck",
+      "upgrade:operational",
+      "verify:presentation-bundles"
+    ]
+  },
+  "data": {
+    "referencedCommands": [
+      "backup:operational",
+      "db:migrate",
+      "dev",
+      "format:check",
+      "jobs:worker",
+      "lint",
+      "maintenance:operational",
+      "restore:operational",
+      "restore:prepare-env",
+      "restore:rehearsal",
+      "rollback:operational",
+      "status:operational",
+      "test",
+      "test:integration",
+      "test:migrations:fresh",
+      "test:migrations:upgrade",
+      "typecheck",
+      "upgrade:operational",
+      "verify:presentation-bundles"
+    ],
+    "missing": []
+  },
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3
+  }
+}

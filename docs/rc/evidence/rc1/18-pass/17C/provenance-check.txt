@@ -1,0 +1,16 @@
+{
+ "root": {
+  "sourceSha": "43e9e77047086b8143f43703dd8d166b1a675013",
+  "clean": true,
+  "version": "0.1.0",
+  "lockfileSha256": "db6f9bbcca7ec4232a72af85e9e13762429bb3f1dbce09fd20f120ce1e3ccc33"
+ },
+ "standalone": {
+  "sourceSha": "43e9e77047086b8143f43703dd8d166b1a675013",
+  "clean": true,
+  "version": "0.1.0",
+  "lockfileSha256": "db6f9bbcca7ec4232a72af85e9e13762429bb3f1dbce09fd20f120ce1e3ccc33"
+ },
+ "agree": true,
+ "lockfileMatches": true
+}

@@ -929,13 +929,26 @@ export async function recoverStaleCommerceJobs(
 
   // Billing reconciliation only reads the provider and applies idempotent local projections.
   // Recover abandoned job leases; the shared provider lock also serializes a slow surviving worker.
+  // The payment-event lane needs the same reset: Payload's runner excludes every
+  // queued job whose concurrencyKey is still marked processing, so a worker
+  // killed mid-settlement would otherwise orphan its job row and permanently
+  // block the replacement job queued above — a paid event that never settles.
+  // Resetting the orphan makes it runnable again; its handler is idempotent
+  // (a processed inbox returns early), so orphan and replacement cannot
+  // double-apply the event.
   if (payload.collections?.['payload-jobs']) {
     const jobs = await payload.find({
       collection: 'payload-jobs',
       where: {
         and: [
           {
-            taskSlug: { in: ['commerce-reconcile-subscriptions', 'commerce-reconcile-referrals'] },
+            taskSlug: {
+              in: [
+                'commerce-reconcile-subscriptions',
+                'commerce-reconcile-referrals',
+                'commerce-process-payment-event',
+              ],
+            },
           },
           { processing: { equals: true } },
           { updatedAt: { less_than_equal: threshold } },

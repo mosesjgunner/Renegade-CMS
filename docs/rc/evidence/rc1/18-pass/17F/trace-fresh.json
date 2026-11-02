@@ -1,0 +1,37 @@
+{
+  "phase": "fresh",
+  "at": "2026-11-02T21:15:41.708Z",
+  "checks": [
+    {
+      "name": "shipped fresh-migration verifier exits 0 (all migrations applied twice, runtime schema assertions)",
+      "ok": true,
+      "detail": "exit 0"
+    },
+    {
+      "name": "payload_migrations records every migration exactly once",
+      "ok": true,
+      "detail": "131 = 131"
+    },
+    {
+      "name": "operator command `npm run db:status` runs against the fresh database",
+      "ok": true,
+      "detail": "exit 0"
+    }
+  ],
+  "observations": {
+    "dbStatusTail": "│\u001b[37m \u001b[0m\u001b[32m                         20261101_150000_rc1_experiment_form\u001b[0m │\u001b[37m \u001b[0m\u001b[32m    1\u001b[0m │\u001b[37m \u001b[0m\u001b[32mYes\u001b[0m │\n│\u001b[37m \u001b[0m\u001b[32m                20261101_160000_rc1_network_relationship_ids\u001b[0m │\u001b[37m \u001b[0m\u001b[32m    1\u001b[0m │\u001b[37m \u001b[0m\u001b[32mYes\u001b[0m │\n└──────────────────────────────────────────────────────────────┴───────┴─────┘\n[21:15:41] \u001b[32mINFO\u001b[39m: \u001b[36mDone.\u001b[39m"
+  },
+  "data": {
+    "database": "rc117f_release_acceptance",
+    "migrationsApplied": 131,
+    "migrationsTotal": 131,
+    "postgresql": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+    "appVersion": "0.1.0",
+    "sourceHead": "f0f4e7f8e30694289039e812f2e3b35753db0d9b"
+  },
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3
+  }
+}

@@ -31,6 +31,7 @@ export function isPrivateAddress(address: string): boolean {
       a >= 224 ||
       (a === 169 && b === 254) ||
       (a === 172 && b >= 16 && b <= 31) ||
+      (a === 100 && b >= 64 && b <= 127) ||
       (a === 192 && b === 168)
     )
   }

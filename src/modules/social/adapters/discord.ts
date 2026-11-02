@@ -381,14 +381,24 @@ export class DiscordAdapter implements SocialProviderAdapter {
     const botToken = (creds?.botToken as string) || (creds?.token as string)
     const channelId = creds?.channelId as string
 
+    // Route through the shared dispatch boundary like publish/edit above:
+    // the webhook URL comes from connection credentials, so without the
+    // boundary this was an unvalidated server-side request to an
+    // operator-supplied destination. socialFetch enforces the outbound
+    // policy (HTTPS, or an explicitly allowlisted loopback origin in
+    // local-harness mode) plus the shared timeout/redirect policy, and a
+    // blocked destination now fails loudly instead of silently egressing.
     if (webhookUrl) {
       const baseWebhook = webhookUrl.split('?')[0]
-      await fetch(`${baseWebhook}/messages/${remotePostId}`, { method: 'DELETE' })
+      await socialFetch(`${baseWebhook}/messages/${remotePostId}`, { method: 'DELETE' })
     } else if (botToken && channelId) {
-      await fetch(`https://discord.com/api/v10/channels/${channelId}/messages/${remotePostId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bot ${botToken}` },
-      })
+      await socialFetch(
+        `https://discord.com/api/v10/channels/${channelId}/messages/${remotePostId}`,
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bot ${botToken}` },
+        },
+      )
     }
   }
 

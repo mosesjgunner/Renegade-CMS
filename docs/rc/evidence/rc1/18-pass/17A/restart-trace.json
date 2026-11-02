@@ -1,0 +1,22 @@
+[
+  {
+    "name": "restart: Next.js web process booted on http://127.0.0.1:39068 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "restart: pre-restart owner session and the WebAuthn-issued session still authenticate after the web + PostgreSQL restart (200/200)",
+    "passed": true
+  },
+  {
+    "name": "restart: the revoked grant (403), the suspended member (401) and the forged token (403) are all still denied after the restart",
+    "passed": true
+  },
+  {
+    "name": "restart: protected state persisted across the restart, identical to the pre-battery snapshot",
+    "passed": true
+  },
+  {
+    "name": "restart: secret canary sweep — the harness PAYLOAD_SECRET never appears in any response body",
+    "passed": true
+  }
+]
