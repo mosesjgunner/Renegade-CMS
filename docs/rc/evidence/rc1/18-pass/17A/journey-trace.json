@@ -1,0 +1,130 @@
+[
+  {
+    "name": "Next.js web process booted on http://127.0.0.1:39068 (anonymous /connections redirects to login)",
+    "passed": true
+  },
+  {
+    "name": "controls: global owner reads the operator API for Beta (200); Alpha-scoped staff reads it for Alpha (200)",
+    "passed": true
+  },
+  {
+    "name": "control: community member session lists its own member sessions (200)",
+    "passed": true
+  },
+  {
+    "name": "anonymous (403), community-member session (403) and staff with no site grants (403) are all denied the operator API",
+    "passed": true
+  },
+  {
+    "name": "Alpha-scoped staff is denied the operator API for Beta on read (403) and on write (403), and no Beta webhook subscription was created",
+    "passed": true
+  },
+  {
+    "name": "anonymous and member sessions cannot list operator accounts (401/403) and cannot read a foreign draft by id (403/404)",
+    "passed": true
+  },
+  {
+    "name": "scoped staff cannot read a foreign draft (404) or foreign media (403/404) by id, and a foreign-site list query returns none of Beta’s records",
+    "passed": true
+  },
+  {
+    "name": "object substitution fails: scoped staff PATCH foreign content, POST content into a foreign site, DELETE foreign draft and PATCH the owner account are all denied (400/403/404)",
+    "passed": true
+  },
+  {
+    "name": "failed cross-tenant attempts leave protected state unchanged (Beta article/draft/media, Alpha article, Beta site, counts identical)",
+    "passed": true
+  },
+  {
+    "name": "owner account role is unchanged after the staff PATCH attempt",
+    "passed": true
+  },
+  {
+    "name": "CSRF: authenticated mutation with a foreign Origin is blocked by the proxy guard (403, guard message)",
+    "passed": true
+  },
+  {
+    "name": "CSRF: authenticated mutation with Sec-Fetch-Site: cross-site and no Origin/Referer is blocked (403, guard message)",
+    "passed": true
+  },
+  {
+    "name": "CSRF controls: same-origin Origin and header-less non-browser mutations pass the guard and reach the handler (no guard message)",
+    "passed": true
+  },
+  {
+    "name": "member mutation without a CSRF token (403) and with a mismatched CSRF token (403) is refused before any session change",
+    "passed": true
+  },
+  {
+    "name": "object substitution: member A cannot revoke member B’s session (404) and B’s session remains valid afterwards (200)",
+    "passed": true
+  },
+  {
+    "name": "control: member A revokes its own second session (200) and the revoked token immediately stops authenticating (401)",
+    "passed": true
+  },
+  {
+    "name": "WebAuthn: completing sign-in without ever requesting a challenge is refused (400)",
+    "passed": true
+  },
+  {
+    "name": "WebAuthn: assertions with a foreign origin (400) and with a never-issued challenge (400) are refused; no session cookie is issued",
+    "passed": true
+  },
+  {
+    "name": "WebAuthn: an expired challenge (400) and an unknown credential id (400) are refused; the stored sign counter has not moved",
+    "passed": true
+  },
+  {
+    "name": "WebAuthn control: a valid software-authenticator assertion completes sign-in (200) and issues the admin session cookie",
+    "passed": true
+  },
+  {
+    "name": "the WebAuthn-issued session works on the operator API (200) and the stored sign counter advanced exactly to the assertion counter",
+    "passed": true
+  },
+  {
+    "name": "WebAuthn replay: resubmitting the consumed assertion is refused (400) and creates no second session",
+    "passed": true
+  },
+  {
+    "name": "account revocation: staff B works (200), the owner deletes the account (200), and B’s live session immediately stops authenticating (403)",
+    "passed": true
+  },
+  {
+    "name": "grant revocation: the owner deletes staff A’s only site grant (200) and A’s live session loses the operator API (403) and its own site’s content (404) on the very next requests",
+    "passed": true
+  },
+  {
+    "name": "session revocation by logout: staff C works (200), logs out (200), and the same cookie is dead afterwards (403)",
+    "passed": true
+  },
+  {
+    "name": "session revocation by the operator (session rows revoked): staff C’s second live session stops authenticating (403)",
+    "passed": true
+  },
+  {
+    "name": "an expired session row (403) and a correctly signed JWT with no session row behind it (403) are both denied",
+    "passed": true
+  },
+  {
+    "name": "forged-secret owner token (403), tampered-payload token elevating a staff id to the owner id (403) and a garbage cookie (403) are all denied without a server error",
+    "passed": true
+  },
+  {
+    "name": "member suspension (operator action): member B’s live member session immediately stops authenticating (401)",
+    "passed": true
+  },
+  {
+    "name": "after the full negative battery, protected state is unchanged: Beta article/draft/media, Alpha article, Beta site and content/media counts all identical to the pre-battery snapshot",
+    "passed": true
+  },
+  {
+    "name": "the only account change is the deliberate owner deletion of staff B; owner/staff A/staff C/unscoped staff/WebAuthn accounts all still exist",
+    "passed": true
+  },
+  {
+    "name": "secret canary sweep: the harness PAYLOAD_SECRET never appears in any response body",
+    "passed": true
+  }
+]
