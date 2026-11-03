@@ -1,4 +1,4 @@
-import { copyFileSync, chmodSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, chmodSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 
@@ -17,7 +17,10 @@ function visit(directory) {
       if (pkg.name !== 'esbuild' && !pkg.name?.startsWith('@esbuild/')) continue
       if (pkg.version !== expectedVersion)
         throw new Error(`Unexpected esbuild runtime package version at ${file}`)
-      const target = join(directory, 'bin', 'esbuild')
+      // Standalone tracing can retain package metadata without its executable directory.
+      const binDirectory = join(directory, 'bin')
+      mkdirSync(binDirectory, { recursive: true })
+      const target = join(binDirectory, 'esbuild')
       copyFileSync(binary, target)
       chmodSync(target, 0o755)
       replaced.push({ package: pkg.name, version: pkg.version, path: target })
