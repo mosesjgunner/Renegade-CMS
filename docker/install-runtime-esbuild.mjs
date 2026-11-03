@@ -1,4 +1,11 @@
-import { copyFileSync, chmodSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import {
+  copyFileSync,
+  chmodSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from 'node:fs'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 

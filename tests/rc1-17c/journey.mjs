@@ -53,17 +53,11 @@ const statePath = `${scratch}/state.json`
 const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, 'utf8')) : {}
 const save = () => writeFileSync(statePath, JSON.stringify(state, null, 2))
 const hash = (buf) => createHash('sha256').update(buf).digest('hex')
-const proxyEnv = {
-  HTTP_PROXY: 'http://hatch-egress-proxy:3128',
-  HTTPS_PROXY: 'http://hatch-egress-proxy:3128',
-  http_proxy: 'http://hatch-egress-proxy:3128',
-  https_proxy: 'http://hatch-egress-proxy:3128',
-}
 
 function run(cmd, args, { env = {}, input, allowFail = false, quiet = false } = {}) {
   const res = spawnSync(cmd, args, {
     cwd: root,
-    env: { ...process.env, ...proxyEnv, ...env },
+    env: { ...process.env, ...env },
     input,
     encoding: 'utf8',
     maxBuffer: 256 * 1024 * 1024,
@@ -145,13 +139,19 @@ function execIn(name, args, opts = {}) {
 }
 
 function fixture(container, runIdValue, ...args) {
-  const res = execIn(container, [
-    '-e',
-    `RC117C_RUN_ID=${runIdValue}`,
-    './node_modules/.bin/tsx',
-    'tests/rc1-17c/fixture.ts',
-    ...args,
-  ])
+  const res = run(
+    'docker',
+    [
+      'exec',
+      '-e',
+      `RC117C_RUN_ID=${runIdValue}`,
+      container,
+      './node_modules/.bin/tsx',
+      'tests/rc1-17c/fixture.ts',
+      ...args,
+    ],
+    { quiet: true },
+  )
   const line = res.stdout
     .split('\n')
     .filter((entry) => entry.startsWith('FIXTURE_JSON:'))
