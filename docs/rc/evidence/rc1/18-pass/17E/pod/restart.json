@@ -1,0 +1,15 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "separate commerce worker restarts and records a fresh durable heartbeat",
+    "provider/DB/web restart retains provider identity and denies duplicate 01a1a0d5-21d6-74c0-83fd-daca0cce195a",
+    "provider/DB/web restart retains provider identity and denies duplicate 01a1a0d6-072b-7165-8ca4-d5394725e49d",
+    "operator-repaired known rejection survives restart without automatic manual production",
+    "durable provider ledger retains exact order count and original order identity across independent process restart",
+    "signed private artwork survives restart byte-for-byte; foreign site, forged signature, expired grant and changed checksum are denied",
+    "disabled provider repair retains persisted provider identity and re-enabling allows reconciliation without resubmission",
+    "fresh browser context refetches saved provider output after restart"
+  ]
+}

@@ -197,7 +197,7 @@ if (command === 'export') {
               depth: 0,
               overrideAccess: true,
             })
-            existing = (found.docs[0] as typeof existing) ?? null
+            existing = (found.docs[0] as unknown as typeof existing) ?? null
           }
         }
         if (!existing && collection === 'article-family-content') {
@@ -213,7 +213,7 @@ if (command === 'export') {
               depth: 0,
               overrideAccess: true,
             })
-            existing = (found.docs[0] as typeof existing) ?? null
+            existing = (found.docs[0] as unknown as typeof existing) ?? null
           }
         }
         if (existing) {

@@ -1,0 +1,22 @@
+[
+  {
+    "name": "restart: Next.js web process booted after the web + PostgreSQL restart",
+    "passed": true
+  },
+  {
+    "name": "restart: the pre-restart owner session still authenticates (200) and the response is canary-free",
+    "passed": true
+  },
+  {
+    "name": "restart: uploaded media still serves (200), and the webhook subscription and AI connection persisted across the restart",
+    "passed": true
+  },
+  {
+    "name": "restart: secret canary sweep over all web logs (fresh, production-posture and restart) — no canary secret was ever logged",
+    "passed": true
+  },
+  {
+    "name": "restart: secret canary sweep over restart-phase response bodies",
+    "passed": true
+  }
+]

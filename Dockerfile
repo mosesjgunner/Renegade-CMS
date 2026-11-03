@@ -8,7 +8,9 @@ FROM node:24-alpine AS production-dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 COPY scripts ./scripts
-RUN npm ci --omit=dev
+# Do not auto-install optional peer tooling such as Next's Playwright test peer
+# or Lexical's TypeScript peer in the operational runtime dependency tree.
+RUN npm ci --omit=dev --omit=peer
 
 # Upstream npm esbuild executables embed older Go standard libraries. Keep the
 # supported esbuild API/version, but build the shipped executable from its exact

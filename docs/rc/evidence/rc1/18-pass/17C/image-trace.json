@@ -1,0 +1,10 @@
+[
+  {
+    "name": "production runner image built from clean candidate ebbfeeb8f808b06860a669948e5c51a276b2fb0a",
+    "passed": true
+  },
+  {
+    "name": "media-heavy target built from the same Dockerfile",
+    "passed": true
+  }
+]

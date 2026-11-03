@@ -12,6 +12,7 @@ media
 *.log
 coverage
 scratch
+docs
 test-results
 playwright-report
 .worktrees

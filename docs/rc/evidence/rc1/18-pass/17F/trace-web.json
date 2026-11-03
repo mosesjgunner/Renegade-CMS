@@ -1,0 +1,25 @@
+{
+  "phase": "web",
+  "at": "2026-11-02T21:33:28.735Z",
+  "checks": [
+    {
+      "name": "web boots on the fixture-upgraded database and reports ready",
+      "ok": true,
+      "detail": "status 200"
+    }
+  ],
+  "observations": {
+    "homepageStatusOnUpgradedDb": 200,
+    "sentinelArticleStatusOnUpgradedDb": 200,
+    "sentinelArticleRendersTitle": true
+  },
+  "data": {
+    "database": "rc117f_upgrade_acceptance",
+    "port": 39175
+  },
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1
+  }
+}

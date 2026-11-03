@@ -1,0 +1,90 @@
+[
+  {
+    "name": "anonymous campaign send denied",
+    "passed": true
+  },
+  {
+    "name": "operator HTTP creates queued persisted delivery",
+    "passed": true
+  },
+  {
+    "name": "actual SMTP DATA exact plain text and HTML captured",
+    "passed": true
+  },
+  {
+    "name": "message identity and persistent attempt",
+    "passed": true
+  },
+  {
+    "name": "accepted retry rejected",
+    "passed": true
+  },
+  {
+    "name": "foreign origin retry denied",
+    "passed": true
+  },
+  {
+    "name": "451 automatically retries and accepts exactly once",
+    "passed": true
+  },
+  {
+    "name": "failed-only HTTP retry accepts a safe exhausted delivery",
+    "passed": true
+  },
+  {
+    "name": "operator retry succeeds with lifetime attempt five and one DATA",
+    "passed": true
+  },
+  {
+    "name": "permanent failure is durable and not retried",
+    "passed": true
+  },
+  {
+    "name": "retry cap persists four attempts",
+    "passed": true
+  },
+  {
+    "name": "failed-only operator retry queues exhausted delivery",
+    "passed": true
+  },
+  {
+    "name": "queued retry cannot enqueue another retry",
+    "passed": true
+  },
+  {
+    "name": "suppression wins on retry with lifetime attempts preserved",
+    "passed": true
+  },
+  {
+    "name": "lost SMTP response quarantined without resend",
+    "passed": true
+  },
+  {
+    "name": "mid-send persisted lease/provider/attempt",
+    "passed": true
+  },
+  {
+    "name": "real worker kill and lease expiry quarantines accepted DATA once",
+    "passed": true
+  },
+  {
+    "name": "restart never duplicates successful/unknown sends",
+    "passed": true
+  },
+  {
+    "name": "controlled bounce event persists bounced state and suppression",
+    "passed": true
+  },
+  {
+    "name": "bounce event replay is idempotent",
+    "passed": true
+  },
+  {
+    "name": "canonical queue command deduplicates delivery ID",
+    "passed": true
+  },
+  {
+    "name": "deduplicated command yields one DATA and one attempt",
+    "passed": true
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "tablesCompared": 311,
+  "tableDifferences": [],
+  "mediaFilesCompared": 42,
+  "mediaDifferences": [],
+  "housekeeping": "The source media .renegade/backup-status.json is excluded from the archive by the shipped tooling and is therefore absent after restore; it is excluded from both checksum maps. Sequences and migration ledger are part of the compared tables."
+}

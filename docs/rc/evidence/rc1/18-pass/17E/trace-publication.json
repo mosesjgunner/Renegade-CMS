@@ -1,0 +1,21 @@
+{
+  "section": "publication",
+  "passed": 15,
+  "checks": [
+    "schedule created a queued lease job through the editorial service",
+    "child executor acquired the lease (status processing, owner worker-A)",
+    "child still alive while blocked inside publish",
+    "killed mid-publish: article was NOT published and no partial publication persisted",
+    "job remains truthfully processing under the dead worker lease",
+    "a second worker is refused while the lease is still valid",
+    "operator schedule-health reconcile ran the recovery sweep",
+    "after lease expiry the job completes and publishes exactly the pinned revision",
+    "published article renders publicly after recovery",
+    "re-running reconcile does not republish (single publication effect)",
+    "the queued Payload publish job drains as an idempotent no-op after lease recovery",
+    "publication failure through the rights gate retries then lands in failed state with a sanitized error",
+    "operator retry resets the failed job truthfully (queued, retryCount 0, lease cleared)",
+    "after the rights fix, reconcile publishes the previously failed job exactly once",
+    "future-dated job remains queued and unpublished"
+  ]
+}

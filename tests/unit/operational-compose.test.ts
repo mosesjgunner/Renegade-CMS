@@ -3,7 +3,11 @@ import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { composeArgs, projectNameFromEnvFile } from '../../src/scripts/operational-compose'
+import {
+  composeArgs,
+  projectNameFromEnvFile,
+  runningBackupWriters,
+} from '../../src/scripts/operational-compose'
 
 const roots: string[] = []
 
@@ -12,6 +16,14 @@ afterEach(async () => {
 })
 
 describe('operational Compose targeting', () => {
+  it('quiesces every running application writer without starting stopped services', () => {
+    expect(runningBackupWriters('postgres\nrenegade-web\nmedia-heavy\n')).toEqual([
+      'renegade-web',
+      'media-heavy',
+    ])
+    expect(runningBackupWriters('postgres\nrenegade-worker\n')).toEqual(['renegade-worker'])
+    expect(runningBackupWriters('postgres\n')).toEqual([])
+  })
   it('uses the instance persisted with the production environment for every operational command', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'renegade-compose-'))
     roots.push(root)

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "source environment migrated (payload_migrations rows: 131)",
+    "passed": true
+  },
+  {
+    "name": "site, owner, staff holding a contributor site grant, member + profile and author created",
+    "passed": true
+  },
+  {
+    "name": "owner passkey credential enrolled (DB row) and a member session issued in the source environment",
+    "passed": true
+  },
+  {
+    "name": "source web boots and reports ready",
+    "passed": true
+  },
+  {
+    "name": "the source-issued member session authenticates in the SOURCE environment (baseline for the restore claim)",
+    "passed": true
+  },
+  {
+    "name": "owner uploads original media over HTTP (201) and an asset is created",
+    "passed": true
+  },
+  {
+    "name": "edited replacement over HTTP (201) records a media-asset version",
+    "passed": true
+  },
+  {
+    "name": "published article with SEO fields and hero media created",
+    "passed": true
+  },
+  {
+    "name": "newsletter consent captured (verified subscriber + confirmed audience membership + contact)",
+    "passed": true
+  },
+  {
+    "name": "forum section, forum, discussion and a member message created",
+    "passed": true
+  },
+  {
+    "name": "product published through the catalog workflow API (draft → review → approved → published)",
+    "passed": true
+  },
+  {
+    "name": "commerce chain persisted: product, cart, checkout, paid intent + attempt, fulfilled order, succeeded partial refund, shipped fulfillment, active subscription + entitlement, succeeded donation",
+    "passed": true
+  },
+  {
+    "name": "owner creates a webhook subscription through the operator API (201)",
+    "passed": true
+  },
+  {
+    "name": "execution event produces exactly one delivery, delivered once to the local receiver with a valid signature",
+    "passed": true
+  },
+  {
+    "name": "a future-dated durable job is queued and pending at backup time",
+    "passed": true
+  },
+  {
+    "name": "source projection snapshot captured for every populated business category",
+    "passed": true
+  }
+]

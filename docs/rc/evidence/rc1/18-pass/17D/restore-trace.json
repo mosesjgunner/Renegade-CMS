@@ -1,0 +1,86 @@
+[
+  {
+    "name": "corrupted media component and a manifest with a removed entry are both rejected by the product verifier",
+    "passed": true
+  },
+  {
+    "name": "rejected restores mutated nothing: target database still has 0 tables and the media directory is still empty",
+    "passed": true
+  },
+  {
+    "name": "product restore-safety guard refuses non-isolated restores and non-restore targets, and accepts the isolated restore target",
+    "passed": true
+  },
+  {
+    "name": "a non-empty database or media target is refused (guard fires on both)",
+    "passed": true
+  },
+  {
+    "name": "archive verifies and is version-compatible with the restore target",
+    "passed": true
+  },
+  {
+    "name": "pg_restore and media extraction complete into the empty target",
+    "passed": true
+  },
+  {
+    "name": "restored database projections are identical to the quiesced source (311 tables compared, 0 differences)",
+    "passed": true
+  },
+  {
+    "name": "restored media bytes are identical to the source (42 files compared, 0 differences)",
+    "passed": true
+  },
+  {
+    "name": "forward migrations run clean against the restored database (exit 0)",
+    "passed": true
+  },
+  {
+    "name": "restored web boots and reports ready",
+    "passed": true
+  },
+  {
+    "name": "owner logs in to the RESTORED environment with the source-enrolled passkey (genuine WebAuthn protocol; session cookie issued)",
+    "passed": true
+  },
+  {
+    "name": "anonymous access to the restored operator API is denied (403)",
+    "passed": true
+  },
+  {
+    "name": "staff fixture session (restore secret) reads the restored operator API (200), including the restored webhook subscription",
+    "passed": true
+  },
+  {
+    "name": "the member session token issued BEFORE backup still authenticates after restore (restored session row validates it)",
+    "passed": true
+  },
+  {
+    "name": "restored refetch matches the source projection: order, refund, subscription, donation, entitlement",
+    "passed": true
+  },
+  {
+    "name": "restored refetch matches: newsletter membership active, forum message body intact, webhook delivery still delivered",
+    "passed": true
+  },
+  {
+    "name": "the restored discussion renders publicly with the member message visible",
+    "passed": true
+  },
+  {
+    "name": "the published article matches the projection via operator read and renders publicly with its SEO title as the page title",
+    "passed": true
+  },
+  {
+    "name": "the edited media serves over HTTP from the restored environment with byte equality to the edited source bytes",
+    "passed": true
+  },
+  {
+    "name": "the future-dated job is still pending after restore (not executed, not lost, no error)",
+    "passed": true
+  },
+  {
+    "name": "a live worker in the restored environment leaves the future-dated job safely pending (heartbeat observed, job untouched)",
+    "passed": true
+  }
+]

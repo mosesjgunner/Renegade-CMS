@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
 import { previewRecipe } from '../public/page-builder'
-import { installStarter } from '../starters/service'
+import { installStarter, toLexicalDocument } from '../starters/service'
 
 const CANONICAL_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
@@ -396,6 +396,7 @@ async function provisionStarterContent(
         slug: path === '/' ? 'home' : path.slice(1),
         canonicalPath: path,
         summary,
+        body: toLexicalDocument(summary),
         status,
         commentsPolicy: defaultComments,
         importSourceSystem: 'onboarding-starter',
@@ -417,6 +418,7 @@ async function provisionStarterContent(
       slug: 'welcome-draft',
       canonicalPath: '/articles/welcome-draft',
       summary: 'A private starter draft. Edit it or delete it whenever you are ready.',
+      body: toLexicalDocument('A private starter draft. Edit it or delete it whenever you are ready.'),
       status: 'draft',
       commentsPolicy: defaultComments,
       importSourceSystem: 'onboarding-starter',

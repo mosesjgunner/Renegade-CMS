@@ -1,0 +1,37 @@
+{
+  "article": {
+    "title": "17D Launch Post",
+    "slug": "17d-launch",
+    "status": "published",
+    "seoTitle": "17D Launch — SEO title"
+  },
+  "order": {
+    "orderNumber": "17D-1001",
+    "state": "fulfilled",
+    "amountMinor": "4200"
+  },
+  "refund": {
+    "amountMinor": "500",
+    "state": "succeeded",
+    "kind": "partial"
+  },
+  "subscription": {
+    "state": "active",
+    "providerKey": "deterministic"
+  },
+  "donation": {
+    "baseAmountMinor": "1500",
+    "lifecycle": "succeeded"
+  },
+  "membership": {
+    "status": "active"
+  },
+  "post": {
+    "body": "First message in the 17D town hall.",
+    "status": "published"
+  },
+  "delivery": {
+    "state": "delivered",
+    "eventType": "content.created"
+  }
+}

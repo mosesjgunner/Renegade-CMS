@@ -1,0 +1,16 @@
+{
+  "section": "fulfillment",
+  "passed": 10,
+  "checks": [
+    "POD product mapped and published",
+    "paid order created exactly one held POD job",
+    "operator released the fulfillment hold",
+    "crash mid-submission: job is truthfully in exception with the attempt reserved, no external id claimed",
+    "provider holds exactly one order for the job idempotency key after the crash",
+    "reconciliation recovers the external order by idempotency key without resubmitting",
+    "provider shipment reconciles the job and completes order fulfillment without new submissions",
+    "known provider rejection lands the job in failed state (no unknown-outcome limbo)",
+    "retry without an audited repair reason is refused",
+    "audited retry submits exactly once and records the recovered external order"
+  ]
+}
