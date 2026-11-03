@@ -1,0 +1,13 @@
+{
+  "section": "email-smtp",
+  "passed": 7,
+  "checks": [
+    "killed mid-dispatch: delivery remains sending under its lease, provider already holds exactly one copy",
+    "unknown outcome is never resent: provider copy count stays one, attempts stay one",
+    "operator retry truthfully refuses an unreconcilable unknown outcome (409, no resend)",
+    "retry with backoff succeeded exactly once (attempts 2, one provider copy)",
+    "four bounded attempts then dead-letter; provider never stored a copy",
+    "operator retry requeues the dead-letter delivery",
+    "repaired delivery accepted exactly once with the attempt cycle restarted truthfully"
+  ]
+}

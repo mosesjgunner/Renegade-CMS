@@ -1,0 +1,26 @@
+[
+  {
+    "name": "rc117cb: migration command (same as image migrate service) exits 0",
+    "passed": true
+  },
+  {
+    "name": "rc117cb: production standalone web process reports ready over HTTP",
+    "passed": true
+  },
+  {
+    "name": "configured modules register: commerce (products) and newsletter (subscribers) collections present",
+    "passed": true
+  },
+  {
+    "name": "unconfigured modules stay off (no forum-sections from community)",
+    "passed": true
+  },
+  {
+    "name": "media-profile worker process boots with WORKER_PROFILE=media-heavy and writes its heartbeat",
+    "passed": true
+  },
+  {
+    "name": "adding a media-profile worker does not change web feature registration",
+    "passed": true
+  }
+]

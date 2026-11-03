@@ -1,0 +1,22 @@
+[
+  {
+    "name": "source at-rest state captured (311 tables, 42 media files)",
+    "passed": true
+  },
+  {
+    "name": "pg_dump -Fc and the media tar (shipped exclusions) are written",
+    "passed": true
+  },
+  {
+    "name": "product manifest created and verifyOperationalBackup passes (checksums + totals)",
+    "passed": true
+  },
+  {
+    "name": "archive format proof: pg_restore -l and tar -tzf both read the archive",
+    "passed": true
+  },
+  {
+    "name": "secret exclusion: no environment secret appears in the manifest or the database dump; the media archive lists no .env or backup-status entries",
+    "passed": true
+  }
+]

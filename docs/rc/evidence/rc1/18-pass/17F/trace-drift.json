@@ -1,0 +1,60 @@
+{
+  "phase": "drift",
+  "at": "2026-11-02T21:16:03.091Z",
+  "checks": [
+    {
+      "name": "schema drift: table sets converge between fresh install and fixture upgrade",
+      "ok": true
+    },
+    {
+      "name": "schema drift: column sets (type/nullability/default) converge",
+      "ok": true
+    },
+    {
+      "name": "schema drift: enum label sets converge",
+      "ok": true
+    },
+    {
+      "name": "schema drift: index definitions converge",
+      "ok": true
+    }
+  ],
+  "observations": {},
+  "data": {
+    "fresh": {
+      "tables": 311,
+      "columns": 4644,
+      "enums": 1060,
+      "indexes": 1827
+    },
+    "upgraded": {
+      "tables": 311,
+      "columns": 4644,
+      "enums": 1060,
+      "indexes": 1827
+    },
+    "diffs": {
+      "tables": {
+        "onlyInA": [],
+        "onlyInB": []
+      },
+      "columns": {
+        "onlyInA": [],
+        "onlyInB": []
+      },
+      "enums": {
+        "onlyInA": [],
+        "onlyInB": []
+      },
+      "indexes": {
+        "onlyInA": [],
+        "onlyInB": []
+      }
+    }
+  },
+  "summary": {
+    "passed": 4,
+    "failed": 0,
+    "total": 4
+  }
+}

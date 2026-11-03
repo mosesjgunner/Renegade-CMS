@@ -9,6 +9,14 @@ export type ComposeTarget = {
   buildSha?: string
 }
 
+/** Application services that can write the database or governed media. */
+export function runningBackupWriters(services: string): string[] {
+  const running = new Set(services.split(/\r?\n/).map((service) => service.trim()))
+  return ['renegade-web', 'renegade-worker', 'media-heavy'].filter((service) =>
+    running.has(service),
+  )
+}
+
 export function projectNameFromEnvFile(
   envFile: string,
   variable = 'RENEGADE_INSTANCE',

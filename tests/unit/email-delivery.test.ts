@@ -141,6 +141,10 @@ describe('email delivery adapters', () => {
       kind: 'permanent',
       code: 'permanent_recipient_error',
     })
+    expect(normalizeEmailError({ message: 'password=top-secret broke' })).toMatchObject({
+      kind: 'unknown',
+      code: 'unknown_outcome',
+    })
     expect(normalizeEmailError({ message: 'password=top-secret broke' })).not.toMatchObject({
       message: expect.stringContaining('top-secret'),
     })

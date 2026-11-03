@@ -1,0 +1,20 @@
+{
+  "phase": "commerce",
+  "at": "2026-11-02T21:16:02.079Z",
+  "checks": [
+    {
+      "name": "shipped commerce-migration verifier exits 0 (commerce subset rehearsed from its baseline, applied twice)",
+      "ok": true,
+      "detail": "exit 0"
+    }
+  ],
+  "observations": {},
+  "data": {
+    "database": "rc117f_commerce_release_acceptance"
+  },
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1
+  }
+}

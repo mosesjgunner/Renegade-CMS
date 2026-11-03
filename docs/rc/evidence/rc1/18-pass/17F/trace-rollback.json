@@ -1,0 +1,98 @@
+{
+  "phase": "rollback",
+  "at": "2026-11-02T21:16:16.682Z",
+  "checks": [
+    {
+      "name": "rollback fixture database migrated to the synthetic baseline only",
+      "ok": true,
+      "detail": "56 migrations"
+    },
+    {
+      "name": "baseline sentinel fixture rows inserted (site/member/media/content)",
+      "ok": true
+    },
+    {
+      "name": "pre-upgrade backup archive created and verified by the product backup module",
+      "ok": true
+    },
+    {
+      "name": "image-rollback guard permits rollback when the migration ledger is unchanged",
+      "ok": true
+    },
+    {
+      "name": "image-rollback guard refuses when the ledger moved, directing the operator to restore the backup",
+      "ok": true
+    },
+    {
+      "name": "restore version guard: same-version and same-major forward restores pass; cross-major and newer-into-older are refused",
+      "ok": true
+    },
+    {
+      "name": "destructive-operation guard requires an explicitly confirmed maintenance window",
+      "ok": true
+    },
+    {
+      "name": "upgrade plan is the documented seven-step sequence (backup before migrations)",
+      "ok": true
+    },
+    {
+      "name": "corrupted pre-upgrade archive is rejected by checksum verification before any restore",
+      "ok": true
+    },
+    {
+      "name": "in-place upgrade applies every remaining migration",
+      "ok": true,
+      "detail": "56 -> 131"
+    },
+    {
+      "name": "sentinel content survives the in-place upgrade with identity and canonical data intact",
+      "ok": true
+    },
+    {
+      "name": "after the schema-changing upgrade, image rollback is refused on the real ledger states",
+      "ok": true
+    },
+    {
+      "name": "restored target ledger equals the pre-upgrade baseline ledger exactly",
+      "ok": true,
+      "detail": "56 migrations"
+    },
+    {
+      "name": "restored sentinel rows are byte-identical to the pre-upgrade rows",
+      "ok": true
+    },
+    {
+      "name": "restored media files are byte-identical to the pre-upgrade media",
+      "ok": true
+    }
+  ],
+  "observations": {
+    "wholeRowHashMayGrowWithAdditiveColumns": {
+      "before": {
+        "sites": "ea64acb1d6fd42cf47f1b880f996f582",
+        "members": "0c9116826094fb5be248d85a81268c5c",
+        "media_assets": "4d663e75e3eddc64b83098dc766390c3",
+        "content": "cf4721b9bd4bb3041cd574427315e189"
+      },
+      "after": {
+        "sites": "a44fa5597ee647f88d8f36c35100d5c3",
+        "members": "d2ff0764b3a737a928605ff89ba290f3",
+        "media_assets": "4d663e75e3eddc64b83098dc766390c3",
+        "content": "ef40a83ec78fa1f390170c78c0be536f"
+      }
+    }
+  },
+  "data": {
+    "baseline": "20260914_110000_med_05_video_workflow",
+    "baselineMigrations": 56,
+    "upgradedMigrations": 131,
+    "archive": "/home/hatch/workspace/renegade-cms/scratch/rc117f/backups/renegade-backup-2026-11-02T21-16-13-526Z",
+    "manifestVersion": "0.1.0",
+    "claimBoundary": "Rollback rehearsal on a synthetic baseline fixture via the shipped backup data-plane; not a historical customer upgrade/rollback."
+  },
+  "summary": {
+    "passed": 15,
+    "failed": 0,
+    "total": 15
+  }
+}

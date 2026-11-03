@@ -2,6 +2,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { reconcileScheduleWorkerJobs, sanitizeErrorLog } from '@/modules/editorial/scheduler'
+import { samePublicOrigin } from '@/modules/public/site-scope'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
+import { randomUUID } from 'node:crypto'
 
 type Doc = Record<string, any>
 
@@ -14,18 +17,21 @@ const idOf = (value: unknown): string => {
 export async function GET(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const { user } = await payload.auth({ headers: req.headers })
+    if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role)))
+      return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
     const { searchParams } = new URL(req.url)
     const limit = parseInt(searchParams.get('limit') ?? '50', 10)
 
     const now = new Date()
-    const nowIso = now.toISOString()
 
     // Query scheduled publish jobs
     const jobsResult = (await payload.find({
       collection: 'scheduled-publish-jobs',
       limit,
       sort: '-scheduledFor',
-      overrideAccess: true,
+      overrideAccess: false,
+      user,
     } as never)) as { docs: Doc[] }
 
     // Map jobs with sanitized logs and exact revision metadata
@@ -68,9 +74,9 @@ export async function GET(req: NextRequest) {
     }
 
     const workerHealth = {
-      status: counts.failedJobs > 0 ? 'degraded' : 'healthy',
-      activeWorkerId: 'worker-primary-node',
-      lastHeartbeat: nowIso,
+      status: 'unknown',
+      activeWorkerId: null,
+      lastHeartbeat: null,
       clockDriftBufferSeconds: 30,
       catchUpThresholdMinutes: 60,
     }
@@ -91,13 +97,19 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const { user } = await payload.auth({ headers: req.headers })
+    if (!user || !['owner', 'administrator'].includes(String(user.role)))
+      return NextResponse.json({ error: 'Administrator access required.' }, { status: 403 })
+    if (!(await samePublicOrigin(payload, req, true)))
+      return NextResponse.json({ error: 'Same-origin request required.' }, { status: 403 })
     const body = await req.json()
-    const { action, jobId, workerId = 'worker-admin' } = body
+    const { action, jobId } = body
 
     if (action === 'reconcile') {
       const result = await reconcileScheduleWorkerJobs(payload, {
-        workerId,
+        workerId: `operator-${randomUUID()}`,
         limit: 50,
+        user,
       })
       return NextResponse.json({ ok: true, result })
     }
@@ -109,37 +121,56 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    if (action === 'retry') {
-      await payload.update({
-        collection: 'scheduled-publish-jobs',
-        id: jobId,
-        data: {
-          status: 'queued',
-          retryCount: 0,
-          leaseOwner: null,
-          leaseExpiresAt: null,
-          lastError: null,
-        },
-        overrideAccess: true,
-      } as never)
-      return NextResponse.json({ ok: true, message: `Job ${jobId} reset for retry.` })
-    }
+    return await withExecutionLock(payload, `scheduled-job:${String(jobId)}`, async () => {
+      const job = await payload
+        .findByID({
+          collection: 'scheduled-publish-jobs',
+          id: jobId,
+          depth: 0,
+          overrideAccess: false,
+          user,
+        })
+        .catch(() => null)
+      if (!job) return NextResponse.json({ error: 'Job unavailable.' }, { status: 404 })
+      if (action === 'retry') {
+        if (job.status !== 'failed')
+          return NextResponse.json({ error: 'Only failed jobs can be retried.' }, { status: 409 })
+        await payload.update({
+          collection: 'scheduled-publish-jobs',
+          id: jobId,
+          data: {
+            status: 'queued',
+            retryCount: 0,
+            leaseOwner: null,
+            leaseExpiresAt: null,
+            lastError: null,
+          },
+          overrideAccess: true,
+        } as never)
+        return NextResponse.json({ ok: true, message: `Job ${jobId} reset for retry.` })
+      }
 
-    if (action === 'cancel') {
-      await payload.update({
-        collection: 'scheduled-publish-jobs',
-        id: jobId,
-        data: {
-          status: 'cancelled',
-          leaseOwner: null,
-          leaseExpiresAt: null,
-        },
-        overrideAccess: true,
-      } as never)
-      return NextResponse.json({ ok: true, message: `Job ${jobId} cancelled.` })
-    }
+      if (action === 'cancel') {
+        if (!['queued', 'failed'].includes(job.status))
+          return NextResponse.json(
+            { error: 'Job cannot be cancelled in its current state.' },
+            { status: 409 },
+          )
+        await payload.update({
+          collection: 'scheduled-publish-jobs',
+          id: jobId,
+          data: {
+            status: 'cancelled',
+            leaseOwner: null,
+            leaseExpiresAt: null,
+          },
+          overrideAccess: true,
+        } as never)
+        return NextResponse.json({ ok: true, message: `Job ${jobId} cancelled.` })
+      }
 
-    return NextResponse.json({ error: `Unknown action "${action}".` }, { status: 400 })
+      return NextResponse.json({ error: `Unknown action "${action}".` }, { status: 400 })
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : String(error) },

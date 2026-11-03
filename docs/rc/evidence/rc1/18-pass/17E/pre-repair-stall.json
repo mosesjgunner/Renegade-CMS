@@ -1,0 +1,14 @@
+{
+  "finding": "Silent drop after worker SIGKILL at the payment-settlement boundary (pre-repair reproduction, 2026-11-02)",
+  "sequence": [
+    "Worker SIGKILLed inside finalizeVerifiedOrder's stock-lock wait; inbox left processingState=processing, attempt state=succeeded, orders=0.",
+    "recoverStaleCommerceJobs(payload, 0) reset the inbox to received and queued a NEW commerce-process-payment-event job.",
+    "The new job never executed: the killed worker's payload-jobs row remains processing=true with concurrencyKey commerce.payment-events, and Payload's runJobs excludes every job whose concurrencyKey is currently processing (node_modules/payload/dist/queues/operations/runJobs/index.js).",
+    "After 180s of worker cycles the inbox was still 'received', attempts=1, orders=0. Without repair the paid order is never created."
+  ],
+  "payload_jobs_rows_at_stall": [
+    { "taskSlug": "commerce-process-payment-event", "processing": true, "completedAt": null, "hasError": false, "concurrencyKey": "commerce.payment-events", "note": "orphan from the SIGKILLed worker" },
+    { "taskSlug": "commerce-process-payment-event", "processing": false, "completedAt": null, "hasError": false, "concurrencyKey": "commerce.payment-events", "note": "recovery-requeued job, permanently blocked by the orphan's concurrency lane" }
+  ],
+  "repair": "recoverStaleCommerceJobs already resets stale processing payload-jobs rows for commerce-reconcile-subscriptions and commerce-reconcile-referrals; 17E extends the same reset to commerce-process-payment-event so the orphaned job itself becomes runnable again (its handler is idempotent: a processed inbox returns early)."
+}

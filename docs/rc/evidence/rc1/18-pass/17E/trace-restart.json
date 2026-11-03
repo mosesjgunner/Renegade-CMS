@@ -1,0 +1,11 @@
+{
+  "section": "restart",
+  "passed": 5,
+  "checks": [
+    "after web/worker reboot the future publication job is still truthfully pending, not executed early or lost",
+    "payment effects survive reboot exactly once (one order for the recovered session)",
+    "subscription remains active with exactly its two grants after reboot",
+    "fulfillment outcome persists after reboot (job shipped, external order recorded)",
+    "unknown dispatch is not silently resent or dropped after reboot (still unknown, one provider copy)"
+  ]
+}

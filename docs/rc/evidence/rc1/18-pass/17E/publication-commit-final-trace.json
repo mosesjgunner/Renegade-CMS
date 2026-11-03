@@ -1,0 +1,19 @@
+{
+  "trace": [
+    "normal editorial scheduling persisted one queued job",
+    "processing lease persisted before interruption",
+    "publication committed before job finalization",
+    "worker recovered expired lease and finalized job",
+    "published content persisted exactly one publication audit",
+    "replay does not add publication effect",
+    "underlying payload job reaches completed state without an error"
+  ],
+  "jobId": "598276ce-43cf-4032-b68b-4d09790fc73e",
+  "articleId": "330fd280-1e6b-4e67-8c28-485dc65695ac",
+  "status": "completed",
+  "publicationEvents": 1,
+  "payloadJobId": "89990a21-41e3-403d-8e9f-1a49642f399a",
+  "payloadJobAttempts": 1,
+  "leaseSeconds": 6,
+  "boundary": "service-created schedule; instrumented scheduler process killed after publication commit before job finalization; actual worker recovery"
+}

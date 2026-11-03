@@ -1,0 +1,33 @@
+{
+  "message": "403 Forbidden - POST https://registry.npmjs.org/-/npm/v1/security/audits/quick - policy_denied",
+  "method": "POST",
+  "uri": "https://registry.npmjs.org/-/npm/v1/security/audits/quick",
+  "headers": {
+    "content-type": [
+      "application/json"
+    ],
+    "content-length": [
+      "200"
+    ],
+    "x-hatch-policy": [
+      "zz_managed_internal_spaces_package_registries"
+    ],
+    "connection": [
+      "close"
+    ],
+    "x-fetch-attempts": [
+      "1"
+    ]
+  },
+  "statusCode": 403,
+  "body": {
+    "detail": "POST /-/npm/v1/security/audits/quick not permitted by policy",
+    "error": "policy_denied",
+    "policy": "zz_managed_internal_spaces_package_registries",
+    "rule": "POST /-/npm/v1/security/audits/quick"
+  },
+  "error": {
+    "summary": "",
+    "detail": ""
+  }
+}

@@ -1127,7 +1127,17 @@ async function publishScheduledArticleUnlocked(
   if (!bundle.revisions.some((revision) => String(revision.id) === scheduledRevisionId))
     throw new Error('Scheduled publication revision was not found.')
   // A later draft must never replace the revision chosen at schedule time.
-  if (idOf(bundle.article.latestPublishedRevision) === scheduledRevisionId) return false
+  if (idOf(bundle.article.latestPublishedRevision) === scheduledRevisionId) {
+    // Publication may have committed before the worker died while finalizing its job.
+    if (scheduledJob.status !== 'completed')
+      await payload.update({
+        collection: 'scheduled-publish-jobs',
+        id: scheduledJob.id,
+        data: { status: 'completed', leaseOwner: null, leaseExpiresAt: null },
+        overrideAccess: true,
+      } as never)
+    return false
+  }
   const workflow = hydrateWorkflow(bundle)
   const published = workflow.publishScheduled(input.actor, input.idempotencyKey, input.now)
   const latestPublishedRevisionId = published

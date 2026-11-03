@@ -1,0 +1,48 @@
+{
+  "phase": "additive",
+  "at": "2026-11-02T21:16:06.508Z",
+  "checks": [
+    {
+      "name": "migration index exports exactly the migration files on disk",
+      "ok": true,
+      "detail": "131 files, 131 exported"
+    },
+    {
+      "name": "generated types cover post-baseline collections (form-definitions, experiments, network-relationships)",
+      "ok": true
+    },
+    {
+      "name": "admin import map exists and is populated",
+      "ok": true,
+      "detail": "52 import statements"
+    }
+  ],
+  "observations": {
+    "postBaselineDestructivePatternHits": [
+      {
+        "migration": "20260920_080000_aud_08_audience_pass_gate",
+        "pattern": "DROP TABLE",
+        "snippet": "delivery_id' AND data_type = 'integer' ) THEN DROP TABLE IF EXISTS \"email_delivery_events\" CASCADE; CREATE TABLE \"email_delivery_events\" ("
+      }
+    ]
+  },
+  "data": {
+    "baseline": "20260914_110000_med_05_video_workflow",
+    "baselineIndex": 55,
+    "postBaselineMigrations": 75,
+    "destructivePatternHits": [
+      {
+        "migration": "20260920_080000_aud_08_audience_pass_gate",
+        "pattern": "DROP TABLE",
+        "snippet": "delivery_id' AND data_type = 'integer' ) THEN DROP TABLE IF EXISTS \"email_delivery_events\" CASCADE; CREATE TABLE \"email_delivery_events\" ("
+      }
+    ],
+    "drizzleSnapshots": 11,
+    "note": "Only 11 of 131 migrations carry drizzle JSON snapshots; the remainder are hand-authored SQL migrations (codebase convention)."
+  },
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3
+  }
+}

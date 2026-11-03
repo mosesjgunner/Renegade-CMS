@@ -1,0 +1,23 @@
+{
+  "section": "payment",
+  "passed": 17,
+  "checks": [
+    "manual product published through the catalog workflow",
+    "ordinary checkout created an action-required attempt with a provider reference",
+    "test confirmation accepted the signed local payment event (303)",
+    "webhook stored a received inbox event and queued settlement",
+    "crash at settle: attempt/intent show provider success but NO order exists yet (atomic finalize rolled back)",
+    "worker recovery sweep requeues the interrupted event (processing -> received)",
+    "recovered settlement produced exactly one order and one receipt delivery",
+    "attempts counted (2) and the provider event recorded exactly once on attempt and intent",
+    "duplicate webhook replay is acknowledged without a second inbox row, order or charge effect",
+    "signed failed event accepted into the inbox (202)",
+    "failed payment settles truthfully: attempt and session failed, no order created",
+    "lost provider creation response leaves the checkout truthfully unknown with reconcile required",
+    "attempt persisted as unknown with no provider reference (never marked success)",
+    "provider harness did create exactly one session for the idempotency key",
+    "reconciliation recovers the same provider session by idempotency key and converges the attempt",
+    "reconciled payment produced exactly one order",
+    "second reconciliation is a no-op: no new session, inbox event or order"
+  ]
+}
