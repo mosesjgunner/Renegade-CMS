@@ -13,7 +13,7 @@ import { snapshotLayout } from '../presentation/snapshots'
 import { importMarkdownToRichText } from '../editorial/markdown'
 import { withExecutionLock } from '../operations/execution-lock'
 
-const toLexicalDocument = (text: string) => {
+export const toLexicalDocument = (text: string) => {
   const convert = (node: any): any => {
     const type =
       node.type === 'markdown-heading'

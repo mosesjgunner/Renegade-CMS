@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { randomUUID } from 'node:crypto'
 
 import config from '../payload.config'
 import { getPayload } from 'payload'
@@ -7,6 +8,7 @@ import { getPayload } from 'payload'
 const pollInterval = Number(process.env.WORKER_POLL_INTERVAL_MS ?? 10_000)
 const heartbeatFile = process.env.WORKER_HEARTBEAT_FILE ?? '/tmp/renegade-worker/heartbeat.json'
 const workerProfile = process.env.WORKER_PROFILE ?? 'default'
+const workerId = `worker-${randomUUID()}`
 
 if (!Number.isInteger(pollInterval) || pollInterval < 1_000 || pollInterval > 60_000) {
   throw new Error('WORKER_POLL_INTERVAL_MS must be an integer between 1000 and 60000')
@@ -23,6 +25,10 @@ async function cycle(): Promise<void> {
       // Side-effect tasks hold a session lock while issuing further database queries.
       // Keep pool connections available for that work; recovery drains durable outboxes below.
       await payload.jobs.run({ queue: 'operations', limit: 1 })
+      if (payload.collections['scheduled-publish-jobs']) {
+        const { reconcileScheduleWorkerJobs } = await import('../modules/editorial/scheduler')
+        await reconcileScheduleWorkerJobs(payload, { workerId })
+      }
       if (payload.collections['email-deliveries']) {
         const { recoverEmailOutbox } = await import('../modules/audience/tasks')
         await recoverEmailOutbox(payload)

@@ -1,0 +1,3 @@
+# 17D handoff
+
+17D is NOT READY. Resume this subpass only when explicitly assigned: create the full site through supported actions on a unique source project, use the supported quiesced backup and restore into a separate empty project, and prove clean-browser owner/staff/member authentication, business category refetch, original/edited media bytes, entitlements, delivery and pending-job safety, negative cases and restart. The current receipt covers only synthetic fixture backup and writer quiescence. Resolve the retained generated Next typecheck conflicts without deleting another run's data. See RESULT.md and its source manifest; preserve the uncommitted concurrent work and all retained resources. Do not start 17E automatically.

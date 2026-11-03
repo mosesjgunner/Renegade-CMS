@@ -1,0 +1,12 @@
+{
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "after PostgreSQL and Next.js restart, guest browser retains paid order view and receipt",
+    "after PostgreSQL and Next.js restart, member browser retains paid order view, receipt and download link",
+    "restart preserves immutable order totals, receipt states, inventory quantity (6) and quarantined cases"
+  ],
+  "providerMode": "Local deterministic-test signed webhook adapter and Stripe-test signature/replay contract; no live external charges.",
+  "authentication": "Genuine guest Chromium session; member session via canonical magic-link service; operator session via admin_sessions fixture (no passkey ceremony claim)."
+}

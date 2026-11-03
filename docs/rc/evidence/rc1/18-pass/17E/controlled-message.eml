@@ -1,0 +1,13 @@
+X-Renegade-Idempotency-Key:
+ email:test:27c8d8f5-89cb-40c9-9e1a-aa77510227a1:U3-nKX85k8Jfu1Mr0MMGi7JTL0QXl1Rvhkg9jNuMIOg
+X-Renegade-Purpose: transactional
+From: RC117E <sender@example.test>
+To: dedup@example.test
+Subject: Dedup
+Message-ID: <cdaee87648f7320298b5d2a102ba1473@renegade.local>
+Content-Transfer-Encoding: 7bit
+Date: Tue, 03 Nov 2026 09:47:01 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+
+Dedup exact body

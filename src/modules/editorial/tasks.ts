@@ -1,6 +1,6 @@
 import type { TaskConfig } from 'payload'
 
-import { publishScheduledArticle } from './persistence'
+import { executeScheduledPublishJob } from './scheduler'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { loadConfig } from '../core/config'
 import { cleanupExpiredUploadSessions } from '../media/upload-sessions'
@@ -29,12 +29,23 @@ export const editorialPublishTask: TaskConfig<EditorialPublishTask> = {
   retries: { attempts: 2, backoff: { delay: 250, type: 'exponential' } },
   concurrency: ({ input }) => `editorial.publish:${String(input.articleId)}:${String(input.key)}`,
   handler: async ({ input, req }) => {
-    const published = await publishScheduledArticle(req.payload, {
-      articleId: input.articleId,
-      actor: { id: input.actorId, role: 'publisher' },
-      actorUserId: input.actorId,
-      idempotencyKey: input.key,
+    const found = await req.payload.find({
+      collection: 'scheduled-publish-jobs',
+      where: { idempotencyKey: { equals: input.key } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
     })
+    const job = found.docs[0]
+    if (!job) throw new Error('Scheduled publication contract was not found.')
+    const articleId = typeof job.article === 'object' ? job.article.id : job.article
+    if (String(articleId) !== input.articleId) throw new Error('Scheduled article mismatch.')
+    const result = await executeScheduledPublishJob(req.payload, String(job.id), {
+      workerId: `payload-${process.pid}`,
+    })
+    if (!result.success && job.status !== 'cancelled' && job.status !== 'failed')
+      throw new Error(result.error ?? 'Scheduled publication deferred.')
+    const published = result.published
     req.payload.logger.info({
       event: 'editorial.job.publish',
       articleId: input.articleId,

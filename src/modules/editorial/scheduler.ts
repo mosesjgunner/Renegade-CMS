@@ -1,5 +1,6 @@
 import { withExecutionLock } from '../operations/execution-lock'
 import type { Payload } from 'payload'
+import type { User } from '../../payload-types'
 import { publishScheduledArticle } from './persistence'
 
 export type CatchUpPolicyMode = 'publish-immediately' | 'expire-and-fail' | 'manual-reconcile'
@@ -18,6 +19,7 @@ export type JobLeaseOptions = {
 
 export type ReconcileOptions = JobLeaseOptions & {
   limit?: number
+  user?: User
 }
 
 export type SanitizedJobLog = {
@@ -102,8 +104,13 @@ async function executeScheduledPublishJobUnlocked(
   if (job.status === 'completed') {
     return { success: true, published: true, catchUpTriggered: false }
   }
-  if (job.status === 'cancelled') {
-    return { success: false, published: false, catchUpTriggered: false, error: 'Job was cancelled' }
+  if (['cancelled', 'failed'].includes(job.status)) {
+    return {
+      success: false,
+      published: false,
+      catchUpTriggered: false,
+      error: `Job is ${job.status}`,
+    }
   }
 
   // Check active lease from another live worker
@@ -285,11 +292,12 @@ export async function reconcileScheduleWorkerJobs(
       where: {
         and: [
           { status: { in: ['queued', 'processing'] } },
-          { scheduledFor: { less_than_equal: new Date(nowMs + 30000).toISOString() } }, // clock drift buffer
+          { scheduledFor: { less_than_equal: new Date(nowMs).toISOString() } },
         ],
       },
       limit,
-      overrideAccess: true,
+      overrideAccess: !options.user,
+      ...(options.user ? { user: options.user } : {}),
     } as never)) as { docs: Doc[] }
   ).docs
 

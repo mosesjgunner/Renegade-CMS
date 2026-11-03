@@ -30,9 +30,9 @@ export type ScheduleHealthData = {
     completedJobs: number
   }
   workerHealth: {
-    status: 'healthy' | 'degraded' | 'down'
-    activeWorkerId: string
-    lastHeartbeat: string
+    status: 'healthy' | 'degraded' | 'down' | 'unknown'
+    activeWorkerId: string | null
+    lastHeartbeat: string | null
     clockDriftBufferSeconds: number
     catchUpThresholdMinutes: number
   }
@@ -137,7 +137,7 @@ export function ScheduleHealthCenter() {
             {data?.workerHealth.status ?? 'Unknown'}
           </span>
           <span className="text-[10px] text-stone-400 block mt-1">
-            Node: {data?.workerHealth.activeWorkerId}
+            Node: {data?.workerHealth.activeWorkerId ?? 'Not observed'}
           </span>
         </div>
 

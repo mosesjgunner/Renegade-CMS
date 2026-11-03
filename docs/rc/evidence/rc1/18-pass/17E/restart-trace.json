@@ -1,0 +1,66 @@
+[
+  {
+    "name": "restart dedup@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart hold@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart unknown@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart exhaust@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart permanent@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart recover@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart temporary@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart accepted@example.test: status and lifetime attempts retained",
+    "passed": true
+  },
+  {
+    "name": "restart replay dedup@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay hold@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay unknown@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay exhaust@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay permanent@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay recover@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay temporary@example.test: no attempt added",
+    "passed": true
+  },
+  {
+    "name": "restart replay accepted@example.test: no attempt added",
+    "passed": true
+  }
+]

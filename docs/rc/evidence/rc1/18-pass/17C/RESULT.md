@@ -1,5 +1,15 @@
 # RC1 SUBPASS 17C — RESULT
 
+## Docker host continuation — 2026-11-02
+
+**STATUS: NOT READY.** Current source HEAD `ebbfeeb8f808b06860a669948e5c51a276b2fb0a` includes the subsequent packaging and harness repairs `042c3014`, `5a6f85df`, and `ebbfeeb8`. The checkout had pre-existing untracked evidence and `0-trace.network`; tracked source was clean at inspection. Those files were preserved. This continuation did not build the image: it inspected the already-present local image `renegade-cms:rc117c-ebbfeeb8`, image ID/digest `sha256:81cb8ae7dd46d96894bfd1dc4f911a76e0055f839011e752f4491f278d7e3578`. The OCI revision and both embedded provenance files identify the full HEAD; embedded `clean` is null, so this alone does not attest a clean build context. Lockfile hash in both files is `bfb8e3b312549a2754ba62c6c65797b83cde7ff1f82d98533172598cada24ea7`. No registry digest or independently reconstructed build context is claimed.
+
+First reproducible blocker: in-image `npm ls --all --omit=dev` exits 1 (`ELSPROBLEMS`), reporting missing `monaco-editor@>= 0.25.0 < 1` required by `@monaco-editor/react@4.7.0` and `yjs@>=13.5.37` required by `@lexical/yjs@0.50.0`. The current in-image inspector invokes that command and exits 1 before reporting source comparison, packaged files, or secret sweep. Whether these peers are required for enabled runtime paths needs investigation; do not suppress the error or assert a complete graph without proof. The earlier Docker host esbuild failure described in `DOCKER-HOST-HANDOFF.md` predates the repairs and is not this image's first blocker.
+
+Executed here: `docker run --rm --network none --entrypoint id renegade-cms:rc117c-ebbfeeb8` exit 0, uid 1001, gid 65533; direct reads of both embedded provenance files exit 0; the inspector invocation exits 1 as above; direct `docker run --rm --network none --entrypoint npm renegade-cms:rc117c-ebbfeeb8 ls --all --omit=dev --parseable` exits 1 with the same missing peers. `npx.cmd vitest run tests/unit/production-module-config.test.ts tests/unit/operational-compose.test.ts tests/unit/operational-image-provenance.test.ts tests/unit/module-registry.test.ts tests/unit/operational-backup.test.ts` exits 0: 5 files, 25 passed, 0 failed, 0 skipped. Current continuation: 2 image identity/user checks passed, 1 graph inspection failed, 0 skipped; current-image packaged-file/source/secret inspection, media-heavy build, web/worker/migration/CLI, Compose isolation, health, persisted action, denials and restart remain unexecuted. The earlier local journey below is historical proof against its explicitly identified source, not proof of this image.
+
+No product code changed in this continuation. Prior retained files and local Docker resources were not removed or overwritten. Aggregate RC1 remains NOT READY.
+
 **STATUS: NOT READY** (2026-11-02) — production image, workers and
 service isolation.
 

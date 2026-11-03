@@ -1,5 +1,9 @@
 # RC1 17C → 17D handoff (cold pickup)
 
+## Current continuation — 17C remains NOT READY
+
+Do not start 17D until separately instructed. At HEAD `ebbfeeb8f808b06860a669948e5c51a276b2fb0a`, the existing runner image `sha256:81cb8ae7dd46d96894bfd1dc4f911a76e0055f839011e752f4491f278d7e3578` fails `npm ls --all --omit=dev`: missing `monaco-editor` and `yjs` peer dependencies. Investigate their runtime reachability and repair the production dependency graph without weakening inspection, then rebuild and bind both image targets to clean source and complete packaged-file/secret inspection, isolated Compose journeys, role/site negatives and non-root media/queue/config restart proof. See the continuation at the top of RESULT.md. Existing scratch state, untracked evidence, databases and running containers are retained resources; create uniquely named disposable resources after inspecting harness destructive defaults. Historical instructions below describe a different source and host.
+
 ## Where 17C landed
 
 - **17C: NOT READY** — one blocker only: the production image cannot

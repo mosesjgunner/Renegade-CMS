@@ -377,7 +377,9 @@ export function normalizeEmailError(error: unknown): EmailDeliveryFailure {
       'temporary_provider_error',
       'SMTP service is temporarily unavailable.',
     )
-  return failure('retryable', 'provider_error', safeMessage(value?.message))
+  // An unclassified transport error does not prove that SMTP rejected the message.
+  // Retrying it could send a second copy after an acceptance response was lost.
+  return failure('unknown', 'unknown_outcome', safeMessage(value?.message))
 }
 
 function failure(

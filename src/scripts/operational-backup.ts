@@ -7,7 +7,7 @@ import {
   verifyOperationalBackup,
 } from '../modules/operations/backup'
 import { assertOperationalEnv } from './operational-env'
-import { projectNameFromEnvFile } from './operational-compose'
+import { projectNameFromEnvFile, runningBackupWriters } from './operational-compose'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -32,6 +32,8 @@ const composeArgs = [
   envFile,
   '-f',
   compose,
+  '--profile',
+  'media-heavy',
 ]
 await assertOperationalEnv(envFile)
 
@@ -54,13 +56,15 @@ async function capture(commandArgs: string[]) {
   })
 }
 
-let stopped = false
+let writersToResume: string[] = []
 try {
   await mkdir(path.resolve(output), { recursive: true })
   await mkdir(backupRoot, { recursive: false })
   // This explicit quiesce window prevents writes between the native DB dump and media capture.
-  await run('docker', [...composeArgs, 'stop', 'renegade-web', 'renegade-worker'])
-  stopped = true
+  writersToResume = runningBackupWriters(
+    await capture([...composeArgs, 'ps', '--status', 'running', '--services']),
+  )
+  if (writersToResume.length) await run('docker', [...composeArgs, 'stop', ...writersToResume])
   await run(
     'docker',
     [
@@ -245,8 +249,5 @@ try {
   ]).catch(() => undefined)
   throw error
 } finally {
-  if (stopped)
-    await run('docker', [...composeArgs, 'up', '-d', 'renegade-web', 'renegade-worker']).catch(
-      () => undefined,
-    )
+  if (writersToResume.length) await run('docker', [...composeArgs, 'start', ...writersToResume])
 }

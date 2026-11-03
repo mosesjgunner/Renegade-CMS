@@ -1,0 +1,51 @@
+{
+  "installation_state": {
+    "state": "complete",
+    "singleton": true,
+    "is_completed": true,
+    "bootstrap_token_hash": null,
+    "bootstrap_expires_at": null
+  },
+  "users": [
+    {
+      "id": "77c81020-025f-4ac8-ba24-bf179a32ed4f",
+      "email": "owner@rc1-01b.test",
+      "role": "owner",
+      "member_id": "2fe4207d-891e-44a8-9e62-0515e05551b4"
+    }
+  ],
+  "passkeys": [
+    {
+      "id": "e2716b54-c717-4994-91e8-b57c683e2f83",
+      "user_id": "77c81020-025f-4ac8-ba24-bf179a32ed4f",
+      "credential_id": "BCKHkejiRGtYeUDB4ZlTvSnklwVFKzi5on-c4FRB7wY",
+      "counter": 3,
+      "transports": [
+        "internal"
+      ],
+      "backed_up": false,
+      "has_created_at": true
+    }
+  ],
+  "recovery_codes": {
+    "total": 10,
+    "used": 1,
+    "unused": 9
+  },
+  "sites": [
+    {
+      "id": "523a2806-9603-423d-aa7c-a76a00c74414",
+      "name": "R-01B Owner Site",
+      "slug": "rc1-r01b-owner",
+      "lifecycle": "active"
+    }
+  ],
+  "member_site_roles": [
+    {
+      "member_id": "2fe4207d-891e-44a8-9e62-0515e05551b4",
+      "site_id": "523a2806-9603-423d-aa7c-a76a00c74414",
+      "role": "community-manager"
+    }
+  ]
+}
+
