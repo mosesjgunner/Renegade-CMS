@@ -1,0 +1,22 @@
+[
+  {
+    "page": "primary",
+    "type": "error",
+    "text": "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+  },
+  {
+    "page": "primary",
+    "type": "error",
+    "text": "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+  },
+  {
+    "page": "primary",
+    "type": "error",
+    "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  },
+  {
+    "page": "second",
+    "type": "error",
+    "text": "Failed to load resource: net::ERR_SSL_PROTOCOL_ERROR"
+  }
+]

@@ -1,0 +1,188 @@
+{
+  "checksPassed": 20,
+  "failed": 0,
+  "trace": [
+    {
+      "name": "fresh database has no sites or content",
+      "passed": true
+    },
+    {
+      "name": "ordinary installer completes real virtual WebAuthn ceremony",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/sites?limit=20",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/content",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/globals/site-settings",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/api/content",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/content",
+      "status": 201
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/content/4665ea93-8c5e-4549-8428-861ea179b045",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/publications?where[site][equals]=2a734bf7-8e60-4a35-8a61-fc450608ec9d",
+      "status": 200
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/publications/d242560f-9b64-48f6-82b5-145d0630513d",
+      "status": 200
+    },
+    {
+      "name": "native product API persisted authored pages/article",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/categories",
+      "status": 201
+    },
+    {
+      "method": "POST",
+      "route": "/api/categories",
+      "status": 201
+    },
+    {
+      "name": "operator hierarchy pair persisted with stable parent reference",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/about-03d",
+      "status": 200
+    },
+    {
+      "name": "public HTTP shows authored page and navigation",
+      "passed": true
+    },
+    {
+      "name": "browser renders public navigation target",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/inspect",
+      "status": 422,
+      "body": "{\"valid\":false,\"sourceChecksum\":\"sha256:6f37b2daed765237928dbac528ae81d1d542646d7aca2cbe7fff22e80b11764b\",\"summary\":{\"posts\":0,\"pages\":0,\"authors\":0,\"categories\":0,\"tags\":0,\"menus\":0,\"media\":0,\"unsupported\":0},\"detectedUnsupportedCount\":0,\"warnings\":[],\"errors\":[\"Failed to parse WXR XML: Provide a WordPress WXR 1.0-1.2 XML export with a complete RSS channel. DTDs and entities are unsupported.\"]}"
+    },
+    {
+      "name": "malformed import rejected through supported endpoint",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/preflight",
+      "status": 200
+    },
+    {
+      "name": "dry-run plans content without creating a target site",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/execute",
+      "status": 200
+    },
+    {
+      "name": "representative import executes with no errors",
+      "passed": true
+    },
+    {
+      "name": "exact imported content count",
+      "passed": true
+    },
+    {
+      "name": "author relationships persisted",
+      "passed": true
+    },
+    {
+      "name": "taxonomy hierarchy persisted",
+      "passed": true
+    },
+    {
+      "name": "actual imported image blob is persisted",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "status": 200
+    },
+    {
+      "name": "supported export contains original media bytes",
+      "passed": true
+    },
+    {
+      "name": "export includes mapped authors and revision history",
+      "passed": true
+    },
+    {
+      "name": "export excludes operator site content",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/execute",
+      "status": 200
+    },
+    {
+      "name": "rerun skips duplicates without creating content or media",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/execute",
+      "status": 422,
+      "body": "{\"runId\":\"mig-685278f6-240\",\"stage\":\"failed\",\"siteId\":\"1e625793-25c8-446c-b309-9ff86778b1b1\",\"targetSiteMode\":\"existing-site\",\"options\":{\"actorId\":\"2d21a879-5b03-4046-ac78-210348c0615a\",\"targetSiteMode\":\"existing-site\",\"targetSiteId\":\"1e625793-25c8-446c-b309-9ff86778b1b1\",\"themeId\":\"neutral-starter\",\"remoteMediaDownloadAllowed\":false,\"dryRun\":false,\"autoActivate\":false,\"rejectDuplicates\":true},\"sourceSummary\":{\"posts\":3,\"pages\":3,\"authors\":2,\"categories\":3,\"tags\":3,\"menus\":1,\"media\":1,\"unsupported\":9},\"reconciliation\":{\"created\":{\"content\":0,\"authors\":0,\"categories\":0,\"tags\":0,\"media\":0,\"redirects\":0,\"layouts\":4,\"templates\":3,\"patterns\":1,\"globals\":2},\"skipped\":8,\"failed\":6},\"checksums\":{\"sourceWxr\":\"sha256:491e85bc1ce6475806f69c43f59f36ebaee6b58446f6c46dd791414d3263ef3b\",\"media\":{\"101\":\"sha256:9321d6db4467e2c9c34a629b97da02ebdb7d773f9c44560718bc88dc83b5d2d4\"},\"report\":\"sha256:ec0ce4375e8778535d86a3674f7ee13ff294675a2bb3dd19af6d0bca08195441\"},\"redirectPlan\":[{\"sourceUrl\":\"https://renegadetribune.example/\",\"legacyPath\":\"/\",\"canonicalPath\":\"/\",\"status\":\"compatible-direct\",\"statusCode\":308},{\"sourceUrl\":\"https://renegadetribune.example/about-us/\",\"legacyPath\":\"/about-us\",\"canonicalPath\":\"/about-us\",\"status\":\"compatible-direct\",\"statusCode\":308},{\"sourceUrl\":\"https://renegadetribune.example/contact/\",\"legacyPath\":\"/contact\",\"canonicalPath\":\"/contact\",\"status\":\"compatible-direct\",\"statusCode\":308},{\"sourceUrl\":\"https://renegadetribune.example/2026/08/investigating-algorithmic-censorship/\",\"legacyPath\":\"/2026/08/investigating-algorithmic-censorship\",\"canonicalPath\":\"/articles/investigating-algorithmic-censorship\",\"status\":\"needs-redirect\",\"statusCode\":308},{\"sourceUrl\":\"https://renegadetribune.example/2026/08/sovereignty-open-formats/\",\"legacyPath\":\"/2026/08/sovereignty-open-"
+    },
+    {
+      "name": "explicit duplicate rejection returns actionable code",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/verify/mig-82f563e6-1e9",
+      "status": 200
+    },
+    {
+      "name": "persisted verification passes all actual checks",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/migration/legacy/activate/mig-82f563e6-1e9",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "status": 200
+    },
+    {
+      "name": "activation persisted after successful server verification",
+      "passed": true
+    }
+  ]
+}

@@ -37,7 +37,35 @@ export const Sites: CollectionConfig = {
     },
   },
   hooks: {
-    beforeDelete: [protectSiteHierarchyDelete],
+    beforeDelete: [
+      protectSiteHierarchyDelete,
+      // Operator grants are linkage created with the site; they are revoked
+      // as part of its deletion. This must run before the site row is
+      // deleted: the member_site_roles.site_id foreign key is ON DELETE
+      // CASCADE, so a post-delete cleanup would find nothing and the grants'
+      // own site-role.revoked audit events would never be recorded. Running
+      // inside the delete transaction keeps the revocation atomic with the
+      // deletion itself.
+      async ({ id, req }) => {
+        const grants = await req.payload.find({
+          collection: 'member-site-roles',
+          where: { site: { equals: id } },
+          depth: 0,
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+          req,
+        })
+        for (const grant of grants.docs) {
+          await req.payload.delete({
+            collection: 'member-site-roles',
+            id: grant.id,
+            overrideAccess: true,
+            req,
+          })
+        }
+      },
+    ],
     beforeValidate: [
       ({ data, originalDoc }) => {
         if (!data) return data

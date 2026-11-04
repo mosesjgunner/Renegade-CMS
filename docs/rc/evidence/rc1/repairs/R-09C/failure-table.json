@@ -1,0 +1,105 @@
+{
+  "scenarios": [
+    {
+      "scenario": "campaign-baseline",
+      "injected": "none",
+      "recipients": 2,
+      "finalStatus": "accepted",
+      "attempts": 1,
+      "dataCount": 2,
+      "note": "snapshot pinned confirmed-consented only; pending excluded"
+    },
+    {
+      "scenario": "accept",
+      "injected": "none",
+      "finalStatus": "accepted",
+      "attempts": 1,
+      "retryRoute": "409 (accepted not retryable); 403 foreign origin",
+      "dataCount": 1
+    },
+    {
+      "scenario": "temporary-451-once",
+      "injected": "SMTP 451 at RCPT (first attempt)",
+      "finalStatus": "accepted",
+      "attempts": 2,
+      "retryRoute": "n/a (automatic)",
+      "dataCount": 1
+    },
+    {
+      "scenario": "temporary-451-x4-then-recover",
+      "injected": "SMTP 451 at RCPT (attempts 1-4)",
+      "finalStatus": "accepted",
+      "attempts": 5,
+      "retryRoute": "200 (dead-letter, retryable outcome)",
+      "dataCount": 1,
+      "note": "automatic cycle bound is 4 attempts; operator retry sets a new cycle base"
+    },
+    {
+      "scenario": "permanent-550",
+      "injected": "SMTP 550 at RCPT",
+      "finalStatus": "failed",
+      "attempts": 1,
+      "retryRoute": "409",
+      "dataCount": 0
+    },
+    {
+      "scenario": "exhaust-451-then-suppress",
+      "injected": "SMTP 451 at RCPT (always); operator suppression after retry queued",
+      "finalStatus": "cancelled",
+      "attempts": 4,
+      "retryRoute": "200 while worker stopped; second retry 409",
+      "dataCount": 0,
+      "note": "send-time eligibility re-check cancels before any send"
+    },
+    {
+      "scenario": "lost-response-after-DATA",
+      "injected": "sink captures DATA then drops the connection without a 250",
+      "finalStatus": "unknown",
+      "attempts": 1,
+      "retryRoute": "409",
+      "dataCount": 1
+    },
+    {
+      "scenario": "response-stall-past-timeout",
+      "injected": "sink delays the 250 reply 20 s (send timeout 5 s)",
+      "finalStatus": "unknown",
+      "attempts": 1,
+      "retryRoute": "409",
+      "dataCount": 1
+    },
+    {
+      "scenario": "worker-killed-mid-send",
+      "injected": "sink never replies; worker SIGKILLed during the send",
+      "finalStatus": "unknown",
+      "attempts": 1,
+      "retryRoute": "409",
+      "dataCount": 1,
+      "note": "recovery waited for natural lease expiry (~60 s); outbox scan quarantined"
+    },
+    {
+      "scenario": "foreign-tenant-retry",
+      "injected": "none (tenant boundary)",
+      "finalStatus": "dead-letter (unchanged)",
+      "attempts": 4,
+      "retryRoute": "400 for the Alpha-only owner",
+      "dataCount": 0
+    },
+    {
+      "scenario": "duplicate-provider-callback",
+      "injected": "same bounce event delivered twice",
+      "finalStatus": "bounced",
+      "attempts": 1,
+      "retryRoute": "n/a",
+      "dataCount": 1,
+      "note": "second callback creates no event row and no state change"
+    },
+    {
+      "scenario": "duplicate-queue-command",
+      "injected": "queueTestSend issued twice for the same message + recipient",
+      "finalStatus": "accepted",
+      "attempts": 1,
+      "retryRoute": "n/a",
+      "dataCount": 1
+    }
+  ]
+}

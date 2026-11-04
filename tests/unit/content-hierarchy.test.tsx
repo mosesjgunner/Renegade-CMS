@@ -169,6 +169,27 @@ describe('canonical hierarchy integrity', () => {
     payload.count.mockResolvedValue({ totalDocs: 1 })
     await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).rejects.toThrow(/content/)
   })
+  it('does not treat operator grant linkage as a protected site reference', async () => {
+    const siteField = [{ name: 'site', type: 'relationship', relationTo: 'sites' }]
+    const payload = {
+      collections: {},
+      config: {
+        collections: [
+          { slug: 'member-site-roles', fields: siteField },
+          { slug: 'content', fields: siteField },
+        ],
+      },
+      count: vi.fn(async ({ collection }: any) => ({
+        totalDocs: collection === 'member-site-roles' ? 2 : 0,
+      })),
+    }
+    const req = { payload } as any
+    // Grants alone must not block: they are revoked with the site.
+    await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).resolves.toBeUndefined()
+    // Real content references still block the delete.
+    payload.count.mockResolvedValue({ totalDocs: 1 })
+    await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).rejects.toThrow(/content/)
+  })
   it('requires real transaction and locks parent rows before reference inspection', async () => {
     const { req, payload } = fixture()
     ;(payload as any).db = { sessions: {} }

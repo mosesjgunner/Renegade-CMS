@@ -64,6 +64,18 @@ export async function exportPortableSite(payload: Payload, siteId: string) {
       .map((row) => row.author),
   )
   if (authorIds.size) await query('authors', { id: { in: [...authorIds] } })
+  // Owner references point at member records, which carry no site field
+  // and are therefore never reached by the site scan above. They are
+  // pulled by reference exactly like authors: a media or content record
+  // whose owner member is missing from the archive can never be
+  // restored into another installation (the owner foreign key has no
+  // target there), so the referenced owners are part of the site bundle.
+  const ownerIds = new Set(
+    records
+      .map((record) => record.data.owner)
+      .filter((owner): owner is string => typeof owner === 'string' && owner.length > 0),
+  )
+  if (ownerIds.size) await query('members', { id: { in: [...ownerIds] } })
   const storage = mediaStorage(loadConfig())
   const media = await Promise.all(
     records
@@ -87,7 +99,7 @@ export async function exportPortableSite(payload: Payload, siteId: string) {
     transferNotes: [
       ...manifest.transferNotes,
       'Content export includes original media bytes; derivative objects must be regenerated.',
-      `Global, unregistered or unsupported collections omitted: ${omitted.filter((name) => name !== 'authors').join(', ')}.`,
+      `Global, unregistered or unsupported collections omitted: ${omitted.filter((name) => name !== 'authors' && !(name === 'members' && ownerIds.size)).join(', ')}.`,
       'This archive is content portability, not a complete installation backup.',
     ],
   }

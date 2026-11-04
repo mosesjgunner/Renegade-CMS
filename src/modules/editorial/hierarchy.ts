@@ -243,6 +243,13 @@ export const protectSiteHierarchyDelete: CollectionBeforeDeleteHook = async ({ i
         ('tabs' in field && field.tabs.some((tab) => hasSite(tab.fields))),
     )
   for (const collection of req.payload.config.collections) {
+    // Operator grants (member-site-roles) are authorization linkage created
+    // with the site (Sites afterChange, installation) and revoked as part of
+    // its deletion (Sites beforeDelete), not site content. Counting them as a protected
+    // reference makes site deletion impossible for a member-linked owner:
+    // the grant must be removed before the delete, but removing it also
+    // removes the grant scope that authorizes the delete.
+    if (collection.slug === 'member-site-roles') continue
     if (!hasSite(collection.fields)) continue
     const result = await req.payload.count({
       collection: collection.slug as never,

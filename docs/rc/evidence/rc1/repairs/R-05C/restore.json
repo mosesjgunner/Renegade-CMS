@@ -1,0 +1,26 @@
+{
+  "passed": 11,
+  "failed": 0,
+  "checks": [
+    "restored original, edited and copy assets all exist",
+    "restored assets live under new ids in the target installation",
+    "restored asset checksums match the source records",
+    "restored edited bytes are byte-identical in restore storage",
+    "restored replacement reference remapped to the imported edited asset",
+    "restored assets are scoped to the target site",
+    "restored article exists",
+    "restored article hero reference remapped to the imported original asset",
+    "restored article is published",
+    "anonymous restored article renders with the edited photograph context",
+    "anonymous restored public original URL resolves the edited bytes"
+  ],
+  "observations": {
+    "importedIds": {
+      "original": "17209212-d89b-4e10-bcea-a9e6c71d149e",
+      "edited": "3ea9d637-7524-45b3-9f48-92ff306734a6",
+      "copy": "5bdd7e81-b040-4652-b6f0-43487ac17717",
+      "content": "0344c2c5-52a9-441b-b27e-2b29c932bc9e"
+    },
+    "importedEditedVariantRows": 0
+  }
+}

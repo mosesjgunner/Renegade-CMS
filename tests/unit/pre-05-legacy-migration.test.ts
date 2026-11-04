@@ -352,7 +352,10 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(presentation.header.name).toBe('Global Site Header')
       expect(presentation.header.blocks.length).toBeGreaterThan(0)
       const headerBlock = presentation.header.blocks[0]
-      expect(headerBlock.component).toBe('publisher.hero')
+      // publisher.hero is not an allowed header-slot component in the
+      // canonical presentation registry; the header global uses
+      // rich-content (R-03D repair).
+      expect(headerBlock.component).toBe('publisher.rich-content')
 
       // Footer Global
       expect(presentation.footer.name).toBe('Global Site Footer')

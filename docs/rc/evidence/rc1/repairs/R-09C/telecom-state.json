@@ -1,0 +1,83 @@
+{
+  "quietZone": "Etc/GMT+3",
+  "rows": [
+    {
+      "id": "a4e9925d-d976-41f3-871f-67f66aaab24e",
+      "status": "queued",
+      "attempts": 0,
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": null
+    },
+    {
+      "id": "e27414c7-dee6-4244-af0c-16fb2ec52dae",
+      "status": "cancelled",
+      "attempts": 0,
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": {
+        "code": "suppressed-before-send",
+        "reason": "inbound-stop",
+        "keyword": "STOP"
+      }
+    },
+    {
+      "id": "782307bc-48fb-4261-8aa7-c8efad9deccb",
+      "status": "accepted",
+      "attempts": 1,
+      "quietHoursDelayedUntil": null,
+      "provider": "telecom-emulator",
+      "outcome": {
+        "delivery": "not-observed",
+        "acceptedAt": "2026-11-04T05:19:43.397Z"
+      }
+    },
+    {
+      "id": "74875263-7cf1-4d95-95a4-8e64320125d4",
+      "status": "cancelled",
+      "attempts": 0,
+      "quietHoursDelayedUntil": null,
+      "provider": null,
+      "outcome": {
+        "code": "event-preference-disabled"
+      }
+    },
+    {
+      "id": "088218d5-4db4-48e7-bcda-007825049876",
+      "status": "cancelled",
+      "attempts": 0,
+      "quietHoursDelayedUntil": "2026-11-04T11:00:00.000Z",
+      "provider": null,
+      "outcome": {
+        "code": "suppressed-before-send",
+        "reason": "inbound-stop",
+        "keyword": "STOP"
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "providerMessageId": "emul-msg-be8ff9a438f6471b92688fa0",
+      "idempotencyKey": "telecom:41467caf-b474-4548-96d5-2388448831b6:e835431e-4a2b-4c5a-aa99-3f13f12355ee",
+      "from": "Renegade",
+      "to": "+14155550199",
+      "channel": "sms",
+      "deliveryPath": "sms-direct",
+      "text": "09C controlled telecom body",
+      "rcs": null,
+      "segments": 1,
+      "costEstimate": {
+        "channel": "sms",
+        "unitsPerRecipient": 1,
+        "totalUnits": 1,
+        "estimatedCostPerUnitMinor": 0.79,
+        "estimatedTotalCostMinor": 0.79,
+        "currency": "USD",
+        "formattedCost": "$0.0079 USD",
+        "isEstimate": true,
+        "disclaimer": "Estimated units and cost are projections only. Actual provider charges may vary by carrier surcharges, destination routing, and local telecom regulations."
+      },
+      "receivedAt": "2026-11-04T05:19:43.397Z"
+    }
+  ]
+}

@@ -109,6 +109,17 @@ function createInMemoryMediaHarness() {
     site: 'site-1',
     status: 'active',
   })
+  // Canonical operator grant: the legacy operator-site-grants collection no
+  // longer exists in src/; the media permission layer resolves a
+  // member-linked owner's site scope through member-site-roles (the state
+  // the installation flow produces), so the fixture seeds that grant too.
+  storeFor('member-site-roles').set('msr-grant-1', {
+    id: 'msr-grant-1',
+    member: 'member-owner-1',
+    site: 'site-1',
+    role: 'owner',
+    status: 'active',
+  })
 
   const payload: any = {
     collections: Object.fromEntries(

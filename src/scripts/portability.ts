@@ -131,6 +131,44 @@ if (command === 'export') {
       )
     return input
   }
+  // A relationship value can only cross the installation boundary when
+  // its target collection is part of this archive: the target
+  // installation has no rows for the source's users, media-blobs or any
+  // other collection the archive does not carry, so writing the source
+  // id verbatim fails the foreign key and loses the whole record.
+  // Sever those references (the archive's own records — sites, media,
+  // content, referenced members — are remapped through idMap instead).
+  const manifestCollections = new Set(manifest.records.map((record) => record.collection))
+  const foreignReferenceFields = new Map<string, string[]>()
+  const severForeignReferences = (collection: string, data: Record<string, unknown>) => {
+    let fields = foreignReferenceFields.get(collection)
+    if (!fields) {
+      const config = (
+        payload.collections as unknown as Record<
+          string,
+          { config?: { flattenedFields?: Array<Record<string, unknown>> } }
+        >
+      )[collection]?.config
+      fields = (config?.flattenedFields ?? [])
+        .filter(
+          (field) =>
+            (field.type === 'relationship' || field.type === 'upload') &&
+            typeof field.relationTo === 'string' &&
+            !manifestCollections.has(field.relationTo as string),
+        )
+        .map((field) => String(field.name))
+      foreignReferenceFields.set(collection, fields)
+    }
+    if (!fields.length) return data
+    const out = { ...data }
+    for (const name of fields) {
+      const value = out[name]
+      if (typeof value === 'string') out[name] = null
+      else if (Array.isArray(value))
+        out[name] = value.filter((item) => typeof item !== 'string')
+    }
+    return out
+  }
   const findImported = async (collection: string, sourceRecordId: string) =>
     (await portabilityPayload
       .findByID({
@@ -169,7 +207,10 @@ if (command === 'export') {
           )
           data = { ...data, storageLocation: location, storageProvider: storage.provider }
         }
-        const remappedData = remapReferences(data, `${collection}/${id}`) as Record<string, unknown>
+        const remappedData = remapReferences(
+          severForeignReferences(collection, data),
+          `${collection}/${id}`,
+        ) as Record<string, unknown>
         if (collection === 'article-family-content') {
           const pointers: Record<string, unknown> = {}
           for (const field of ['currentRevision', 'latestPublishedRevision']) {

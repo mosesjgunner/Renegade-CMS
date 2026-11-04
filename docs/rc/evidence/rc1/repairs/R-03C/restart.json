@@ -1,0 +1,158 @@
+{
+  "checks": 19,
+  "trace": [
+    {
+      "name": "unpublication persisted after restart",
+      "passed": true
+    },
+    {
+      "path": "/articles/renamed-report",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11404
+    },
+    {
+      "name": "/articles/renamed-report: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "/articles/renamed-report: excludes PUBLIC-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/about-renamed-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 21956
+    },
+    {
+      "name": "/about-renamed-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/about-renamed-03c: contains PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 20135
+    },
+    {
+      "name": "/: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/: contains PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/feed.xml",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 491
+    },
+    {
+      "name": "/feed.xml: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/feed.xml: excludes Public Report 03C",
+      "passed": true
+    },
+    {
+      "path": "/search?q=Report",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 24406
+    },
+    {
+      "name": "/search?q=Report: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/search?q=Report: excludes Public Report 03C",
+      "passed": true
+    },
+    {
+      "path": "/authors/author-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11560
+    },
+    {
+      "name": "/authors/author-03c: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/tags/tag-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11548
+    },
+    {
+      "name": "/tags/tag-03c: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/articles/public-report",
+      "host": "rc1-03c.test:38761",
+      "status": 308,
+      "location": "/articles/renamed-report",
+      "bytes": 24
+    },
+    {
+      "name": "/articles/public-report: HTTP 308",
+      "passed": true
+    },
+    {
+      "path": "/about-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 308,
+      "location": "/about-renamed-03c",
+      "bytes": 18
+    },
+    {
+      "name": "/about-03c: HTTP 308",
+      "passed": true
+    },
+    {
+      "path": "/articles/secret-members",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11404
+    },
+    {
+      "name": "/articles/secret-members: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/articles/secret-deleted",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11404
+    },
+    {
+      "name": "/articles/secret-deleted: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "members-only visibility persisted after restart",
+      "passed": true
+    },
+    {
+      "name": "trash removal policy persisted after restart",
+      "passed": true
+    }
+  ]
+}

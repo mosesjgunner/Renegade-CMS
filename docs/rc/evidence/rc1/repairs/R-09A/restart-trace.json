@@ -1,0 +1,44 @@
+{
+  "checks": 8,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "post-restart: Alpha visitor-one remains unsubscribed with an unsubscribe suppression",
+      "passed": true
+    },
+    {
+      "name": "post-restart: Beta visitor-one remains active (site isolation survives restart)",
+      "passed": true
+    },
+    {
+      "name": "post-restart: consent history is intact (same event count as before restart)",
+      "passed": true
+    },
+    {
+      "name": "post-restart: suppressed-before-send delivery stays cancelled, never resent",
+      "passed": true
+    },
+    {
+      "name": "post-restart: campaign recipient snapshot hash is unchanged",
+      "passed": true
+    },
+    {
+      "name": "post-restart: no email is sent by restarted web/worker within the observation window",
+      "passed": true
+    },
+    {
+      "name": "post-restart: new signup confirms and persists as active",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "post-restart: deliverable count includes only the newly confirmed subscriber",
+      "passed": true
+    }
+  ]
+}

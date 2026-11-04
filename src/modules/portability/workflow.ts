@@ -149,18 +149,38 @@ export async function importPortableManifest(
     const failure = await attempt(record)
     if (failure) retryable.push(record)
   }
-  // One deferred retry: a row whose dependency lived in the same collection
+  // Deferred retries: a row whose dependency lived in the same collection
   // (a category's parent, a revision's parent) or was written later despite
-  // the ordering gets a second chance before it is reported as failed.
-  for (const record of retryable) {
-    const failure = await attempt(record)
-    if (failure) {
-      failedRows.push({
-        sourceId: `${record.collection}/${record.id}`,
-        collection: record.collection,
-        message: failure.message,
-      })
+  // the ordering gets another chance once its dependency exists. Retries
+  // repeat until a full pass makes no progress (bounded), because chains
+  // can span the collection order — a content record precedes the media
+  // assets its hero reference needs, while its family and revisions can
+  // only follow the content — so a single retry pass in attempt order can
+  // strand a row whose target was written by a later retry in that pass.
+  let pending = retryable
+  const lastFailure = new Map<string, string>()
+  for (let pass = 0; pass < 8 && pending.length > 0; pass++) {
+    const remaining: PortableRecord[] = []
+    let progress = false
+    for (const record of pending) {
+      const failure = await attempt(record)
+      if (failure) {
+        remaining.push(record)
+        lastFailure.set(`${record.collection}/${record.id}`, failure.message)
+      } else {
+        progress = true
+      }
     }
+    pending = remaining
+    if (!progress) break
+  }
+  for (const record of pending) {
+    const sourceId = `${record.collection}/${record.id}`
+    failedRows.push({
+      sourceId,
+      collection: record.collection,
+      message: lastFailure.get(sourceId) ?? 'Import failed.',
+    })
   }
   const relationshipRepairs =
     dryRun || failedRows.length ? 0 : ((await store.repairRelationships?.(manifest.records)) ?? 0)

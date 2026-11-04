@@ -1,0 +1,41 @@
+{
+  "checksPassed": 5,
+  "failed": 0,
+  "trace": [
+    {
+      "name": "restart retains exact canonical content IDs",
+      "passed": true
+    },
+    {
+      "name": "restart retains imported content count",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "status": 200
+    },
+    {
+      "name": "restart retains verified migration report",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "status": 200
+    },
+    {
+      "name": "restart exports original media bytes unchanged",
+      "passed": true
+    },
+    {
+      "method": "GET",
+      "route": "/about-03d",
+      "status": 200
+    },
+    {
+      "name": "restart public output retains operator text and navigation",
+      "passed": true
+    }
+  ]
+}

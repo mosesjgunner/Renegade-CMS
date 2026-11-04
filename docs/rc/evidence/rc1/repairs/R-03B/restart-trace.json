@@ -1,0 +1,96 @@
+{
+  "checks": 10,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "restart: exact persisted body/authors/status 02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "passed": true
+    },
+    {
+      "route": "/articles/draft-0-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "bytes": 11557,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: draft/private draft-0-1793726238066 still not public",
+      "passed": true
+    },
+    {
+      "name": "restart: exact persisted body/authors/status 59f28f84-3e96-44dd-8a5b-07f4fc62b2bb",
+      "passed": true
+    },
+    {
+      "route": "/articles/draft-1-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "bytes": 11557,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: draft/private draft-1-1793726238066 still not public",
+      "passed": true
+    },
+    {
+      "name": "restart: exact persisted body/authors/status b382e127-a6c3-4873-a1a2-6d73021781dc",
+      "passed": true
+    },
+    {
+      "route": "/draft-2-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "bytes": 11701,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: draft/private draft-2-1793726238066 still not public",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1203,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: append-only restored revision history retained",
+      "passed": true
+    },
+    {
+      "route": "/preview/article/0916ee2483537689445aa22151781e24c29f0172ca408909",
+      "method": "GET",
+      "status": 200,
+      "bytes": 24939,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": "noindex, nofollow"
+    },
+    {
+      "name": "restart: original saved preview remains authorized and no-indexed",
+      "passed": true
+    },
+    {
+      "name": "restart: preview renders actual original media bytes",
+      "passed": true
+    },
+    {
+      "name": "restart: native Lexical editor reopens restored draft",
+      "passed": true
+    }
+  ]
+}
