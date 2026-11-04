@@ -1,0 +1,147 @@
+name: RC1 17C image acceptance
+
+# Runs the committed 17C acceptance harness (tests/rc1-17c) on a real
+# Docker host: builds the production images from this exact tree, runs the
+# in-image inspection, both stacks and the restart phase, then exercises
+# the shipped production Compose file end to end. Evidence is uploaded as
+# an artifact and mirrored to the rc1-17c-evidence branch; the 17C ledger
+# flip stays a separate reviewed step based on that evidence.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rc1-17c.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'tests/rc1-17c/**'
+      - 'compose.production.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+  pull_request:
+    paths:
+      - '.github/workflows/rc1-17c.yml'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'tests/rc1-17c/**'
+      - 'compose.production.yaml'
+      - 'package.json'
+      - 'package-lock.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rc1-17c
+  cancel-in-progress: false
+
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Host PostgreSQL for the harness (disposable, trust auth)
+        run: |
+          docker run -d --name rc117c-hostpg --network host \
+            -e POSTGRES_HOST_AUTH_METHOD=trust \
+            postgres:17-alpine
+          for i in $(seq 1 30); do
+            if docker exec rc117c-hostpg pg_isready -h 127.0.0.1 -U postgres; then break; fi
+            sleep 2
+          done
+          command -v psql >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client)
+          psql -h 127.0.0.1 -U postgres -c 'select version()'
+
+      - name: Run the 17C harness (build, inspect, stack-a, restart-a, stack-b)
+        id: harness
+        run: |
+          set -o pipefail
+          bash tests/rc1-17c/run.sh all 2>&1 | tee 17c-harness.log
+
+      - name: Harness cleanup
+        if: always()
+        run: bash tests/rc1-17c/run.sh down || true
+
+      - name: Shipped Compose stack proof (compose.production.yaml)
+        id: compose
+        env:
+          RENEGADE_INSTANCE: rc117c-ci
+          RENEGADE_IMAGE_TAG: ci
+          APP_URL: https://rc117c.example.test
+          PROXY_MODE: direct
+        run: |
+          set -euo pipefail
+          export BUILD_SHA=$(git rev-parse HEAD)
+          export POSTGRES_PASSWORD=$(openssl rand -hex 24)
+          export PAYLOAD_SECRET=$(openssl rand -hex 32)
+          docker compose -f compose.production.yaml --profile media-heavy up -d --build --wait --wait-timeout 900
+          curl -fsS http://127.0.0.1:3000/health/ready
+          docker compose -f compose.production.yaml ps > compose-ps.txt
+          echo 'COMPOSE PROOF OK: production stack healthy, /health/ready responded'
+
+      - name: Compose logs and teardown
+        if: always()
+        env:
+          RENEGADE_INSTANCE: rc117c-ci
+          RENEGADE_IMAGE_TAG: ci
+          APP_URL: https://rc117c.example.test
+          PROXY_MODE: direct
+          POSTGRES_PASSWORD: teardown-placeholder
+          PAYLOAD_SECRET: teardown-placeholder
+        run: |
+          export BUILD_SHA=$(git rev-parse HEAD)
+          docker compose -f compose.production.yaml logs --no-color > compose-logs.txt 2>&1 || true
+          docker compose -f compose.production.yaml --profile media-heavy down -v || true
+
+      - name: Collect evidence
+        if: always()
+        run: |
+          mkdir -p ci-evidence
+          cp -r docs/rc/evidence/rc1/18-pass/17C ci-evidence/17C 2>/dev/null || true
+          cp 17c-harness.log ci-evidence/ 2>/dev/null || true
+          cp compose-ps.txt compose-logs.txt ci-evidence/ 2>/dev/null || true
+          {
+            echo "run_id: ${{ github.run_id }}"
+            echo "sha: $(git rev-parse HEAD)"
+            echo "ref: ${{ github.ref }}"
+            echo "harness_outcome: ${{ steps.harness.outcome }}"
+            echo "compose_outcome: ${{ steps.compose.outcome }}"
+            docker images --digests | grep -E 'renegade|REPOSITORY' || true
+          } > ci-evidence/RUN-SUMMARY.txt
+          cat ci-evidence/RUN-SUMMARY.txt
+          {
+            echo '## RC1 17C CI evidence'
+            echo ''
+            echo "- harness: **${{ steps.harness.outcome }}**"
+            echo "- compose proof: **${{ steps.compose.outcome }}**"
+            echo "- sha: `$(git rev-parse HEAD)`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rc1-17c-evidence-${{ github.run_id }}
+          path: ci-evidence
+          if-no-files-found: warn
+
+      - name: Mirror evidence to the rc1-17c-evidence branch
+        if: always()
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          rm -rf /tmp/evdrop && mkdir -p /tmp/evdrop && cd /tmp/evdrop
+          git init -q -b rc1-17c-evidence
+          git config user.name 'rc1-17c-ci'
+          git config user.email 'ci@localhost'
+          cp -r "$GITHUB_WORKSPACE"/ci-evidence/* .
+          git add -A
+          git commit -q -m "17C CI evidence: run ${{ github.run_id }} (harness ${{ steps.harness.outcome }}, compose ${{ steps.compose.outcome }})"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" rc1-17c-evidence
