@@ -1,5 +1,23 @@
 # RC1 SUBPASS 17C — RESULT
 
+## Final determination — 2026-11-04 (GitHub Actions, real Docker host)
+
+**STATUS: PASS** — production image, workers and service isolation.
+
+The blocker that held this subpass (no usable Docker host on Harbor's VM) was retired by moving the acceptance to GitHub Actions (`.github/workflows/rc1-17c.yml`, authored by Harbor, uploaded by Matthew). Final run **41923067257** on main `3b6911e9e4bc6bf442fe6aefc044e64aa315bc1e`, ref `refs/heads/main`: **harness_outcome: success, compose_outcome: success**.
+
+- Image phase **9/9**: both production targets built from a clean CI checkout (so the provenance attestation the sandbox runs could never make is inherent to this run), unprivileged `nextjs` uid 1001, packaged files present, embedded provenance agrees with the shipped lockfile, shipped source byte-identical to the candidate (968 files), dependency graph resolves with next/payload/tsx and no dev toolchain at top level, secret sweep clean. Digests: `renegade-cms:rc117c-3b6911e9` `sha256:6b3e4f31fca9e3aea5c4ecc2f21f6cc3a2d85b17ce6df7923389022e3d7b8777`; `renegade-cms-media-heavy:rc117c-3b6911e9` `sha256:4fdda8f06e931789898cd650a3aa7bce7699e3d853b619ecf7890378d1b70486`.
+- Journey **10/10**, restart **5/5**, stack B **6/6** (30/30 harness checks): migrations on a disposable PostgreSQL 17 database, web readiness, floor registration, anonymous upload refused, cross-site upload denied 403, owner upload 201 with served bytes, worker/queue behavior, restart persistence including the owner session, second (lean) stack.
+- Shipped Compose proof **success**: `compose.production.yaml` brought up postgres (healthy), renegade-web (healthy), renegade-worker (healthy) and media-heavy; `/health/ready` responded. Compose-built image digests: web/worker image `sha256:e3cd71143302392e919a432189d3eb02bf08b886978a030be439ddd3ce39037e`, media-heavy `sha256:15ad2bfe69051fd0bf4a4c7aeea0ae6b8cf720877f56e1ac33549e7ffa4d3c6d`.
+
+The road here, all preserved in the runs on branch `rc1-17c-evidence` (final-run files copied into `ci/` beside this file): run 41721680189 failed inspection on devOptional peer baggage (`typescript`, `@playwright`, ≈42 MB installed despite `--omit=dev --omit=peer`) → Dockerfile prune step (PR #23); run 41814415400 passed the image phase 9/9 and failed stack-A check a6 — a harness-fixture defect, not a product defect: the fixture owner was member-linked with no `member-site-roles` grant and was deliberately denied site-scoped upload → fixture grant (PR #25); the PR-tree run 41822508721 went harness-green 30/30 and the Compose proof then failed because the workflow handed the production stack a loopback http `APP_URL`, which the product correctly rejects in production (`src/modules/core/config.ts`) → workflow env corrected to an https APP_URL (Matthew's upload, main `3b6911e`); main run 41823194159 confirmed the harness green on main, and 41923067257 closed the Compose proof. The earlier missing-peer blocker (`monaco-editor`, `yjs`) recorded below was fixed by declaring both as dependencies (PR #22).
+
+Bounds: the proof ran on a GitHub-hosted Ubuntu runner (Docker, PostgreSQL 17.6) — no Docker claim is made for Harbor's sandbox VM, where Docker remains impossible (see `docker-investigation.md`). The local-process and Windows records below are historical and preserved verbatim; this determination supersedes their NOT READY status.
+
+---
+
+# RC1 SUBPASS 17C — RESULT
+
 ## Docker host continuation — 2026-11-02
 
 **STATUS: NOT READY.** Current source HEAD `ebbfeeb8f808b06860a669948e5c51a276b2fb0a` includes the subsequent packaging and harness repairs `042c3014`, `5a6f85df`, and `ebbfeeb8`. The checkout had pre-existing untracked evidence and `0-trace.network`; tracked source was clean at inspection. Those files were preserved. This continuation did not build the image: it inspected the already-present local image `renegade-cms:rc117c-ebbfeeb8`, image ID/digest `sha256:81cb8ae7dd46d96894bfd1dc4f911a76e0055f839011e752f4491f278d7e3578`. The OCI revision and both embedded provenance files identify the full HEAD; embedded `clean` is null, so this alone does not attest a clean build context. Lockfile hash in both files is `bfb8e3b312549a2754ba62c6c65797b83cde7ff1f82d98533172598cada24ea7`. No registry digest or independently reconstructed build context is claimed.
