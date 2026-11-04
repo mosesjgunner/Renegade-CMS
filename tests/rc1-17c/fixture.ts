@@ -62,6 +62,18 @@ try {
       collection: 'member-site-roles',
       data: { member: staffMember, site: alpha.id, role: 'contributor' },
     })
+    // Creating a user auto-links a member identity (Users beforeChange), and
+    // a member-linked owner is scoped by canonical grants: the legacy
+    // installation fallback applies only to owners with no member identity
+    // (src/modules/operations/operator-grants.ts). Without this grant the
+    // owner is deliberately unauthorized for site-scoped media upload
+    // (assertMediaPermission -> checkOperatorSiteAccess -> 403). Mirror the
+    // installation-canonical state, as the R-05C harness documented.
+    const ownerMember = typeof owner.member === 'object' ? owner.member.id : owner.member
+    await payload.create({
+      collection: 'member-site-roles',
+      data: { member: ownerMember, site: alpha.id, role: 'community-manager' },
+    })
     emit({
       alphaId: String(alpha.id),
       betaId: String(beta.id),
