@@ -1,0 +1,16 @@
+[
+  {
+    "method": "GET",
+    "route": "/articles/05c-edited-1793743716415",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "text/html; charset=utf-8"
+  },
+  {
+    "method": "GET",
+    "route": "/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/png"
+  }
+]

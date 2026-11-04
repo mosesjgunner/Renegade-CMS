@@ -1,0 +1,320 @@
+[
+  {
+    "method": "POST",
+    "route": "/api/media/upload",
+    "host": "rc1-05c.test:38772",
+    "status": 201,
+    "type": "application/json"
+  },
+  {
+    "method": "PATCH",
+    "route": "/api/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "application/json"
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9&retentionMode=active",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/governance?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "url": "https://rc1-05c.test:38772/api/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "status": 201
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "url": "https://rc1-05c.test:38772/api/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6",
+    "status": 403
+  },
+  {
+    "method": "PUT",
+    "url": "https://rc1-05c.test:38772/api/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6",
+    "status": 201
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/api/media/command-center?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "status": 200
+  },
+  {
+    "method": "GET",
+    "url": "https://rc1-05c.test:38772/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "status": 200
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "host": "rc1-05c.test:38772",
+    "status": 403,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "host": "rc1-05c.test:38772",
+    "status": 403,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "host": "rc1-05c.test:38772",
+    "status": 403,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/cb18f673-fabe-400b-a9b6-6197ab332816",
+    "host": "rc1-05c.test:38772",
+    "status": 415,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "host": "rc1-05c.test:38772",
+    "status": 409,
+    "type": "application/json"
+  },
+  {
+    "method": "POST",
+    "route": "/api/media/upload",
+    "host": "rc1-05c.test:38772",
+    "status": 201,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/dc858eeb-6282-4c76-bee6-424e9f1f7ac1",
+    "host": "rc1-05c.test:38772",
+    "status": 201,
+    "type": "application/json"
+  },
+  {
+    "method": "PUT",
+    "route": "/api/media/dc858eeb-6282-4c76-bee6-424e9f1f7ac1",
+    "host": "rc1-05c.test:38772",
+    "status": 409,
+    "type": "application/json"
+  },
+  {
+    "method": "POST",
+    "route": "/api/content",
+    "host": "rc1-05c.test:38772",
+    "status": 201,
+    "type": "application/json"
+  },
+  {
+    "method": "PATCH",
+    "route": "/api/content/059ba1c6-4f2a-4acf-ad36-c96fde76f6f8",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "application/json"
+  },
+  {
+    "method": "GET",
+    "route": "/api/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6/variants?siteId=8eaa5b02-0224-4d83-b64f-8209e671f2c9",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "application/json"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=wide&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=wide&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=wide&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=thumbnail&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=thumbnail&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=thumbnail&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=square&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=square&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=square&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=portrait&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=portrait&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=portrait&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=og&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=og&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=inline&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=inline&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=inline&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=hero&format=jpeg&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/jpeg"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=hero&format=avif&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/avif"
+  },
+  {
+    "method": "GET",
+    "route": "/media/dcce9dfa-2bd3-4c54-a45f-b2748036adc6?variant=hero&format=webp&v=1",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/webp"
+  },
+  {
+    "method": "GET",
+    "route": "/media/d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "host": "rc1-05c.test:38772",
+    "status": 200,
+    "type": "image/png"
+  }
+]

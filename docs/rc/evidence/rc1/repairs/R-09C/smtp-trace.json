@@ -1,0 +1,95 @@
+{
+  "messages": [
+    {
+      "to": "sub-one@rc1-09c.test",
+      "at": "2026-11-04T05:17:23.625Z",
+      "subject": "Confirm your subscription",
+      "messageId": "<8fb9fbf86c18a6c0d2235ea431dbfd22@renegade.local>",
+      "bytes": 591
+    },
+    {
+      "to": "sub-two@rc1-09c.test",
+      "at": "2026-11-04T05:17:25.796Z",
+      "subject": "Confirm your subscription",
+      "messageId": "<f481cfb18486caee6d1dbcdc28592c27@renegade.local>",
+      "bytes": 591
+    },
+    {
+      "to": "sub-pending@rc1-09c.test",
+      "at": "2026-11-04T05:17:28.078Z",
+      "subject": "Confirm your subscription",
+      "messageId": "<8fd5298c46be0782852a633279a3d373@renegade.local>",
+      "bytes": 595
+    },
+    {
+      "to": "sub-one@rc1-09c.test",
+      "at": "2026-11-04T05:17:36.791Z",
+      "subject": "09C Campaign One",
+      "messageId": "<57455233dc67abc96818048c8b6cecd1@renegade.local>",
+      "bytes": 2643
+    },
+    {
+      "to": "sub-two@rc1-09c.test",
+      "at": "2026-11-04T05:17:37.068Z",
+      "subject": "09C Campaign One",
+      "messageId": "<bde38e44e0b135d964cf3eb110708e76@renegade.local>",
+      "bytes": 2643
+    },
+    {
+      "to": "accepted@rc1-09c.test",
+      "at": "2026-11-04T05:17:39.167Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<28af87f89ab8a10b1f82a04c10c87cf2@renegade.local>",
+      "bytes": 1443
+    },
+    {
+      "to": "temporary@rc1-09c.test",
+      "at": "2026-11-04T05:17:43.379Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<d2f2e980847300ecf7e860c5d0e22219@renegade.local>",
+      "bytes": 1444
+    },
+    {
+      "to": "recover@rc1-09c.test",
+      "at": "2026-11-04T05:17:55.999Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<92a7b81848854ab548ee13e01f57a070@renegade.local>",
+      "bytes": 1442
+    },
+    {
+      "to": "unknown@rc1-09c.test",
+      "at": "2026-11-04T05:18:19.135Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<9a50d1d083276ccb8f4f0fe334eb969c@renegade.local>",
+      "bytes": 1442
+    },
+    {
+      "to": "stall@rc1-09c.test",
+      "at": "2026-11-04T05:18:21.330Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<52e4f3ff255b472e65de978b6f099e0a@renegade.local>",
+      "bytes": 1440
+    },
+    {
+      "to": "hold@rc1-09c.test",
+      "at": "2026-11-04T05:18:28.440Z",
+      "subject": "09C Controlled MIME",
+      "messageId": "<778c57f3d14cf6e478f778ae64be1960@renegade.local>",
+      "bytes": 1439
+    },
+    {
+      "to": "dedup@rc1-09c.test",
+      "at": "2026-11-04T05:19:42.480Z",
+      "subject": "09C Dedup",
+      "messageId": "<8d0819c36e6f586feaa984c85690d851@renegade.local>",
+      "bytes": 448
+    }
+  ],
+  "rcptRejections": {
+    "temporary@rc1-09c.test": 1,
+    "recover@rc1-09c.test": 4,
+    "exhaust@rc1-09c.test": 4,
+    "exhaust-beta@rc1-09c.test": 4
+  },
+  "boundary": "Loopback only; no remote SMTP/carrier activity"
+}

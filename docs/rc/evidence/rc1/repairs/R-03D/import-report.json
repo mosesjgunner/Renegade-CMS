@@ -1,0 +1,413 @@
+{
+  "runId": "mig-82f563e6-1e9",
+  "stage": "imported",
+  "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+  "targetSiteMode": "new-isolated-site",
+  "options": {
+    "actorId": "2d21a879-5b03-4046-ac78-210348c0615a",
+    "targetSiteMode": "new-isolated-site",
+    "newSiteName": "03D Imported Tribune",
+    "newSiteSlug": "imported-tribune-03d",
+    "themeId": "neutral-starter",
+    "remoteMediaDownloadAllowed": false,
+    "dryRun": false,
+    "autoActivate": false,
+    "rejectDuplicates": false
+  },
+  "sourceSummary": {
+    "posts": 3,
+    "pages": 3,
+    "authors": 2,
+    "categories": 3,
+    "tags": 3,
+    "menus": 1,
+    "media": 1,
+    "unsupported": 9
+  },
+  "reconciliation": {
+    "created": {
+      "content": 6,
+      "authors": 2,
+      "categories": 3,
+      "tags": 3,
+      "media": 1,
+      "redirects": 3,
+      "layouts": 9,
+      "templates": 3,
+      "patterns": 1,
+      "globals": 2
+    },
+    "skipped": 0,
+    "failed": 0
+  },
+  "checksums": {
+    "sourceWxr": "sha256:491e85bc1ce6475806f69c43f59f36ebaee6b58446f6c46dd791414d3263ef3b",
+    "media": {
+      "101": "sha256:9321d6db4467e2c9c34a629b97da02ebdb7d773f9c44560718bc88dc83b5d2d4"
+    },
+    "report": "sha256:28dcb68d9de8147524c785eb42d1aa9ab330e4ab6d5bf4bace8feee0779f446a"
+  },
+  "redirectPlan": [
+    {
+      "sourceUrl": "https://renegadetribune.example/",
+      "legacyPath": "/",
+      "canonicalPath": "/",
+      "status": "compatible-direct",
+      "statusCode": 308
+    },
+    {
+      "sourceUrl": "https://renegadetribune.example/about-us/",
+      "legacyPath": "/about-us",
+      "canonicalPath": "/about-us",
+      "status": "compatible-direct",
+      "statusCode": 308
+    },
+    {
+      "sourceUrl": "https://renegadetribune.example/contact/",
+      "legacyPath": "/contact",
+      "canonicalPath": "/contact",
+      "status": "compatible-direct",
+      "statusCode": 308
+    },
+    {
+      "sourceUrl": "https://renegadetribune.example/2026/08/investigating-algorithmic-censorship/",
+      "legacyPath": "/2026/08/investigating-algorithmic-censorship",
+      "canonicalPath": "/articles/investigating-algorithmic-censorship",
+      "status": "needs-redirect",
+      "statusCode": 308
+    },
+    {
+      "sourceUrl": "https://renegadetribune.example/2026/08/sovereignty-open-formats/",
+      "legacyPath": "/2026/08/sovereignty-open-formats",
+      "canonicalPath": "/articles/sovereignty-open-formats",
+      "status": "needs-redirect",
+      "statusCode": 308
+    },
+    {
+      "sourceUrl": "https://renegadetribune.example/2026/08/commerce-digital-independence/",
+      "legacyPath": "/2026/08/commerce-digital-independence",
+      "canonicalPath": "/articles/commerce-digital-independence",
+      "status": "needs-redirect",
+      "statusCode": 308
+    }
+  ],
+  "sideBySide": [
+    {
+      "sourceId": "301",
+      "sourceTitle": "Home",
+      "sourceType": "page",
+      "sourceUrl": "https://renegadetribune.example/",
+      "sourceExcerpt": "Welcome to The Renegade Tribune. Uncensored, independent reporting for the modern era.",
+      "renegadeId": "ace0d7f8-ce02-4990-af36-72a2c922364b",
+      "renegadeTitle": "Home",
+      "renegadePath": "/",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2F",
+      "repairUrl": "/builder?path=%2F",
+      "status": "migrated",
+      "warnings": []
+    },
+    {
+      "sourceId": "302",
+      "sourceTitle": "About Our Newsroom",
+      "sourceType": "page",
+      "sourceUrl": "https://renegadetribune.example/about-us/",
+      "sourceExcerpt": "Learn about our mission and journalistic standards.",
+      "renegadeId": "90fbc4b3-6674-4fdb-8fbc-196d88b84d40",
+      "renegadeTitle": "About Our Newsroom",
+      "renegadePath": "/about-us",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2Fabout-us",
+      "repairUrl": "/builder?path=%2Fabout-us",
+      "status": "migrated",
+      "warnings": []
+    },
+    {
+      "sourceId": "303",
+      "sourceTitle": "Contact Us",
+      "sourceType": "page",
+      "sourceUrl": "https://renegadetribune.example/contact/",
+      "sourceExcerpt": "Get in touch with our editorial desk securely.",
+      "renegadeId": "f0af88d7-b510-497a-b9a5-b53ce8fe0f0f",
+      "renegadeTitle": "Contact Us",
+      "renegadePath": "/contact",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2Fcontact",
+      "repairUrl": "/builder?path=%2Fcontact",
+      "status": "quarantined",
+      "warnings": [
+        "Quarantined: form (contact-form-7)"
+      ]
+    },
+    {
+      "sourceId": "401",
+      "sourceTitle": "Investigating Algorithmic Censorship",
+      "sourceType": "post",
+      "sourceUrl": "https://renegadetribune.example/2026/08/investigating-algorithmic-censorship/",
+      "sourceExcerpt": "How major content networks silently deprioritize independent publications.",
+      "renegadeId": "d7c68c7f-825c-4c6b-bca0-41db082b02c8",
+      "renegadeTitle": "Investigating Algorithmic Censorship",
+      "renegadePath": "/articles/investigating-algorithmic-censorship",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2Farticles%2Finvestigating-algorithmic-censorship",
+      "repairUrl": "/builder?path=%2Farticles%2Finvestigating-algorithmic-censorship",
+      "status": "quarantined",
+      "warnings": [
+        "Quarantined: comment (wordpress-comments)"
+      ]
+    },
+    {
+      "sourceId": "402",
+      "sourceTitle": "The Sovereignty of Open Formats",
+      "sourceType": "post",
+      "sourceUrl": "https://renegadetribune.example/2026/08/sovereignty-open-formats/",
+      "sourceExcerpt": "Why publishers must own their data without proprietary lock-in.",
+      "renegadeId": "a84c3563-d4c7-43e6-bc79-6facf74c0a98",
+      "renegadeTitle": "The Sovereignty of Open Formats",
+      "renegadePath": "/articles/sovereignty-open-formats",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2Farticles%2Fsovereignty-open-formats",
+      "repairUrl": "/builder?path=%2Farticles%2Fsovereignty-open-formats",
+      "status": "quarantined",
+      "warnings": [
+        "Quarantined: script (inline-script)",
+        "Quarantined: style (inline-style)",
+        "Quarantined: shortcode (gallery)"
+      ]
+    },
+    {
+      "sourceId": "403",
+      "sourceTitle": "Commerce and Digital Independence",
+      "sourceType": "post",
+      "sourceUrl": "https://renegadetribune.example/2026/08/commerce-digital-independence/",
+      "sourceExcerpt": "Building sustainable models for creator monetization.",
+      "renegadeId": "6a45a62e-37db-46cd-9974-68a6b52b7bcb",
+      "renegadeTitle": "Commerce and Digital Independence",
+      "renegadePath": "/articles/commerce-digital-independence",
+      "renegadeStatus": "draft",
+      "previewUrl": "/builder/preview?path=%2Farticles%2Fcommerce-digital-independence",
+      "repairUrl": "/builder?path=%2Farticles%2Fcommerce-digital-independence",
+      "status": "quarantined",
+      "warnings": [
+        "Quarantined: php-code (inline-php)",
+        "Quarantined: commerce (woocommerce/cart)",
+        "Quarantined: commerce (woocommerce_cart)"
+      ]
+    }
+  ],
+  "quarantine": [
+    {
+      "id": "2111eacb-4406-4d3d-bb81-bada1d29f83f",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "303",
+      "itemType": "page",
+      "title": "Contact Us",
+      "kind": "form",
+      "name": "contact-form-7",
+      "rawSource": "[contact-form-7 id=\"45\" title=\"Contact form 1\"]",
+      "location": "Item: Contact Us (ID: 303)",
+      "reason": "WordPress shortcode '[contact-form-7]' requires custom PHP shortcode handlers; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "b28d4357-0b6d-4a59-b286-6b2bed47e8f2",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "401",
+      "itemType": "post",
+      "title": "Investigating Algorithmic Censorship",
+      "kind": "comment",
+      "name": "wordpress-comments",
+      "rawSource": "1 comments attached to post 401",
+      "location": "Item: Investigating Algorithmic Censorship",
+      "reason": "WordPress user comments are not auto-imported into editorial content; comments preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "11f2d42e-501f-4a64-96cb-06979e77690f",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "402",
+      "itemType": "post",
+      "title": "The Sovereignty of Open Formats",
+      "kind": "script",
+      "name": "inline-script",
+      "rawSource": "<script>console.log(\"Unsafe third-party tracker payload\");</script>",
+      "location": "Item: The Sovereignty of Open Formats (ID: 402)",
+      "reason": "Raw client-side script tags are rejected by Renegade presentation boundary; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "417da0cb-77e9-4eaf-9ef6-7c67b31be57e",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "402",
+      "itemType": "post",
+      "title": "The Sovereignty of Open Formats",
+      "kind": "style",
+      "name": "inline-style",
+      "rawSource": "<style>.unsafe-inline-override { color: red !important; }</style>",
+      "location": "Item: The Sovereignty of Open Formats (ID: 402)",
+      "reason": "Untrusted CSS stylesheets are disallowed to protect theme token integrity; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "3a79e65d-5abc-4361-9ca6-35741b815542",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "402",
+      "itemType": "post",
+      "title": "The Sovereignty of Open Formats",
+      "kind": "shortcode",
+      "name": "gallery",
+      "rawSource": "[gallery ids=\"101,102\"]",
+      "location": "Item: The Sovereignty of Open Formats (ID: 402)",
+      "reason": "WordPress shortcode '[gallery]' requires custom PHP shortcode handlers; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "7d310233-34ad-4ccd-b6fb-a7586410a546",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "403",
+      "itemType": "post",
+      "title": "Commerce and Digital Independence",
+      "kind": "php-code",
+      "name": "inline-php",
+      "rawSource": "<?php echo \"Legacy PHP query execution\"; ?>",
+      "location": "Item: Commerce and Digital Independence (ID: 403)",
+      "reason": "Arbitrary PHP execution is disallowed in Renegade CMS for security; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "210840c2-f1c3-4a51-9a84-7d1ab36daf48",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "403",
+      "itemType": "post",
+      "title": "Commerce and Digital Independence",
+      "kind": "commerce",
+      "name": "woocommerce/cart",
+      "rawSource": "<!-- wp:woocommerce/cart /-->",
+      "location": "Item: Commerce and Digital Independence (ID: 403)",
+      "reason": "WordPress plugin block 'woocommerce/cart' cannot run without its proprietary PHP runtime; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "bffd2a44-1cf3-4399-99ae-91fa67c4590f",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "403",
+      "itemType": "post",
+      "title": "Commerce and Digital Independence",
+      "kind": "commerce",
+      "name": "woocommerce_cart",
+      "rawSource": "[woocommerce_cart]",
+      "location": "Item: Commerce and Digital Independence (ID: 403)",
+      "reason": "WordPress shortcode '[woocommerce_cart]' requires custom PHP shortcode handlers; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    },
+    {
+      "id": "66dbbff1-1d45-4a1a-8037-61338c2d9385",
+      "runId": "mig-82f563e6-1e9",
+      "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1",
+      "sourceId": "501",
+      "itemType": "portfolio_docket",
+      "title": "Archive Investigation Docket #42",
+      "kind": "custom-post-type",
+      "name": "cpt:portfolio_docket",
+      "rawSource": "\n\t\t<title><![CDATA[Archive Investigation Docket #42]]></title>\n\t\t<link>https://renegadetribune.example/dockets/docket-42/</link>\n\t\t<pubDate>Mon, 24 Aug 2026 09:00:00 +0000</pubDate>\n\t\t<dc:creator><![CDATA[chief_editor]]></dc:creator>\n\t\t<wp:post_id>501</wp:post_id>\n\t\t<wp:post_date_gmt><![CDATA[2026-08-24 09:00:00]]></wp:post_date_gmt>\n\t\t<wp:post_name><![CDATA[docket-42]]></wp:post_name>\n\t\t<wp:status><![CDATA[publish]]></wp:status>\n\t\t<wp:post_type><![CDATA[portfolio_docket]]></wp:post_type>\n\t\t<content:encoded><![CDATA[<p>Classified docket evidence repository.</p>]]></content:encoded>\n\t",
+      "location": "Post type: portfolio_docket, ID: 501",
+      "reason": "Custom post type 'portfolio_docket' has custom schema not registered in Renegade; preserved in quarantine.",
+      "createdAt": "2026-11-03T23:11:11.227Z"
+    }
+  ],
+  "warnings": [],
+  "errors": [],
+  "acceptanceChecklist": {
+    "contentCountsMatch": true,
+    "mediaChecksumsVerified": true,
+    "urlsAndRedirectsLoopFree": true,
+    "renderedTemplatesValid": true,
+    "themeSafeNoArbitraryExec": true,
+    "unsupportedQuarantined": true,
+    "idempotencyVerified": true
+  },
+  "resumableCheckpoint": {
+    "completedSourceIds": [
+      "author:chief_editor",
+      "author:sarah_scribe",
+      "category:opinion",
+      "category:news",
+      "category:investigative",
+      "tag:freedom",
+      "tag:tech",
+      "tag:journalism",
+      "content:301",
+      "content:302",
+      "content:303",
+      "content:401",
+      "content:402",
+      "content:403",
+      "redirect:/2026/08/investigating-algorithmic-censorship",
+      "redirect:/2026/08/sovereignty-open-formats",
+      "redirect:/2026/08/commerce-digital-independence",
+      "layout:header",
+      "layout:footer",
+      "template:tpl-post-81683a7b",
+      "template:tpl-page-95b6d438",
+      "template:tpl-archive-cbab40c6",
+      "pattern:pat-cta-bb1faaf8",
+      "layout:page:/",
+      "layout:page:/about-us",
+      "layout:page:/contact"
+    ]
+  },
+  "createdEntityIds": {
+    "contentIds": [
+      "ace0d7f8-ce02-4990-af36-72a2c922364b",
+      "90fbc4b3-6674-4fdb-8fbc-196d88b84d40",
+      "f0af88d7-b510-497a-b9a5-b53ce8fe0f0f",
+      "d7c68c7f-825c-4c6b-bca0-41db082b02c8",
+      "a84c3563-d4c7-43e6-bc79-6facf74c0a98",
+      "6a45a62e-37db-46cd-9974-68a6b52b7bcb"
+    ],
+    "authorIds": [
+      "6ce7ff73-ccb6-4148-bf51-079139e2f298",
+      "537b7f1b-0f09-48fd-9a35-4e1d5be93178"
+    ],
+    "categoryIds": [
+      "0a8d7c7a-42f3-4076-a664-2dbebe3750e5",
+      "09515a67-db27-4f80-ad48-ea45764bca30",
+      "695a3c50-e327-4501-a34d-a3771646c945"
+    ],
+    "tagIds": [
+      "e4c82c16-ecfc-4ee4-ba20-20c0962f2a51",
+      "dea58b87-533c-4232-8c82-99dd80bb75f8",
+      "ef67f1a8-fa10-4306-9810-674e96e987c4"
+    ],
+    "mediaIds": [
+      "7807841b-dc09-4edf-9585-399af471c96a"
+    ],
+    "redirectIds": [
+      "055ff0d1-be35-4bac-b12e-081849c3ed42",
+      "b7f581f1-04b9-4e0b-b9c0-559651076c5f",
+      "1c92e961-564c-4d02-95fe-a3349c805095"
+    ],
+    "layoutIds": [
+      "e19a3dd8-288e-4d72-baa6-617a050e13b4",
+      "043c1581-1d22-4092-b7dc-11b15cf91b3b",
+      "5f655849-6662-4771-a884-94c3abc0219e",
+      "2bebba38-2333-4a25-a6fa-09fa7d84e51f",
+      "6f41d53a-1069-446d-a5d7-b578726762e1",
+      "24aca5f5-a83b-4473-ae80-e4ec9a92d977",
+      "b09bbab9-4df9-4fad-8608-5f7405ce2a10",
+      "8d989aa4-69b1-4d7a-935d-17741fa66fd2",
+      "1f9afe57-db07-4f2c-bc05-210c4a8e9141"
+    ],
+    "siteId": "1e625793-25c8-446c-b309-9ff86778b1b1"
+  },
+  "createdAt": "2026-11-03T23:11:12.352Z",
+  "updatedAt": "2026-11-03T23:11:12.352Z"
+}

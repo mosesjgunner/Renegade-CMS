@@ -1,0 +1,14 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "checks": [
+    "restart record d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "restart bytes d0217795-f3f8-4a2e-98dd-7a76b60081e8",
+    "restart record dcce9dfa-2bd3-4c54-a45f-b2748036adc6",
+    "restart bytes dcce9dfa-2bd3-4c54-a45f-b2748036adc6",
+    "restart record cb18f673-fabe-400b-a9b6-6197ab332816",
+    "restart bytes cb18f673-fabe-400b-a9b6-6197ab332816",
+    "restart public article",
+    "restart replacement delivery"
+  ]
+}

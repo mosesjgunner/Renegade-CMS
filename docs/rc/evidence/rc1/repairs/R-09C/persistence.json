@@ -1,0 +1,110 @@
+{
+  "deliveries": [
+    {
+      "id": "c71f86e5-9d32-474b-b030-e0133f533990",
+      "recipientEmail": "dedup@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<8d0819c36e6f586feaa984c85690d851@renegade.local>"
+    },
+    {
+      "id": "27e80300-2a46-4bf6-b5d4-eb65c571a647",
+      "recipientEmail": "exhaust-beta@rc1-09c.test",
+      "status": "dead-letter",
+      "attempts": 4,
+      "providerMessageId": null
+    },
+    {
+      "id": "5f85f5ae-c1ac-4e5c-b2bc-3d54d0ff1eb6",
+      "recipientEmail": "hold@rc1-09c.test",
+      "status": "unknown",
+      "attempts": 1,
+      "providerMessageId": null
+    },
+    {
+      "id": "72d0a45d-f155-4801-81dd-3c80199c51d8",
+      "recipientEmail": "stall@rc1-09c.test",
+      "status": "unknown",
+      "attempts": 1,
+      "providerMessageId": null
+    },
+    {
+      "id": "6c5f95fd-4c2d-4f58-a949-dc9a573530c8",
+      "recipientEmail": "unknown@rc1-09c.test",
+      "status": "unknown",
+      "attempts": 1,
+      "providerMessageId": null
+    },
+    {
+      "id": "e72ea401-3e69-4e79-8df9-8a938470c728",
+      "recipientEmail": "exhaust@rc1-09c.test",
+      "status": "cancelled",
+      "attempts": 4,
+      "providerMessageId": null
+    },
+    {
+      "id": "33943f36-1c4b-448c-ad85-15be87c447e9",
+      "recipientEmail": "permanent@rc1-09c.test",
+      "status": "failed",
+      "attempts": 1,
+      "providerMessageId": null
+    },
+    {
+      "id": "23b473af-3883-4a49-8a19-b4e96fb60f51",
+      "recipientEmail": "recover@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 5,
+      "providerMessageId": "<92a7b81848854ab548ee13e01f57a070@renegade.local>"
+    },
+    {
+      "id": "d5a59047-6951-445b-bc25-b17b21e0e60e",
+      "recipientEmail": "temporary@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 2,
+      "providerMessageId": "<d2f2e980847300ecf7e860c5d0e22219@renegade.local>"
+    },
+    {
+      "id": "dfc677c7-3161-4405-a6ea-1c37e7eab249",
+      "recipientEmail": "accepted@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<28af87f89ab8a10b1f82a04c10c87cf2@renegade.local>"
+    },
+    {
+      "id": "7b2302b9-c123-418f-8e15-12df2205e108",
+      "recipientEmail": "sub-one@rc1-09c.test",
+      "status": "bounced",
+      "attempts": 1,
+      "providerMessageId": "<57455233dc67abc96818048c8b6cecd1@renegade.local>"
+    },
+    {
+      "id": "037eb707-ce88-49fa-8054-fbf7bcd92f15",
+      "recipientEmail": "sub-two@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<bde38e44e0b135d964cf3eb110708e76@renegade.local>"
+    },
+    {
+      "id": "a60e9aa7-7f7c-49ad-a7ae-0ddf25e9c681",
+      "recipientEmail": "sub-pending@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<8fd5298c46be0782852a633279a3d373@renegade.local>"
+    },
+    {
+      "id": "1f3d4b0c-433c-461b-8849-621338c9ad24",
+      "recipientEmail": "sub-two@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<f481cfb18486caee6d1dbcdc28592c27@renegade.local>"
+    },
+    {
+      "id": "9c5cfdcb-917e-467f-9977-e126f005e2a7",
+      "recipientEmail": "sub-one@rc1-09c.test",
+      "status": "accepted",
+      "attempts": 1,
+      "providerMessageId": "<8fb9fbf86c18a6c0d2235ea431dbfd22@renegade.local>"
+    }
+  ],
+  "capturedCount": 12
+}

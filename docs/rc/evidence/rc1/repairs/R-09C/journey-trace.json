@@ -1,0 +1,384 @@
+{
+  "checks": 44,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "fresh database has no sites or subscribers",
+      "passed": true
+    },
+    {
+      "name": "ordinary installer completes real virtual WebAuthn ceremony",
+      "passed": true
+    },
+    {
+      "name": "second site created as a tenant boundary (no owner grant)",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "name": "two subscribers complete double opt-in and persist active",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "name": "third subscriber stays pending (never confirms)",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "campaign preview renders MIME with a stable render hash",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "segment evaluation counts only the two confirmed subscribers as deliverable",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "campaign snapshot pins exactly the two consented recipients",
+      "passed": true
+    },
+    {
+      "name": "campaign MIME is exact: subject, sender, recorded Message-ID, List-Unsubscribe, body",
+      "passed": true
+    },
+    {
+      "name": "campaign deliveries record the smtp provider, one attempt and acceptance identity",
+      "passed": true
+    },
+    {
+      "name": "no campaign delivery and no campaign mail exist for the unconfirmed subscriber",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "operator test-send creates a queued persisted delivery",
+      "passed": true
+    },
+    {
+      "name": "accepted: one attempt, one DATA, recorded Message-ID matches the wire",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "accepted delivery cannot be retried",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 403,
+      "body": "{\"error\":\"Cross-origin authenticated mutation is forbidden.\"}"
+    },
+    {
+      "name": "foreign-origin retry is denied before any state change",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "SMTP 451 is retried automatically with bounded backoff and accepts exactly once",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "four temporary failures dead-letter with no DATA sent",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "operator retry grants a fresh budget to a dead-lettered delivery",
+      "passed": true
+    },
+    {
+      "name": "operator retry succeeds at lifetime attempt five with exactly one DATA",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "SMTP 550 is a durable permanent failure after one attempt",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "permanent failure cannot be retried",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "exhaustion persists four attempts and zero DATA",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "operator retry queues the exhausted delivery while no worker runs (attempts preserved)",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "a queued delivery cannot be retried a second time",
+      "passed": true
+    },
+    {
+      "name": "suppression is recorded for the queued recipient before dispatch",
+      "passed": true
+    },
+    {
+      "name": "suppression wins over the queued retry: cancelled, attempts preserved, never sent",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "lost SMTP response after DATA parks unknown, non-retryable, one attempt, one DATA",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "unknown outcome cannot be retried",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "send timeout is classified unknown (never auto-retried), one attempt, one DATA",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "timed-out unknown outcome cannot be retried",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "mid-send state is persisted: sending + provider + attempt + live lease",
+      "passed": true
+    },
+    {
+      "name": "worker killed mid-send (SIGKILL) with the send unacknowledged",
+      "passed": true
+    },
+    {
+      "name": "interrupted send quarantines as unknown after lease expiry: no resend, one DATA",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "interrupted-send unknown cannot be retried",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 403,
+      "body": "{\"error\":\"Staff site access required.\"}"
+    },
+    {
+      "name": "anonymous campaign test-send is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 403,
+      "body": "{\"error\":\"Staff access required.\"}"
+    },
+    {
+      "name": "anonymous retry is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Delivery unavailable.\"}"
+    },
+    {
+      "name": "owner of another site cannot retry a foreign tenant delivery (not found under access)",
+      "passed": true
+    },
+    {
+      "name": "native staff mutation of a delivery status is denied",
+      "passed": true
+    },
+    {
+      "name": "anonymous native delivery creation is denied",
+      "passed": true
+    },
+    {
+      "name": "controlled bounce event marks the delivery bounced and suppresses the address",
+      "passed": true
+    },
+    {
+      "name": "duplicate provider callback is idempotent: exactly one event row, state unchanged",
+      "passed": true
+    },
+    {
+      "name": "duplicate queue commands return the same delivery ID",
+      "passed": true
+    },
+    {
+      "name": "deduplicated command yields one attempt and one DATA",
+      "passed": true
+    },
+    {
+      "name": "telecom: emulation explicitly selected; live carrier disabled",
+      "passed": true
+    },
+    {
+      "name": "telecom: canonical contact phone and profile timezone produce durable quiet-hour scheduling",
+      "passed": true
+    },
+    {
+      "name": "telecom: early quiet-hours replay emits no telecom message",
+      "passed": true
+    },
+    {
+      "name": "telecom: per-event follow preference cancels telecom emulation",
+      "passed": true
+    },
+    {
+      "name": "telecom: allowed event accepted once with exact emulated body and persistent attempt",
+      "passed": true
+    },
+    {
+      "name": "telecom: site-scoped STOP cannot cancel a foreign tenant using the same phone",
+      "passed": true
+    },
+    {
+      "name": "telecom: STOP after queue prevents another send",
+      "passed": true
+    },
+    {
+      "name": "telecom: STOP suppression persisted using canonical phone hash",
+      "passed": true
+    },
+    {
+      "name": "telecom: campaign replay does not add deliveries",
+      "passed": true
+    },
+    {
+      "name": "final state: every scenario delivery is in its recorded terminal/parked state",
+      "passed": true
+    }
+  ]
+}

@@ -321,6 +321,13 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     const created = (await this.payload.create({
       collection: 'sites',
       overrideAccess: true,
+      // Pass the actor so the canonical Sites afterChange creator grant
+      // fires for the new site (as it does for UI/API site creation).
+      // Without a request user no grant is created, and the media
+      // permission layer then denies the actor's own media imports
+      // into the site the migration just created ("Site scope access
+      // denied" MEDIA_STORE_FAILED).
+      user: this.actor ? { ...this.actor, collection: 'users' } : undefined,
       data: {
         name: data.name,
         slug: data.slug,
@@ -540,6 +547,13 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         title: data.title,
         slug: data.slug,
         canonicalPath: data.canonicalPath,
+        // The migration's canonical path is deliberate (derived from
+        // the legacy URL plan, e.g. the legacy home page maps to '/').
+        // Without an explicit override the editorial path derivation
+        // recomputes it from the slug ('/home'), and the migration's
+        // own verification then cannot find the record at the planned
+        // path (contentCountsMatch fails; stage stays 'failed').
+        pathOverride: true,
         parentPage: data.parentPageId ?? null,
         excerpt: data.excerpt,
         body: lexicalBody,

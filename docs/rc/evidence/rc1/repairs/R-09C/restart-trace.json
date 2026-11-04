@@ -1,0 +1,174 @@
+{
+  "checks": 37,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "post-restart: dedup@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: exhaust-beta@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: hold@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: stall@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: unknown@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: exhaust@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: permanent@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: recover@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: temporary@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: accepted@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: sub-one@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: sub-two@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: sub-pending@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: sub-two@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: sub-one@rc1-09c.test keeps status/attempts/provider message id",
+      "passed": true
+    },
+    {
+      "name": "post-restart: restarted worker sends nothing during the observation window",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: dedup@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: exhaust-beta@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: hold@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: stall@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: unknown@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: exhaust@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: permanent@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: recover@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: temporary@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: accepted@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: sub-one@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: sub-two@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: sub-pending@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: sub-two@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "name": "post-restart replay: sub-one@rc1-09c.test gains no attempt",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "post-restart: unknown-outcome retry is still refused",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "post-restart: permanent-failure retry is still refused",
+      "passed": true
+    },
+    {
+      "name": "post-restart: telecom 782307bc-48fb-4261-8aa7-c8efad9deccb keeps terminal state",
+      "passed": true
+    },
+    {
+      "name": "post-restart: telecom 74875263-7cf1-4d95-95a4-8e64320125d4 keeps terminal state",
+      "passed": true
+    },
+    {
+      "name": "post-restart: telecom e27414c7-dee6-4244-af0c-16fb2ec52dae keeps terminal state",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "post-restart: fresh dispatch still reaches the sink exactly once",
+      "passed": true
+    }
+  ]
+}

@@ -149,31 +149,60 @@ export async function requestDoubleOptIn(
     limit: 1,
     overrideAccess: true,
   })
-  const subscriber =
-    existing.docs[0] ||
-    (await payload.create({
-      collection: 'subscribers',
-      data: { site: input.siteId, email, emailHash, status: 'pending' },
-      overrideAccess: true,
-    }))
+  // Concurrent duplicate submissions race the find-then-create pairs
+  // below. The unique indexes ((site, emailHash) on subscribers,
+  // (subscriber, audienceList) on memberships) let exactly one create
+  // win; the loser must converge onto the winner's rows, not surface
+  // the index violation as a failed signup.
+  let subscriber = existing.docs[0] as Doc | undefined
+  if (!subscriber) {
+    try {
+      subscriber = (await payload.create({
+        collection: 'subscribers',
+        data: { site: input.siteId, email, emailHash, status: 'pending' },
+        overrideAccess: true,
+      })) as Doc
+    } catch (error) {
+      const raced = await payload.find({
+        collection: 'subscribers',
+        where: { site: { equals: input.siteId }, emailHash: { equals: emailHash } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!raced.docs[0]) throw error
+      subscriber = raced.docs[0] as Doc
+    }
+  }
   const memberships = await payload.find({
     collection: 'audience-memberships',
     where: { subscriber: { equals: subscriber.id }, audienceList: { equals: input.listId } },
     limit: 1,
     overrideAccess: true,
   })
-  const membership =
-    memberships.docs[0] ||
-    (await payload.create({
-      collection: 'audience-memberships',
-      data: {
-        subscriber: subscriber.id,
-        audienceList: input.listId,
-        status: 'pending',
-        source: input.source,
-      },
-      overrideAccess: true,
-    }))
+  let membership = memberships.docs[0] as Doc | undefined
+  if (!membership) {
+    try {
+      membership = (await payload.create({
+        collection: 'audience-memberships',
+        data: {
+          subscriber: subscriber.id,
+          audienceList: input.listId,
+          status: 'pending',
+          source: input.source,
+        },
+        overrideAccess: true,
+      })) as Doc
+    } catch (error) {
+      const raced = await payload.find({
+        collection: 'audience-memberships',
+        where: { subscriber: { equals: subscriber.id }, audienceList: { equals: input.listId } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!raced.docs[0]) throw error
+      membership = raced.docs[0] as Doc
+    }
+  }
   // A replay must not mint a second live confirmation or emit another message.
   // The existing opaque token cannot be recovered, so callers get a safe
   // pending response and staff can explicitly reissue after expiry.
@@ -190,7 +219,7 @@ export async function requestDoubleOptIn(
   })
   if (outstanding.docs[0]) return { subscriber, token: undefined, replay: true }
   const token = opaqueDeliveryToken()
-  await payload.create({
+  const createdToken = (await payload.create({
     collection: 'subscriber-confirmation-tokens',
     data: {
       site: input.siteId,
@@ -202,7 +231,30 @@ export async function requestDoubleOptIn(
       consentWording: input.consentWording,
     },
     overrideAccess: true,
+  })) as Doc
+  // Two racers can both pass the outstanding check before either
+  // token lands. The later token withdraws itself so exactly one
+  // live confirmation (and one confirmation email) survives.
+  const liveTokens = await payload.find({
+    collection: 'subscriber-confirmation-tokens',
+    where: {
+      subscriber: { equals: subscriber.id },
+      audienceList: { equals: input.listId },
+      usedAt: { exists: false },
+      expiresAt: { greater_than: now() },
+    },
+    sort: 'createdAt',
+    limit: 2,
+    overrideAccess: true,
   })
+  if (liveTokens.docs.length > 1 && String(liveTokens.docs[0].id) !== String(createdToken.id)) {
+    await payload.delete({
+      collection: 'subscriber-confirmation-tokens',
+      id: createdToken.id,
+      overrideAccess: true,
+    })
+    return { subscriber, token: undefined, replay: true }
+  }
   await payload.create({
     collection: 'consent-events',
     data: {

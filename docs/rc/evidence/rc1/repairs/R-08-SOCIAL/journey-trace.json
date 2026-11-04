@@ -1,0 +1,1058 @@
+{
+  "checksPassedBySection": {
+    "08A": 26,
+    "08B": 35,
+    "08C": 41,
+    "setup": 3
+  },
+  "totalChecks": 105,
+  "failed": 0,
+  "trace": [
+    {
+      "section": "setup",
+      "name": "fresh database has no sites or content",
+      "passed": true
+    },
+    {
+      "section": "setup",
+      "name": "ordinary installer completes real virtual WebAuthn ceremony",
+      "passed": true
+    },
+    {
+      "section": "setup",
+      "method": "GET",
+      "route": "/api/sites?limit=20",
+      "status": 200
+    },
+    {
+      "section": "setup",
+      "method": "POST",
+      "route": "/api/content",
+      "status": 201
+    },
+    {
+      "section": "setup",
+      "method": "PATCH",
+      "route": "/api/content/4b35e4b5-75c0-42ce-b243-db8bec9fe231",
+      "status": 200
+    },
+    {
+      "section": "setup",
+      "method": "GET",
+      "route": "/articles/report-08s",
+      "status": 200
+    },
+    {
+      "section": "setup",
+      "name": "real published article is anonymously reachable",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "GET",
+      "route": "/api/admin/social/accounts",
+      "status": 403,
+      "body": "{\"error\":\"Unauthorized.\"}"
+    },
+    {
+      "section": "08A",
+      "name": "unauthenticated GET accounts rejected (403)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 403,
+      "body": "{\"error\":\"Forbidden. You do not have operator access to this site.\"}"
+    },
+    {
+      "section": "08A",
+      "name": "foreign operator denied connect on target site (403)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "connect local-harness Bluesky succeeds truthfully",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "credentialHealth is healthy",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "mode reported truthfully as local-harness (not live/sandbox)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "capabilities declare textLimit 300",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "local AT harness received a real createSession call",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "plaintext password never stored in database",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "connectionReference is an encrypted envelope",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "encrypted envelope decrypts to the supplied secret (diagnostic path)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "API output returns no credential or secret",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "GET",
+      "route": "/api/admin/integrations?siteId=637ab663-aa27-49e0-bfe5-3c46f4dcd9e6",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "integrations dashboard includes the social account",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "integrations reflect healthy status and true publish scopes",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "Social Command Center displays the connected account",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "captured social command center screenshot",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "created ActivityPub/Mastodon local-harness account",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "GET",
+      "route": "/api/admin/social/drafts",
+      "status": 403,
+      "body": "{\"error\":\"Unauthorized.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "unauthenticated GET drafts rejected (403)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "GET",
+      "route": "/api/admin/social/drafts",
+      "status": 403,
+      "body": "{\"error\":\"Unauthorized.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "bogus session GET drafts rejected (403)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "GET",
+      "route": "/api/admin/social/drafts?siteId=637ab663-aa27-49e0-bfe5-3c46f4dcd9e6",
+      "status": 403,
+      "body": "{\"error\":\"Forbidden. You do not have operator access to this site.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "foreign staff GET drafts on target site rejected (403)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 400,
+      "body": "{\"error\":\"Variant validation failed: BLUESKY: Text length (350) exceeds Bluesky 300 grapheme limit by 50.\",\"validationErrors\":[\"BLUESKY: Text length (350) exceeds Bluesky 300 grapheme limit by 50.\"]}"
+    },
+    {
+      "section": "08B",
+      "name": "adapter pre-flight rejects Bluesky copy over the 300 limit (400)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft-workflow-panel loaded",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: Bluesky and ActivityPub account cards visible",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: pre-flight validation gate passed",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft saved through the UI",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft 1 ID resolved from UI",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: draft 1 persisted with status draft",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: draft 1 canonicalUrl is the published article URL",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: exactly 2 per-platform variants created",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: Bluesky tailored copy persisted",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: Mastodon tailored copy persisted",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft 1 status badge updated to review",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: draft 1 status is review after submit",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 403,
+      "body": "{\"error\":\"Forbidden. Only owners or administrators can approve social drafts.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "staff role cannot approve drafts (403)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 400,
+      "body": "{\"error\":\"Draft must be approved before it can be scheduled for release.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "unapproved (in-review) draft cannot be scheduled (400)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft 1 status badge updated to approved",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: every variant carries a sha256 approvalHash and approvedBy",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 403,
+      "body": "{\"error\":\"Forbidden. Only owners or administrators can schedule social distribution.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "staff role cannot schedule drafts (403)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: draft 1 status badge updated to scheduled",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: persisted queue count in UI is 2",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: exactly 2 queue items created for draft 1",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: queue items are scheduled with deterministic idempotency keys naming the draft",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "browser: scheduled composer screenshot captured",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08B",
+      "name": "draft 2 created by staff through the API",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "draft 2 is bound to the real published article (sourceContent)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08B",
+      "name": "draft 2 variant edit persists through update-draft",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08B",
+      "name": "draft 2 declined by owner",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: draft 2 and its variants are cancelled",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "db: declined draft has exactly 0 queue items (remains unsent)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 400,
+      "body": "{\"error\":\"Draft must be approved before it can be scheduled for release.\"}"
+    },
+    {
+      "section": "08B",
+      "name": "scheduling a cancelled draft is rejected (400)",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "queued records persist after reload (draft 1 reselected in UI)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "invalid credentials fail truthfully without fake success",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "invalid credentials set credentialHealth revoked",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "diagnostics record a sanitized error",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "harness received the bad-auth call",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "absent credentials report not-configured (unconfigured safety, distinct claim)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "unconfigured manual-handoff provider is not upgraded to available",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "capability truth keeps local-harness / remote-sandbox / live / manual-handoff distinct",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "test ping on healthy account succeeds (non-publishing)",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "test ping updates lastVerifiedAt",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "method": "POST",
+      "route": "/api/admin/social/accounts",
+      "status": 200
+    },
+    {
+      "section": "08A",
+      "name": "disconnect action succeeds",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "disconnect sets revoked and clears connectionReference",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "isolated local-harness accounts configured for dispatch scenarios",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "dispatch persists one adapter success and one deliberate failure",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "parent draft persists partial failure truthfully",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "local receiver holds the exact dispatched Bluesky text",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "confirmed external post receipt persisted for the success",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "future-scheduled work is not sent early",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "browser presents persisted success and failure states",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "browser receipt mode pill says local-harness (truthful claim level)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "failed-only retry publishes the failure without resending the success",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "partial draft reaches published after only its failed destination recovers",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 403,
+      "body": "{\"error\":\"Queue item site access denied.\"}"
+    },
+    {
+      "section": "08C",
+      "name": "foreign scoped actor denied worker dispatch-item (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 403,
+      "body": "{\"error\":\"Queue item site access denied.\"}"
+    },
+    {
+      "section": "08C",
+      "name": "foreign scoped actor denied worker retry-failed (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 403,
+      "body": "{\"error\":\"Queue item site access denied.\"}"
+    },
+    {
+      "section": "08C",
+      "name": "foreign scoped actor denied worker reconcile (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 403,
+      "body": "{\"error\":\"Unauthorized.\"}"
+    },
+    {
+      "section": "08C",
+      "name": "anonymous worker dispatch denied (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 403,
+      "body": "{\"error\":\"Cross-origin authenticated mutation is forbidden.\"}"
+    },
+    {
+      "section": "08C",
+      "name": "cross-origin worker dispatch denied (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "PATCH",
+      "route": "/api/social-queue-items/c8c660db-6e2f-4ab3-bd3d-1002f46f0959",
+      "status": 403,
+      "body": "{\"errors\":[{\"message\":\"You are not allowed to perform this action.\"}]}"
+    },
+    {
+      "section": "08C",
+      "name": "native API cannot forge queue completion (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/external-posts",
+      "status": 403,
+      "body": "{\"errors\":[{\"message\":\"You are not allowed to perform this action.\"}]}"
+    },
+    {
+      "section": "08C",
+      "name": "native API cannot forge a provider receipt (403)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "PATCH",
+      "route": "/api/social-network-variants/d03df8eb-5cf3-4a48-982d-d0a14cfe6114",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "native scoped staff cannot forge approval or variant publication state",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "PATCH",
+      "route": "/api/social-drafts/e9b3ab7a-74e5-4a08-ab12-4d28df562376",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "native scoped staff cannot forge parent publication state",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "denied writes preserve scheduled future work with zero attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "no forged external post was persisted",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "single-item dispatch also enforces future due time (skipped, no send)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "real 429 persists failed with rate-limit kind and a future retry time",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "manual retry cannot bypass the provider rate limit",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "eligible retry succeeds once after the rate limit expires",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "failed delivery is bounded at exactly 3 sends and 3 attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "lost provider response persists unknown (not failure, not success)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "failed-only retry excludes uncertain delivery (no resend)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "read-only reconciliation finds the accepted post without resending",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "actual adapter timeout remains unknown and quarantined",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "unsupported reconciliation does not replay the uncertain Mastodon post",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "uncertain outcome has no published receipt",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "PATCH",
+      "route": "/api/social-accounts/02c3f275-80c4-4413-98e2-d213041f3559",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "disconnected provider is never called and persists reconnect-required",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "unapproved local origin fails truthfully before any provider request",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "configuration refusal is terminal (no automatic retry scheduled)",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 201
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/drafts",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "killed web leaves a real persisted publishing lease and a started attempt",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "actual jobs worker recovers the expired publication without a duplicate send",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "browser reload presents the recovered persisted publication",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "no duplicate confirmed provider IDs in persisted external posts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "every published attempt receipt identifies the local protocol harness",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "the unapproved origin received zero requests across the whole journey",
+      "passed": true
+    }
+  ]
+}

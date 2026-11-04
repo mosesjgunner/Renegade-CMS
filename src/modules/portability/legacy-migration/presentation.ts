@@ -86,10 +86,17 @@ export function reconstructPresentation(
     navigationLinks.push({ label: 'Home', href: '/' }, { label: 'Articles', href: '/articles' })
   }
 
+  // The canonical presentation registry allows only publisher.cta,
+  // publisher.rich-content and publisher.pattern in the header slot —
+  // a publisher.hero block is rejected by layout validation
+  // ("publisher.hero is not allowed in header"), and its plain
+  // {label, href} link is not a valid chooser reference. The header
+  // global therefore uses rich-content with the site title/description,
+  // exactly as the footer global below does.
   const headerBlocks: LayoutBlock[] = [
     {
       id: `hdr-${randomUUID().slice(0, 8)}`,
-      component: 'publisher.hero',
+      component: 'publisher.rich-content',
       componentVersion: 1,
       props: {
         title: themeMapping?.header?.siteTitle || siteInfo.title,
@@ -99,9 +106,6 @@ export function reconstructPresentation(
         width: 'standard',
         background: 'canvas',
         emphasis: 'normal',
-        link: navigationLinks[0]
-          ? { label: navigationLinks[0].label, href: navigationLinks[0].href }
-          : undefined,
       },
       visible: { desktop: true, tablet: true, mobile: true },
     },
@@ -236,7 +240,11 @@ export function reconstructPresentation(
             width: 'standard',
             background: 'surface',
             emphasis: 'bold',
-            link: { label: 'Get Started', href: '/articles' },
+            // No link prop: layout validation requires link props to be
+            // chooser references ({siteId, id, label}) selected from the
+            // target site, which does not exist at reconstruction time.
+            // A plain {label, href} link is rejected ("link must be
+            // selected from this site's link chooser").
           },
           visible: { desktop: true, tablet: true, mobile: true },
         },

@@ -1,0 +1,166 @@
+{
+  "checksPassed": 15,
+  "failed": 0,
+  "trace": [
+    {
+      "route": "/api/sites?limit=50",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/content?where[site][equals]=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "name": "anonymous denied /api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "name": "anonymous denied /api/migration/legacy/report/mig-82f563e6-1e9",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/execute",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "anonymous denied /api/migration/legacy/execute",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/staff/invite",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/auth/passkey/enroll",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/auth/passkey/enroll",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "invited site-scoped staff completes real virtual WebAuthn enrollment and login",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/export?siteId=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/report/mig-82f563e6-1e9",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/verify/mig-82f563e6-1e9",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/verify/mig-82f563e6-1e9",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/activate/mig-82f563e6-1e9",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/activate/mig-82f563e6-1e9",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/rollback/mig-82f563e6-1e9",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/rollback/mig-82f563e6-1e9",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/execute",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/execute",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/execute",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign site or unauthorized creation denied /api/migration/legacy/execute",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/export?siteId=2a734bf7-8e60-4a35-8a61-fc450608ec9d",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "scoped staff can export authorized site without foreign content",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/execute",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "cross-origin mutation denied for authenticated owner",
+      "passed": true
+    },
+    {
+      "route": "/api/migration/legacy/report/mig-82f563e6-1e9",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "denied mutations preserve exact persisted migration report",
+      "passed": true
+    },
+    {
+      "route": "/api/content?where[site][equals]=1e625793-25c8-446c-b309-9ff86778b1b1",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "denied mutations preserve content count",
+      "passed": true
+    }
+  ]
+}

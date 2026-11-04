@@ -1,0 +1,124 @@
+{
+  "checksPassedBySection": {
+    "08A": 1,
+    "08B": 2,
+    "08C": 17,
+    "setup": 0
+  },
+  "totalChecks": 20,
+  "failed": 0,
+  "trace": [
+    {
+      "section": "08C",
+      "name": "restart retains queue e377b4dd-63cd-43c9-8cc6-304aae847b3c status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue 64d6c67c-dd7c-46d6-9627-6814fab983a4 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue c79dbbf4-cb69-43ee-ae4b-e6440022598e status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue ae748e8d-a8f1-4456-866a-8dd1ce4801f2 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue c9a8023c-3e2a-4782-8f34-46fc5526f226 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue 402f05d6-3826-4f4a-b64b-3d42e21b413f status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue 8592752d-609a-429c-9ca5-fe7a0802207f status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue c8c660db-6e2f-4ab3-bd3d-1002f46f0959 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue 63ca2cba-15c1-4d46-9e7e-211f3a803f95 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue d89ee9c1-84ad-402c-996f-d56a40bc54b4 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue 7554a4f0-73e7-4ef1-87e7-a1986dbb373f status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains queue dd54e9b5-ac92-4a2e-bbf2-7d493f4707d8 status and attempts",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains exact external post count",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart retains exact attempt count",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "restart retains scheduled 08B draft",
+      "passed": true
+    },
+    {
+      "section": "08B",
+      "name": "restart retains future queue item scheduled with zero attempts",
+      "passed": true
+    },
+    {
+      "section": "08A",
+      "name": "restart retains connected account healthy in local-harness mode",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "POST",
+      "route": "/api/admin/social/worker",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "restart dispatch replays no published or unknown work",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "name": "restart dispatch leaves exact attempt count unchanged",
+      "passed": true
+    },
+    {
+      "section": "08C",
+      "method": "GET",
+      "route": "/articles/report-08s",
+      "status": 200
+    },
+    {
+      "section": "08C",
+      "name": "restart public output retains the published article",
+      "passed": true
+    }
+  ]
+}

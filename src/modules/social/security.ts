@@ -106,7 +106,18 @@ export function validateOutboundUrl(
   }
 
   const isLocalDev = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-  const allowHttp = options.allowHttpInDev && isLocalDev
+  // An origin the operator explicitly allowlisted for local social
+  // adapters (SOCIAL_LOCAL_ADAPTER_ORIGINS, enforced again by the
+  // dispatch boundary on every fetch) is a deliberate production
+  // opt-in to a local harness, not a dev-only accident: it satisfies
+  // the HTTP/loopback gate in any NODE_ENV. Non-allowlisted loopback
+  // remains dev/test-only, and the metadata/private-IP blocks below
+  // apply regardless of the allowlist.
+  const allowlistedLocalOrigin = (process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .includes(parsed.origin)
+  const allowHttp = options.allowHttpInDev && (isLocalDev || allowlistedLocalOrigin)
 
   // Enforce HTTPS protocol
   if (parsed.protocol !== 'https:' && !(allowHttp && parsed.protocol === 'http:')) {

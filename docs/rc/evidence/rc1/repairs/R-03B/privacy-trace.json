@@ -1,0 +1,250 @@
+{
+  "checks": 12,
+  "cacheFailures": 0,
+  "completed": true,
+  "succeeded": true,
+  "trace": [
+    {
+      "route": "/api/admin/workflow/revisions?contentId=02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "name": "authorized unpublished article preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "route": "/articles/draft-0-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "name": "anonymous article URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/c366e5a5f18241ebf2f4704e47f46af33d0e15a480dc4752",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "name": "authorized unpublished article preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "route": "/articles/draft-1-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "name": "anonymous article URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/faf967df2d43c5be08503084f49b2c26d604f7efa8c026ed",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "name": "authorized unpublished page preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "route": "/draft-2-1793726238066",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate"
+    },
+    {
+      "name": "anonymous page URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "name": "rendered inline media bytes, combined marks and actual Lexical links",
+      "passed": true
+    },
+    {
+      "name": "author names render in explicit display order",
+      "passed": true
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01tampered",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/3a560c7a92045cbb1326113727a264a188b1670bd056ec01",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/088da3ae5cd14cfa5cb9cf787cd84f4321b866fc507d5641",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "name": "anonymous, foreign creator/site, ungranted, tampered and expired previews denied",
+      "passed": true
+    },
+    {
+      "route": "/api/content/02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/content/02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/content/02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=59f28f84-3e96-44dd-8a5b-07f4fc62b2bb",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "denied edits/restores/previews and foreign revision substitution preserve full content/history",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/api/member-site-roles/9e69e9b7-5871-4021-8510-ef8b01947741",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "route": "/preview/article/3b109601661d73e6094f7cc5171245563812da1a9919ab35",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "private, no-store"
+    },
+    {
+      "name": "revoking a creator grant denies its previously issued preview",
+      "passed": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "cacheControl": "public, no-cache, must-revalidate"
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "cacheControl": "public, no-cache, must-revalidate"
+    },
+    {
+      "name": "draft/private paths and titles absent from public sitemap/feed",
+      "passed": true
+    }
+  ]
+}

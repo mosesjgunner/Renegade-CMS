@@ -1,0 +1,795 @@
+{
+  "records": [
+    {
+      "id": "02a2d6a2-57d6-49f3-bd9d-57e4ca7cfbeb",
+      "site": "6829439c-8627-414e-b5ea-31f5aec16a85",
+      "publication": "05e0a1d9-7d22-4787-b160-a8adcfde2aa8",
+      "space": null,
+      "owner": "55a4f4a0-2349-4351-bbc9-018624899763",
+      "contentType": "article",
+      "title": "03B article 0 1793726238066",
+      "body": {
+        "root": {
+          "type": "root",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "children": [
+            {
+              "tag": "h2",
+              "type": "heading",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "UNPUBLISHED original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Combined marked copy",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 31,
+                  "version": 1
+                },
+                {
+                  "mode": "normal",
+                  "text": " plus ",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                },
+                {
+                  "type": "link",
+                  "fields": {
+                    "url": "https://example.com/report",
+                    "newTab": false,
+                    "linkType": "custom"
+                  },
+                  "format": "",
+                  "indent": 0,
+                  "version": 3,
+                  "children": [
+                    {
+                      "mode": "normal",
+                      "text": "Source link",
+                      "type": "text",
+                      "style": "",
+                      "detail": 0,
+                      "format": 3,
+                      "version": 1
+                    }
+                  ],
+                  "direction": "ltr"
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "quote",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Verified quoted original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "relationship",
+              "value": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+              "format": "",
+              "version": 2,
+              "relationTo": "media-assets"
+            },
+            {
+              "type": "block",
+              "fields": {
+                "id": "256236e7-3eba-43e3-8d3c-3c45eb0e6e13",
+                "text": "Preserved callout original",
+                "title": "Context block",
+                "blockType": "editorialCallout"
+              },
+              "format": "",
+              "version": 2
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "End of original draft",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            }
+          ],
+          "direction": "ltr"
+        }
+      },
+      "summary": null,
+      "subtitle": null,
+      "excerpt": null,
+      "authors": [
+        {
+          "id": "6aea172028d5af369c3eed48",
+          "author": "03fbed21-e7e5-4a37-ad25-a956644123b4",
+          "displayOrder": 2,
+          "role": "Editor"
+        },
+        {
+          "id": "6aea172028d5af369c3eed49",
+          "author": "88e72f86-0fca-4587-8326-d8bb675c9710",
+          "displayOrder": 1,
+          "role": "Lead reporter"
+        }
+      ],
+      "sections": [],
+      "categories": [],
+      "collections": [],
+      "sortOrder": 0,
+      "topics": [],
+      "tags": [],
+      "series": [],
+      "slug": "draft-0-1793726238066",
+      "pathOverride": false,
+      "canonicalPath": "/articles/draft-0-1793726238066",
+      "parentPage": null,
+      "pageTemplate": "standard",
+      "featured": false,
+      "pinned": false,
+      "readingTimeMinutes": 1,
+      "tableOfContents": [
+        {
+          "id": "unpublished-original",
+          "text": "UNPUBLISHED original",
+          "level": 2
+        }
+      ],
+      "relatedContent": [],
+      "correctionNotices": [],
+      "changeNotes": [],
+      "heroMedia": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+      "requiredEntitlement": null,
+      "visibility": "public",
+      "status": "draft",
+      "publishedAt": null,
+      "updatedAtEditorial": null,
+      "commentsPolicy": "open",
+      "publicChangeHistoryPolicy": "summary",
+      "seoTitle": null,
+      "seoDescription": null,
+      "seoCanonicalURL": null,
+      "seoImageAlt": null,
+      "seoKeywords": null,
+      "seoFocusKeyphrase": null,
+      "seoNoIndex": false,
+      "discoveryOverrides": null,
+      "publicModifiedAt": null,
+      "relationships": [],
+      "seoOverride": null,
+      "socialOverride": null,
+      "structuredDataMode": "none",
+      "structuredDataPrimaryType": null,
+      "structuredDataSourceCollection": null,
+      "structuredDataSourceIdentifier": null,
+      "structuredDataManual": null,
+      "structuredDataVersion": 1,
+      "knowledgeGraphProjectionStatus": "disabled",
+      "knowledgeGraphNodeKey": null,
+      "knowledgeGraphProjectionBoundary": null,
+      "importSourceSystem": null,
+      "importSourceIdentifier": null,
+      "importSourceChecksum": null,
+      "exportFormatVersion": 1,
+      "exportOwnership": null,
+      "revisionCompatibility": null,
+      "auditMetadata": null,
+      "retentionMode": "permanent",
+      "retentionExpiresAt": null,
+      "retentionHold": "none",
+      "removeFromDiscovery": false,
+      "tombstoneLabel": null,
+      "updatedAt": "2026-11-03T17:18:11.011Z",
+      "createdAt": "2026-11-03T17:17:20.154Z"
+    },
+    {
+      "id": "59f28f84-3e96-44dd-8a5b-07f4fc62b2bb",
+      "site": "6829439c-8627-414e-b5ea-31f5aec16a85",
+      "publication": "05e0a1d9-7d22-4787-b160-a8adcfde2aa8",
+      "space": null,
+      "owner": "55a4f4a0-2349-4351-bbc9-018624899763",
+      "contentType": "article",
+      "title": "03B article 1 1793726238066",
+      "body": {
+        "root": {
+          "type": "root",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "children": [
+            {
+              "tag": "h2",
+              "type": "heading",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "UNPUBLISHED original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Combined marked copy",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 31,
+                  "version": 1
+                },
+                {
+                  "mode": "normal",
+                  "text": " plus ",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                },
+                {
+                  "type": "link",
+                  "fields": {
+                    "url": "https://example.com/report",
+                    "newTab": false,
+                    "linkType": "custom"
+                  },
+                  "format": "",
+                  "indent": 0,
+                  "version": 3,
+                  "children": [
+                    {
+                      "mode": "normal",
+                      "text": "Source link",
+                      "type": "text",
+                      "style": "",
+                      "detail": 0,
+                      "format": 3,
+                      "version": 1
+                    }
+                  ],
+                  "direction": "ltr"
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "quote",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Verified quoted original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "relationship",
+              "value": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+              "format": "",
+              "version": 2,
+              "relationTo": "media-assets"
+            },
+            {
+              "type": "block",
+              "fields": {
+                "id": "b87e35a0-c769-44d4-b6f1-49d05d7c75d4",
+                "text": "Preserved callout original",
+                "title": "Context block",
+                "blockType": "editorialCallout"
+              },
+              "format": "",
+              "version": 2
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "End of original draft",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            }
+          ],
+          "direction": "ltr"
+        }
+      },
+      "summary": null,
+      "subtitle": null,
+      "excerpt": null,
+      "authors": [
+        {
+          "id": "6aea172028d5af369c3eed4a",
+          "author": "03fbed21-e7e5-4a37-ad25-a956644123b4",
+          "displayOrder": 2,
+          "role": "Editor"
+        },
+        {
+          "id": "6aea172028d5af369c3eed4b",
+          "author": "88e72f86-0fca-4587-8326-d8bb675c9710",
+          "displayOrder": 1,
+          "role": "Lead reporter"
+        }
+      ],
+      "sections": [],
+      "categories": [],
+      "collections": [],
+      "sortOrder": 0,
+      "topics": [],
+      "tags": [],
+      "series": [],
+      "slug": "draft-1-1793726238066",
+      "pathOverride": false,
+      "canonicalPath": "/articles/draft-1-1793726238066",
+      "parentPage": null,
+      "pageTemplate": "standard",
+      "featured": false,
+      "pinned": false,
+      "readingTimeMinutes": 1,
+      "tableOfContents": [
+        {
+          "id": "unpublished-original",
+          "text": "UNPUBLISHED original",
+          "level": 2
+        }
+      ],
+      "relatedContent": [],
+      "correctionNotices": [],
+      "changeNotes": [],
+      "heroMedia": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+      "requiredEntitlement": null,
+      "visibility": "private",
+      "status": "draft",
+      "publishedAt": null,
+      "updatedAtEditorial": null,
+      "commentsPolicy": "open",
+      "publicChangeHistoryPolicy": "summary",
+      "seoTitle": null,
+      "seoDescription": null,
+      "seoCanonicalURL": null,
+      "seoImageAlt": null,
+      "seoKeywords": null,
+      "seoFocusKeyphrase": null,
+      "seoNoIndex": false,
+      "discoveryOverrides": null,
+      "publicModifiedAt": null,
+      "relationships": [],
+      "seoOverride": null,
+      "socialOverride": null,
+      "structuredDataMode": "none",
+      "structuredDataPrimaryType": null,
+      "structuredDataSourceCollection": null,
+      "structuredDataSourceIdentifier": null,
+      "structuredDataManual": null,
+      "structuredDataVersion": 1,
+      "knowledgeGraphProjectionStatus": "disabled",
+      "knowledgeGraphNodeKey": null,
+      "knowledgeGraphProjectionBoundary": null,
+      "importSourceSystem": null,
+      "importSourceIdentifier": null,
+      "importSourceChecksum": null,
+      "exportFormatVersion": 1,
+      "exportOwnership": null,
+      "revisionCompatibility": null,
+      "auditMetadata": null,
+      "retentionMode": "permanent",
+      "retentionExpiresAt": null,
+      "retentionHold": "none",
+      "removeFromDiscovery": false,
+      "tombstoneLabel": null,
+      "updatedAt": "2026-11-03T17:18:14.261Z",
+      "createdAt": "2026-11-03T17:17:20.408Z"
+    },
+    {
+      "id": "b382e127-a6c3-4873-a1a2-6d73021781dc",
+      "site": "6829439c-8627-414e-b5ea-31f5aec16a85",
+      "publication": "05e0a1d9-7d22-4787-b160-a8adcfde2aa8",
+      "space": null,
+      "owner": "55a4f4a0-2349-4351-bbc9-018624899763",
+      "contentType": "page",
+      "title": "03B page 2 1793726238066",
+      "body": {
+        "root": {
+          "type": "root",
+          "format": "",
+          "indent": 0,
+          "version": 1,
+          "children": [
+            {
+              "tag": "h2",
+              "type": "heading",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "UNPUBLISHED original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Combined marked copy",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 31,
+                  "version": 1
+                },
+                {
+                  "mode": "normal",
+                  "text": " plus ",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                },
+                {
+                  "type": "link",
+                  "fields": {
+                    "url": "https://example.com/report",
+                    "newTab": false,
+                    "linkType": "custom"
+                  },
+                  "format": "",
+                  "indent": 0,
+                  "version": 3,
+                  "children": [
+                    {
+                      "mode": "normal",
+                      "text": "Source link",
+                      "type": "text",
+                      "style": "",
+                      "detail": 0,
+                      "format": 3,
+                      "version": 1
+                    }
+                  ],
+                  "direction": "ltr"
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "quote",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "Verified quoted original",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            },
+            {
+              "type": "relationship",
+              "value": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+              "format": "",
+              "version": 2,
+              "relationTo": "media-assets"
+            },
+            {
+              "type": "block",
+              "fields": {
+                "id": "efc4934a-f11c-4823-bf0c-b6a5d22d6af0",
+                "text": "Preserved callout original",
+                "title": "Context block",
+                "blockType": "editorialCallout"
+              },
+              "format": "",
+              "version": 2
+            },
+            {
+              "type": "paragraph",
+              "format": "",
+              "indent": 0,
+              "version": 1,
+              "children": [
+                {
+                  "mode": "normal",
+                  "text": "End of original draft",
+                  "type": "text",
+                  "style": "",
+                  "detail": 0,
+                  "format": 0,
+                  "version": 1
+                }
+              ],
+              "direction": "ltr"
+            }
+          ],
+          "direction": "ltr"
+        }
+      },
+      "summary": null,
+      "subtitle": null,
+      "excerpt": null,
+      "authors": [
+        {
+          "id": "6aea172028d5af369c3eed4c",
+          "author": "03fbed21-e7e5-4a37-ad25-a956644123b4",
+          "displayOrder": 2,
+          "role": "Editor"
+        },
+        {
+          "id": "6aea172028d5af369c3eed4d",
+          "author": "88e72f86-0fca-4587-8326-d8bb675c9710",
+          "displayOrder": 1,
+          "role": "Lead reporter"
+        }
+      ],
+      "sections": [],
+      "categories": [],
+      "collections": [],
+      "sortOrder": 0,
+      "topics": [],
+      "tags": [],
+      "series": [],
+      "slug": "draft-2-1793726238066",
+      "pathOverride": false,
+      "canonicalPath": "/draft-2-1793726238066",
+      "parentPage": null,
+      "pageTemplate": "standard",
+      "featured": false,
+      "pinned": false,
+      "readingTimeMinutes": 1,
+      "tableOfContents": [
+        {
+          "id": "unpublished-original",
+          "text": "UNPUBLISHED original",
+          "level": 2
+        }
+      ],
+      "relatedContent": [],
+      "correctionNotices": [],
+      "changeNotes": [],
+      "heroMedia": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+      "requiredEntitlement": null,
+      "visibility": "public",
+      "status": "draft",
+      "publishedAt": null,
+      "updatedAtEditorial": null,
+      "commentsPolicy": "open",
+      "publicChangeHistoryPolicy": "summary",
+      "seoTitle": null,
+      "seoDescription": null,
+      "seoCanonicalURL": null,
+      "seoImageAlt": null,
+      "seoKeywords": null,
+      "seoFocusKeyphrase": null,
+      "seoNoIndex": false,
+      "discoveryOverrides": null,
+      "publicModifiedAt": null,
+      "relationships": [],
+      "seoOverride": null,
+      "socialOverride": null,
+      "structuredDataMode": "none",
+      "structuredDataPrimaryType": null,
+      "structuredDataSourceCollection": null,
+      "structuredDataSourceIdentifier": null,
+      "structuredDataManual": null,
+      "structuredDataVersion": 1,
+      "knowledgeGraphProjectionStatus": "disabled",
+      "knowledgeGraphNodeKey": null,
+      "knowledgeGraphProjectionBoundary": null,
+      "importSourceSystem": null,
+      "importSourceIdentifier": null,
+      "importSourceChecksum": null,
+      "exportFormatVersion": 1,
+      "exportOwnership": null,
+      "revisionCompatibility": null,
+      "auditMetadata": null,
+      "retentionMode": "permanent",
+      "retentionExpiresAt": null,
+      "retentionHold": "none",
+      "removeFromDiscovery": false,
+      "tombstoneLabel": null,
+      "updatedAt": "2026-11-03T17:18:16.756Z",
+      "createdAt": "2026-11-03T17:17:20.614Z"
+    }
+  ],
+  "history": {
+    "currentRevision": "926e6ac5-0b08-4721-a970-1970e7a49c86",
+    "revisions": [
+      {
+        "id": "926e6ac5-0b08-4721-a970-1970e7a49c86",
+        "sequence": 4,
+        "reason": "restored",
+        "createdAt": "2026-11-03T17:18:10.920Z",
+        "excerpt": "UNPUBLISHED original Combined marked copy plus Source link Verified quoted original Context block Preserved callout original End of original draft"
+      },
+      {
+        "id": "578c0e3a-7aad-4669-be86-e900bd1f99b8",
+        "sequence": 3,
+        "reason": "edited",
+        "createdAt": "2026-11-03T17:17:50.676Z",
+        "excerpt": "UNPUBLISHED original Combined marked copy plus Source link Verified quoted original Context block Preserved callout original End of original draft BROWSER AUTOS"
+      },
+      {
+        "id": "78af8062-7183-4a97-8b0b-3101d0bbb9ae",
+        "sequence": 2,
+        "reason": "edited",
+        "createdAt": "2026-11-03T17:17:39.245Z",
+        "excerpt": "UNPUBLISHED original Combined marked copy plus Source link Verified quoted original Context block Preserved callout original End of original draft BROWSER AUTOS"
+      },
+      {
+        "id": "29ce31f4-994f-43c6-b56e-ad34821dcd31",
+        "sequence": 1,
+        "reason": "created",
+        "createdAt": "2026-11-03T17:17:20.240Z",
+        "excerpt": "UNPUBLISHED original Combined marked copy plus Source link Verified quoted original Context block Preserved callout original End of original draft"
+      }
+    ]
+  },
+  "media": {
+    "id": "b167b09d-545e-4169-ba2d-cdf8b31eb5e8",
+    "site": "6829439c-8627-414e-b5ea-31f5aec16a85",
+    "publication": null,
+    "space": null,
+    "owner": "cf429e94-0a84-474f-8474-90c04cedea53",
+    "title": "03B original media",
+    "kind": "image",
+    "storageLocation": "6829439c-8627-414e-b5ea-31f5aec16a85/ec668bc9-4ab7-4043-93fc-4c5f9547f9d5.png",
+    "storageProvider": "local",
+    "originalBlob": "00a789b2-c31c-4e3c-982d-0036fa8b721e",
+    "originalFilename": "editor-original.png",
+    "mimeType": "image/png",
+    "sizeBytes": 126,
+    "checksum": "sha256:4e5b75021a3f2565cdc7d52f2d42989938845bf2216013e477dc37269fe06d14",
+    "width": 32,
+    "height": 24,
+    "durationSeconds": null,
+    "audioMetadata": null,
+    "videoMetadata": null,
+    "altText": "Blue editorial fixture",
+    "focalPoint": {
+      "x": null,
+      "y": null
+    },
+    "aspectRatio": 1.3333,
+    "dominantColor": "#2858b8",
+    "colorPalette": [
+      {
+        "b": 184,
+        "g": 88,
+        "r": 40
+      },
+      {
+        "b": 187,
+        "g": 85,
+        "r": 34
+      }
+    ],
+    "cropSettings": null,
+    "caption": null,
+    "description": null,
+    "creatorCredit": null,
+    "credits": null,
+    "source": null,
+    "copyrightOwner": null,
+    "license": null,
+    "licenseType": null,
+    "licenseUrl": null,
+    "rightsSourceUrl": null,
+    "rightsExpiresAt": null,
+    "embargoUntil": null,
+    "usageRestrictions": null,
+    "consentReference": null,
+    "modelReleaseReference": null,
+    "propertyReleaseReference": null,
+    "governanceEnabled": false,
+    "customMetadata": null,
+    "processingState": "ready",
+    "publicPolicy": "published-use",
+    "tags": [],
+    "collections": [],
+    "variants": [],
+    "replaceGloballyWith": null,
+    "originalExportAllowed": true,
+    "rightsStatus": "approved",
+    "retentionMode": "permanent",
+    "retentionExpiresAt": null,
+    "retentionHold": "none",
+    "removeFromDiscovery": false,
+    "tombstoneLabel": null,
+    "updatedAt": "2026-11-03T17:17:31.096Z",
+    "createdAt": "2026-11-03T17:17:20.005Z"
+  }
+}

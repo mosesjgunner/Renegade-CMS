@@ -1,0 +1,594 @@
+{
+  "checks": 93,
+  "trace": [
+    {
+      "name": "referenced revision history is protected from hard deletion",
+      "passed": true
+    },
+    {
+      "name": "supported trash preserves history and persists removal policy",
+      "passed": true
+    },
+    {
+      "name": "published content persisted via access-checked native API",
+      "passed": true
+    },
+    {
+      "name": "actual published immutable revision exists",
+      "passed": true
+    },
+    {
+      "path": "/articles/public-report",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 28654
+    },
+    {
+      "name": "/articles/public-report: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/articles/public-report: contains PUBLIC-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/about-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 25005
+    },
+    {
+      "name": "/about-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/about-03c: contains PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/authors/author-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 16628
+    },
+    {
+      "name": "/authors/author-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/authors/author-03c: contains Public Report 03C",
+      "passed": true
+    },
+    {
+      "name": "/authors/author-03c: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "path": "/tags/tag-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 16592
+    },
+    {
+      "name": "/tags/tag-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/tags/tag-03c: contains Public Report 03C",
+      "passed": true
+    },
+    {
+      "name": "/tags/tag-03c: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "path": "/categories/category-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 22027
+    },
+    {
+      "name": "/categories/category-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/categories/category-03c: contains Public Report 03C",
+      "passed": true
+    },
+    {
+      "name": "/categories/category-03c: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/articles/secret-draft",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11558
+    },
+    {
+      "name": "/articles/secret-draft: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/articles/secret-members",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11519
+    },
+    {
+      "name": "/articles/secret-members: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/articles/secret-deleted",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11519
+    },
+    {
+      "name": "/articles/secret-deleted: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 22477
+    },
+    {
+      "name": "/: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "name": "/: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "name": "/: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/articles",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 23975
+    },
+    {
+      "name": "/articles: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/articles: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "name": "/articles: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "name": "/articles: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/feed.xml",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 849
+    },
+    {
+      "name": "/feed.xml: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/feed.xml: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "name": "/feed.xml: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "name": "/feed.xml: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/feed.json",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 507
+    },
+    {
+      "name": "/feed.json: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/feed.json: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "name": "/feed.json: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "name": "/feed.json: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/search?q=SECRET",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 25081
+    },
+    {
+      "name": "/search?q=SECRET: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/search?q=SECRET: excludes SECRET-DRAFT-03C",
+      "passed": true
+    },
+    {
+      "name": "/search?q=SECRET: excludes SECRET-MEMBERS-03C",
+      "passed": true
+    },
+    {
+      "name": "/search?q=SECRET: excludes SECRET-DELETED-03C",
+      "passed": true
+    },
+    {
+      "path": "/feed.xml",
+      "host": "beta.rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 501
+    },
+    {
+      "name": "/feed.xml: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/feed.xml: excludes Public Report 03C",
+      "passed": true
+    },
+    {
+      "path": "/feed.json",
+      "host": "unknown.rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 9
+    },
+    {
+      "name": "/feed.json: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/search?q=Report&site=f1a24029-7030-439b-a4ab-3ae48048857b",
+      "host": "beta.rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11942
+    },
+    {
+      "name": "/search?q=Report&site=f1a24029-7030-439b-a4ab-3ae48048857b: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "unauthorized publication change rejected",
+      "passed": true
+    },
+    {
+      "name": "unauthorized publication change rejected",
+      "passed": true
+    },
+    {
+      "name": "unauthorized publication change rejected",
+      "passed": true
+    },
+    {
+      "name": "denied updates preserve persisted row",
+      "passed": true
+    },
+    {
+      "name": "navigation updates to renamed canonical URL",
+      "passed": true
+    },
+    {
+      "name": "new canonical path persisted",
+      "passed": true
+    },
+    {
+      "path": "/articles/public-report",
+      "host": "rc1-03c.test:38761",
+      "status": 308,
+      "location": "/articles/renamed-report",
+      "bytes": 24
+    },
+    {
+      "name": "/articles/public-report: HTTP 308",
+      "passed": true
+    },
+    {
+      "name": "old slug redirects to new canonical",
+      "passed": true
+    },
+    {
+      "path": "/articles/renamed-report",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 28426
+    },
+    {
+      "name": "/articles/renamed-report: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/articles/renamed-report: contains PUBLIC-BODY-03C",
+      "passed": true
+    },
+    {
+      "name": "anonymous browser renders published body",
+      "passed": true
+    },
+    {
+      "name": "anonymous browser follows author archive link",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/1yg4x5e3obwvr.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/242x7dx0zu3hf.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/3ti4tb70d0p12.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/3mb_v650fie_i.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/0a-rekt06v0sv.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/10xjn4zbvtwck.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/1ip5m3_boruso.js",
+      "passed": true
+    },
+    {
+      "name": "public script excludes visual editor: /_next/static/chunks/1qbtb6h34xmb6.js",
+      "passed": true
+    },
+    {
+      "name": "[...path]: client manifest excludes editor",
+      "passed": true
+    },
+    {
+      "name": "articles/[slug]: client manifest excludes editor",
+      "passed": true
+    },
+    {
+      "path": "/tags/tag-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 16328
+    },
+    {
+      "name": "/tags/tag-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/tags/tag-03c: contains /articles/renamed-report",
+      "passed": true
+    },
+    {
+      "name": "/tags/tag-03c: excludes /articles/public-report",
+      "passed": true
+    },
+    {
+      "name": "unpublication removes stored navigation link",
+      "passed": true
+    },
+    {
+      "name": "unpublication persisted",
+      "passed": true
+    },
+    {
+      "path": "/articles/renamed-report",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11404
+    },
+    {
+      "name": "/articles/renamed-report: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "/articles/renamed-report: excludes PUBLIC-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/authors/author-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11560
+    },
+    {
+      "name": "/authors/author-03c: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/tags/tag-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11548
+    },
+    {
+      "name": "/tags/tag-03c: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "archive service excludes all nonpublic content",
+      "passed": true
+    },
+    {
+      "name": "unreferenced hard deletion removes persisted record",
+      "passed": true
+    },
+    {
+      "path": "/articles/removable-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 11445
+    },
+    {
+      "name": "/articles/removable-03c: HTTP 404",
+      "passed": true
+    },
+    {
+      "name": "colliding canonical URL rejected with original page unchanged",
+      "passed": true
+    },
+    {
+      "path": "/about-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 308,
+      "location": "/about-renamed-03c",
+      "bytes": 18
+    },
+    {
+      "name": "/about-03c: HTTP 308",
+      "passed": true
+    },
+    {
+      "path": "/about-renamed-03c",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 21956
+    },
+    {
+      "name": "/about-renamed-03c: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/about-renamed-03c: contains PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 20135
+    },
+    {
+      "name": "/: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/: contains PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/",
+      "host": "beta.rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 21484
+    },
+    {
+      "name": "/: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/: excludes PAGE-BODY-03C",
+      "passed": true
+    },
+    {
+      "path": "/feeds/content/75a21ae1-2a29-4f41-93c2-15b72cb7a4db.json",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 9
+    },
+    {
+      "name": "/feeds/content/75a21ae1-2a29-4f41-93c2-15b72cb7a4db.json: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/feeds/content/6ffe7873-917c-443e-8969-b4610b1375b9.json",
+      "host": "rc1-03c.test:38761",
+      "status": 404,
+      "location": null,
+      "bytes": 9
+    },
+    {
+      "name": "/feeds/content/6ffe7873-917c-443e-8969-b4610b1375b9.json: HTTP 404",
+      "passed": true
+    },
+    {
+      "path": "/feeds/content/de0fddd7-4f62-4e88-94e9-da8734ae0f1b.json",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 510
+    },
+    {
+      "name": "/feeds/content/de0fddd7-4f62-4e88-94e9-da8734ae0f1b.json: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/feeds/content/de0fddd7-4f62-4e88-94e9-da8734ae0f1b.json: contains About 03C",
+      "passed": true
+    },
+    {
+      "path": "/sitemaps/1.xml",
+      "host": "rc1-03c.test:38761",
+      "status": 200,
+      "location": null,
+      "bytes": 437
+    },
+    {
+      "name": "/sitemaps/1.xml: HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "/sitemaps/1.xml: excludes secret-members",
+      "passed": true
+    }
+  ]
+}

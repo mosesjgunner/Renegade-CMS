@@ -29,8 +29,14 @@ describe('MED-01 durable upload sessions', () => {
     const records: any = {}
     let n = 0
     const payload = {
-      find: async ({ collection }: any) =>
-        collection === 'team-memberships' ? { docs: [{ id: 'team' }] } : { docs: [] },
+      // Canonical operator-grant fixture: the member-linked owner holds a
+      // member-site-roles grant for site-a (the state installation produces).
+      find: async ({ collection, where }: any) =>
+        collection === 'team-memberships'
+          ? { docs: [{ id: 'team' }] }
+          : collection === 'member-site-roles' && where?.member?.equals === 'member'
+            ? { docs: [{ id: 'grant-1', member: 'member', site: 'site-a', role: 'owner' }] }
+            : { docs: [] },
       create: async ({ collection, data }: any) => {
         const record = {
           id:
@@ -100,8 +106,14 @@ describe('MED-01 durable upload sessions', () => {
     const records: any = {}
     let n = 0
     const payload = {
-      find: async ({ collection }: any) =>
-        collection === 'team-memberships' ? { docs: [{ id: 'team' }] } : { docs: [] },
+      // Canonical operator-grant fixture: the member-linked owner holds a
+      // member-site-roles grant for site-a (the state installation produces).
+      find: async ({ collection, where }: any) =>
+        collection === 'team-memberships'
+          ? { docs: [{ id: 'team' }] }
+          : collection === 'member-site-roles' && where?.member?.equals === 'member'
+            ? { docs: [{ id: 'grant-1', member: 'member', site: 'site-a', role: 'owner' }] }
+            : { docs: [] },
       create: async ({ collection, data }: any) => {
         const record = {
           id:
@@ -145,8 +157,14 @@ describe('MED-01 durable upload sessions', () => {
     })
     const records: any = {}
     const payload = {
-      find: async ({ collection }: any) =>
-        collection === 'team-memberships' ? { docs: [{ id: 'team' }] } : { docs: [] },
+      // Canonical operator-grant fixture: owner-a holds a member-site-roles
+      // grant for site-a; owner-b holds none.
+      find: async ({ collection, where }: any) =>
+        collection === 'team-memberships'
+          ? { docs: [{ id: 'team' }] }
+          : collection === 'member-site-roles' && where?.member?.equals === 'owner-a'
+            ? { docs: [{ id: 'grant-1', member: 'owner-a', site: 'site-a', role: 'owner' }] }
+            : { docs: [] },
       create: async ({ data }: any) =>
         (records.session = { id: '00000000-0000-4000-8000-000000000003', ...data }),
       findByID: async () => records.session,

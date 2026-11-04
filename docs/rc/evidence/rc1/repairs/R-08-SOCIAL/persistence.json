@@ -1,0 +1,662 @@
+{
+  "queues": [
+    {
+      "id": "e377b4dd-63cd-43c9-8cc6-304aae847b3c",
+      "variant": "9ea2bb20-2d69-4f10-be82-44b491f25a84",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "scheduledFor": "2026-11-04T00:23:31.172Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:d438ff15-3bea-4fe9-ad26-6b8c324ab47d:9ea2bb20-2d69-4f10-be82-44b491f25a84:sha256:1845af429be69e6496a4c8471a4e8cc6b30d63e429ba3fb645ef5cfedd729c56",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:24:41.977Z",
+      "createdAt": "2026-11-04T00:23:32.765Z"
+    },
+    {
+      "id": "64d6c67c-dd7c-46d6-9627-6814fab983a4",
+      "variant": "731d1a4d-e357-40d1-b906-3547baf84246",
+      "account": "73914f72-901d-4836-92d3-10fe2b7188c7",
+      "scheduledFor": "2026-11-04T00:23:27.222Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:fbbbf5a9-f52a-4b1e-b3b4-dc59018d7ea3:731d1a4d-e357-40d1-b906-3547baf84246:sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "validation",
+        "message": "Blocked by SSRF protection: Disallowed protocol: http:. HTTPS is required.",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:23:29.302Z",
+      "createdAt": "2026-11-04T00:23:28.725Z"
+    },
+    {
+      "id": "c79dbbf4-cb69-43ee-ae4b-e6440022598e",
+      "variant": "24af0a63-d9c3-4263-861b-c682a44ffacb",
+      "account": "02c3f275-80c4-4413-98e2-d213041f3559",
+      "scheduledFor": "2026-11-04T00:23:23.953Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:e36fa6e2-2749-4afb-a3f7-6639ef75688b:24af0a63-d9c3-4263-861b-c682a44ffacb:sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "reconnect-required",
+        "message": "Account is disconnected or credentials are not healthy; reconnect before publishing.",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:23:26.400Z",
+      "createdAt": "2026-11-04T00:23:25.634Z"
+    },
+    {
+      "id": "ae748e8d-a8f1-4456-866a-8dd1ce4801f2",
+      "variant": "befb4105-d1cb-465d-a232-244037bc0713",
+      "account": "e7654217-7fe2-4fd9-9d04-2b810439ea15",
+      "scheduledFor": "2026-11-04T00:23:15.363Z",
+      "timeZone": "UTC",
+      "status": "unknown",
+      "idempotencyKey": "scheduled:draft:0e4e96e2-e370-4cff-8482-5566dac82b69:befb4105-d1cb-465d-a232-244037bc0713:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "remote-unknown",
+        "message": "This adapter cannot verify an uncertain post automatically. Inspect the provider; automatic resend is disabled.",
+        "remoteOutcome": "unknown"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:23:22.745Z",
+      "createdAt": "2026-11-04T00:23:16.962Z"
+    },
+    {
+      "id": "c9a8023c-3e2a-4782-8f34-46fc5526f226",
+      "variant": "76e42fef-ed06-494d-9ed1-f7e6775f79c6",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "scheduledFor": "2026-11-04T00:23:08.773Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:073ea5e1-2c78-448b-92cd-b5b957836aa6:76e42fef-ed06-494d-9ed1-f7e6775f79c6:sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:23:14.533Z",
+      "createdAt": "2026-11-04T00:23:10.356Z"
+    },
+    {
+      "id": "402f05d6-3826-4f4a-b64b-3d42e21b413f",
+      "variant": "d68f65c7-3e74-4749-a646-24f8aeadd793",
+      "account": "08224bc3-601f-4026-9555-ee4a0d555557",
+      "scheduledFor": "2026-11-04T00:22:59.933Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:df2ea8ec-d2f7-4e93-9803-c20e76fa7666:d68f65c7-3e74-4749-a646-24f8aeadd793:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 3,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:23:06.763Z",
+      "createdAt": "2026-11-04T00:23:01.585Z"
+    },
+    {
+      "id": "8592752d-609a-429c-9ca5-fe7a0802207f",
+      "variant": "e39bb748-019c-4a61-9e0c-2f03d94c8aad",
+      "account": "0ab9a338-cb36-4a51-ab12-aab7bff3fec6",
+      "scheduledFor": "2026-11-04T00:22:39.361Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:feb5da6b-71d7-4219-b9e3-85c4b2382e92:e39bb748-019c-4a61-9e0c-2f03d94c8aad:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 2,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:57.733Z",
+      "createdAt": "2026-11-04T00:22:40.961Z"
+    },
+    {
+      "id": "c8c660db-6e2f-4ab3-bd3d-1002f46f0959",
+      "variant": "d03df8eb-5cf3-4a48-982d-d0a14cfe6114",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "scheduledFor": "2026-11-04T01:22:30.476Z",
+      "timeZone": "UTC",
+      "status": "scheduled",
+      "idempotencyKey": "scheduled:draft:e9b3ab7a-74e5-4a08-ab12-4d28df562376:d03df8eb-5cf3-4a48-982d-d0a14cfe6114:sha256:2b7a74066497142c2b144264a9dc8489122da204dc3904f6edea1872aa4a7535",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 0,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:31.227Z",
+      "createdAt": "2026-11-04T00:22:31.227Z"
+    },
+    {
+      "id": "63ca2cba-15c1-4d46-9e7e-211f3a803f95",
+      "variant": "d14de289-edd3-46f5-988c-681dffbb3442",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "scheduledFor": "2026-11-04T00:22:26.986Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:28c42577-d6fd-45ad-a85e-ff49e4bebe96:d14de289-edd3-46f5-988c-681dffbb3442:sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:31.325Z",
+      "createdAt": "2026-11-04T00:22:28.833Z"
+    },
+    {
+      "id": "d89ee9c1-84ad-402c-996f-d56a40bc54b4",
+      "variant": "32e9e3f4-41be-464e-9910-7bb57833f9ed",
+      "account": "591f363d-59e6-42c5-ae10-e1cae63ae4b1",
+      "scheduledFor": "2026-11-04T00:22:26.986Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:28c42577-d6fd-45ad-a85e-ff49e4bebe96:32e9e3f4-41be-464e-9910-7bb57833f9ed:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 2,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:36.187Z",
+      "createdAt": "2026-11-04T00:22:28.804Z"
+    },
+    {
+      "id": "7554a4f0-73e7-4ef1-87e7-a1986dbb373f",
+      "variant": "b65dd0bb-113e-41e5-8af2-5f9793fe274f",
+      "account": "591f363d-59e6-42c5-ae10-e1cae63ae4b1",
+      "scheduledFor": "2026-11-04T01:22:00.000Z",
+      "timeZone": "UTC",
+      "status": "scheduled",
+      "idempotencyKey": "scheduled:draft:14315d9e-aac2-43a4-90df-671597cc7ebb:b65dd0bb-113e-41e5-8af2-5f9793fe274f:sha256:d811a67e63bce93c875615b12d55c3f5cec959b95e65c1ff0b27d50abcc0cc0e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 0,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:16.359Z",
+      "createdAt": "2026-11-04T00:22:16.359Z"
+    },
+    {
+      "id": "dd54e9b5-ac92-4a2e-bbf2-7d493f4707d8",
+      "variant": "429ae569-5a9d-4d27-864e-37d31a9f964d",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "scheduledFor": "2026-11-04T01:22:00.000Z",
+      "timeZone": "UTC",
+      "status": "scheduled",
+      "idempotencyKey": "scheduled:draft:14315d9e-aac2-43a4-90df-671597cc7ebb:429ae569-5a9d-4d27-864e-37d31a9f964d:sha256:f631a7067938a796251252cfa4599619db64aba4735d9ff91adfdc3daca7d7b8",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 0,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-11-04T00:22:16.333Z",
+      "createdAt": "2026-11-04T00:22:16.333Z"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "292ec1e0-6014-454f-bd5c-acf02248acc3",
+      "queueItem": "e377b4dd-63cd-43c9-8cc6-304aae847b3c",
+      "variant": "9ea2bb20-2d69-4f10-be82-44b491f25a84",
+      "idempotencyKey": "scheduled:draft:d438ff15-3bea-4fe9-ad26-6b8c324ab47d:9ea2bb20-2d69-4f10-be82-44b491f25a84:sha256:1845af429be69e6496a4c8471a4e8cc6b30d63e429ba3fb645ef5cfedd729c56",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "CRASH accepted before web termination",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:1845af429be69e6496a4c8471a4e8cc6b30d63e429ba3fb645ef5cfedd729c56"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3141/posts/1047d07037bbbac77694c421acb33e0e",
+          "publishedAt": "2026-11-04T00:24:41.951Z",
+          "rawResponse": {
+            "cid": "local-cid-5",
+            "uri": "at://did:plc:renegade/app.bsky.feed.post/1047d07037bbbac77694c421acb33e0e",
+            "value": {
+              "text": "CRASH accepted before web termination",
+              "createdAt": "2026-11-04T00:23:38.280Z"
+            },
+            "reconciled": true,
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:renegade/app.bsky.feed.post/1047d07037bbbac77694c421acb33e0e"
+        },
+        "remoteId": "at://did:plc:renegade/app.bsky.feed.post/1047d07037bbbac77694c421acb33e0e",
+        "remoteUrl": "http://127.0.0.1:3141/posts/1047d07037bbbac77694c421acb33e0e",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-11-04T00:23:38.188Z",
+      "finishedAt": "2026-11-04T00:24:41.952Z",
+      "updatedAt": "2026-11-04T00:24:41.957Z",
+      "createdAt": "2026-11-04T00:23:38.247Z"
+    },
+    {
+      "id": "cb81a09d-593b-4d10-8819-e02eab2b1416",
+      "queueItem": "64d6c67c-dd7c-46d6-9627-6814fab983a4",
+      "variant": "731d1a4d-e357-40d1-b906-3547baf84246",
+      "idempotencyKey": "scheduled:draft:fbbbf5a9-f52a-4b1e-b3b4-dc59018d7ea3:731d1a4d-e357-40d1-b906-3547baf84246:sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "BLOCKED unapproved local origin",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32"
+      },
+      "response": null,
+      "error": {
+        "kind": "validation",
+        "message": "Blocked by SSRF protection: Disallowed protocol: http:. HTTPS is required.",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:23:29.266Z",
+      "finishedAt": "2026-11-04T00:23:29.288Z",
+      "updatedAt": "2026-11-04T00:23:29.292Z",
+      "createdAt": "2026-11-04T00:23:29.279Z"
+    },
+    {
+      "id": "0a45cbcd-e987-43e3-99e4-22ae2705bc8e",
+      "queueItem": "c79dbbf4-cb69-43ee-ae4b-e6440022598e",
+      "variant": "24af0a63-d9c3-4263-861b-c682a44ffacb",
+      "idempotencyKey": "scheduled:draft:e36fa6e2-2749-4afb-a3f7-6639ef75688b:24af0a63-d9c3-4263-861b-c682a44ffacb:sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "REVOKED must remain unsent",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e"
+      },
+      "response": null,
+      "error": {
+        "kind": "reconnect-required",
+        "message": "Account is disconnected or credentials are not healthy; reconnect before publishing.",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:23:26.359Z",
+      "finishedAt": "2026-11-04T00:23:26.384Z",
+      "updatedAt": "2026-11-04T00:23:26.388Z",
+      "createdAt": "2026-11-04T00:23:26.375Z"
+    },
+    {
+      "id": "9fef8812-9236-4cde-85bc-9f3979178765",
+      "queueItem": "ae748e8d-a8f1-4456-866a-8dd1ce4801f2",
+      "variant": "befb4105-d1cb-465d-a232-244037bc0713",
+      "idempotencyKey": "scheduled:draft:0e4e96e2-e370-4cff-8482-5566dac82b69:befb4105-d1cb-465d-a232-244037bc0713:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "attemptNumber": 1,
+      "status": "unknown",
+      "request": {
+        "text": "TIMEOUT accepted but response never returned",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad"
+      },
+      "response": null,
+      "error": {
+        "kind": "remote-unknown",
+        "message": "This adapter cannot verify an uncertain post automatically. Inspect the provider; automatic resend is disabled.",
+        "remoteOutcome": "unknown"
+      },
+      "startedAt": "2026-11-04T00:23:18.354Z",
+      "finishedAt": "2026-11-04T00:23:22.736Z",
+      "updatedAt": "2026-11-04T00:23:22.737Z",
+      "createdAt": "2026-11-04T00:23:18.371Z"
+    },
+    {
+      "id": "6741b7f3-c1fb-4d5a-8fe7-401d4c1e4b95",
+      "queueItem": "c9a8023c-3e2a-4782-8f34-46fc5526f226",
+      "variant": "76e42fef-ed06-494d-9ed1-f7e6775f79c6",
+      "idempotencyKey": "scheduled:draft:073ea5e1-2c78-448b-92cd-b5b957836aa6:76e42fef-ed06-494d-9ed1-f7e6775f79c6:sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "LOST provider accepted then socket closed",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3141/posts/af4e00690d4ddbe7e9cf02682ff6cef9",
+          "publishedAt": "2026-11-04T00:23:14.499Z",
+          "rawResponse": {
+            "cid": "local-cid-3",
+            "uri": "at://did:plc:renegade/app.bsky.feed.post/af4e00690d4ddbe7e9cf02682ff6cef9",
+            "value": {
+              "text": "LOST provider accepted then socket closed",
+              "createdAt": "2026-11-04T00:23:13.212Z"
+            },
+            "reconciled": true,
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:renegade/app.bsky.feed.post/af4e00690d4ddbe7e9cf02682ff6cef9"
+        },
+        "remoteId": "at://did:plc:renegade/app.bsky.feed.post/af4e00690d4ddbe7e9cf02682ff6cef9",
+        "remoteUrl": "http://127.0.0.1:3141/posts/af4e00690d4ddbe7e9cf02682ff6cef9",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-11-04T00:23:13.175Z",
+      "finishedAt": "2026-11-04T00:23:14.499Z",
+      "updatedAt": "2026-11-04T00:23:14.503Z",
+      "createdAt": "2026-11-04T00:23:13.193Z"
+    },
+    {
+      "id": "001f3e71-8223-4860-8c06-45079e7bee94",
+      "queueItem": "402f05d6-3826-4f4a-b64b-3d42e21b413f",
+      "variant": "d68f65c7-3e74-4749-a646-24f8aeadd793",
+      "idempotencyKey": "scheduled:draft:df2ea8ec-d2f7-4e93-9803-c20e76fa7666:d68f65c7-3e74-4749-a646-24f8aeadd793:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 3,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:23:06.721Z",
+      "finishedAt": "2026-11-04T00:23:06.751Z",
+      "updatedAt": "2026-11-04T00:23:06.754Z",
+      "createdAt": "2026-11-04T00:23:06.738Z"
+    },
+    {
+      "id": "00462b6a-f8c0-40c1-b356-1ad3c1a04e8f",
+      "queueItem": "402f05d6-3826-4f4a-b64b-3d42e21b413f",
+      "variant": "d68f65c7-3e74-4749-a646-24f8aeadd793",
+      "idempotencyKey": "scheduled:draft:df2ea8ec-d2f7-4e93-9803-c20e76fa7666:d68f65c7-3e74-4749-a646-24f8aeadd793:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 2,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:23:03.975Z",
+      "finishedAt": "2026-11-04T00:23:04.003Z",
+      "updatedAt": "2026-11-04T00:23:04.007Z",
+      "createdAt": "2026-11-04T00:23:03.989Z"
+    },
+    {
+      "id": "fba2ccd3-f49f-4867-b7a9-26f913354f66",
+      "queueItem": "402f05d6-3826-4f4a-b64b-3d42e21b413f",
+      "variant": "d68f65c7-3e74-4749-a646-24f8aeadd793",
+      "idempotencyKey": "scheduled:draft:df2ea8ec-d2f7-4e93-9803-c20e76fa7666:d68f65c7-3e74-4749-a646-24f8aeadd793:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:23:02.286Z",
+      "finishedAt": "2026-11-04T00:23:02.355Z",
+      "updatedAt": "2026-11-04T00:23:02.359Z",
+      "createdAt": "2026-11-04T00:23:02.338Z"
+    },
+    {
+      "id": "f826c091-e42f-40b9-a41b-19a6521044dd",
+      "queueItem": "8592752d-609a-429c-9ca5-fe7a0802207f",
+      "variant": "e39bb748-019c-4a61-9e0c-2f03d94c8aad",
+      "idempotencyKey": "scheduled:draft:feb5da6b-71d7-4219-b9e3-85c4b2382e92:e39bb748-019c-4a61-9e0c-2f03d94c8aad:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "attemptNumber": 2,
+      "status": "published",
+      "request": {
+        "text": "RATE real local rate limit",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3141/posts/0bcb212c5f542ce8251e795dc7a5392f",
+          "publishedAt": "2026-11-04T00:22:57.657Z",
+          "rawResponse": {
+            "cid": "local-cid-2",
+            "uri": "at://did:plc:rate/app.bsky.feed.post/0bcb212c5f542ce8251e795dc7a5392f",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:rate/app.bsky.feed.post/0bcb212c5f542ce8251e795dc7a5392f"
+        },
+        "remoteId": "at://did:plc:rate/app.bsky.feed.post/0bcb212c5f542ce8251e795dc7a5392f",
+        "remoteUrl": "http://127.0.0.1:3141/posts/0bcb212c5f542ce8251e795dc7a5392f",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-11-04T00:22:57.558Z",
+      "finishedAt": "2026-11-04T00:22:57.658Z",
+      "updatedAt": "2026-11-04T00:22:57.663Z",
+      "createdAt": "2026-11-04T00:22:57.630Z"
+    },
+    {
+      "id": "5f23522f-90d5-44b6-9590-e4a173989689",
+      "queueItem": "8592752d-609a-429c-9ca5-fe7a0802207f",
+      "variant": "e39bb748-019c-4a61-9e0c-2f03d94c8aad",
+      "idempotencyKey": "scheduled:draft:feb5da6b-71d7-4219-b9e3-85c4b2382e92:e39bb748-019c-4a61-9e0c-2f03d94c8aad:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "RATE real local rate limit",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022"
+      },
+      "response": null,
+      "error": {
+        "kind": "rate-limit",
+        "message": "Bluesky rate limit exceeded: Local rate limit",
+        "retryAfter": "2026-11-04T00:22:56.934Z",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:22:41.895Z",
+      "finishedAt": "2026-11-04T00:22:41.935Z",
+      "updatedAt": "2026-11-04T00:22:41.939Z",
+      "createdAt": "2026-11-04T00:22:41.917Z"
+    },
+    {
+      "id": "1d2a577a-21e8-4822-8b09-c318abcccb28",
+      "queueItem": "d89ee9c1-84ad-402c-996f-d56a40bc54b4",
+      "variant": "32e9e3f4-41be-464e-9910-7bb57833f9ed",
+      "idempotencyKey": "scheduled:draft:28c42577-d6fd-45ad-a85e-ff49e4bebe96:32e9e3f4-41be-464e-9910-7bb57833f9ed:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "attemptNumber": 2,
+      "status": "published",
+      "request": {
+        "text": "PARTIAL deliberately failing local Mastodon",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3141/masto/1",
+          "publishedAt": "2026-11-04T00:22:36.170Z",
+          "rawResponse": {
+            "id": "local-masto-1",
+            "url": "http://127.0.0.1:3141/masto/1",
+            "created_at": "2026-11-04T00:22:36.170Z",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "local-masto-1"
+        },
+        "remoteId": "local-masto-1",
+        "remoteUrl": "http://127.0.0.1:3141/masto/1",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-11-04T00:22:36.141Z",
+      "finishedAt": "2026-11-04T00:22:36.172Z",
+      "updatedAt": "2026-11-04T00:22:36.175Z",
+      "createdAt": "2026-11-04T00:22:36.156Z"
+    },
+    {
+      "id": "a6c3add6-04e3-4b84-8145-4375be6c4125",
+      "queueItem": "d89ee9c1-84ad-402c-996f-d56a40bc54b4",
+      "variant": "32e9e3f4-41be-464e-9910-7bb57833f9ed",
+      "idempotencyKey": "scheduled:draft:28c42577-d6fd-45ad-a85e-ff49e4bebe96:32e9e3f4-41be-464e-9910-7bb57833f9ed:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "PARTIAL deliberately failing local Mastodon",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-11-04T00:22:31.355Z",
+      "finishedAt": "2026-11-04T00:22:31.469Z",
+      "updatedAt": "2026-11-04T00:22:31.522Z",
+      "createdAt": "2026-11-04T00:22:31.433Z"
+    },
+    {
+      "id": "df41bd34-a6d9-4c30-a9f3-98048af5c0fc",
+      "queueItem": "63ca2cba-15c1-4d46-9e7e-211f3a803f95",
+      "variant": "d14de289-edd3-46f5-988c-681dffbb3442",
+      "idempotencyKey": "scheduled:draft:28c42577-d6fd-45ad-a85e-ff49e4bebe96:d14de289-edd3-46f5-988c-681dffbb3442:sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "PARTIAL successful local Bluesky",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3141/posts/aa85f02f9825d9a7b2d0b07884af12ae",
+          "publishedAt": "2026-11-04T00:22:31.235Z",
+          "rawResponse": {
+            "cid": "local-cid-0",
+            "uri": "at://did:plc:renegade/app.bsky.feed.post/aa85f02f9825d9a7b2d0b07884af12ae",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:renegade/app.bsky.feed.post/aa85f02f9825d9a7b2d0b07884af12ae"
+        },
+        "remoteId": "at://did:plc:renegade/app.bsky.feed.post/aa85f02f9825d9a7b2d0b07884af12ae",
+        "remoteUrl": "http://127.0.0.1:3141/posts/aa85f02f9825d9a7b2d0b07884af12ae",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-11-04T00:22:31.021Z",
+      "finishedAt": "2026-11-04T00:22:31.237Z",
+      "updatedAt": "2026-11-04T00:22:31.244Z",
+      "createdAt": "2026-11-04T00:22:31.134Z"
+    }
+  ],
+  "external": [
+    {
+      "id": "2fe6f40e-499b-4186-b98f-b4b4b27d4365",
+      "variant": "9ea2bb20-2d69-4f10-be82-44b491f25a84",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "remoteId": "at://did:plc:renegade/app.bsky.feed.post/1047d07037bbbac77694c421acb33e0e",
+      "remoteUrl": "http://127.0.0.1:3141/posts/1047d07037bbbac77694c421acb33e0e",
+      "remoteState": "published",
+      "publishedAt": "2026-11-04T00:24:41.968Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-11-04T00:24:41.970Z",
+      "createdAt": "2026-11-04T00:24:41.970Z"
+    },
+    {
+      "id": "27621787-1c9d-4147-bbcb-79d4afe5f3a6",
+      "variant": "76e42fef-ed06-494d-9ed1-f7e6775f79c6",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "remoteId": "at://did:plc:renegade/app.bsky.feed.post/af4e00690d4ddbe7e9cf02682ff6cef9",
+      "remoteUrl": "http://127.0.0.1:3141/posts/af4e00690d4ddbe7e9cf02682ff6cef9",
+      "remoteState": "published",
+      "publishedAt": "2026-11-04T00:23:14.528Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-11-04T00:23:14.528Z",
+      "createdAt": "2026-11-04T00:23:14.528Z"
+    },
+    {
+      "id": "b55bd6f1-767f-4d21-ae9e-394b0ecc5bcf",
+      "variant": "e39bb748-019c-4a61-9e0c-2f03d94c8aad",
+      "account": "0ab9a338-cb36-4a51-ab12-aab7bff3fec6",
+      "remoteId": "at://did:plc:rate/app.bsky.feed.post/0bcb212c5f542ce8251e795dc7a5392f",
+      "remoteUrl": "http://127.0.0.1:3141/posts/0bcb212c5f542ce8251e795dc7a5392f",
+      "remoteState": "published",
+      "publishedAt": "2026-11-04T00:22:57.723Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-11-04T00:22:57.724Z",
+      "createdAt": "2026-11-04T00:22:57.724Z"
+    },
+    {
+      "id": "c412f7d0-f823-41c8-b964-9675e191a683",
+      "variant": "32e9e3f4-41be-464e-9910-7bb57833f9ed",
+      "account": "591f363d-59e6-42c5-ae10-e1cae63ae4b1",
+      "remoteId": "local-masto-1",
+      "remoteUrl": "http://127.0.0.1:3141/masto/1",
+      "remoteState": "published",
+      "publishedAt": "2026-11-04T00:22:36.183Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-11-04T00:22:36.183Z",
+      "createdAt": "2026-11-04T00:22:36.183Z"
+    },
+    {
+      "id": "3921b907-6226-4eee-899e-acd561266c7a",
+      "variant": "d14de289-edd3-46f5-988c-681dffbb3442",
+      "account": "2dbb29e9-931b-4f84-8f2e-45bd6d6b73e2",
+      "remoteId": "at://did:plc:renegade/app.bsky.feed.post/aa85f02f9825d9a7b2d0b07884af12ae",
+      "remoteUrl": "http://127.0.0.1:3141/posts/aa85f02f9825d9a7b2d0b07884af12ae",
+      "remoteState": "published",
+      "publishedAt": "2026-11-04T00:22:31.258Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-11-04T00:22:31.259Z",
+      "createdAt": "2026-11-04T00:22:31.259Z"
+    }
+  ]
+}

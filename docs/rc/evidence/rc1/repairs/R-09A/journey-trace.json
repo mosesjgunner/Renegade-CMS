@@ -1,0 +1,300 @@
+{
+  "checks": 41,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "fresh database has no sites or subscribers",
+      "passed": true
+    },
+    {
+      "name": "ordinary installer completes real virtual WebAuthn ceremony",
+      "passed": true
+    },
+    {
+      "name": "second site created and both canonical origins registered",
+      "passed": true
+    },
+    {
+      "name": "anonymous published signup form accepts a visitor subscription request",
+      "passed": true
+    },
+    {
+      "name": "signup persists a pending subscriber and a consent-provenance event",
+      "passed": true
+    },
+    {
+      "name": "signup auto-resolves the site list (double opt-in) with a pending membership",
+      "passed": true
+    },
+    {
+      "name": "worker delivers the confirmation to the local mail sink with a confirm link",
+      "passed": true
+    },
+    {
+      "name": "confirmation delivery is recorded accepted via the smtp provider",
+      "passed": true
+    },
+    {
+      "name": "duplicate signup creates no duplicate subscriber, live token or confirmation email",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "name": "second visitor signup returns pending and persists unconfirmed",
+      "passed": true
+    },
+    {
+      "name": "confirmation activates subscriber and membership and records consent with token evidence",
+      "passed": true
+    },
+    {
+      "name": "reused confirmation link is denied and state is unchanged",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/confirm",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Confirmation link is invalid or already used.\"}"
+    },
+    {
+      "name": "forged confirmation token is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "segmentation counts exclude the unconfirmed visitor from deliverable",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "campaign 1 snapshot pins exactly the one consented recipient",
+      "passed": true
+    },
+    {
+      "name": "campaign email carries real per-recipient preference and unsubscribe links",
+      "passed": true
+    },
+    {
+      "name": "no campaign delivery exists for the unconfirmed visitor",
+      "passed": true
+    },
+    {
+      "name": "preference grant is recorded as consent evidence and keeps the subscriber eligible",
+      "passed": true
+    },
+    {
+      "name": "preference withdrawal unsubscribes and suppresses the record with consent evidence",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "after withdrawal the segment has no deliverable recipients",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Empty audience: No consented subscribers match this segment. Review audience targeting before scheduling.\",\"emptyAudience\":true}"
+    },
+    {
+      "name": "scheduling a campaign to an all-unconsented/suppressed audience is refused",
+      "passed": true
+    },
+    {
+      "name": "re-subscription reconfirms, reactivates and lifts the unsubscribe suppression",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "campaign 3 delivers to the reconsented subscriber",
+      "passed": true
+    },
+    {
+      "name": "mail sink switched to SMTP 450 temporary failure to force a retryable send failure",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "campaign 4 delivery is queued and attempted but only meets a temporary SMTP failure",
+      "passed": true
+    },
+    {
+      "name": "unsubscribe page flow suppresses the subscriber again",
+      "passed": true
+    },
+    {
+      "name": "suppressed-before-send: the queued campaign is never delivered after suppression",
+      "passed": true
+    },
+    {
+      "name": "same address on the second site creates an independent pending subscriber",
+      "passed": true
+    },
+    {
+      "name": "beta confirmation activates only the beta subscriber; alpha stays unsubscribed",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Community site unavailable.\"}"
+    },
+    {
+      "name": "subscribe naming a foreign site for the host is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Newsletter unavailable.\"}"
+    },
+    {
+      "name": "subscribe naming a foreign list for the host site is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/unsubscribe",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Invalid unsubscribe link.\"}"
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/preferences",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Invalid preference link.\"}"
+    },
+    {
+      "name": "access tokens are purpose-bound (preferences token cannot unsubscribe and vice versa)",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/unsubscribe",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Invalid unsubscribe link.\"}"
+    },
+    {
+      "name": "a tampered access token (foreign subscriber id, original signature) is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/preferences",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Invalid preference link.\"}"
+    },
+    {
+      "name": "an expired access token is denied",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/confirm",
+      "host": "alpha",
+      "status": 400,
+      "body": "{\"error\":\"Confirmation link is invalid or already used.\"}"
+    },
+    {
+      "name": "an expired confirmation token is denied and the subscriber stays pending",
+      "passed": true
+    },
+    {
+      "name": "an address suppressed for bounce cannot sign up again and no subscriber is created",
+      "passed": true
+    },
+    {
+      "name": "visitor-two confirms on Beta while remaining merely pending on Alpha",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/campaign?siteId=f1e689d5-a686-4078-a307-9d5cca7a6f9a",
+      "host": "alpha",
+      "status": 200
+    },
+    {
+      "name": "socket-level send failure parks both deliveries unknown and non-retryable",
+      "passed": true
+    },
+    {
+      "name": "parked unknown delivery is cancelled by suppression and never sent; the eligible one stays parked",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/admin/audience/retry",
+      "host": "alpha",
+      "status": 409,
+      "body": "{\"error\":\"This outcome cannot be safely retried.\"}"
+    },
+    {
+      "name": "operator retry of an unknown-outcome delivery is refused as unsafe",
+      "passed": true
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "method": "POST",
+      "route": "/api/subscribers/subscribe",
+      "host": "alpha",
+      "status": 202
+    },
+    {
+      "name": "concurrent duplicate signups converge to one subscriber, one live token, one email",
+      "passed": true
+    }
+  ]
+}

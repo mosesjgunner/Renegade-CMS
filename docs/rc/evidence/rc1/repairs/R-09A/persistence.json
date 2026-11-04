@@ -1,0 +1,199 @@
+{
+  "alphaSubscribers": [
+    {
+      "id": "b3542bb7-fefc-401b-a11a-65bd68d61ed9",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-seven@rc1-09a.test",
+      "emailHash": "-CaRmT8DmXANYHl1-TZH6do6TLGaAAUV32-VJ50MzYE",
+      "member": null,
+      "contact": null,
+      "status": "pending",
+      "verifiedAt": null,
+      "globalUnsubscribedAt": null,
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:47:17.692Z",
+      "createdAt": "2026-11-04T04:47:17.692Z"
+    },
+    {
+      "id": "4b630a0d-d2d7-4563-b820-2252e962bc9d",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-eight@rc1-09a.test",
+      "emailHash": "cidTyMhYHHBMVhc23CaktY32R7fPFosJiGx-txzLuds",
+      "member": null,
+      "contact": null,
+      "status": "pending",
+      "verifiedAt": null,
+      "globalUnsubscribedAt": null,
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:46:53.963Z",
+      "createdAt": "2026-11-04T04:46:53.963Z"
+    },
+    {
+      "id": "f860f93d-cf79-4d04-81f6-821f148648f0",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-two@rc1-09a.test",
+      "emailHash": "3FdkimjWj1DLnuUW0GobvwNPxk-mJGw0FpF0Svw0Ymo",
+      "member": null,
+      "contact": null,
+      "status": "pending",
+      "verifiedAt": null,
+      "globalUnsubscribedAt": null,
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:45:14.995Z",
+      "createdAt": "2026-11-04T04:45:14.995Z"
+    },
+    {
+      "id": "c40b82bc-5198-411a-8219-ab94d7fb333b",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-one@rc1-09a.test",
+      "emailHash": "3HbTS_7iYcK2PdpRJMAVzremzWJ-kupzgIV9Py-X0eQ",
+      "member": null,
+      "contact": null,
+      "status": "unsubscribed",
+      "verifiedAt": "2026-11-04T04:45:40.285Z",
+      "globalUnsubscribedAt": "2026-11-04T04:46:34.254Z",
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:46:34.275Z",
+      "createdAt": "2026-11-04T04:45:07.995Z"
+    }
+  ],
+  "betaSubscribers": [
+    {
+      "id": "2b92c26b-004f-4b36-b792-018d231a3104",
+      "site": "f1e689d5-a686-4078-a307-9d5cca7a6f9a",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-two@rc1-09a.test",
+      "emailHash": "3FdkimjWj1DLnuUW0GobvwNPxk-mJGw0FpF0Svw0Ymo",
+      "member": null,
+      "contact": null,
+      "status": "unsubscribed",
+      "verifiedAt": "2026-11-04T04:46:57.409Z",
+      "globalUnsubscribedAt": "2026-11-04T04:47:03.591Z",
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:47:03.598Z",
+      "createdAt": "2026-11-04T04:46:55.383Z"
+    },
+    {
+      "id": "4a938a5b-d117-496b-88f1-105eb4d394cc",
+      "site": "f1e689d5-a686-4078-a307-9d5cca7a6f9a",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "email": "visitor-one@rc1-09a.test",
+      "emailHash": "3HbTS_7iYcK2PdpRJMAVzremzWJ-kupzgIV9Py-X0eQ",
+      "member": null,
+      "contact": null,
+      "status": "active",
+      "verifiedAt": "2026-11-04T04:46:53.275Z",
+      "globalUnsubscribedAt": null,
+      "erasedAt": null,
+      "updatedAt": "2026-11-04T04:46:53.368Z",
+      "createdAt": "2026-11-04T04:46:51.530Z"
+    }
+  ],
+  "suppressions": [
+    {
+      "id": "4fe4fb89-dd9b-4c61-a246-6fef622fda75",
+      "site": "f1e689d5-a686-4078-a307-9d5cca7a6f9a",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "emailHash": "3FdkimjWj1DLnuUW0GobvwNPxk-mJGw0FpF0Svw0Ymo",
+      "reason": "unsubscribe",
+      "provider": null,
+      "occurredAt": "2026-11-04T04:47:03.605Z",
+      "global": true,
+      "scope": "site",
+      "source": null,
+      "details": null,
+      "updatedAt": "2026-11-04T04:47:03.608Z",
+      "createdAt": "2026-11-04T04:47:03.607Z"
+    },
+    {
+      "id": "cfe37144-bd4e-4af9-8f83-e00403e871a5",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "emailHash": "_jxj675r2TuFMhSzt6ko_Nx5I_6-phtaL3i7COq_3wk",
+      "reason": "bounce",
+      "provider": null,
+      "occurredAt": "2026-11-04T04:46:54.078Z",
+      "global": true,
+      "scope": "site",
+      "source": null,
+      "details": null,
+      "updatedAt": "2026-11-04T04:46:54.080Z",
+      "createdAt": "2026-11-04T04:46:54.080Z"
+    },
+    {
+      "id": "ce354fda-0436-4085-84ac-db25019c6345",
+      "site": "7cde9f68-fb0b-4e96-929d-84f0022884a1",
+      "publication": null,
+      "space": null,
+      "owner": null,
+      "emailHash": "3HbTS_7iYcK2PdpRJMAVzremzWJ-kupzgIV9Py-X0eQ",
+      "reason": "unsubscribe",
+      "provider": null,
+      "occurredAt": "2026-11-04T04:46:34.295Z",
+      "global": true,
+      "scope": "site",
+      "source": null,
+      "details": null,
+      "updatedAt": "2026-11-04T04:46:34.297Z",
+      "createdAt": "2026-11-04T04:46:34.297Z"
+    }
+  ],
+  "capturedSubjects": [
+    {
+      "to": "visitor-one@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-two@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-one@rc1-09a.test",
+      "subject": "09A Campaign One"
+    },
+    {
+      "to": "visitor-one@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-one@rc1-09a.test",
+      "subject": "09A Campaign Three"
+    },
+    {
+      "to": "visitor-one@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-eight@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-two@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    },
+    {
+      "to": "visitor-seven@rc1-09a.test",
+      "subject": "Confirm your subscription"
+    }
+  ]
+}
