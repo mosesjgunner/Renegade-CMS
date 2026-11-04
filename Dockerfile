@@ -12,6 +12,13 @@ COPY scripts ./scripts
 # or Lexical's TypeScript peer in the operational runtime dependency tree.
 RUN npm ci --omit=dev --omit=peer
 
+# npm installs devOptional peer satisfactions (the root devDependencies
+# typescript and @playwright/test) even with --omit=dev --omit=peer, because
+# production packages peer-depend on them optionally (Lexical, Next). Nothing
+# in the runtime imports them; remove the dev/test toolchain explicitly.
+RUN rm -rf node_modules/typescript node_modules/@playwright \
+    node_modules/playwright node_modules/playwright-core
+
 # Upstream npm esbuild executables embed older Go standard libraries. Keep the
 # supported esbuild API/version, but build the shipped executable from its exact
 # upstream source with a patched Go toolchain and retain inspectable build info.
