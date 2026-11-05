@@ -6,6 +6,10 @@ import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
 import { scheduleContentRelease } from '../../src/modules/releases/service'
+import { isGateSnapshotValid } from '../../src/modules/releases/gates'
+import { createPasskeySession } from '../../src/modules/operations/passkey-auth'
+import { loadConfig } from '../../src/modules/core/config'
+import { PATCH as catalogTransition } from '../../src/app/(frontend)/api/admin/catalog/route'
 
 let payload: Payload
 
@@ -72,8 +76,7 @@ describe('coordinated content release acceptance', () => {
         slug: `release-product-${suffix}`,
         canonicalPath: `/store/release-product-${suffix}`,
         kind: 'physical',
-        state: 'approved',
-        releaseRevision: `revision-${suffix}`,
+        state: 'draft',
         productCapabilities: ['shippable'],
         variants: [
           {
@@ -100,6 +103,67 @@ describe('coordinated content release acceptance', () => {
       },
       overrideAccess: true,
     } as never)) as any
+    const member = await payload.create({
+      collection: 'members',
+      data: {
+        displayName: 'Release editor',
+        email: `release-${suffix}@example.test`,
+        status: 'active',
+      },
+      overrideAccess: true,
+    } as never)
+    const editor = await payload.create({
+      collection: 'users',
+      data: { email: `release-${suffix}@example.test`, role: 'staff', member: member.id },
+      context: { skipEnrollmentToken: true, seeding: true },
+      overrideAccess: true,
+    })
+    const grants = await payload.find({
+      collection: 'member-site-roles',
+      where: { and: [{ member: { equals: member.id } }, { site: { equals: site.id } }] },
+      overrideAccess: true,
+    } as never)
+    if (!grants.docs.length) {
+      await payload.create({
+        collection: 'member-site-roles',
+        data: { member: member.id, site: site.id, role: 'contributor' },
+        overrideAccess: true,
+      } as never)
+    }
+    // Fixture session only: this integration test does not claim WebAuthn enrollment.
+    const session = await createPasskeySession(
+      { id: String(editor.id), email: String(editor.email) },
+      loadConfig().payloadSecret,
+      async (id, expires) => {
+        await payload.db.pool.query(
+          'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3)',
+          [id, editor.id, expires],
+        )
+      },
+    )
+    const request = (action: string, authenticated: boolean) =>
+      new Request('http://localhost:3000/api/admin/catalog', {
+        method: 'PATCH',
+        headers: {
+          'content-type': 'application/json',
+          ...(authenticated ? { cookie: `renegade-passkey=${session.token}` } : {}),
+        },
+        body: JSON.stringify({ productId: product.id, action }),
+      })
+    expect((await catalogTransition(request('request-review', false))).status).toBe(403)
+    for (const action of ['request-review', 'approve']) {
+      const response = await catalogTransition(request(action, true))
+      const body = await response.text()
+      expect(response.status, body).toBe(200)
+    }
+    const approved = await payload.findByID({
+      collection: 'products',
+      id: product.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+    expect(approved.state).toBe('approved')
+    expect(approved.releaseRevision).toBeTruthy()
     const release = (await payload.create({
       collection: 'content-releases' as never,
       data: {
@@ -107,7 +171,7 @@ describe('coordinated content release acceptance', () => {
         publication: publication.id,
         title: `Release ${suffix}`,
         product: product.id,
-        productRevision: product.releaseRevision,
+        productRevision: approved.releaseRevision,
       },
       overrideAccess: true,
     } as never)) as any
@@ -119,7 +183,18 @@ describe('coordinated content release acceptance', () => {
       actorId: 'publisher-acceptance',
       idempotencyKey: `release-schedule-${suffix}`,
     })) as any
-    await payload.jobs.runByID({ id: idOf(scheduled.executionJob), silent: true })
+    expect(isGateSnapshotValid(scheduled, scheduled.gateSnapshot).valid).toBe(true)
+    expect(
+      isGateSnapshotValid(
+        { ...scheduled, plannedInstant: '2030-01-01T00:00:00.000Z' },
+        scheduled.gateSnapshot,
+      ).valid,
+    ).toBe(false)
+    await payload.jobs.run({
+      queue: 'operations',
+      where: { id: { equals: idOf(scheduled.executionJob) } },
+      silent: true,
+    })
 
     const finished = (await payload.findByID({
       collection: 'content-releases' as never,
@@ -137,7 +212,11 @@ describe('coordinated content release acceptance', () => {
     expect(finished.executionItems).toMatchObject([{ status: 'succeeded', attempts: 1 }])
     expect(published.state).toBe('published')
 
-    await payload.jobs.runByID({ id: idOf(scheduled.executionJob), silent: true })
+    await payload.jobs.run({
+      queue: 'operations',
+      where: { id: { equals: idOf(scheduled.executionJob) } },
+      silent: true,
+    })
     const replayed = (await payload.findByID({
       collection: 'content-releases' as never,
       id: release.id,

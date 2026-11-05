@@ -20,6 +20,23 @@ const getFullRegistrations = () => registeredPayloadDomains(loadConfig(testEnv))
 
 describe('02D: Module-Profile Acceptance Matrix', () => {
   describe('Profile 1: Lean / Default', () => {
+    it('only schedules webhook delivery when the integrations collection is enabled', () => {
+      const full = getFullRegistrations()
+      const lean = gatePayloadRegistrations(full, { enabled: new Set() })
+      const integrations = gatePayloadRegistrations(full, {
+        enabled: parseEnabledModules('integrations'),
+      })
+
+      expect(lean.collections.map((collection) => collection.slug)).not.toContain(
+        'webhook-deliveries',
+      )
+      expect(lean.tasks.map((task) => task.slug)).not.toContain('webhook-delivery-dispatch')
+      expect(integrations.collections.map((collection) => collection.slug)).toContain(
+        'webhook-deliveries',
+      )
+      expect(integrations.tasks.map((task) => task.slug)).toContain('webhook-delivery-dispatch')
+    })
+
     it('registers the core baseline collections (~66 collections) and disables outer-ring collections', () => {
       const full = getFullRegistrations()
       const leanDefault = gatePayloadRegistrations(full, { enabled: new Set() })
@@ -113,21 +130,15 @@ describe('02D: Module-Profile Acceptance Matrix', () => {
       expect(standardAll.collections.length).toBeGreaterThan(200)
 
       // Lock documents capping: Must stay strictly below 100 for PostgreSQL json_build_array limit
-      const lockableCount = standardAll.collections.filter(
-        (c) => c.lockDocuments !== false,
-      ).length
+      const lockableCount = standardAll.collections.filter((c) => c.lockDocuments !== false).length
       expect(lockableCount).toBeLessThan(POSTGRES_FUNCTION_ARG_LIMIT)
 
       // Content retains locking; optional collections have lockDocuments: false
-      expect(
-        standardAll.collections.find((c) => c.slug === 'content')?.lockDocuments,
-      ).not.toBe(false)
-      expect(
-        standardAll.collections.find((c) => c.slug === 'products')?.lockDocuments,
-      ).toBe(false)
-      expect(
-        standardAll.collections.find((c) => c.slug === 'carts')?.lockDocuments,
-      ).toBe(false)
+      expect(standardAll.collections.find((c) => c.slug === 'content')?.lockDocuments).not.toBe(
+        false,
+      )
+      expect(standardAll.collections.find((c) => c.slug === 'products')?.lockDocuments).toBe(false)
+      expect(standardAll.collections.find((c) => c.slug === 'carts')?.lockDocuments).toBe(false)
     })
 
     it('makes commerce and community collections available when all modules are active', () => {

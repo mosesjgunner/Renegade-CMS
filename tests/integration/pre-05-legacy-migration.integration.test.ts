@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
+import sharp from 'sharp'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
@@ -23,7 +24,12 @@ let fixturePackage: LegacySitePackage
 
 beforeAll(async () => {
   payload = await getPayload({ config })
-  store = new PayloadLegacyMigrationStore(payload)
+  const actor = await payload.create({
+    collection: 'users',
+    data: { email: `legacy-fixture-${Date.now()}@example.test`, role: 'owner' },
+    overrideAccess: true,
+  } as never)
+  store = new PayloadLegacyMigrationStore(payload, actor)
 
   const fixtureDir = path.resolve(__dirname, '../fixtures/legacy-migration')
   const wxr = await readFile(path.join(fixtureDir, 'wordpress-fixture.xml'), 'utf8')
@@ -33,6 +39,17 @@ beforeAll(async () => {
   fixturePackage = {
     wxr,
     themeMapping,
+    mediaFiles: {
+      'tribune-hero.png': {
+        buffer: await sharp({
+          create: { width: 2, height: 2, channels: 3, background: '#336699' },
+        })
+          .png()
+          .toBuffer(),
+        fileName: 'tribune-hero.png',
+        mimeType: 'image/png',
+      },
+    },
   }
 }, 120000)
 

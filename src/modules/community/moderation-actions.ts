@@ -279,7 +279,7 @@ export async function applyModerationAction(payload: Payload, input: Input) {
         )
       else if (input.targetType === 'forum_topic')
         await query(
-          "UPDATE forum_topics SET is_quarantined=false, is_locked=false, updated_at=now() WHERE id=$1 AND site_id=$2",
+          'UPDATE forum_topics SET is_quarantined=false, is_locked=false, updated_at=now() WHERE id=$1 AND site_id=$2',
           [input.targetId, input.siteId],
         )
       if (item.authorId) {

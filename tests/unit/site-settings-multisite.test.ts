@@ -130,5 +130,3 @@ describe('02A: Sites and Persistent Settings', () => {
     })
   })
 })
-
-

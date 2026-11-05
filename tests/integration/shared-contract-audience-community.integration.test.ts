@@ -1,7 +1,7 @@
 import { telecomRecipient } from '../helpers/telecom-recipient'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -228,6 +228,13 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
       overrideAccess: true,
     } as never)
 
+    aliceContext.actor = await resolveCommunityActor(payload, aliceSessionToken, siteId)
+    bobContext.actor = await resolveCommunityActor(payload, bobSessionToken, siteId)
+    charlieModContext.actor = await resolveCommunityActor(payload, charlieModSessionToken, siteId)
+    expect(aliceContext.actor.status).toBe('active')
+    expect(bobContext.actor.status).toBe('active')
+    expect(charlieModContext.actor.isModerator).toBe(true)
+
     resetLocalMailSink()
     resetTelecomEmulator()
   })
@@ -236,6 +243,8 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
     resetLocalMailSink()
     resetTelecomEmulator()
   })
+
+  afterEach(() => vi.useRealTimers())
 
   // ===========================================================================
   // AUDIENCE BOUNDARY (PROOFS 1 - 7)
@@ -516,6 +525,8 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
     })
 
     it('5. Exercises Telecom emulator: routes RCS directly, performs SMS fallback, and parses STOP keyword', async () => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date('2026-09-20T17:00:00.000Z'))
       resetTelecomEmulator()
 
       const phoneRcs = `+1555${Math.floor(1000000 + Math.random() * 9000000)}`

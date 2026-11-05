@@ -81,7 +81,10 @@ const api = async (route: string, method = 'GET', data?: any, expected = 200) =>
           origin: base,
           cookie: cookies,
           ...(payloadText
-            ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payloadText) }
+            ? {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(payloadText),
+              }
             : {}),
         },
         timeout: 180000,
@@ -173,8 +176,7 @@ try {
       'restart retains verified migration report',
       report.runId === state.runId && report.stage === state.stage,
     )
-    const exported = (await api(`/api/migration/export?siteId=${state.importSite}`)).json()
-      .manifest
+    const exported = (await api(`/api/migration/export?siteId=${state.importSite}`)).json().manifest
     check(
       'restart exports original media bytes unchanged',
       exported.media[0].objectData === png.toString('base64'),
@@ -253,7 +255,11 @@ try {
         { timeout: 180000 },
       )
       await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
-      assert.equal((await completeResponse).status(), 201, 'supported installer completion HTTP 201')
+      assert.equal(
+        (await completeResponse).status(),
+        201,
+        'supported installer completion HTTP 201',
+      )
       check(
         'ordinary installer completes real virtual WebAuthn ceremony',
         (await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey'),
@@ -261,9 +267,9 @@ try {
       // Recovery codes and session cookies remain outside evidence.
       await context.storageState({ path: `${scratch}/session.json` })
     }
-    const site = (await api('/api/sites?limit=20')).json().docs.find(
-      (row: any) => row.slug === 'operator-dispatch-03d',
-    )
+    const site = (await api('/api/sites?limit=20'))
+      .json()
+      .docs.find((row: any) => row.slug === 'operator-dispatch-03d')
     assert.ok(site)
     const home = await native('content', {
       site: site.id,
@@ -295,8 +301,7 @@ try {
       status: 'draft',
     })
     await api(`/api/content/${article.id}`, 'PATCH', { status: 'published' })
-    const publications = (await api(`/api/publications?where[site][equals]=${site.id}`)).json()
-      .docs
+    const publications = (await api(`/api/publications?where[site][equals]=${site.id}`)).json().docs
     assert.ok(publications[0], 'installer publication exists')
     await api(`/api/publications/${publications[0].id}`, 'PATCH', {
       navigation: {
@@ -307,7 +312,10 @@ try {
         ],
       },
     })
-    check('native product API persisted authored pages/article', [home.id, about.id, article.id].every((id) => id))
+    check(
+      'native product API persisted authored pages/article',
+      [home.id, about.id, article.id].every((id) => id),
+    )
     // Added check (see header): operator-side hierarchy pair.
     const parentCategory = await native('categories', {
       site: site.id,
@@ -355,10 +363,13 @@ try {
     }
     await api('/api/migration/legacy/inspect', 'POST', { wxr: '<<<NOT-XML>>>' }, 422)
     check('malformed import rejected through supported endpoint', true)
-    const preflight = (await api('/api/migration/legacy/preflight', 'POST', { pkg, options })).json()
+    const preflight = (
+      await api('/api/migration/legacy/preflight', 'POST', { pkg, options })
+    ).json()
     check(
       'dry-run plans content without creating a target site',
-      preflight.stage === 'dry-run' && (await payload.count({ collection: 'sites' })).totalDocs === 1,
+      preflight.stage === 'dry-run' &&
+        (await payload.count({ collection: 'sites' })).totalDocs === 1,
     )
     const report = (await api('/api/migration/legacy/execute', 'POST', { pkg, options })).json()
     await writeFile(`${out}/import-report.json`, JSON.stringify(report, null, 2))
@@ -373,7 +384,10 @@ try {
       imported.length ===
         normalized.items.filter((row) => ['post', 'page'].includes(row.postType)).length,
     )
-    check('author relationships persisted', imported.some((row: any) => row.authors?.length))
+    check(
+      'author relationships persisted',
+      imported.some((row: any) => row.authors?.length),
+    )
     const categories = await rows('categories', report.siteId)
     const child = categories.find((row: any) => row.slug === 'investigative')
     check(
@@ -383,10 +397,15 @@ try {
     const assets = await rows('media-assets', report.siteId)
     check(
       'actual imported image blob is persisted',
-      assets.length === 1 && assets[0].originalBlob && !assets[0].storageLocation.startsWith('local://'),
+      assets.length === 1 &&
+        assets[0].originalBlob &&
+        !assets[0].storageLocation.startsWith('local://'),
     )
     const exported = (await api(`/api/migration/export?siteId=${report.siteId}`)).json().manifest
-    check('supported export contains original media bytes', exported.media[0].objectData === png.toString('base64'))
+    check(
+      'supported export contains original media bytes',
+      exported.media[0].objectData === png.toString('base64'),
+    )
     check(
       'export includes mapped authors and revision history',
       ['authors', 'revision-records', 'public-redirects'].every((name) =>
@@ -417,7 +436,11 @@ try {
         'POST',
         {
           pkg,
-          options: { targetSiteMode: 'existing-site', targetSiteId: report.siteId, rejectDuplicates: true },
+          options: {
+            targetSiteMode: 'existing-site',
+            targetSiteId: report.siteId,
+            rejectDuplicates: true,
+          },
         },
         422,
       )
@@ -459,10 +482,12 @@ try {
   await page.screenshot({ path: `${out}/failure.png`, fullPage: true }).catch(() => {})
   await writeFile(
     `${out}/failure-page.txt`,
-    (await page.locator('body').innerText().catch(() => '')).replace(
-      /[A-Za-z0-9_-]{43}/g,
-      '[redacted token]',
-    ),
+    (
+      await page
+        .locator('body')
+        .innerText()
+        .catch(() => '')
+    ).replace(/[A-Za-z0-9_-]{43}/g, '[redacted token]'),
   )
   process.exitCode = 1
 } finally {

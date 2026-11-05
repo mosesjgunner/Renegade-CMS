@@ -68,6 +68,7 @@ describe('Payload domain registration', () => {
         'commerce-process-payment-event',
         'commerce-reconcile-payments',
         'commerce-reconcile-subscriptions',
+        'commerce-reconcile-referrals',
         'analytics-retention-cleanup',
         'community-message-attachment-scan',
         'community-message-attachment-cleanup',

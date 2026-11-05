@@ -25,3 +25,7 @@ docs/rc/evidence/rc-08c-2026-10-06/
 
 # Immutable RC1 baseline manifests, raw results and preserved historical report.
 docs/rc/evidence/rc1/stage-01/
+
+# Retained audit records and RC acceptance receipts are immutable evidence.
+docs/audits/pass-09/
+docs/rc/evidence/

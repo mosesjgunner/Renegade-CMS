@@ -239,4 +239,3 @@ describe('15D Quality Scanning & Citations Contracts', () => {
     expect(canWaive({ actorRole: 'staff', severity: 'warning', category: 'editorial' })).toBe(false)
   })
 })
-

@@ -160,7 +160,9 @@ async function run() {
   // =========================================================================
   // Phase 2: Create Two Articles and One Page with Media & Blocks
   // =========================================================================
-  console.log('\nPhase 2: Creating two articles and one page with rich formatting, media & blocks...')
+  console.log(
+    '\nPhase 2: Creating two articles and one page with rich formatting, media & blocks...',
+  )
 
   function textNode(text: string, format = 0): Record<string, unknown> {
     return {
@@ -186,7 +188,10 @@ async function run() {
     }
   }
 
-  function hNode(tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6', text: string): Record<string, unknown> {
+  function hNode(
+    tag: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6',
+    text: string,
+  ): Record<string, unknown> {
     return {
       type: 'heading',
       tag,
@@ -209,7 +214,10 @@ async function run() {
     }
   }
 
-  function listNode(items: string[], listType: 'bullet' | 'number' = 'bullet'): Record<string, unknown> {
+  function listNode(
+    items: string[],
+    listType: 'bullet' | 'number' = 'bullet',
+  ): Record<string, unknown> {
     return {
       type: 'list',
       listType,
@@ -254,7 +262,10 @@ async function run() {
     }
   }
 
-  function relationshipNode(relationTo: 'media-assets' | 'content', value: string | number): Record<string, unknown> {
+  function relationshipNode(
+    relationTo: 'media-assets' | 'content',
+    value: string | number,
+  ): Record<string, unknown> {
     return {
       type: 'relationship',
       version: 2,
@@ -322,9 +333,7 @@ async function run() {
 
   const article2Body = rootDoc(
     hNode('h2', 'Economic Projections for Q4'),
-    pNode(
-      textNode('Quarterly financial analysis indicates stable growth trajectories.'),
-    ),
+    pNode(textNode('Quarterly financial analysis indicates stable growth trajectories.')),
     relationshipNode('media-assets', mediaAsset.id),
   )
 
@@ -351,9 +360,7 @@ async function run() {
 
   const page1Body = rootDoc(
     hNode('h1', 'About Alpha Investigation Team'),
-    pNode(
-      textNode('Renegade investigations operate independently with public support.'),
-    ),
+    pNode(textNode('Renegade investigations operate independently with public support.')),
     relationshipNode('media-assets', mediaAsset.id),
   )
 
@@ -372,14 +379,24 @@ async function run() {
     } as any,
   })
 
-  console.log(`   ✓ Article 1 (id=${article1.id}), Article 2 (id=${article2.id}), and Page 1 (id=${page1.id}) created as drafts.`)
+  console.log(
+    `   ✓ Article 1 (id=${article1.id}), Article 2 (id=${article2.id}), and Page 1 (id=${page1.id}) created as drafts.`,
+  )
 
   // =========================================================================
   // Phase 3: Save & Reload Persistence Check
   // =========================================================================
   console.log('\nPhase 3: Verifying save/reload persistence and companion revision records...')
-  const reloadedArticle1 = await payload.findByID({ collection: 'content', id: article1.id, depth: 2 })
-  const reloadedArticle2 = await payload.findByID({ collection: 'content', id: article2.id, depth: 2 })
+  const reloadedArticle1 = await payload.findByID({
+    collection: 'content',
+    id: article1.id,
+    depth: 2,
+  })
+  const reloadedArticle2 = await payload.findByID({
+    collection: 'content',
+    id: article2.id,
+    depth: 2,
+  })
   const reloadedPage1 = await payload.findByID({ collection: 'content', id: page1.id, depth: 2 })
 
   assert.equal(reloadedArticle1.title, 'Alpha Investigative Field Report')
@@ -419,9 +436,7 @@ async function run() {
   const updatedArticle1Body = rootDoc(
     ...(article1Body.root.children as any[]),
     hNode('h3', 'Phase 2 Updated Discoveries'),
-    pNode(
-      textNode('Supplemental fieldwork uncovered additional corroborating documents.'),
-    ),
+    pNode(textNode('Supplemental fieldwork uncovered additional corroborating documents.')),
   )
 
   await payload.update({
@@ -455,7 +470,9 @@ async function run() {
   // =========================================================================
   // Phase 5: Historical Revision Restore
   // =========================================================================
-  console.log('\nPhase 5: Restoring historical Revision 1 to verify append-only revision restore...')
+  console.log(
+    '\nPhase 5: Restoring historical Revision 1 to verify append-only revision restore...',
+  )
   const restoredResult = await restoreEditorialRevision(payload, {
     articleId: String(family1.id),
     revisionId: String(revision1Id),
@@ -464,7 +481,11 @@ async function run() {
     now: new Date().toISOString(),
   })
 
-  assert.equal(restoredResult.article.currentRevisionSequence, 3, 'Restoration must advance sequence to 3')
+  assert.equal(
+    restoredResult.article.currentRevisionSequence,
+    3,
+    'Restoration must advance sequence to 3',
+  )
 
   const revisionsAfterRestore = await payload.find({
     collection: 'revision-records',
@@ -479,16 +500,30 @@ async function run() {
   assert.equal(rev3.restoredFromRevision, revision1Id)
 
   // Verify content.body reverted to Revision 1 content
-  const article1AfterRestore = await payload.findByID({ collection: 'content', id: article1.id, depth: 0 })
+  const article1AfterRestore = await payload.findByID({
+    collection: 'content',
+    id: article1.id,
+    depth: 0,
+  })
   const plainTextRestored = JSON.stringify(article1AfterRestore.body)
-  assert.ok(!plainTextRestored.includes('Phase 2 Updated Discoveries'), 'Restored body must NOT contain Edit 2 additions')
-  assert.ok(plainTextRestored.includes('Executive Summary and Primary Findings'), 'Restored body must contain Revision 1 heading')
-  console.log(`   ✓ Historical Revision 1 restored cleanly: sequence=3, restoredFromRevision=${revision1Id}`)
+  assert.ok(
+    !plainTextRestored.includes('Phase 2 Updated Discoveries'),
+    'Restored body must NOT contain Edit 2 additions',
+  )
+  assert.ok(
+    plainTextRestored.includes('Executive Summary and Primary Findings'),
+    'Restored body must contain Revision 1 heading',
+  )
+  console.log(
+    `   ✓ Historical Revision 1 restored cleanly: sequence=3, restoredFromRevision=${revision1Id}`,
+  )
 
   // =========================================================================
   // Phase 6: Preview Unpublished Content & Non-Indexing Verification
   // =========================================================================
-  console.log('\nPhase 6: Generating preview token and verifying unpublished presentation & noindex...')
+  console.log(
+    '\nPhase 6: Generating preview token and verifying unpublished presentation & noindex...',
+  )
   const previewTokenData = await createEditorialPreviewToken(payload, {
     articleId: String(family1.id),
     revisionId: String(rev3.id),
@@ -506,21 +541,39 @@ async function run() {
   )
   assert.equal(presentation.preview, true, 'Presentation must flag preview=true')
   assert.equal(presentation.title, 'Alpha Investigative Field Report')
-  assert.deepEqual(presentation.authors, ['Jane Author'], 'Author metadata must be correctly populated')
+  assert.deepEqual(
+    presentation.authors,
+    ['Jane Author'],
+    'Author metadata must be correctly populated',
+  )
   assert.ok(presentation.tableOfContents.length >= 1, 'TOC must be extracted from headings')
   assert.equal(presentation.tableOfContents[0].text, 'Executive Summary and Primary Findings')
 
   // Public Access Verification: Must NOT be rendered or indexable
-  assert.equal(canRenderPublic(article1AfterRestore as any), false, 'Draft content must fail canRenderPublic')
-  assert.equal(canDiscoverPublic(article1AfterRestore as any), false, 'Draft content must fail canDiscoverPublic')
+  assert.equal(
+    canRenderPublic(article1AfterRestore as any),
+    false,
+    'Draft content must fail canRenderPublic',
+  )
+  assert.equal(
+    canDiscoverPublic(article1AfterRestore as any),
+    false,
+    'Draft content must fail canDiscoverPublic',
+  )
 
   let publicReadBlocked = false
   try {
-    await loadPublishedArticleByPath(payload, { siteId: String(siteA.id), path: String(article1.canonicalPath) })
+    await loadPublishedArticleByPath(payload, {
+      siteId: String(siteA.id),
+      path: String(article1.canonicalPath),
+    })
   } catch (err: any) {
     publicReadBlocked = true
   }
-  assert.ok(publicReadBlocked, 'Unpublished draft must throw when accessed via public published reader')
+  assert.ok(
+    publicReadBlocked,
+    'Unpublished draft must throw when accessed via public published reader',
+  )
 
   // Discovery Document Non-Indexable Contract
   const discovery = await resolveDiscoveryDocument(payload, {
@@ -532,12 +585,16 @@ async function run() {
   assert.equal(discovery.indexability.reason, 'draft', 'Draft reason must be "draft"')
   assert.equal(discovery.indexability.robotsDirectives.index, false, 'Robots index must be false')
   assert.equal(discovery.indexability.robotsDirectives.follow, false, 'Robots follow must be false')
-  console.log(`   ✓ Unpublished preview authorized for creator; public access blocked; robots noindex/nofollow guaranteed.`)
+  console.log(
+    `   ✓ Unpublished preview authorized for creator; public access blocked; robots noindex/nofollow guaranteed.`,
+  )
 
   // =========================================================================
   // Phase 7: Negative Preview Cases (Expired, Foreign, Tampered)
   // =========================================================================
-  console.log('\nPhase 7: Testing negative preview cases (expired, foreign user, tampered token)...')
+  console.log(
+    '\nPhase 7: Testing negative preview cases (expired, foreign user, tampered token)...',
+  )
 
   // 1. Expired Token
   const expiredTokenData = await createEditorialPreviewToken(payload, {
@@ -548,7 +605,12 @@ async function run() {
   })
   let expiredCaught = false
   try {
-    await resolveEditorialPreviewToken(payload, expiredTokenData.token, 'desktop', String(ownerUser.id))
+    await resolveEditorialPreviewToken(
+      payload,
+      expiredTokenData.token,
+      'desktop',
+      String(ownerUser.id),
+    )
   } catch (err: any) {
     expiredCaught = true
     assert.match(err.message, /expired/i)
@@ -559,7 +621,12 @@ async function run() {
   let foreignCaught = false
   try {
     // Attempting resolution with Staff Beta (foreign site operator)
-    await resolveEditorialPreviewToken(payload, previewTokenData.token, 'desktop', String(staffBetaUser.id))
+    await resolveEditorialPreviewToken(
+      payload,
+      previewTokenData.token,
+      'desktop',
+      String(staffBetaUser.id),
+    )
   } catch (err: any) {
     foreignCaught = true
     assert.match(err.message, /creator session/i)
@@ -569,7 +636,12 @@ async function run() {
   // 3. Tampered Token
   let tamperedCaught = false
   try {
-    await resolveEditorialPreviewToken(payload, 'deadbeefcafebabe0000000000000000', 'desktop', String(ownerUser.id))
+    await resolveEditorialPreviewToken(
+      payload,
+      'deadbeefcafebabe0000000000000000',
+      'desktop',
+      String(ownerUser.id),
+    )
   } catch (err: any) {
     tamperedCaught = true
     assert.match(err.message, /not found/i)
@@ -602,7 +674,10 @@ async function run() {
   } catch {
     foreignEditBlocked = true
   }
-  assert.ok(foreignEditBlocked, 'Foreign operator edit attempt must be denied by tenantUpdateAccess')
+  assert.ok(
+    foreignEditBlocked,
+    'Foreign operator edit attempt must be denied by tenantUpdateAccess',
+  )
 
   // 2. Anonymous Edit Attempt
   let anonEditBlocked = false
@@ -641,7 +716,11 @@ async function run() {
 
   // DB Unchanged Assertion
   const dbAfterAttacks = await pool.query('SELECT id, site_id, title FROM content ORDER BY id')
-  assert.deepEqual(dbBeforeAttacks.rows, dbAfterAttacks.rows, 'PostgreSQL content rows must remain 100% unaltered after denied edits')
+  assert.deepEqual(
+    dbBeforeAttacks.rows,
+    dbAfterAttacks.rows,
+    'PostgreSQL content rows must remain 100% unaltered after denied edits',
+  )
   console.log(`   ✓ Unauthorized and foreign edits denied; PostgreSQL content verified unchanged.`)
 
   // =========================================================================
@@ -682,7 +761,11 @@ async function run() {
     } as any,
   })
   assert.equal(staffLockStatus.isLocked, true, 'Document must be LOCKED for concurrent viewer')
-  assert.equal((staffLockStatus.currentEditor as any)?.id, ownerUser.id, 'Current editor must be identified as Owner')
+  assert.equal(
+    (staffLockStatus.currentEditor as any)?.id,
+    ownerUser.id,
+    'Current editor must be identified as Owner',
+  )
 
   // 4. Staff Alpha attempts concurrent update with checkDocumentLockStatus({ overrideLock: false })
   let lockCollisionCaught = false
@@ -700,11 +783,22 @@ async function run() {
     lockCollisionCaught = true
     assert.match(err.message, /locked/i)
   }
-  assert.ok(lockCollisionCaught, 'Concurrent update attempt must be blocked by checkDocumentLockStatus')
+  assert.ok(
+    lockCollisionCaught,
+    'Concurrent update attempt must be blocked by checkDocumentLockStatus',
+  )
 
   // DB Unchanged during locked conflict
-  const articleDuringLock = await payload.findByID({ collection: 'content', id: article1.id, depth: 0 })
-  assert.equal(articleDuringLock.title, 'Alpha Investigative Field Report', 'Title must not be altered while locked')
+  const articleDuringLock = await payload.findByID({
+    collection: 'content',
+    id: article1.id,
+    depth: 0,
+  })
+  assert.equal(
+    articleDuringLock.title,
+    'Alpha Investigative Field Report',
+    'Title must not be altered while locked',
+  )
 
   // 5. Owner releases lock
   await payload.delete({
@@ -741,11 +835,21 @@ async function run() {
     collection: 'payload-locked-documents' as any,
     where: { id: { equals: staffLock.id } },
   })
-  assert.equal(remainingLocks.totalDocs, 0, 'Document lock must be automatically cleared upon update completion')
+  assert.equal(
+    remainingLocks.totalDocs,
+    0,
+    'Document lock must be automatically cleared upon update completion',
+  )
 
-  const articleAfterStaffEdit = await payload.findByID({ collection: 'content', id: article1.id, depth: 0 })
+  const articleAfterStaffEdit = await payload.findByID({
+    collection: 'content',
+    id: article1.id,
+    depth: 0,
+  })
   assert.equal(articleAfterStaffEdit.title, 'Alpha Field Report - Staff Approved Note')
-  console.log(`   ✓ Simultaneous editor conflict prevented; lock release enables legitimate staff update.`)
+  console.log(
+    `   ✓ Simultaneous editor conflict prevented; lock release enables legitimate staff update.`,
+  )
 
   // =========================================================================
   // Phase 10: State Snapshot Export
@@ -757,13 +861,30 @@ async function run() {
       { id: authorJane.id, displayName: authorJane.displayName },
       { id: authorMark.id, displayName: authorMark.displayName },
     ],
-    article1: { id: article1.id, title: articleAfterStaffEdit.title, status: articleAfterStaffEdit.status },
+    article1: {
+      id: article1.id,
+      title: articleAfterStaffEdit.title,
+      status: articleAfterStaffEdit.status,
+    },
     article2: { id: article2.id, title: article2.title, status: article2.status },
     page1: { id: page1.id, title: page1.title, status: page1.status },
-    family1: { id: family1.id, currentRevisionSequence: (await payload.findByID({ collection: 'article-family-content', id: family1.id, depth: 0 })).currentRevisionSequence },
-    totalRevisionsArticle1: (await payload.find({ collection: 'revision-records', where: { article: { equals: family1.id } } })).totalDocs,
+    family1: {
+      id: family1.id,
+      currentRevisionSequence: (
+        await payload.findByID({ collection: 'article-family-content', id: family1.id, depth: 0 })
+      ).currentRevisionSequence,
+    },
+    totalRevisionsArticle1: (
+      await payload.find({
+        collection: 'revision-records',
+        where: { article: { equals: family1.id } },
+      })
+    ).totalDocs,
   }
-  await writeFile('scratch/rc103b-20261018/state-summary.json', JSON.stringify(stateSummary, null, 2))
+  await writeFile(
+    'scratch/rc103b-20261018/state-summary.json',
+    JSON.stringify(stateSummary, null, 2),
+  )
   console.log('\n✓ ALL 10 RC1-03B ACCEPTANCE PHASES COMPLETED WITH 100% SUCCESS.')
 
   await pool.end()

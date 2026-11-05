@@ -10,14 +10,10 @@ export default defineConfig({
     browserName: 'chromium',
     ignoreHTTPSErrors: true,
     launchOptions: {
-      args: [
-        '--host-resolver-rules=MAP rc1-01b.test 127.0.0.1',
-        '--ignore-certificate-errors',
-      ],
+      args: ['--host-resolver-rules=MAP rc1-01b.test 127.0.0.1', '--ignore-certificate-errors'],
     },
     trace: 'on',
     screenshot: 'on',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], ignoreHTTPSErrors: true } }],
 })
-

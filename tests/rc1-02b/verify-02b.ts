@@ -27,7 +27,10 @@ import {
   revokePasskeySession,
 } from '@/modules/operations/passkey-auth'
 import { rotateOwnerRecoveryCodes } from '@/modules/operations/owner-recovery'
-import { POST as staffInvitePost, DELETE as staffInviteDelete } from '@/app/(frontend)/api/admin/staff/invite/route'
+import {
+  POST as staffInvitePost,
+  DELETE as staffInviteDelete,
+} from '@/app/(frontend)/api/admin/staff/invite/route'
 import { GET as enrollmentGet } from '@/app/(frontend)/api/auth/enrollment/route'
 import { POST as passkeyEnrollPost } from '@/app/(frontend)/api/auth/passkey/enroll/route'
 import { POST as passkeyOptionsPost } from '@/app/(frontend)/api/auth/passkey/options/route'
@@ -48,7 +51,9 @@ async function run() {
     databaseUrl.port !== '5433' ||
     !databaseUrl.pathname.includes('rc102b')
   ) {
-    throw new Error('Refusing destructive verification without the dedicated rc102b disposable database on loopback port 5433.')
+    throw new Error(
+      'Refusing destructive verification without the dedicated rc102b disposable database on loopback port 5433.',
+    )
   }
 
   // Start local HTTP origin for WebAuthn RPID/Origin matching
@@ -64,7 +69,7 @@ async function run() {
   console.log('2. Truncating test tables in isolated database...')
   await db.pool.query(
     `TRUNCATE admin_sessions, admin_auth_audit_events, recovery_codes, passkeys, identity_tokens,
-              member_site_roles, content_releases, publications, sites, users, members CASCADE`
+              member_site_roles, content_releases, publications, sites, users, members CASCADE`,
   )
   console.log('   Isolated database clean.')
 
@@ -134,14 +139,14 @@ async function run() {
       false,
       'Owner Passkey',
       '[]',
-    ]
+    ],
   )
 
   async function createTestAdminSession(user: { id: string; email: string }) {
     return createPasskeySession(user, runtimeConfig.payloadSecret, async (id, expiresAt) => {
       await db.pool.query(
         `INSERT INTO admin_sessions (id, user_id, expires_at) VALUES ($1, $2, $3)`,
-        [id, user.id, expiresAt]
+        [id, user.id, expiresAt],
       )
     })
   }
@@ -153,12 +158,18 @@ async function run() {
 
   const ownerHeaders = new Headers({
     'content-type': 'application/json',
-    cookie: passkeySessionCookie(ownerSession.token, ownerSession.expirationSeconds, runtimeConfig.secureCookies),
+    cookie: passkeySessionCookie(
+      ownerSession.token,
+      ownerSession.expirationSeconds,
+      runtimeConfig.secureCookies,
+    ),
   })
 
   // Verify owner grant context
   const ownerGrant = await resolveOperatorGrantContext(payload, ownerUser as any)
-  console.log(`   Owner grant: authorized=${ownerGrant.authorized}, isGlobalOwner=${ownerGrant.isGlobalOwner}`)
+  console.log(
+    `   Owner grant: authorized=${ownerGrant.authorized}, isGlobalOwner=${ownerGrant.isGlobalOwner}`,
+  )
   if (!ownerGrant.authorized || !ownerGrant.isGlobalOwner) {
     throw new Error('Owner authority invariant violated: owner must have global access!')
   }
@@ -170,17 +181,16 @@ async function run() {
   const key = fs.readFileSync('scratch/rc02-tls/key.pem')
   const cert = fs.readFileSync('scratch/rc02-tls/cert.pem')
 
-  const localHttps = https.createServer({ key, cert }, (req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' })
-    res.end('<!DOCTYPE html><html><body>Renegade CMS WebAuthn Runner</body></html>')
-  }).listen(originPort, '127.0.0.1')
+  const localHttps = https
+    .createServer({ key, cert }, (req, res) => {
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      res.end('<!DOCTYPE html><html><body>Renegade CMS WebAuthn Runner</body></html>')
+    })
+    .listen(originPort, '127.0.0.1')
 
   const browser = await chromium.launch({
     headless: true,
-    args: [
-      `--host-resolver-rules=MAP ${originHost} 127.0.0.1`,
-      '--ignore-certificate-errors',
-    ],
+    args: [`--host-resolver-rules=MAP ${originHost} 127.0.0.1`, '--ignore-certificate-errors'],
   })
   const browserContext = await browser.newContext({ ignoreHTTPSErrors: true })
   const browserPage = await browserContext.newPage()
@@ -221,10 +231,15 @@ async function run() {
   }
 
   async function loginWithPasskey(userId: string, email: string) {
-    const optionsResponse = await passkeyOptionsPost(new Request('http://localhost/api/auth/passkey/options', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email }),
-    }))
-    if (optionsResponse.status !== 200) throw new Error(`Passkey login options failed: ${optionsResponse.status}`)
+    const optionsResponse = await passkeyOptionsPost(
+      new Request('http://localhost/api/auth/passkey/options', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }),
+    )
+    if (optionsResponse.status !== 200)
+      throw new Error(`Passkey login options failed: ${optionsResponse.status}`)
     const { options } = await optionsResponse.json()
     const credential = await browserPage.evaluate(`(async (opts) => {
       const decode = (value) => Uint8Array.from(atob(value.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0))
@@ -235,13 +250,21 @@ async function run() {
       return { id: assertion.id, rawId: encode(assertion.rawId), type: assertion.type,
         response: { clientDataJSON: encode(assertion.response.clientDataJSON), authenticatorData: encode(assertion.response.authenticatorData), signature: encode(assertion.response.signature), userHandle: assertion.response.userHandle ? encode(assertion.response.userHandle) : null } }
     })(${JSON.stringify(options)})`)
-    const response = await passkeyCompletePost(new Request('http://localhost/api/auth/passkey/complete', {
-      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(credential),
-    }))
-    if (response.status !== 200) throw new Error(`Passkey login failed: ${response.status} ${await response.text()}`)
+    const response = await passkeyCompletePost(
+      new Request('http://localhost/api/auth/passkey/complete', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(credential),
+      }),
+    )
+    if (response.status !== 200)
+      throw new Error(`Passkey login failed: ${response.status} ${await response.text()}`)
     const cookie = response.headers.get('set-cookie')
     if (!cookie) throw new Error('Passkey login did not issue a session cookie')
-    const sessions = await db.pool.query('SELECT id FROM admin_sessions WHERE user_id = $1 AND revoked_at IS NULL ORDER BY created_at DESC LIMIT 1', [userId])
+    const sessions = await db.pool.query(
+      'SELECT id FROM admin_sessions WHERE user_id = $1 AND revoked_at IS NULL ORDER BY created_at DESC LIMIT 1',
+      [userId],
+    )
     if (!sessions.rows[0]) throw new Error('Passkey login session was not persisted')
     return { cookie: cookie.split(';')[0], sessionId: sessions.rows[0].id }
   }
@@ -274,8 +297,14 @@ async function run() {
   console.log(`      Admin role: ${adminInviteBody.user.role}, siteId: ${adminInviteBody.siteId}`)
 
   // Pending invitations must not create operator grants.
-  const adminUserDoc = await payload.findByID({ collection: 'users', id: adminInviteBody.user.id, depth: 0, overrideAccess: true })
-  const adminMemberId = typeof adminUserDoc.member === 'object' ? (adminUserDoc.member as any).id : adminUserDoc.member
+  const adminUserDoc = await payload.findByID({
+    collection: 'users',
+    id: adminInviteBody.user.id,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const adminMemberId =
+    typeof adminUserDoc.member === 'object' ? (adminUserDoc.member as any).id : adminUserDoc.member
   if (!adminMemberId) throw new Error('Administrator user missing canonical member linkage!')
   const adminSiteRoles = await payload.find({
     collection: 'member-site-roles',
@@ -283,7 +312,8 @@ async function run() {
     depth: 0,
     overrideAccess: true,
   })
-  if (adminSiteRoles.docs.length !== 0) throw new Error('Pending administrator invitation granted site access!')
+  if (adminSiteRoles.docs.length !== 0)
+    throw new Error('Pending administrator invitation granted site access!')
   if ((await resolveOperatorGrantContext(payload, adminUserDoc as any)).authorized) {
     throw new Error('Pending administrator invitation granted operator access!')
   }
@@ -310,8 +340,14 @@ async function run() {
   console.log(`      Staff token issued: ${staffInviteBody.enrollmentToken.substring(0, 16)}...`)
 
   // Verify Staff canonical Member and Member-Site-Roles
-  const staffUserDoc = await payload.findByID({ collection: 'users', id: staffInviteBody.user.id, depth: 0, overrideAccess: true })
-  const staffMemberId = typeof staffUserDoc.member === 'object' ? (staffUserDoc.member as any).id : staffUserDoc.member
+  const staffUserDoc = await payload.findByID({
+    collection: 'users',
+    id: staffInviteBody.user.id,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const staffMemberId =
+    typeof staffUserDoc.member === 'object' ? (staffUserDoc.member as any).id : staffUserDoc.member
   if (!staffMemberId) throw new Error('Staff user missing canonical member linkage!')
   const staffSiteRoles = await payload.find({
     collection: 'member-site-roles',
@@ -319,7 +355,8 @@ async function run() {
     depth: 0,
     overrideAccess: true,
   })
-  if (staffSiteRoles.docs.length !== 0) throw new Error('Pending staff invitation granted site access!')
+  if (staffSiteRoles.docs.length !== 0)
+    throw new Error('Pending staff invitation granted site access!')
   if ((await resolveOperatorGrantContext(payload, staffUserDoc as any)).authorized) {
     throw new Error('Pending staff invitation granted operator access!')
   }
@@ -361,16 +398,26 @@ async function run() {
     throw new Error(`Admin complete passkey enrollment failed: ${JSON.stringify(err)}`)
   }
   const adminCompleteData = await adminCompleteRes.json()
-  console.log(`      Admin enrolled: ${adminCompleteData.status}, recovery codes count=${adminCompleteData.recoveryCodes.length}`)
-  if (adminCompleteData.recoveryCodes.length !== 10) throw new Error('Expected 10 recovery codes for administrator!')
+  console.log(
+    `      Admin enrolled: ${adminCompleteData.status}, recovery codes count=${adminCompleteData.recoveryCodes.length}`,
+  )
+  if (adminCompleteData.recoveryCodes.length !== 10)
+    throw new Error('Expected 10 recovery codes for administrator!')
 
   // Verify single-use token consumption in database
   const tokenQuery = await db.pool.query(
     `SELECT consumed_at FROM identity_tokens WHERE token_hash = $1`,
-    [createHmac('sha256', runtimeConfig.payloadSecret).update(adminInviteBody.enrollmentToken).digest('hex')]
+    [
+      createHmac('sha256', runtimeConfig.payloadSecret)
+        .update(adminInviteBody.enrollmentToken)
+        .digest('hex'),
+    ],
   )
-  if (!tokenQuery.rows[0]?.consumed_at) throw new Error('Admin enrollment token was NOT marked consumed in database!')
-  console.log(`      Admin token consumed_at verified: ${tokenQuery.rows[0].consumed_at.toISOString()}`)
+  if (!tokenQuery.rows[0]?.consumed_at)
+    throw new Error('Admin enrollment token was NOT marked consumed in database!')
+  console.log(
+    `      Admin token consumed_at verified: ${tokenQuery.rows[0].consumed_at.toISOString()}`,
+  )
 
   // Staff Passkey Enrollment
   console.log('   D. Staff requests enrollment options and completes passkey registration...')
@@ -395,7 +442,9 @@ async function run() {
   const staffCompleteRes = await passkeyEnrollPost(staffCompleteReq)
   if (staffCompleteRes.status !== 200) throw new Error('Staff complete passkey enrollment failed!')
   const staffCompleteData = await staffCompleteRes.json()
-  console.log(`      Staff enrolled: ${staffCompleteData.status}, recovery codes count=${staffCompleteData.recoveryCodes.length}`)
+  console.log(
+    `      Staff enrolled: ${staffCompleteData.status}, recovery codes count=${staffCompleteData.recoveryCodes.length}`,
+  )
 
   // ==========================================
   // JOURNEY 3: Administrator Login, Permissions, Denials & Logout
@@ -410,8 +459,14 @@ async function run() {
 
   // Permitted actions:
   const adminGrant = await resolveOperatorGrantContext(payload, adminUserDoc as any)
-  console.log(`   Admin grant context: authorized=${adminGrant.authorized}, isGlobalOwner=${adminGrant.isGlobalOwner}, sites=${adminGrant.authorizedSiteIds}`)
-  if (!adminGrant.authorized || adminGrant.isGlobalOwner || !adminGrant.authorizedSiteIds.includes(siteA.id)) {
+  console.log(
+    `   Admin grant context: authorized=${adminGrant.authorized}, isGlobalOwner=${adminGrant.isGlobalOwner}, sites=${adminGrant.authorizedSiteIds}`,
+  )
+  if (
+    !adminGrant.authorized ||
+    adminGrant.isGlobalOwner ||
+    !adminGrant.authorizedSiteIds.includes(siteA.id)
+  ) {
     throw new Error('Administrator grant context invalid: should be scoped strictly to Site A!')
   }
   if (adminGrant.authorizedSiteIds.includes(siteB.id)) {
@@ -421,7 +476,8 @@ async function run() {
   const adminCanAccessSiteB = await checkOperatorSiteAccess(payload, adminUserDoc as any, siteB.id)
   console.log(`   Admin Site A access: ${adminCanAccessSiteA} (Permitted)`)
   console.log(`   Admin Site B access: ${adminCanAccessSiteB} (Denied)`)
-  if (!adminCanAccessSiteA || adminCanAccessSiteB) throw new Error('Site access boundary failure for administrator!')
+  if (!adminCanAccessSiteA || adminCanAccessSiteB)
+    throw new Error('Site access boundary failure for administrator!')
 
   // Denied action: Administrator cannot invite other staff (Owner only)
   console.log('   Exercising administrator privilege denial: inviting staff...')
@@ -432,7 +488,8 @@ async function run() {
   })
   const unauthInviteRes = await staffInvitePost(unauthInviteReq)
   console.log(`   Admin invite staff denial status: ${unauthInviteRes.status} (Expected 403)`)
-  if (unauthInviteRes.status !== 403) throw new Error(`Administrator was not denied staff invite (got ${unauthInviteRes.status})!`)
+  if (unauthInviteRes.status !== 403)
+    throw new Error(`Administrator was not denied staff invite (got ${unauthInviteRes.status})!`)
 
   // Admin Logout
   console.log('   Logging out administrator...')
@@ -447,10 +504,13 @@ async function run() {
   // Verify session marked revoked in admin_sessions
   const adminSessQuery = await db.pool.query(
     `SELECT revoked_at FROM admin_sessions WHERE id = $1`,
-    [adminSession.sessionId]
+    [adminSession.sessionId],
   )
-  if (!adminSessQuery.rows[0]?.revoked_at) throw new Error('Administrator session was not revoked in database!')
-  console.log(`   Admin session revoked in database: ${adminSessQuery.rows[0].revoked_at.toISOString()}`)
+  if (!adminSessQuery.rows[0]?.revoked_at)
+    throw new Error('Administrator session was not revoked in database!')
+  console.log(
+    `   Admin session revoked in database: ${adminSessQuery.rows[0].revoked_at.toISOString()}`,
+  )
 
   // ==========================================
   // JOURNEY 4: Staff Login, Scoped Actions, Denials & Logout
@@ -465,15 +525,22 @@ async function run() {
 
   // Permitted actions for staff
   const staffGrant = await resolveOperatorGrantContext(payload, staffUserDoc as any)
-  console.log(`   Staff grant context: authorized=${staffGrant.authorized}, isGlobalOwner=${staffGrant.isGlobalOwner}, sites=${staffGrant.authorizedSiteIds}`)
-  if (!staffGrant.authorized || staffGrant.isGlobalOwner || !staffGrant.authorizedSiteIds.includes(siteA.id)) {
+  console.log(
+    `   Staff grant context: authorized=${staffGrant.authorized}, isGlobalOwner=${staffGrant.isGlobalOwner}, sites=${staffGrant.authorizedSiteIds}`,
+  )
+  if (
+    !staffGrant.authorized ||
+    staffGrant.isGlobalOwner ||
+    !staffGrant.authorizedSiteIds.includes(siteA.id)
+  ) {
     throw new Error('Staff grant context invalid: should be scoped strictly to Site A!')
   }
   const staffCanAccessSiteA = await checkOperatorSiteAccess(payload, staffUserDoc as any, siteA.id)
   const staffCanAccessSiteB = await checkOperatorSiteAccess(payload, staffUserDoc as any, siteB.id)
   console.log(`   Staff Site A access: ${staffCanAccessSiteA} (Permitted)`)
   console.log(`   Staff Site B access: ${staffCanAccessSiteB} (Denied)`)
-  if (!staffCanAccessSiteA || staffCanAccessSiteB) throw new Error('Site access boundary failure for staff!')
+  if (!staffCanAccessSiteA || staffCanAccessSiteB)
+    throw new Error('Site access boundary failure for staff!')
   const staffRelease = await payload.create({
     collection: 'content-releases',
     data: { title: `Staff Site A Release ${runId}`, site: siteA.id, status: 'draft' },
@@ -483,27 +550,35 @@ async function run() {
   if (!staffRelease.id) throw new Error('Staff could not persist a permitted Site A release')
 
   // Denied action for staff: cannot invite staff
-  const staffInviteAttempt = await staffInvitePost(new Request('http://localhost/api/admin/staff/invite', {
-    method: 'POST',
-    headers: staffHeaders,
-    body: JSON.stringify({ email: 'staff-attack@rc1-02b.test', role: 'staff', siteId: siteA.id }),
-  }))
+  const staffInviteAttempt = await staffInvitePost(
+    new Request('http://localhost/api/admin/staff/invite', {
+      method: 'POST',
+      headers: staffHeaders,
+      body: JSON.stringify({ email: 'staff-attack@rc1-02b.test', role: 'staff', siteId: siteA.id }),
+    }),
+  )
   console.log(`   Staff invite denial status: ${staffInviteAttempt.status} (Expected 403)`)
-  if (staffInviteAttempt.status !== 403) throw new Error('Staff invite attempt was not denied with 403!')
+  if (staffInviteAttempt.status !== 403)
+    throw new Error('Staff invite attempt was not denied with 403!')
 
   // Staff Logout
   console.log('   Logging out staff...')
-  const staffLogoutRes = await logoutPost(new Request('http://localhost/api/auth/logout', {
-    method: 'POST',
-    headers: staffHeaders,
-  }))
+  const staffLogoutRes = await logoutPost(
+    new Request('http://localhost/api/auth/logout', {
+      method: 'POST',
+      headers: staffHeaders,
+    }),
+  )
   if (staffLogoutRes.status !== 200) throw new Error('Staff logout failed!')
   const staffSessQuery = await db.pool.query(
     `SELECT revoked_at FROM admin_sessions WHERE id = $1`,
-    [staffSession.sessionId]
+    [staffSession.sessionId],
   )
-  if (!staffSessQuery.rows[0]?.revoked_at) throw new Error('Staff session was not revoked in database!')
-  console.log(`   Staff session revoked in database: ${staffSessQuery.rows[0].revoked_at.toISOString()}`)
+  if (!staffSessQuery.rows[0]?.revoked_at)
+    throw new Error('Staff session was not revoked in database!')
+  console.log(
+    `   Staff session revoked in database: ${staffSessQuery.rows[0].revoked_at.toISOString()}`,
+  )
 
   // ==========================================
   // JOURNEY 5: Dynamic Role Changes Immediately Take Effect
@@ -518,7 +593,8 @@ async function run() {
     overrideAccess: true,
   })
   console.log(`    Current staff member-site-role: ${initialRole.docs[0]?.role}`)
-  if (initialRole.docs[0]?.role !== 'contributor') throw new Error('Expected initial contributor role!')
+  if (initialRole.docs[0]?.role !== 'contributor')
+    throw new Error('Expected initial contributor role!')
 
   // Promote staff to community-manager
   console.log('    Promoting staff to community-manager on Site A...')
@@ -532,7 +608,9 @@ async function run() {
 
   // Dynamic grant re-evaluation without restart
   const promotedGrant = await resolveOperatorGrantContext(payload, staffUserDoc as any)
-  console.log(`    Promoted grant authorized: ${promotedGrant.authorized}, sites: ${promotedGrant.authorizedSiteIds}`)
+  console.log(
+    `    Promoted grant authorized: ${promotedGrant.authorized}, sites: ${promotedGrant.authorizedSiteIds}`,
+  )
   if (!promotedGrant.authorized || !promotedGrant.authorizedSiteIds.includes(siteA.id)) {
     throw new Error('Dynamic grant promotion did not take effect!')
   }
@@ -548,9 +626,13 @@ async function run() {
 
   // Dynamic grant re-evaluation immediately reflects revocation
   const revokedGrant = await resolveOperatorGrantContext(payload, staffUserDoc as any)
-  console.log(`    Revoked grant authorized: ${revokedGrant.authorized}, sites: ${revokedGrant.authorizedSiteIds}`)
+  console.log(
+    `    Revoked grant authorized: ${revokedGrant.authorized}, sites: ${revokedGrant.authorizedSiteIds}`,
+  )
   if (revokedGrant.authorized || revokedGrant.authorizedSiteIds.length !== 0) {
-    throw new Error('Dynamic grant revocation did not take immediate effect: user still has access!')
+    throw new Error(
+      'Dynamic grant revocation did not take immediate effect: user still has access!',
+    )
   }
   let revokedWriteDenied = false
   try {
@@ -596,14 +678,18 @@ async function run() {
   const expiredReq = new Request(`http://localhost/api/auth/enrollment?token=${expiredToken}`)
   const expiredRes = await enrollmentGet(expiredReq)
   console.log(`      Expired token rejection status: ${expiredRes.status} (Expected 410)`)
-  if (expiredRes.status !== 410) throw new Error(`Expired token was not rejected with 410 (got ${expiredRes.status})!`)
+  if (expiredRes.status !== 410)
+    throw new Error(`Expired token was not rejected with 410 (got ${expiredRes.status})!`)
 
   // B. Reused token rejection
   console.log('   B. Testing reused invitation token rejection...')
-  const reusedReq = new Request(`http://localhost/api/auth/enrollment?token=${adminInviteBody.enrollmentToken}`)
+  const reusedReq = new Request(
+    `http://localhost/api/auth/enrollment?token=${adminInviteBody.enrollmentToken}`,
+  )
   const reusedRes = await enrollmentGet(reusedReq)
   console.log(`      Reused token rejection status: ${reusedRes.status} (Expected 410)`)
-  if (reusedRes.status !== 410) throw new Error(`Reused token was not rejected with 410 (got ${reusedRes.status})!`)
+  if (reusedRes.status !== 410)
+    throw new Error(`Reused token was not rejected with 410 (got ${reusedRes.status})!`)
 
   // C. Foreign-site token rejection
   console.log('   C. Testing foreign-site invitation token rejection...')
@@ -613,12 +699,16 @@ async function run() {
     siteId: siteA.id,
     invitedByUserId: ownerUser.id,
   })
-  const wrongSiteReq = new Request(`http://localhost/api/auth/enrollment?token=${freshStaffToken.enrollmentToken}&siteId=${siteB.id}`)
+  const wrongSiteReq = new Request(
+    `http://localhost/api/auth/enrollment?token=${freshStaffToken.enrollmentToken}&siteId=${siteB.id}`,
+  )
   const wrongSiteRes = await enrollmentGet(wrongSiteReq)
   console.log(`      Foreign-site token rejection status: ${wrongSiteRes.status} (Expected 400)`)
-  if (wrongSiteRes.status !== 400) throw new Error(`Foreign-site token was not rejected with 400 (got ${wrongSiteRes.status})!`)
+  if (wrongSiteRes.status !== 400)
+    throw new Error(`Foreign-site token was not rejected with 400 (got ${wrongSiteRes.status})!`)
   const wrongSiteErr = await wrongSiteRes.json()
-  if (wrongSiteErr.code !== 'WRONG_SITE') throw new Error(`Expected WRONG_SITE code, got ${wrongSiteErr.code}`)
+  if (wrongSiteErr.code !== 'WRONG_SITE')
+    throw new Error(`Expected WRONG_SITE code, got ${wrongSiteErr.code}`)
 
   // D. Object-ID substitution rejection & unchanged records
   console.log('   D. Testing Object-ID substitution rejection & record immutability...')
@@ -643,19 +733,32 @@ async function run() {
   } as never)
 
   // Verify Admin (granted Site A only) cannot access or modify Release B by guessing/substituting its ID
-  const releaseASiteId = typeof (releaseA as any).site === 'object' && (releaseA as any).site ? (releaseA as any).site.id : String((releaseA as any).site)
-  const releaseBSiteId = typeof (releaseB as any).site === 'object' && (releaseB as any).site ? (releaseB as any).site.id : String((releaseB as any).site)
+  const releaseASiteId =
+    typeof (releaseA as any).site === 'object' && (releaseA as any).site
+      ? (releaseA as any).site.id
+      : String((releaseA as any).site)
+  const releaseBSiteId =
+    typeof (releaseB as any).site === 'object' && (releaseB as any).site
+      ? (releaseB as any).site.id
+      : String((releaseB as any).site)
   const adminCanAccessReleaseA = adminGrant.authorizedSiteIds.includes(releaseASiteId)
   const adminCanAccessReleaseB = adminGrant.authorizedSiteIds.includes(releaseBSiteId)
   console.log(`      Admin access to Release A (Site A): ${adminCanAccessReleaseA} (Allowed)`)
   console.log(`      Admin access to Release B (Site B): ${adminCanAccessReleaseB} (Blocked)`)
-  if (!adminCanAccessReleaseA || adminCanAccessReleaseB) throw new Error('Object-ID grant boundary check failed!')
+  if (!adminCanAccessReleaseA || adminCanAccessReleaseB)
+    throw new Error('Object-ID grant boundary check failed!')
 
-  const releaseBBefore = await payload.findByID({ collection: 'content-releases', id: releaseB.id, depth: 0, overrideAccess: true })
+  const releaseBBefore = await payload.findByID({
+    collection: 'content-releases',
+    id: releaseB.id,
+    depth: 0,
+    overrideAccess: true,
+  })
   const substitutionSession = await loginWithPasskey(adminUserDoc.id, adminEmail)
   const substitutedAction = await releaseActionPost(
     new Request(`http://localhost/api/admin/releases/${releaseB.id}`, {
-      method: 'POST', headers: { 'content-type': 'application/json', cookie: substitutionSession.cookie },
+      method: 'POST',
+      headers: { 'content-type': 'application/json', cookie: substitutionSession.cookie },
       body: JSON.stringify({ action: 'cancel', reason: 'cross-site-substitution' }),
     }),
     { params: Promise.resolve({ id: releaseB.id }) },
@@ -696,7 +799,9 @@ async function run() {
   if (revRes.status !== 200) throw new Error('Revoke staff invitation endpoint failed!')
 
   // Redemption of revoked invitation fails
-  const revAttemptReq = new Request(`http://localhost/api/auth/enrollment?token=${revInvite.enrollmentToken}`)
+  const revAttemptReq = new Request(
+    `http://localhost/api/auth/enrollment?token=${revInvite.enrollmentToken}`,
+  )
   const revAttemptRes = await enrollmentGet(revAttemptReq)
   console.log(`      Revoked token redemption status: ${revAttemptRes.status} (Expected 410)`)
   if (revAttemptRes.status !== 410) throw new Error('Revoked token was not rejected with 410!')
@@ -716,22 +821,23 @@ async function run() {
   // Verify prior recovery codes invalidated
   const codesCheck = await db.pool.query(
     `SELECT count(*) FROM recovery_codes WHERE user_id = $1 AND used_at IS NOT NULL`,
-    [ownerUser.id]
+    [ownerUser.id],
   )
   console.log(`      Previously invalidated recovery codes count: ${codesCheck.rows[0].count}`)
 
   // Verify existing owner sessions were revoked
   const revokedOwnerSess = await db.pool.query(
     `SELECT revoked_at FROM admin_sessions WHERE id = $1`,
-    [preRecoveryOwnerSession.sessionId]
+    [preRecoveryOwnerSession.sessionId],
   )
-  if (!revokedOwnerSess.rows[0]?.revoked_at) throw new Error('Owner session was not revoked during owner recovery!')
+  if (!revokedOwnerSess.rows[0]?.revoked_at)
+    throw new Error('Owner session was not revoked during owner recovery!')
   console.log(`      Owner session revoked: ${revokedOwnerSess.rows[0].revoked_at.toISOString()}`)
 
   // Verify audit event
   const auditQuery = await db.pool.query(
     `SELECT event FROM admin_auth_audit_events WHERE user_id = $1 ORDER BY created_at DESC LIMIT 1`,
-    [ownerUser.id]
+    [ownerUser.id],
   )
   console.log(`      Owner recovery audit event logged: ${auditQuery.rows[0]?.event}`)
   if (auditQuery.rows[0]?.event !== 'owner.local_recovery_codes.rotated') {

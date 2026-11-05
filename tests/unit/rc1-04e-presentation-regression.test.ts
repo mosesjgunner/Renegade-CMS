@@ -3,7 +3,10 @@ import { readFileSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
-import { publicationCommunityStarter, campaignCommerceStarter } from '../../src/modules/starters/definitions'
+import {
+  publicationCommunityStarter,
+  campaignCommerceStarter,
+} from '../../src/modules/starters/definitions'
 import { starterComponents } from '../../src/modules/presentation/themes/components'
 import { resolveTheme, themes } from '../../src/modules/presentation/registry'
 import { validateLayout } from '../../src/modules/public/page-builder'

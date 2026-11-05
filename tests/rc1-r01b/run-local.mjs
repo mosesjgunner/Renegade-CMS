@@ -54,7 +54,10 @@ if (!existsSync(secretFile)) {
 }
 const payloadSecret = readFileSync(secretFile, 'utf8').trim()
 
-const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).stdout.trim()
+const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], {
+  cwd: repo,
+  encoding: 'utf8',
+}).stdout.trim()
 
 const appEnv = {
   ...process.env,
@@ -109,7 +112,8 @@ const migrate = spawnSync('npm', ['run', 'db:migrate'], {
   stdio: ['ignore', migrateLog, migrateLog],
 })
 closeSync(migrateLog)
-if (migrate.status !== 0) fail(`db:migrate exited ${migrate.status}; see scratch/rc1r01b/migrate.log`)
+if (migrate.status !== 0)
+  fail(`db:migrate exited ${migrate.status}; see scratch/rc1r01b/migrate.log`)
 console.log('[r01b-local] migrations applied')
 
 // 3. Start the production web process (standalone server, image CMD equivalent).
@@ -122,7 +126,7 @@ function startWeb() {
     env: appEnv,
     stdio: ['ignore', fd, fd],
   })
-  web.on('exit', code => console.log(`[r01b-local] web process exited (${code})`))
+  web.on('exit', (code) => console.log(`[r01b-local] web process exited (${code})`))
 }
 startWeb()
 
@@ -170,7 +174,7 @@ const proxy = createHttpsServer(
           'x-forwarded-for': '127.0.0.1',
         },
       },
-      upstreamRes => {
+      (upstreamRes) => {
         res.writeHead(upstreamRes.statusCode ?? 502, upstreamRes.headers)
         upstreamRes.pipe(res)
       },
@@ -186,7 +190,7 @@ const proxy = createHttpsServer(
   },
 )
 proxy.on('upgrade', (_req, socket) => socket.destroy())
-await new Promise(resolve => proxy.listen(proxyPort, '127.0.0.1', resolve))
+await new Promise((resolve) => proxy.listen(proxyPort, '127.0.0.1', resolve))
 console.log(`[r01b-local] https proxy listening on 127.0.0.1:${proxyPort}`)
 
 // 6. Wait for web readiness.
@@ -197,7 +201,7 @@ async function waitReady(label) {
       console.log(`[r01b-local] web ready (${label})`)
       return
     }
-    await new Promise(r => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 1000))
   }
   fail(`web did not become ready (${label}); see scratch/rc1r01b/web.log`)
 }
@@ -210,7 +214,7 @@ await waitReady('initial')
 // blocking spawnSync here freezes the proxy for the whole request and the
 // warm-up deadlocks against itself.
 function warmSetupOnce() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const child = spawn('curl', [
       '-sk',
       '--noproxy',
@@ -226,7 +230,7 @@ function warmSetupOnce() {
       `https://rc1-01b.test:${proxyPort}/setup`,
     ])
     let out = ''
-    child.stdout.on('data', d => (out += d))
+    child.stdout.on('data', (d) => (out += d))
     child.on('close', () => resolve(out.trim()))
     child.on('error', () => resolve(''))
   })
@@ -237,7 +241,7 @@ for (let i = 0; i < 10; i++) {
     break
   }
   if (i === 9) fail('warm-up GET /setup via proxy never returned 200')
-  await new Promise(r => setTimeout(r, 1000))
+  await new Promise((r) => setTimeout(r, 1000))
 }
 
 // 7. Restart watcher: the journey writes the flag to restart the web process.
@@ -251,8 +255,8 @@ watchFile(restartFlag, { interval: 200 }, async () => {
   if (old) {
     old.kill('SIGTERM')
     await Promise.race([
-      new Promise(r => old.once('exit', r)),
-      new Promise(r => setTimeout(r, 10000)),
+      new Promise((r) => old.once('exit', r)),
+      new Promise((r) => setTimeout(r, 10000)),
     ])
     if (old.exitCode === null) old.kill('SIGKILL')
   }
@@ -267,7 +271,14 @@ watchFile(restartFlag, { interval: 200 }, async () => {
 // rejects the .test host (net::ERR_TUNNEL_CONNECTION_FAILED). The journey is
 // entirely local, so the browser child runs with no proxy configuration.
 const browserEnv = { ...appEnv }
-for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'all_proxy']) {
+for (const key of [
+  'http_proxy',
+  'https_proxy',
+  'HTTP_PROXY',
+  'HTTPS_PROXY',
+  'ALL_PROXY',
+  'all_proxy',
+]) {
   delete browserEnv[key]
 }
 browserEnv.NO_PROXY = `${browserEnv.NO_PROXY ?? ''},rc1-01b.test`
@@ -284,13 +295,13 @@ const testEnv = {
 // NOTE: async spawn is load-bearing — the proxy and the restart watcher live
 // in this process, so a blocking spawnSync would freeze them for the entire
 // journey and every browser request would stall.
-const runStatus = await new Promise(resolve => {
+const runStatus = await new Promise((resolve) => {
   const child = spawn('npx', ['playwright', 'test', '-c', 'playwright.r01b.local.config.ts'], {
     cwd: repo,
     env: testEnv,
     stdio: 'inherit',
   })
-  child.on('close', code => resolve(code ?? 1))
+  child.on('close', (code) => resolve(code ?? 1))
   child.on('error', () => resolve(1))
 })
 

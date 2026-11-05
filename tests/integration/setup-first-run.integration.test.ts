@@ -40,7 +40,7 @@ function onboardingInput(slug: string, name: string): OnboardingInput {
     name,
     slug,
     description: 'First-run installer regression coverage.',
-    primaryUrl: 'https://example.test',
+    primaryUrl: `https://${slug}.example.test`,
     locale: 'en-US',
     timezone: 'UTC',
     themeId: 'neutral-starter',

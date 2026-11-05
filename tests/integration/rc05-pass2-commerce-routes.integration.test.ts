@@ -1,3 +1,4 @@
+import { reviewCatalogFixture } from '../helpers/review-catalog-fixture'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { describe, expect, it } from 'vitest'
@@ -84,12 +85,12 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       collection: 'products',
       data: {
         site: siteId,
+        merchantConnection: merchant.id,
         name: `Renegade Pass2 Jacket ${suffix}`,
         slug: `pass2-jacket-${suffix}`,
         canonicalPath: `/store/pass2-jacket-${suffix}`,
         kind: 'physical',
-        state: 'published',
-        publishedAt: new Date().toISOString(),
+        state: 'draft',
         productCapabilities: ['shippable'],
         optionDimensions: [{ key: 'size', label: 'Size', values: ['M'] }],
         variants: [
@@ -120,6 +121,8 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       },
       overrideAccess: true,
     })
+
+    await reviewCatalogFixture(demo.cookieHeader, String(product.id))
 
     // 1. Customer adds to cart
     const addRes = await cartRoute(
@@ -173,12 +176,12 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
             postalCode: '78701',
             country: 'US',
           },
-          selectedShippingRateId: 'standard',
+          selectedShippingRateId: 'rate_standard_flat',
           consents: { termsAccepted: true, privacyAccepted: true },
         }),
       }),
     )
-    expect(proposalRes.status).toBe(200)
+    expect(proposalRes.status, await proposalRes.clone().text()).toBe(200)
     const proposalData = await proposalRes.json()
     expect(proposalData.proposal).toBeDefined()
     const proposal = proposalData.proposal
@@ -197,7 +200,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
         }),
       }),
     )
-    expect([200, 201]).toContain(initRes.status)
+    expect([200, 201], await initRes.clone().text()).toContain(initRes.status)
     const checkoutData = await initRes.json()
     expect(checkoutData.actionUrl).toMatch(/^\/checkout\/test\/det_cs_/)
     expect(checkoutData.sessionId).toBeDefined()
@@ -298,8 +301,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
         slug: `tamper-target-${suffix}`,
         canonicalPath: `/store/tamper-target-${suffix}`,
         kind: 'physical',
-        state: 'published',
-        publishedAt: new Date().toISOString(),
+        state: 'draft',
         productCapabilities: ['shippable'],
         variants: [
           {
@@ -326,6 +328,8 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       overrideAccess: true,
     })
 
+    await reviewCatalogFixture(demo.cookieHeader, String(product.id))
+
     // Tamper Attempt 1: Negative quantity
     const badQtyRes = await cartRoute(
       new Request('http://localhost/api/commerce/cart', {
@@ -339,7 +343,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       }),
     )
     expect(badQtyRes.status).toBe(400)
-    expect((await badQtyRes.json()).error).toMatch(/positive integer/i)
+    expect((await badQtyRes.json()).error).toBe('Invalid cart quantity.')
 
     // Tamper Attempt 2: Non-integer quantity
     const floatQtyRes = await cartRoute(
@@ -368,8 +372,20 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
         }),
       }),
     )
-    expect(addRes.status).toBe(200)
-    const cartCookie = addRes.headers.get('set-cookie')!.split(';')[0]
+    expect(addRes.status).toBe(400)
+    const validAdd = await cartRoute(
+      new Request('http://localhost/api/commerce/cart', {
+        method: 'POST',
+        headers: { host: 'localhost', 'content-type': 'application/json' },
+        body: JSON.stringify({
+          productId: String(product.id),
+          variantSku: `TMP-${suffix}`,
+          quantity: 1,
+        }),
+      }),
+    )
+    expect(validAdd.status).toBe(200)
+    const cartCookie = validAdd.headers.get('set-cookie')!.split(';')[0]
 
     const getRes = await getCartRoute(
       new Request('http://localhost/api/commerce/cart', {
@@ -400,7 +416,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
         }),
       }),
     )
-    expect(proposalRes.status).toBe(200)
+    expect(proposalRes.status, await proposalRes.clone().text()).toBe(200)
     const proposal = (await proposalRes.json()).proposal
 
     // Tamper proposal record in database to set grandTotalMinor to '100'

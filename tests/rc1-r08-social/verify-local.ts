@@ -116,7 +116,10 @@ const api = async (
           origin: opts.origin ?? base,
           ...(cookies ? { cookie: cookies } : {}),
           ...(payloadText
-            ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payloadText) }
+            ? {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(payloadText),
+              }
             : {}),
         },
         timeout: 180000,
@@ -226,7 +229,10 @@ async function startSink() {
           badAuthCalls++
           response.statusCode = 401
           return response.end(
-            JSON.stringify({ error: 'AuthenticationFailed', message: 'Invalid identifier or password' }),
+            JSON.stringify({
+              error: 'AuthenticationFailed',
+              message: 'Invalid identifier or password',
+            }),
           )
         }
         const n = failureCounts.get(`session:${data.identifier}`) ?? 0
@@ -234,7 +240,9 @@ async function startSink() {
         if (data.identifier === 'rate.local' && n === 0) {
           response.statusCode = 429
           response.setHeader('retry-after', '15')
-          return response.end(JSON.stringify({ error: 'RateLimitExceeded', message: 'Local rate limit' }))
+          return response.end(
+            JSON.stringify({ error: 'RateLimitExceeded', message: 'Local rate limit' }),
+          )
         }
         sessionCalls++
         return response.end(
@@ -252,14 +260,23 @@ async function startSink() {
         return response.end(
           JSON.stringify(
             record
-              ? { uri: record.remoteId, cid: record.id, value: { text: record.text, createdAt: record.receivedAt } }
+              ? {
+                  uri: record.remoteId,
+                  cid: record.id,
+                  value: { text: record.text, createdAt: record.receivedAt },
+                }
               : { error: 'RecordNotFound' },
           ),
         )
       }
       if (url.pathname.endsWith('com.atproto.repo.createRecord')) {
         const key = `bsky:${data.rkey}`
-        requests.push({ network: 'bluesky', key, text: data.record.text, receivedAt: new Date().toISOString() })
+        requests.push({
+          network: 'bluesky',
+          key,
+          text: data.record.text,
+          receivedAt: new Date().toISOString(),
+        })
         if (records.has(key)) {
           response.statusCode = 400
           return response.end(JSON.stringify({ error: 'RecordAlreadyExists' }))
@@ -285,7 +302,12 @@ async function startSink() {
         const token = String(request.headers.authorization ?? '')
         const n = failureCounts.get(token) ?? 0
         failureCounts.set(token, n + 1)
-        requests.push({ network: 'mastodon', key, text: data.status, receivedAt: new Date().toISOString() })
+        requests.push({
+          network: 'mastodon',
+          key,
+          text: data.status,
+          receivedAt: new Date().toISOString(),
+        })
         if (token.includes('always-fail') || (token.includes('partial') && n === 0)) {
           response.statusCode = 500
           return response.end(JSON.stringify({ error: 'Local deliberately failed delivery' }))
@@ -304,7 +326,9 @@ async function startSink() {
           JSON.stringify({ id: record.id, url: record.remoteUrl, created_at: record.receivedAt }),
         )
       }
-      const record = [...records.values()].find((value) => value.remoteUrl === sinkOrigin + url.pathname)
+      const record = [...records.values()].find(
+        (value) => value.remoteUrl === sinkOrigin + url.pathname,
+      )
       if (record) return response.end(JSON.stringify(record))
       response.statusCode = 404
       return response.end(JSON.stringify({ error: 'NotFound' }))
@@ -364,14 +388,22 @@ try {
       account.credentialHealth === 'healthy' && account.diagnostics?.mode === 'local-harness',
     )
     currentSection = '08C'
-    const dispatched = (await api('/api/admin/social/worker', 'POST', { action: 'dispatch' })).json()
-    check('restart dispatch replays no published or unknown work', dispatched.summary.processedCount === 0)
+    const dispatched = (
+      await api('/api/admin/social/worker', 'POST', { action: 'dispatch' })
+    ).json()
+    check(
+      'restart dispatch replays no published or unknown work',
+      dispatched.summary.processedCount === 0,
+    )
     check(
       'restart dispatch leaves exact attempt count unchanged',
       (await find('social-publish-attempts')).length === state.attemptCount,
     )
     const output = await api(state.articlePath)
-    check('restart public output retains the published article', output.text.includes('08S operator reporting'))
+    check(
+      'restart public output retains the published article',
+      output.text.includes('08S operator reporting'),
+    )
     passed = true
   } else {
     await startSink()
@@ -441,9 +473,9 @@ try {
       (await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey'),
     )
     await context.storageState({ path: `${scratch}/session.json` })
-    const site = (await api('/api/sites?limit=20')).json().docs.find(
-      (rowDoc: any) => rowDoc.slug === 'social-dispatch-08s',
-    )
+    const site = (await api('/api/sites?limit=20'))
+      .json()
+      .docs.find((rowDoc: any) => rowDoc.slug === 'social-dispatch-08s')
     assert.ok(site, 'installer site exists')
     const native = async (collection: string, data: any) =>
       (await api(`/api/${collection}`, 'POST', data, 201)).json().doc
@@ -594,7 +626,11 @@ try {
     const rejectConsent = page.getByRole('button', { name: 'Reject non-essential', exact: true })
     await rejectConsent.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
     if (await rejectConsent.isVisible()) await rejectConsent.click()
-    await page.getByText('Renegade Official Bluesky').first().waitFor({ timeout: 30000 }).catch(() => {})
+    await page
+      .getByText('Renegade Official Bluesky')
+      .first()
+      .waitFor({ timeout: 30000 })
+      .catch(() => {})
     check(
       'Social Command Center displays the connected account',
       await page.getByText('Renegade Official Bluesky').first().isVisible(),
@@ -687,7 +723,10 @@ try {
     await page.click('[data-testid="save-draft-btn"]')
     await page.waitForSelector('[data-testid="workflow-message"]', { timeout: 60000 })
     const saveMsg = await page.textContent('[data-testid="workflow-message"]')
-    check('browser: draft saved through the UI', Boolean(saveMsg?.includes('Draft successfully saved')))
+    check(
+      'browser: draft saved through the UI',
+      Boolean(saveMsg?.includes('Draft successfully saved')),
+    )
     const draft1Id = (await page.textContent('[data-testid="current-draft-id"]'))
       ?.replace('ID: ', '')
       .trim()
@@ -695,7 +734,10 @@ try {
     check('browser: draft 1 ID resolved from UI', Boolean(draft1Id))
     const dbDraft1 = await row('social-drafts', draft1Id)
     check('db: draft 1 persisted with status draft', dbDraft1.status === 'draft')
-    check('db: draft 1 canonicalUrl is the published article URL', dbDraft1.canonicalUrl === articleUrl)
+    check(
+      'db: draft 1 canonicalUrl is the published article URL',
+      dbDraft1.canonicalUrl === articleUrl,
+    )
     const dbVariants1 = await find('social-network-variants', { draft: { equals: draft1Id } })
     check('db: exactly 2 per-platform variants created', dbVariants1.length === 2)
     check(
@@ -715,20 +757,11 @@ try {
       'db: draft 1 status is review after submit',
       (await row('social-drafts', draft1Id)).status === 'review',
     )
-    await api(
-      '/api/admin/social/drafts',
-      'POST',
-      { action: 'approve', draftId: draft1Id },
-      403,
-      { cookie: staffCookie },
-    )
+    await api('/api/admin/social/drafts', 'POST', { action: 'approve', draftId: draft1Id }, 403, {
+      cookie: staffCookie,
+    })
     check('staff role cannot approve drafts (403)', true)
-    await api(
-      '/api/admin/social/drafts',
-      'POST',
-      { action: 'schedule', draftId: draft1Id },
-      400,
-    )
+    await api('/api/admin/social/drafts', 'POST', { action: 'schedule', draftId: draft1Id }, 400)
     check('unapproved (in-review) draft cannot be scheduled (400)', true)
     await page.click('[data-testid="approve-draft-btn"]')
     await page.waitForSelector('[data-testid="draft-status-badge"]:has-text("approved")', {
@@ -744,13 +777,9 @@ try {
         (v: any) => v.approvalHash?.startsWith('sha256:') && Boolean(v.approvedBy),
       ),
     )
-    await api(
-      '/api/admin/social/drafts',
-      'POST',
-      { action: 'schedule', draftId: draft1Id },
-      403,
-      { cookie: staffCookie },
-    )
+    await api('/api/admin/social/drafts', 'POST', { action: 'schedule', draftId: draft1Id }, 403, {
+      cookie: staffCookie,
+    })
     check('staff role cannot schedule drafts (403)', true)
     await page.click('[data-testid="schedule-draft-btn"]')
     await page.waitForSelector('[data-testid="draft-status-badge"]:has-text("scheduled")', {
@@ -784,7 +813,11 @@ try {
           sourceContentId: article.id,
           variants: [
             { accountId: bskyAccountId, network: 'bluesky', text: 'Speculative draft for Bluesky' },
-            { accountId: mastoAccount.id, network: 'activitypub', text: 'Speculative draft for Mastodon' },
+            {
+              accountId: mastoAccount.id,
+              network: 'activitypub',
+              text: 'Speculative draft for Mastodon',
+            },
           ],
         },
         201,
@@ -811,7 +844,10 @@ try {
       ],
     })
     const editedVariant = await row('social-network-variants', draft2Variant.id)
-    check('draft 2 variant edit persists through update-draft', editedVariant.text.endsWith('— edited'))
+    check(
+      'draft 2 variant edit persists through update-draft',
+      editedVariant.text.endsWith('— edited'),
+    )
     await api(
       '/api/admin/social/drafts',
       'POST',
@@ -871,12 +907,15 @@ try {
         },
       })
     ).json()
+    check('invalid credentials fail truthfully without fake success', badConnect.success === false)
     check(
-      'invalid credentials fail truthfully without fake success',
-      badConnect.success === false,
+      'invalid credentials set credentialHealth revoked',
+      badConnect.account.credentialHealth === 'revoked',
     )
-    check('invalid credentials set credentialHealth revoked', badConnect.account.credentialHealth === 'revoked')
-    check('diagnostics record a sanitized error', Boolean(badConnect.account.diagnostics?.lastError))
+    check(
+      'diagnostics record a sanitized error',
+      Boolean(badConnect.account.diagnostics?.lastError),
+    )
     check('harness received the bad-auth call', badAuthCalls >= 1)
     const absentConnect = (
       await api('/api/admin/social/accounts', 'POST', {
@@ -1010,7 +1049,11 @@ try {
       [bskyMain, 'PARTIAL successful local Bluesky'],
       [mastoAccount, 'PARTIAL deliberately failing local Mastodon'],
     ])
-    const future = await make('08C future must not dispatch', [[bskyMain, 'FUTURE must remain unsent']], true)
+    const future = await make(
+      '08C future must not dispatch',
+      [[bskyMain, 'FUTURE must remain unsent']],
+      true,
+    )
     // Due work executes through the real worker path: scheduling
     // enqueued a durable operations job (waitUntil reached), and the
     // jobs worker's outbox sweep also drains due queue items. Poll
@@ -1022,14 +1065,22 @@ try {
         const rowsNow = await Promise.all(
           partial.queues.map((q: any) => row('social-queue-items', q.id)),
         )
-        return rowsNow.some((q: any) => q.status === 'published') && rowsNow.some((q: any) => q.status === 'failed')
+        return (
+          rowsNow.some((q: any) => q.status === 'published') &&
+          rowsNow.some((q: any) => q.status === 'failed')
+        )
       },
       120000,
     )
-    const partialRows = await Promise.all(partial.queues.map((q: any) => row('social-queue-items', q.id)))
+    const partialRows = await Promise.all(
+      partial.queues.map((q: any) => row('social-queue-items', q.id)),
+    )
     const successQueue = partialRows.find((q: any) => q.status === 'published')
     const failedQueue = partialRows.find((q: any) => q.status === 'failed')
-    check('dispatch persists one adapter success and one deliberate failure', Boolean(successQueue && failedQueue))
+    check(
+      'dispatch persists one adapter success and one deliberate failure',
+      Boolean(successQueue && failedQueue),
+    )
     check(
       'parent draft persists partial failure truthfully',
       (await row('social-drafts', partial.id)).status === 'partially-published',
@@ -1038,21 +1089,42 @@ try {
       'local receiver holds the exact dispatched Bluesky text',
       [...records.values()].some((r: any) => r.text === 'PARTIAL successful local Bluesky'),
     )
-    const successPost = (await find('external-posts', { variant: { equals: successQueue.variant } }))[0]
-    check('confirmed external post receipt persisted for the success', Boolean(successPost?.remoteId))
+    const successPost = (
+      await find('external-posts', { variant: { equals: successQueue.variant } })
+    )[0]
+    check(
+      'confirmed external post receipt persisted for the success',
+      Boolean(successPost?.remoteId),
+    )
     check(
       'future-scheduled work is not sent early',
-      sends('FUTURE') === 0 && (await row('social-queue-items', future.queues[0].id)).status === 'scheduled',
+      sends('FUTURE') === 0 &&
+        (await row('social-queue-items', future.queues[0].id)).status === 'scheduled',
     )
     await page.goto(`${base}/admin/social`, { timeout: 180000, waitUntil: 'domcontentloaded' })
     await page.getByTestId('draft-workflow-panel').waitFor({ timeout: 120000 })
     await page.getByTestId('draft-select').selectOption(partial.id)
-    await page.getByTestId('current-draft-id').filter({ hasText: partial.id }).waitFor({ timeout: 60000 })
-    await page.getByTestId(`item-status-${successQueue.id}`).filter({ hasText: 'published' }).waitFor({ timeout: 60000 })
-    await page.getByTestId(`item-status-${failedQueue.id}`).filter({ hasText: 'failed' }).waitFor({ timeout: 60000 })
+    await page
+      .getByTestId('current-draft-id')
+      .filter({ hasText: partial.id })
+      .waitFor({ timeout: 60000 })
+    await page
+      .getByTestId(`item-status-${successQueue.id}`)
+      .filter({ hasText: 'published' })
+      .waitFor({ timeout: 60000 })
+    await page
+      .getByTestId(`item-status-${failedQueue.id}`)
+      .filter({ hasText: 'failed' })
+      .waitFor({ timeout: 60000 })
     check('browser presents persisted success and failure states', true)
-    const modePill = await page.getByTestId(`provider-mode-pill-${successQueue.id}`).textContent().catch(() => '')
-    check('browser receipt mode pill says local-harness (truthful claim level)', modePill?.trim() === 'local-harness')
+    const modePill = await page
+      .getByTestId(`provider-mode-pill-${successQueue.id}`)
+      .textContent()
+      .catch(() => '')
+    check(
+      'browser receipt mode pill says local-harness (truthful claim level)',
+      modePill?.trim() === 'local-harness',
+    )
     await page.screenshot({ path: `${out}/partial-destination.png`, fullPage: true })
     const successSendsBefore = sends('PARTIAL successful')
     const failedState = await row('social-queue-items', failedQueue.id)
@@ -1086,7 +1158,12 @@ try {
       origin: 'https://foreign.invalid',
     })
     check('cross-origin worker dispatch denied (403)', true)
-    await api(`/api/social-queue-items/${future.queues[0].id}`, 'PATCH', { status: 'published' }, 403)
+    await api(
+      `/api/social-queue-items/${future.queues[0].id}`,
+      'PATCH',
+      { status: 'published' },
+      403,
+    )
     check('native API cannot forge queue completion (403)', true)
     await api(
       '/api/external-posts',
@@ -1125,7 +1202,8 @@ try {
       'denied writes preserve scheduled future work with zero attempts',
       futureUnchanged.status === 'scheduled' &&
         futureUnchanged.attemptCount === 0 &&
-        (await find('social-publish-attempts', { queueItem: { equals: futureUnchanged.id } })).length === 0,
+        (await find('social-publish-attempts', { queueItem: { equals: futureUnchanged.id } }))
+          .length === 0,
     )
     check(
       'no forged external post was persisted',
@@ -1166,9 +1244,12 @@ try {
     )
     check(
       'eligible retry succeeds once after the rate limit expires',
-      (await row('social-queue-items', limitedRow.id)).status === 'published' && sends('RATE') === 1,
+      (await row('social-queue-items', limitedRow.id)).status === 'published' &&
+        sends('RATE') === 1,
     )
-    const hard = await make('08C bounded failure', [[permanentAccount, 'HARD always failed delivery']])
+    const hard = await make('08C bounded failure', [
+      [permanentAccount, 'HARD always failed delivery'],
+    ])
     // Drive the bounded retry path: the queued retry jobs and the
     // retry endpoint are the same canonical service; loop until the
     // attempt budget is exhausted, calling the endpoint each round.
@@ -1187,10 +1268,13 @@ try {
     await worker({ action: 'retry-failed', queueItemId: hard.queues[0].id })
     check(
       'failed delivery is bounded at exactly 3 sends and 3 attempts',
-      sends('HARD') === 3 && (await row('social-queue-items', hard.queues[0].id)).attemptCount === 3,
+      sends('HARD') === 3 &&
+        (await row('social-queue-items', hard.queues[0].id)).attemptCount === 3,
     )
     // -- Lost response, reconciliation, timeout -------------------
-    const lost = await make('08C lost response', [[bskyMain, 'LOST provider accepted then socket closed']])
+    const lost = await make('08C lost response', [
+      [bskyMain, 'LOST provider accepted then socket closed'],
+    ])
     await until(
       'lost-response row settles as unknown',
       async () => (await row('social-queue-items', lost.queues[0].id)).status === 'unknown',
@@ -1198,16 +1282,20 @@ try {
     )
     check(
       'lost provider response persists unknown (not failure, not success)',
-      (await row('social-queue-items', lost.queues[0].id)).status === 'unknown' && sends('LOST') === 1,
+      (await row('social-queue-items', lost.queues[0].id)).status === 'unknown' &&
+        sends('LOST') === 1,
     )
     await worker({ action: 'retry-failed', queueItemId: lost.queues[0].id })
     check('failed-only retry excludes uncertain delivery (no resend)', sends('LOST') === 1)
     await worker({ action: 'reconcile', queueItemId: lost.queues[0].id })
     check(
       'read-only reconciliation finds the accepted post without resending',
-      (await row('social-queue-items', lost.queues[0].id)).status === 'published' && sends('LOST') === 1,
+      (await row('social-queue-items', lost.queues[0].id)).status === 'published' &&
+        sends('LOST') === 1,
     )
-    const timed = await make('08C timeout', [[timeoutAccount, 'TIMEOUT accepted but response never returned']])
+    const timed = await make('08C timeout', [
+      [timeoutAccount, 'TIMEOUT accepted but response never returned'],
+    ])
     await until(
       'timeout row settles as unknown',
       async () => (await row('social-queue-items', timed.queues[0].id)).status === 'unknown',
@@ -1236,7 +1324,9 @@ try {
       credentialHealth: 'revoked',
       connectionReference: '',
     })
-    const disconnect = await make('08C safe disconnect', [[revokedAccount, 'REVOKED must remain unsent']])
+    const disconnect = await make('08C safe disconnect', [
+      [revokedAccount, 'REVOKED must remain unsent'],
+    ])
     await worker({ action: 'dispatch-item', queueItemId: disconnect.queues[0].id }).catch(() => {})
     await until(
       'disconnected row settles as failed',
@@ -1303,7 +1393,9 @@ try {
       await until(
         'crash web readiness',
         async () =>
-          fetch('http://127.0.0.1:38793/health/ready').then((r) => r.ok).catch(() => false),
+          fetch('http://127.0.0.1:38793/health/ready')
+            .then((r) => r.ok)
+            .catch(() => false),
         120000,
       )
       const crashCookies = (await context.cookies(base))
@@ -1340,7 +1432,9 @@ try {
         'provider accepted the crash post',
         async () => {
           if (pendingResponse)
-            throw new Error(`crash dispatch returned before provider acceptance: ${pendingResponse}`)
+            throw new Error(
+              `crash dispatch returned before provider acceptance: ${pendingResponse}`,
+            )
           return sends('CRASH') === 1
         },
         60000,
@@ -1381,7 +1475,10 @@ try {
     await page.goto(`${base}/admin/social`, { timeout: 180000, waitUntil: 'domcontentloaded' })
     await page.getByTestId('draft-workflow-panel').waitFor({ timeout: 120000 })
     await page.getByTestId('draft-select').selectOption(crash.id)
-    await page.getByTestId('current-draft-id').filter({ hasText: crash.id }).waitFor({ timeout: 60000 })
+    await page
+      .getByTestId('current-draft-id')
+      .filter({ hasText: crash.id })
+      .waitFor({ timeout: 60000 })
     await page
       .getByTestId(`item-status-${crashQueueId}`)
       .filter({ hasText: 'published' })
@@ -1394,7 +1491,8 @@ try {
     const attempts = await find('social-publish-attempts')
     check(
       'no duplicate confirmed provider IDs in persisted external posts',
-      new Set(external.map((post: any) => `${post.account}:${post.remoteId}`)).size === external.length,
+      new Set(external.map((post: any) => `${post.account}:${post.remoteId}`)).size ===
+        external.length,
     )
     check(
       'every published attempt receipt identifies the local protocol harness',
@@ -1447,10 +1545,12 @@ try {
   await page.screenshot({ path: `${out}/failure.png`, fullPage: true }).catch(() => {})
   await writeFile(
     `${out}/failure-page.txt`,
-    (await page.locator('body').innerText().catch(() => '')).replace(
-      /[A-Za-z0-9_-]{43}/g,
-      '[redacted token]',
-    ),
+    (
+      await page
+        .locator('body')
+        .innerText()
+        .catch(() => '')
+    ).replace(/[A-Za-z0-9_-]{43}/g, '[redacted token]'),
   ).catch(() => {})
   process.exitCode = 1
 } finally {

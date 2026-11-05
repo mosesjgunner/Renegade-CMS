@@ -1,3 +1,4 @@
+import { reviewCatalogFixture } from '../helpers/review-catalog-fixture'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHmac, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
@@ -117,12 +118,12 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
       collection: 'products',
       data: {
         site: siteId,
+        merchantConnection: merchant.id,
         name: `Limited Edition Print ${suffix}`,
         slug: `limited-print-${suffix}`,
         canonicalPath: `/store/limited-print-${suffix}`,
         kind: 'physical',
-        state: 'published',
-        publishedAt: new Date().toISOString(),
+        state: 'draft',
         productCapabilities: ['shippable'],
         optionDimensions: [{ key: 'finish', label: 'Finish', values: ['Matte'] }],
         variants: [
@@ -154,6 +155,8 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
       overrideAccess: true,
     })
 
+    await reviewCatalogFixture(demo.cookieHeader, String(raceProduct.id))
+
     // Upload a separate, private asset through the media persistence service.
     // The public demo hero cannot satisfy private digital delivery preflight.
     const operator = await payload.findByID({ collection: 'users', id: demo.userId })
@@ -177,12 +180,12 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
       collection: 'products',
       data: {
         site: siteId,
+        merchantConnection: merchant.id,
         name: `Digital EP Album ${suffix}`,
         slug: `digital-ep-${suffix}`,
         canonicalPath: `/store/digital-ep-${suffix}`,
         kind: 'digital',
-        state: 'published',
-        publishedAt: new Date().toISOString(),
+        state: 'draft',
         productCapabilities: ['digital-entitlement'],
         optionDimensions: [{ key: 'format', label: 'Format', values: ['FLAC'] }],
         variants: [
@@ -224,6 +227,8 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
       },
       overrideAccess: true,
     })
+
+    await reviewCatalogFixture(demo.cookieHeader, String(digitalProduct.id))
 
     // Customer A adds the last physical item + digital item to Cart A
     const addResA = await cartRoute(
@@ -304,7 +309,7 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
         postalCode: '78701',
         country: 'US',
       },
-      selectedShippingRateId: 'standard',
+      selectedShippingRateId: 'rate_standard_free',
       consents: { termsAccepted: true, privacyAccepted: true },
     }
     const propResA = await proposalRoute(
@@ -314,7 +319,7 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
         body: JSON.stringify(proposalReqA),
       }),
     )
-    expect(propResA.status).toBe(200)
+    expect(propResA.status, await propResA.clone().text()).toBe(200)
     const { proposal: proposalA } = await propResA.json()
     expect(proposalA.pricingSnapshot.subtotalMinor).toBe('6500') // $50 + $15
 
@@ -355,7 +360,7 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
         }),
       }),
     )
-    expect([200, 201]).toContain(initResA.status)
+    expect([200, 201], await initResA.clone().text()).toContain(initResA.status)
     const checkoutA = await initResA.json()
     expect(checkoutA.actionUrl).toMatch(/^\/checkout\/test\//)
 
@@ -499,7 +504,7 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
             postalCode: '75201',
             country: 'US',
           },
-          selectedShippingRateId: 'standard',
+          selectedShippingRateId: 'rate_standard_free',
           consents: { termsAccepted: true, privacyAccepted: true },
         }),
       }),
@@ -517,18 +522,20 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
         method: 'POST',
         headers: {
           host: 'localhost',
+          origin: 'http://localhost',
           'content-type': 'application/json',
           'x-site-id': siteId,
           cookie: demo.cookieHeader,
         },
         body: JSON.stringify({
+          action: 'request',
           orderId: String(orderDocA.id),
           amountMinor: '1500', // refund digital portion
           reason: 'Customer requested refund.',
         }),
       }),
     )
-    expect([200, 202]).toContain(refundRes.status)
+    expect([200, 202], await refundRes.clone().text()).toContain(refundRes.status)
     const refundJson = await refundRes.json()
     expect(['awaiting-approval', 'previewed', 'processing', 'succeeded']).toContain(
       refundJson.refund?.state,

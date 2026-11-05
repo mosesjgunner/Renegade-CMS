@@ -10,7 +10,10 @@ import {
 import { snapshotHash } from '@/modules/community/moderation-reports'
 import { exportCommunityData } from '@/modules/identity/community-export'
 import { targetIsDeliverable, type InboxEvent } from '@/modules/community/inbox-notifications'
-import { startDirectConversation, sendConversationMessage } from '@/modules/community/conversation-composer'
+import {
+  startDirectConversation,
+  sendConversationMessage,
+} from '@/modules/community/conversation-composer'
 
 describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => {
   const siteA = '00000000-0000-7000-8000-000000000001'
@@ -111,7 +114,9 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
 
     // Verifies tombstone and case closure executed
     expect(executedQueries.some((q) => q.includes('UPDATE comments SET status=$1'))).toBe(true)
-    expect(executedQueries.some((q) => q.includes("UPDATE moderation_cases SET status='closed'"))).toBe(true)
+    expect(
+      executedQueries.some((q) => q.includes("UPDATE moderation_cases SET status='closed'")),
+    ).toBe(true)
     // Verifies moderation outbox event emitted
     expect(executedQueries.some((q) => q.includes('moderation.action.v1'))).toBe(true)
   })
@@ -177,11 +182,15 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
     expect(result.actionId).toBe('action-reinstate-1')
 
     // Verifies status restored to visible
-    expect(executedQueries.some((q) => q.includes("UPDATE comments SET status='visible'"))).toBe(true)
+    expect(executedQueries.some((q) => q.includes("UPDATE comments SET status='visible'"))).toBe(
+      true,
+    )
     // Verifies active sanctions revoked
     expect(executedQueries.some((q) => q.includes('revoked_at=now()'))).toBe(true)
     // Verifies case closed and report resolved
-    expect(executedQueries.some((q) => q.includes("UPDATE moderation_cases SET status='closed'"))).toBe(true)
+    expect(
+      executedQueries.some((q) => q.includes("UPDATE moderation_cases SET status='closed'")),
+    ).toBe(true)
     // Verifies search rehydration event emitted
     expect(executedQueries.some((q) => q.includes('search.rehydrate.v1'))).toBe(true)
   })
@@ -216,10 +225,12 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
     } as never
 
     // Posting assertion throws 403
-    await expect(assertMemberCanPost(payload, { siteId: siteA, memberId: memberAlice })).rejects.toThrow(
-      ModerationActionError,
-    )
-    await expect(assertMemberCanPost(payload, { siteId: siteA, memberId: memberAlice })).rejects.toMatchObject({
+    await expect(
+      assertMemberCanPost(payload, { siteId: siteA, memberId: memberAlice }),
+    ).rejects.toThrow(ModerationActionError)
+    await expect(
+      assertMemberCanPost(payload, { siteId: siteA, memberId: memberAlice }),
+    ).rejects.toMatchObject({
       code: 'MEMBER_POSTING_SUSPENDED',
       status: 403,
     })

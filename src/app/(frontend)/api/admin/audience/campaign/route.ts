@@ -68,10 +68,7 @@ export async function GET(request: Request) {
       payload.find({
         collection: 'content',
         where: {
-          and: [
-            { site: { equals: siteId } },
-            { status: { in: ['published', 'updated'] } },
-          ],
+          and: [{ site: { equals: siteId } }, { status: { in: ['published', 'updated'] } }],
         },
         limit: 50,
         sort: '-publishedAt',
@@ -90,10 +87,7 @@ export async function GET(request: Request) {
         ? payload.find({
             collection: 'audience-segments',
             where: {
-              and: [
-                { site: { equals: siteId } },
-                { status: { equals: 'active' } },
-              ],
+              and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }],
             },
             limit: 50,
             overrideAccess: true,
@@ -197,7 +191,10 @@ export async function POST(request: Request) {
     } catch (err: unknown) {
       const msg = String(err)
       if (msg.includes('mismatch') || msg.includes('access denied')) {
-        return Response.json({ error: 'Segment access outside owning site is forbidden.' }, { status: 403 })
+        return Response.json(
+          { error: 'Segment access outside owning site is forbidden.' },
+          { status: 403 },
+        )
       }
       return Response.json({ error: msg }, { status: 400 })
     }
@@ -246,7 +243,9 @@ export async function POST(request: Request) {
 
   // 3. Test send to operator inbox via local SMTP boundary
   if (action === 'test-send') {
-    const recipientEmail = String(body.recipientEmail ?? '').trim().toLowerCase()
+    const recipientEmail = String(body.recipientEmail ?? '')
+      .trim()
+      .toLowerCase()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail)) {
       return Response.json({ error: 'Enter a valid recipient email address.' }, { status: 400 })
     }
@@ -406,7 +405,10 @@ export async function POST(request: Request) {
     } catch (err: unknown) {
       const msg = String(err)
       if (msg.includes('mismatch') || msg.includes('access denied')) {
-        return Response.json({ error: 'Segment access outside owning site is forbidden.' }, { status: 403 })
+        return Response.json(
+          { error: 'Segment access outside owning site is forbidden.' },
+          { status: 403 },
+        )
       }
       return Response.json({ error: msg }, { status: 400 })
     }

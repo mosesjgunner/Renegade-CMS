@@ -3,10 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { loadConfig } from '@/modules/core/config'
-import {
-  cleanupExpiredUploadSessions,
-  createUploadSession,
-} from '@/modules/media/upload-sessions'
+import { cleanupExpiredUploadSessions, createUploadSession } from '@/modules/media/upload-sessions'
 import { assertMediaPermission, MediaWorkflowError } from '@/modules/media/workflow'
 
 export const runtime = 'nodejs'

@@ -10,8 +10,8 @@ import { POST } from '../../src/app/(frontend)/api/admin/commerce/affiliate/rout
 function request(body: Record<string, unknown>) {
   return new NextRequest('http://localhost/api/admin/commerce/affiliate', {
     method: 'POST',
-    body: JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ siteId: 'site-1', ...body }),
+    headers: { 'Content-Type': 'application/json', Origin: 'http://localhost' },
   })
 }
 
@@ -60,5 +60,22 @@ describe('SHOP-08 affiliate command boundary', () => {
     auth.mockResolvedValue({ user: { id: 'owner-1', role: 'owner' } })
     const response = await POST(request({ action: 'reconcile-batch', success: true }))
     expect(response.status).toBe(409)
+  })
+
+  it('rejects a missing or foreign origin even for an owner', async () => {
+    auth.mockResolvedValue({ user: { id: 'owner-1', role: 'owner' } })
+    for (const origin of [null, 'https://foreign.example']) {
+      const req = request({ action: 'approve-batch' })
+      if (origin) req.headers.set('Origin', origin)
+      else req.headers.delete('Origin')
+      expect((await POST(req)).status).toBe(403)
+    }
+  })
+
+  it('denies a foreign site for a site-scoped owner', async () => {
+    auth.mockResolvedValue({
+      user: { id: 'owner-1', role: 'owner', authorizedSiteIds: ['site-1'] },
+    })
+    expect((await POST(request({ action: 'summarize', siteId: 'site-2' }))).status).toBe(403)
   })
 })

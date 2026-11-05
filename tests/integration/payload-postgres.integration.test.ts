@@ -32,6 +32,10 @@ describe('Payload PostgreSQL integration', () => {
 
     expect(String(created.id)).toMatch(/^[0-9a-f-]{36}$/i)
     expect(read.docs[0]?.name).toBe('Integration Publication')
-    await payload.delete({ collection: 'sites', id: created.id })
+    await expect(payload.delete({ collection: 'sites', id: created.id })).rejects.toThrow(
+      'The site still contains publications',
+    )
+    const retained = await payload.findByID({ collection: 'sites', id: created.id })
+    expect(retained.name).toBe('Integration Publication')
   })
 })

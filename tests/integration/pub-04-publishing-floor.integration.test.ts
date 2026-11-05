@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { randomUUID } from 'crypto'
@@ -17,6 +17,11 @@ import { querySearchProjection } from '../../src/modules/public/search-projectio
 import sitemap from '../../src/modules/public/sitemap-compat'
 import robots from '../../src/app/(frontend)/robots'
 import { seed } from '../../src/scripts/seed'
+
+vi.mock('next/headers', async () => ({
+  ...(await vi.importActual<typeof import('next/headers')>('next/headers')),
+  headers: async () => new Headers({ host: 'renegadeparty.org' }),
+}))
 
 describe('PUB-04 publishing floor integration contract', () => {
   let payload: Payload

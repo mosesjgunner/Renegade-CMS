@@ -34,8 +34,13 @@ async function run() {
   fixture.editorToken = editorInvite.enrollmentToken
   fixture.editorEmail = editorInvite.user.email
   const pool = (payload.db as any).pool
-  await pool.query('DELETE FROM passkeys WHERE user_id IN (SELECT id FROM users WHERE email IN ($1, $2))', [fixture.adminEmail, fixture.editorEmail])
-  await pool.query("DELETE FROM public_redirects WHERE from_path IN ('/ui-created', '/ui-import', '/loop-ui')")
+  await pool.query(
+    'DELETE FROM passkeys WHERE user_id IN (SELECT id FROM users WHERE email IN ($1, $2))',
+    [fixture.adminEmail, fixture.editorEmail],
+  )
+  await pool.query(
+    "DELETE FROM public_redirects WHERE from_path IN ('/ui-created', '/ui-import', '/loop-ui')",
+  )
   await pool.query("DELETE FROM content WHERE title = '02C concurrent UI article'")
   let stage = 'initialization'
   let page: Page | undefined
@@ -43,8 +48,8 @@ async function run() {
     async function enroll(context: BrowserContext, token: string, email: string) {
       const actor = await context.newPage()
       page = actor
-      actor.on('console', msg => console.log(`[PAGE CONSOLE] ${msg.type()}: ${msg.text()}`))
-      actor.on('response', async res => {
+      actor.on('console', (msg) => console.log(`[PAGE CONSOLE] ${msg.type()}: ${msg.text()}`))
+      actor.on('response', async (res) => {
         if (res.url().includes('/api/')) {
           console.log(`[HTTP ${res.status()}] ${res.url()}`)
           if (res.status() >= 400) {

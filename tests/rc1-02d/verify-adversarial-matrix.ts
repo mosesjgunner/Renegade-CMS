@@ -31,19 +31,31 @@ async function run() {
     assert.equal(siteB.slug, 'site-beta')
 
     // Verify Content Alpha & Beta exist with untouched attributes
-    const contentA = await payload.findByID({ collection: 'content', id: fixture.contentAId, depth: 0 })
-    const contentB = await payload.findByID({ collection: 'content', id: fixture.contentBId, depth: 0 })
+    const contentA = await payload.findByID({
+      collection: 'content',
+      id: fixture.contentAId,
+      depth: 0,
+    })
+    const contentB = await payload.findByID({
+      collection: 'content',
+      id: fixture.contentBId,
+      depth: 0,
+    })
     assert.equal((contentA.site as any)?.id || contentA.site, fixture.siteAId)
     assert.equal((contentB.site as any)?.id || contentB.site, fixture.siteBId)
     assert.equal(contentA.title, 'Article Alpha Pristine')
     assert.equal(contentB.title, 'Article Beta Pristine')
 
     // Verify Direct SQL queries confirm no cross-site contamination
-    const sqlCheck = await pool.query('SELECT id, site_id, title FROM content WHERE id = $1', [fixture.contentAId])
+    const sqlCheck = await pool.query('SELECT id, site_id, title FROM content WHERE id = $1', [
+      fixture.contentAId,
+    ])
     assert.equal(sqlCheck.rows[0].site_id, fixture.siteAId)
     assert.equal(sqlCheck.rows[0].title, 'Article Alpha Pristine')
 
-    console.log('PASS 02D Restart Verification: Multi-site boundary and content integrity confirmed in PostgreSQL after restart.')
+    console.log(
+      'PASS 02D Restart Verification: Multi-site boundary and content integrity confirmed in PostgreSQL after restart.',
+    )
     process.exit(0)
   }
 
@@ -247,7 +259,9 @@ async function run() {
 
   // Capture pre-adversarial SQL state hashes
   const preSqlContent = await pool.query('SELECT id, site_id, title FROM content ORDER BY id')
-  const preSqlRedirects = await pool.query('SELECT id, site_id, from_path FROM public_redirects ORDER BY id')
+  const preSqlRedirects = await pool.query(
+    'SELECT id, site_id, from_path FROM public_redirects ORDER BY id',
+  )
 
   console.log('5. Adversarial Test: Operator Site Grants & Isolation Checks...')
   // Global Owner: unrestricted access
@@ -275,12 +289,30 @@ async function run() {
 
   console.log('6. Adversarial Test: Cross-Site Object-ID Substitution on Content...')
   // Admin A attempting to read/access Site B content record by ID
-  const canAdminAccessContentB = await checkOperatorRecordAccess(payload, adminUser, 'content', contentB.id)
-  assert.equal(canAdminAccessContentB, false, 'Admin A must NOT have operator access to Site B content')
+  const canAdminAccessContentB = await checkOperatorRecordAccess(
+    payload,
+    adminUser,
+    'content',
+    contentB.id,
+  )
+  assert.equal(
+    canAdminAccessContentB,
+    false,
+    'Admin A must NOT have operator access to Site B content',
+  )
 
   // Staff A attempting to read/access Site B content record by ID
-  const canStaffAccessContentB = await checkOperatorRecordAccess(payload, staffUser, 'content', contentB.id)
-  assert.equal(canStaffAccessContentB, false, 'Staff A must NOT have operator access to Site B content')
+  const canStaffAccessContentB = await checkOperatorRecordAccess(
+    payload,
+    staffUser,
+    'content',
+    contentB.id,
+  )
+  assert.equal(
+    canStaffAccessContentB,
+    false,
+    'Staff A must NOT have operator access to Site B content',
+  )
 
   // Verify DB unchanged after denied object-ID substitution attempts
   const postSubstitutionSql = await pool.query('SELECT id, site_id, title FROM content ORDER BY id')
@@ -297,7 +329,11 @@ async function run() {
       title: 'Malicious Cross-Site Re-parenting',
     },
   } as any)
-  assert.equal(reparentAllowed, false, 'Cross-site re-parenting of content MUST be rejected by preserveRecordRelationshipsAccess')
+  assert.equal(
+    reparentAllowed,
+    false,
+    'Cross-site re-parenting of content MUST be rejected by preserveRecordRelationshipsAccess',
+  )
 
   // Verify DB unchanged after denied re-parenting attempt
   const postReparentSql = await pool.query('SELECT id, site_id, title FROM content ORDER BY id')
@@ -370,9 +406,19 @@ async function run() {
 
   // Final DB integrity assertion
   const finalSqlContent = await pool.query('SELECT id, site_id, title FROM content ORDER BY id')
-  const finalSqlRedirects = await pool.query('SELECT id, site_id, from_path FROM public_redirects ORDER BY id')
-  assert.deepEqual(finalSqlContent.rows, preSqlContent.rows, 'Content table must remain completely unchanged')
-  assert.deepEqual(finalSqlRedirects.rows, preSqlRedirects.rows, 'Redirects table must remain completely unchanged')
+  const finalSqlRedirects = await pool.query(
+    'SELECT id, site_id, from_path FROM public_redirects ORDER BY id',
+  )
+  assert.deepEqual(
+    finalSqlContent.rows,
+    preSqlContent.rows,
+    'Content table must remain completely unchanged',
+  )
+  assert.deepEqual(
+    finalSqlRedirects.rows,
+    preSqlRedirects.rows,
+    'Redirects table must remain completely unchanged',
+  )
 
   // Write fixture for restart-check
   const fixture = {
@@ -386,7 +432,9 @@ async function run() {
     globalOwnerUserId: globalOwnerUser.id,
   }
   await writeFile(FIXTURE_PATH, JSON.stringify(fixture, null, 2))
-  console.log('PASS 02D Adversarial Matrix: All cross-site denials, moves, and DB-unchanged assertions succeeded.')
+  console.log(
+    'PASS 02D Adversarial Matrix: All cross-site denials, moves, and DB-unchanged assertions succeeded.',
+  )
   process.exit(0)
 }
 

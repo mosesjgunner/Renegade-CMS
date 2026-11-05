@@ -126,6 +126,12 @@ export async function seed(payload: Payload): Promise<void> {
     data: { email: 'river@example.test', role: 'staff', member: member.id },
   })
 
+  await upsert(payload, {
+    collection: 'member-site-roles',
+    where: { and: [{ site: { equals: site.id } }, { member: { equals: member.id } }] },
+    data: { site: site.id, member: member.id, role: 'contributor' },
+  })
+
   const profile = await upsert(payload, {
     collection: 'profiles',
     where: { member: { equals: member.id } },
@@ -335,6 +341,25 @@ export async function seed(payload: Payload): Promise<void> {
       pathOverride: true,
       canonicalPath: '/notes/demo-field-report',
       summary: 'Neutral seeded article used for canonical IA tests.',
+      body: {
+        root: {
+          type: 'root',
+          version: 1,
+          children: [
+            {
+              type: 'paragraph',
+              version: 1,
+              children: [
+                {
+                  type: 'text',
+                  version: 1,
+                  text: 'A neutral fixture article for canonical information architecture tests.',
+                },
+              ],
+            },
+          ],
+        },
+      },
       status: 'published',
       publishedAt: '2026-08-13T12:00:00.000Z',
       authors: [
@@ -759,7 +784,7 @@ export async function seed(payload: Payload): Promise<void> {
     },
   })
 
-  const attachedPost = await upsert(payload, {
+  await upsert(payload, {
     collection: 'discussion-posts',
     where: { permalink: { equals: '/notes/demo-field-report#post-1' } },
     data: {
@@ -786,7 +811,6 @@ export async function seed(payload: Payload): Promise<void> {
       discussion: thread.id,
       authorGuest: guestAuthor.id,
       body: 'This seeded post starts a standalone forum thread.',
-      parent: attachedPost.id,
       displayOrder: 1,
       permalink: '/forums/introductions/welcome-thread#post-1',
       paginationAnchor: 'post-1',
@@ -823,11 +847,18 @@ export async function seed(payload: Payload): Promise<void> {
 }
 
 export const script = async (config: SanitizedConfig): Promise<void> => {
-  if (process.env.ALLOW_FIXTURE_SEED !== 'true') {
-    throw new Error('Fixture seed is disabled. Set ALLOW_FIXTURE_SEED=true for smoke-only data.')
+  let payload: Payload | undefined
+  try {
+    if (process.env.ALLOW_FIXTURE_SEED !== 'true') {
+      throw new Error('Fixture seed is disabled. Set ALLOW_FIXTURE_SEED=true for smoke-only data.')
+    }
+    payload = await getPayload({ config })
+    await seed(payload)
+    await payload.db.destroy?.()
+  } catch (error) {
+    console.error(error)
+    await payload?.db.destroy?.().catch(() => undefined)
+    // Payload's custom bin runner catches rejections and exits zero.
+    process.exit(1)
   }
-  const payload = await getPayload({ config })
-  await seed(payload)
-  await payload.db.destroy?.()
-  process.exit(0)
 }

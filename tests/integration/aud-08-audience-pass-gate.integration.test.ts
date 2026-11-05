@@ -1,7 +1,7 @@
 import { telecomRecipient } from '../helpers/telecom-recipient'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -117,6 +117,8 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
       listId = String(createdList.id)
     }
   }, 120_000)
+
+  afterEach(() => vi.useRealTimers())
 
   afterAll(async () => {
     resetLocalMailSink()
@@ -1017,6 +1019,11 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
   // 8. Telecom SMS & RCS variants, fallback, quiet hours, STOP/HELP keywords
   // ---------------------------------------------------------------------------
   it('8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator', async () => {
+    // Use a daytime instant across US time zones; quiet-hours behavior is asserted below.
+    const midday = new Date()
+    midday.setUTCHours(17, 0, 0, 0)
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(midday)
     resetTelecomEmulator()
 
     // 1. GSM-7 vs UCS-2 segment calculation

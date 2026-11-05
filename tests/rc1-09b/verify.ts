@@ -61,7 +61,10 @@ try {
     check('Restart: campaign status retained as scheduled', message.status === 'scheduled')
     check('Restart: scheduledFor date preserved', Boolean(message.scheduledFor))
     check('Restart: approvedRender snapshot preserved', Boolean(message.approvedRender?.hash))
-    check('Restart: approvedRender HTML preserved', message.approvedRender?.html?.includes('max-width:600px'))
+    check(
+      'Restart: approvedRender HTML preserved',
+      message.approvedRender?.html?.includes('max-width:600px'),
+    )
 
     const snapshot = await payload.findByID({
       collection: 'recipient-snapshots',
@@ -74,7 +77,8 @@ try {
     check('Restart: recipient snapshot frozen count preserved', snapshot.recipients?.length === 2)
     check(
       'Restart: recipient snapshot exclusion counts preserved',
-      snapshot.exclusionCounts?.duplicates === 1 && snapshot.exclusionCounts?.unconsentedOrPending === 1,
+      snapshot.exclusionCounts?.duplicates === 1 &&
+        snapshot.exclusionCounts?.unconsentedOrPending === 1,
     )
 
     console.log(`\nALL ${checks} RESTART CHECKS PASSED cleanly. State survived container restart.`)
@@ -152,7 +156,8 @@ try {
       status: 'published',
       publishedAt: new Date().toISOString(),
       canonicalPath: '/news/freedom-act-update-2026',
-      summary: 'Breakthrough developments in digital freedom legislation and community mobilization.',
+      summary:
+        'Breakthrough developments in digital freedom legislation and community mobilization.',
       body: {
         root: {
           type: 'root',
@@ -170,7 +175,9 @@ try {
   check('Article created and published', article && article.status === 'published')
 
   // 3. SEED AUDIENCE LIST, SEGMENTS & SUBSCRIBERS
-  console.log('\n[3/6] Seeding audience list, segments, and subscribers with consent/suppression states...')
+  console.log(
+    '\n[3/6] Seeding audience list, segments, and subscribers with consent/suppression states...',
+  )
   const listAlpha = await payload.create({
     collection: 'audience-lists',
     data: {
@@ -375,7 +382,10 @@ try {
 
   // Verify UI View
   const composerHeading = await page.textContent('h1')
-  check('UI loads with composer heading', composerHeading?.includes('Newsletter & Campaign Composer'))
+  check(
+    'UI loads with composer heading',
+    composerHeading?.includes('Newsletter & Campaign Composer'),
+  )
 
   // A. Derive Newsletter from Article
   console.log('-> Testing Article Derivation in UI...')
@@ -388,7 +398,10 @@ try {
 
   // Verify pinned content card visible
   const cardTitle = await page.textContent('[data-testid="pinned-content-card"]')
-  check('Pinned content card visible with article details', cardTitle?.includes('Freedom Act Update 2026'))
+  check(
+    'Pinned content card visible with article details',
+    cardTitle?.includes('Freedom Act Update 2026'),
+  )
 
   // B. Live Responsive Preview & MIME Output
   console.log('-> Testing Live Responsive MIME Preview...')
@@ -403,11 +416,17 @@ try {
   )
 
   const warningText = await page.textContent('[data-testid="preview-warning"]')
-  check('Approximation warning is visible', warningText?.includes('Mailbox/device previews are approximations'))
+  check(
+    'Approximation warning is visible',
+    warningText?.includes('Mailbox/device previews are approximations'),
+  )
 
   const iframeSrcDoc = await page.getAttribute('[data-testid="preview-iframe"]', 'srcdoc')
   check('Rendered MIME HTML has responsive container', iframeSrcDoc?.includes('max-width:600px'))
-  check('Rendered MIME HTML has derived article title', iframeSrcDoc?.includes('Freedom Act Update 2026'))
+  check(
+    'Rendered MIME HTML has derived article title',
+    iframeSrcDoc?.includes('Freedom Act Update 2026'),
+  )
   check(
     'Rendered MIME HTML has mandatory legal/unsubscribe link',
     iframeSrcDoc?.includes('https://renegadeparty.org/audience/unsubscribe'),
@@ -438,13 +457,19 @@ try {
   check('Live analysis matches all 5 list subscribers', totalMatchedText?.trim() === '5')
 
   const eligibleCountText = await page.textContent('[data-testid="count-eligible-consented"]')
-  check('Live analysis counts exactly 2 eligible consented recipients', eligibleCountText?.includes('2 Consented Recipients'))
+  check(
+    'Live analysis counts exactly 2 eligible consented recipients',
+    eligibleCountText?.includes('2 Consented Recipients'),
+  )
 
   const dupCountText = await page.textContent('[data-testid="count-duplicates"]')
   check('Live analysis reports 1 duplicate email deduplicated', dupCountText?.trim() === '1')
 
   const unconsentedCountText = await page.textContent('[data-testid="count-unconsented"]')
-  check('Live analysis reports 1 pending/unconsented subscriber', unconsentedCountText?.trim() === '1')
+  check(
+    'Live analysis reports 1 pending/unconsented subscriber',
+    unconsentedCountText?.trim() === '1',
+  )
 
   const suppressedCountText = await page.textContent('[data-testid="count-suppressed"]')
   check('Live analysis reports 1 suppressed subscriber', suppressedCountText?.trim() === '1')
@@ -456,7 +481,10 @@ try {
   await page.waitForSelector('[data-testid="empty-audience-warning"]', { timeout: 15000 })
 
   const emptyWarning = await page.textContent('[data-testid="empty-audience-warning"]')
-  check('Empty audience state warning is displayed', emptyWarning?.includes('Empty audience: 0 eligible consented recipients found'))
+  check(
+    'Empty audience state warning is displayed',
+    emptyWarning?.includes('Empty audience: 0 eligible consented recipients found'),
+  )
 
   const isScheduleDisabled = await page.isDisabled('[data-testid="schedule-campaign-btn"]')
   check('Schedule button is disabled on empty audience state', isScheduleDisabled === true)
@@ -478,13 +506,22 @@ try {
   await page.waitForSelector('[data-testid="composer-success-alert"]', { timeout: 15000 })
 
   const successAlert = await page.textContent('[data-testid="composer-success-alert"]')
-  check('Campaign scheduled success banner displayed', successAlert?.includes('Campaign scheduled successfully'))
+  check(
+    'Campaign scheduled success banner displayed',
+    successAlert?.includes('Campaign scheduled successfully'),
+  )
 
   const statusBadge = await page.textContent('[data-testid="campaign-status-badge"]')
-  check('Campaign status transitioned to SCHEDULED', statusBadge?.trim().toLowerCase() === 'scheduled')
+  check(
+    'Campaign status transitioned to SCHEDULED',
+    statusBadge?.trim().toLowerCase() === 'scheduled',
+  )
 
   const snapshotHashEl = await page.textContent('[data-testid="snapshot-hash"]')
-  check('Immutable recipient snapshot SHA-256 hash displayed', /^[a-f0-9]{64}$/.test(snapshotHashEl?.trim() || ''))
+  check(
+    'Immutable recipient snapshot SHA-256 hash displayed',
+    /^[a-f0-9]{64}$/.test(snapshotHashEl?.trim() || ''),
+  )
 
   const frozenRecipientsEl = await page.textContent('[data-testid="frozen-recipients"]')
   check('Frozen recipients count displayed as 2', frozenRecipientsEl?.includes('2'))
@@ -513,10 +550,7 @@ try {
   const scheduledMessages = await payload.find({
     collection: 'email-messages',
     where: {
-      and: [
-        { site: { equals: siteAlpha.id } },
-        { status: { equals: 'scheduled' } },
-      ],
+      and: [{ site: { equals: siteAlpha.id } }, { status: { equals: 'scheduled' } }],
     },
     limit: 1,
     overrideAccess: true,
@@ -525,11 +559,18 @@ try {
   const scheduledMessage = scheduledMessages.docs[0]
 
   check('Persisted message has scheduledFor timestamp', Boolean(scheduledMessage.scheduledFor))
-  check('Persisted message has approvedRender snapshot', Boolean(scheduledMessage.approvedRender?.hash))
-  check('Persisted message has pinned recipientSnapshot reference', Boolean(scheduledMessage.recipientSnapshot))
+  check(
+    'Persisted message has approvedRender snapshot',
+    Boolean(scheduledMessage.approvedRender?.hash),
+  )
+  check(
+    'Persisted message has pinned recipientSnapshot reference',
+    Boolean(scheduledMessage.recipientSnapshot),
+  )
 
   const snapshotId =
-    typeof scheduledMessage.recipientSnapshot === 'object' && scheduledMessage.recipientSnapshot !== null
+    typeof scheduledMessage.recipientSnapshot === 'object' &&
+    scheduledMessage.recipientSnapshot !== null
       ? scheduledMessage.recipientSnapshot.id
       : scheduledMessage.recipientSnapshot
 
@@ -562,7 +603,10 @@ try {
       segmentId: segmentForeign.id,
     }),
   })
-  check('Foreign site segment evaluation rejected with 403 Forbidden', foreignEvalRes.status === 403)
+  check(
+    'Foreign site segment evaluation rejected with 403 Forbidden',
+    foreignEvalRes.status === 403,
+  )
   const foreignEvalData = await foreignEvalRes.json()
   check(
     'Forbidden response explains site scoping violation',
@@ -584,8 +628,12 @@ try {
     overrideAccess: true,
   })
   // At scheduling time, only the test send delivery was queued, not the bulk scheduled send
-  const pendingDeliveries = deliveries.docs.filter((d: any) => d.recipientEmail === 'pending@renegadeparty.org')
-  const bouncedDeliveries = deliveries.docs.filter((d: any) => d.recipientEmail === 'bounced@renegadeparty.org')
+  const pendingDeliveries = deliveries.docs.filter(
+    (d: any) => d.recipientEmail === 'pending@renegadeparty.org',
+  )
+  const bouncedDeliveries = deliveries.docs.filter(
+    (d: any) => d.recipientEmail === 'bounced@renegadeparty.org',
+  )
   check('Unconsented subscriber has zero deliveries', pendingDeliveries.length === 0)
   check('Suppressed subscriber has zero deliveries', bouncedDeliveries.length === 0)
 

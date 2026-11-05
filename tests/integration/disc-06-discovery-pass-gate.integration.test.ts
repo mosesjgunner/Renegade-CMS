@@ -1,3 +1,4 @@
+import { fixtureRichText } from '../helpers/fixture-rich-text'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -21,6 +22,12 @@ import robots from '../../src/app/robots'
 import { GET as getFeed } from '../../src/app/(frontend)/feed.xml/route'
 import { GET as getSitemapIndex } from '../../src/app/(frontend)/sitemap.xml/route'
 import { GET as getSitemapPage } from '../../src/app/(frontend)/sitemaps/[page]/route'
+
+function hostRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers)
+  headers.set('host', new URL(url).host)
+  return new Request(url, { ...init, headers })
+}
 
 let payload: Payload
 let siteId: string
@@ -59,6 +66,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: `Original Title ${suffix}`,
         slug: articleSlug,
         canonicalPath: `/articles/${articleSlug}`,
@@ -95,6 +103,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'page',
+        body: fixtureRichText(),
         title: `Home Page ${suffix}`,
         slug: `home-${suffix}`,
         canonicalPath: `/home-${suffix}`,
@@ -116,6 +125,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: `Post ${suffix}`,
         slug: `post-${suffix}`,
         canonicalPath: `/articles/post-${suffix}`,
@@ -160,6 +170,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: `Meta Inspect ${suffix}`,
         slug: articleSlug,
         canonicalPath: `/articles/${articleSlug}`,
@@ -202,7 +213,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     expect(robotsRes.rules).toBeDefined()
 
     // Sitemap Index API
-    const req = new Request('http://localhost:3110/sitemap.xml')
+    const req = hostRequest('http://localhost:3110/sitemap.xml')
     const sitemapIndexRes = await getSitemapIndex(req)
     expect(sitemapIndexRes.status).toBe(200)
     const xmlText = await sitemapIndexRes.text()
@@ -210,14 +221,14 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     expect(xmlText).toContain('/sitemaps/1.xml')
 
     // Child Sitemap API
-    const childReq = new Request('http://localhost:3110/sitemaps/1.xml')
+    const childReq = hostRequest('http://localhost:3110/sitemaps/1.xml')
     const childRes = await getSitemapPage(childReq, { params: Promise.resolve({ page: '1.xml' }) })
     expect(childRes.status).toBe(200)
     const childXml = await childRes.text()
     expect(childXml).toContain('<urlset')
 
     // Feed XML API
-    const feedReq = new Request('http://localhost:3110/feed.xml')
+    const feedReq = hostRequest('http://localhost:3110/feed.xml')
     const feedRes = await getFeed(feedReq)
     expect(feedRes.status).toBe(200)
     const feedXml = await feedRes.text()
@@ -233,6 +244,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: searchTitle,
         slug: searchSlug,
         canonicalPath: `/articles/${searchSlug}`,
@@ -348,6 +360,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
         site: siteId,
         publication: publicationId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: `Private Draft ${suffix}`,
         slug: draftSlug,
         canonicalPath: `/articles/${draftSlug}`,
@@ -369,7 +382,20 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     expect(resolved?.indexability.indexable).toBe(false)
     expect(resolved?.indexability.reason).toBe('draft')
 
-    await payload.delete({ collection: 'content', id: draftDoc.id, overrideAccess: true } as never)
+    await expect(
+      payload.delete({ collection: 'content', id: draftDoc.id, overrideAccess: true } as never),
+    ).rejects.toThrow('editorial revision history cannot be deleted')
+    await payload.update({
+      collection: 'content',
+      id: draftDoc.id,
+      data: { status: 'archived' },
+      overrideAccess: true,
+    } as never)
+    const archived = await resolveDiscoveryDocument(payload, {
+      siteId,
+      path: draftDoc.canonicalPath,
+    })
+    expect(archived?.indexability.indexable).toBe(false)
   })
 
   it('9. Exercises webmaster adapter and indexing change generation', async () => {

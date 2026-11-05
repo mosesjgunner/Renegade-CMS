@@ -218,7 +218,10 @@ try {
     consentWording: 'I consent to receiving the weekly Renegade Dispatch newsletter.',
     source: 'web_footer_signup',
   })
-  check('visitor signup initiated pending subscriber', signupResult.subscriber?.status === 'pending')
+  check(
+    'visitor signup initiated pending subscriber',
+    signupResult.subscriber?.status === 'pending',
+  )
   check('single-use confirmation token generated', Boolean(signupResult.token))
 
   // =========================================================================
@@ -421,7 +424,10 @@ try {
   const searchNameRes = await getCrm(searchNameReq)
   check('crm search by name returns HTTP 200', searchNameRes.status === 200)
   const searchNameData = await searchNameRes.json()
-  check('crm search found Jane Doe', searchNameData.contacts?.some((c: any) => c.displayName === 'Jane Doe'))
+  check(
+    'crm search found Jane Doe',
+    searchNameData.contacts?.some((c: any) => c.displayName === 'Jane Doe'),
+  )
 
   // 2. Search by phone
   const searchPhoneReq = new Request(
@@ -457,7 +463,10 @@ try {
   const detailData = await detailRes.json()
 
   check('detail indicates recipient is suppressed', detailData.isSuppressed === true)
-  check('detail indicates suppression reason is unsubscribe', detailData.suppressionReason === 'unsubscribe')
+  check(
+    'detail indicates suppression reason is unsubscribe',
+    detailData.suppressionReason === 'unsubscribe',
+  )
   check(
     'detail contains consent history with double-opt-in and withdrawal',
     detailData.consentHistory?.some((e: any) => e.event === 'double-opt-in-confirmed') &&
@@ -482,7 +491,10 @@ try {
   check('export report returns HTTP 200', exportRes.status === 200)
   check('export header is text/csv', exportRes.headers.get('content-type')?.includes('text/csv'))
   const exportCsv = await exportRes.text()
-  check('export asserts k-anonymity policy in header comments', exportCsv.includes('All cohorts with < 5 subjects are masked'))
+  check(
+    'export asserts k-anonymity policy in header comments',
+    exportCsv.includes('All cohorts with < 5 subjects are masked'),
+  )
   check('export masks small cohorts (< 5)', exportCsv.includes('< 5'))
 
   // 6. Create Contact via API
@@ -567,19 +579,20 @@ try {
 
   // 3. Foreign site operator access to Command Center -> 403
   const foreignCcRes = await getCommandCenter(
-    new Request(
-      `http://localhost:39002/api/admin/audience/command-center?siteId=${alphaSite.id}`,
-      { headers: { cookie: betaCookie } },
-    ),
+    new Request(`http://localhost:39002/api/admin/audience/command-center?siteId=${alphaSite.id}`, {
+      headers: { cookie: betaCookie },
+    }),
   )
-  check('cross-site foreign operator command center access denied HTTP 403', foreignCcRes.status === 403)
+  check(
+    'cross-site foreign operator command center access denied HTTP 403',
+    foreignCcRes.status === 403,
+  )
 
   // 4. Foreign site operator access to CRM -> 403
   const foreignCrmRes = await getCrm(
-    new Request(
-      `http://localhost:39002/api/admin/audience/crm?siteId=${alphaSite.id}`,
-      { headers: { cookie: betaCookie } },
-    ),
+    new Request(`http://localhost:39002/api/admin/audience/crm?siteId=${alphaSite.id}`, {
+      headers: { cookie: betaCookie },
+    }),
   )
   check('cross-site foreign operator crm access denied HTTP 403', foreignCrmRes.status === 403)
 

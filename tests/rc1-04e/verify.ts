@@ -122,11 +122,19 @@ try {
     // 2. Create Sites
     const siteAlpha = await payload.create({
       collection: 'sites',
-      data: { name: 'The Vanguard Chronicle', slug: `site-alpha-${stamp}`, lifecycle: 'active' } as never,
+      data: {
+        name: 'The Vanguard Chronicle',
+        slug: `site-alpha-${stamp}`,
+        lifecycle: 'active',
+      } as never,
     })
     const siteBeta = await payload.create({
       collection: 'sites',
-      data: { name: 'Forward for the People', slug: `site-beta-${stamp}`, lifecycle: 'active' } as never,
+      data: {
+        name: 'Forward for the People',
+        slug: `site-beta-${stamp}`,
+        lifecycle: 'active',
+      } as never,
     })
     check('created isolated Site Alpha and Site Beta records', siteAlpha.id && siteBeta.id)
 
@@ -159,7 +167,10 @@ try {
       await payload.count({ collection: 'products', where: { site: { equals: siteBeta.id } } })
     ).totalDocs
     const betaDonationCount = (
-      await payload.count({ collection: 'donation-campaigns', where: { site: { equals: siteBeta.id } } })
+      await payload.count({
+        collection: 'donation-campaigns',
+        where: { site: { equals: siteBeta.id } },
+      })
     ).totalDocs
     check('campaign-commerce provisioned content on Site Beta', betaContentCount > 0)
     check('campaign-commerce provisioned products on Site Beta', betaProductCount > 0)
@@ -227,7 +238,9 @@ try {
       },
     })
     assert.equal(draftAlpha.status(), 200, await draftAlpha.text())
-    const themeDraftAlpha = await (await apiAlpha.get(`/api/admin/themes?site=${siteAlpha.id}`)).json()
+    const themeDraftAlpha = await (
+      await apiAlpha.get(`/api/admin/themes?site=${siteAlpha.id}`)
+    ).json()
     const activateAlpha = await apiAlpha.post('/api/admin/themes', {
       data: { action: 'activate', site: siteAlpha.id, revision: themeDraftAlpha.state.revision },
     })
@@ -274,7 +287,8 @@ try {
     )
     check(
       'cross-site theme isolation: palettes do not cross-contaminate',
-      alphaThemeState?.active?.tokens?.['color.accent'] !== betaThemeState?.active?.tokens?.['color.accent'],
+      alphaThemeState?.active?.tokens?.['color.accent'] !==
+        betaThemeState?.active?.tokens?.['color.accent'],
     )
 
     // 6. Builder Content Revision, Publication & Rollback
@@ -312,11 +326,18 @@ try {
       id: homeLayoutAlpha.id,
       depth: 0,
     })
-    check('published revision 2 for Site Alpha homepage', Number(rev2Layout.publishedRevision) === 2)
+    check(
+      'published revision 2 for Site Alpha homepage',
+      Number(rev2Layout.publishedRevision) === 2,
+    )
 
     // Rollback to revision 1
     const rollbackAlpha = await apiAlpha.post(`/api/layouts/${homeLayoutAlpha.id}/rollback`, {
-      data: { targetRevision: initialRev, expectedRevision: Number(rev2Layout.revision), publish: true },
+      data: {
+        targetRevision: initialRev,
+        expectedRevision: Number(rev2Layout.revision),
+        publish: true,
+      },
     })
     assert.equal(rollbackAlpha.status(), 200, await rollbackAlpha.text())
     const rolledBackLayout = await payload.findByID({
@@ -417,7 +438,9 @@ try {
     const firstArticle = (
       await payload.find({
         collection: 'content',
-        where: { and: [{ site: { equals: siteAlpha.id } }, { contentType: { equals: 'article' } }] },
+        where: {
+          and: [{ site: { equals: siteAlpha.id } }, { contentType: { equals: 'article' } }],
+        },
         limit: 1,
       })
     ).docs[0]

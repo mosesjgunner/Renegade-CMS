@@ -44,7 +44,10 @@ if (!existsSync(secretFile)) {
 }
 const payloadSecret = readFileSync(secretFile, 'utf8').trim()
 
-const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).stdout.trim()
+const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], {
+  cwd: repo,
+  encoding: 'utf8',
+}).stdout.trim()
 
 const appEnv = {
   ...process.env,
@@ -104,7 +107,8 @@ const migrate = spawnSync('npm', ['run', 'db:migrate'], {
   stdio: ['ignore', migrateLog, migrateLog],
 })
 closeSync(migrateLog)
-if (migrate.status !== 0) fail(`db:migrate exited ${migrate.status}; see scratch/rc1r03a/migrate.log`)
+if (migrate.status !== 0)
+  fail(`db:migrate exited ${migrate.status}; see scratch/rc1r03a/migrate.log`)
 const migrationCount = psqlCount()
 function psqlCount() {
   const result = spawnSync('psql', [dbUrl, '-Atc', 'SELECT count(*) FROM payload_migrations'], {
@@ -128,7 +132,7 @@ function startWeb() {
     env: appEnv,
     stdio: ['ignore', fd, fd],
   })
-  web.on('exit', code => console.log(`[r03a-local] web process exited (${code})`))
+  web.on('exit', (code) => console.log(`[r03a-local] web process exited (${code})`))
 }
 function startWorker() {
   const fd = openSync(workerLog, 'a')
@@ -160,7 +164,7 @@ async function waitReady(label) {
       console.log(`[r03a-local] web ready (${label})`)
       return
     }
-    await new Promise(r => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 1000))
   }
   fail(`web did not become ready (${label}); see scratch/rc1r03a/web.log`)
 }
@@ -190,7 +194,7 @@ const proxy = createHttpsServer(
           'x-forwarded-for': '127.0.0.1',
         },
       },
-      upstreamRes => {
+      (upstreamRes) => {
         res.writeHead(upstreamRes.statusCode ?? 502, upstreamRes.headers)
         upstreamRes.pipe(res)
       },
@@ -204,7 +208,7 @@ const proxy = createHttpsServer(
   },
 )
 proxy.on('upgrade', (_req, socket) => socket.destroy())
-await new Promise(resolve => proxy.listen(proxyPort, '127.0.0.1', resolve))
+await new Promise((resolve) => proxy.listen(proxyPort, '127.0.0.1', resolve))
 console.log(`[r03a-local] https proxy listening on 127.0.0.1:${proxyPort}`)
 
 // 5. Run a harness phase as a child process with the app environment; the
@@ -215,16 +219,23 @@ async function phase(name, script, args = [], { browser = false } = {}) {
   const fd = openSync(logPath, 'w')
   const env = { ...appEnv }
   if (browser) {
-    for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'all_proxy'])
+    for (const key of [
+      'http_proxy',
+      'https_proxy',
+      'HTTP_PROXY',
+      'HTTPS_PROXY',
+      'ALL_PROXY',
+      'all_proxy',
+    ])
       delete env[key]
   }
-  const status = await new Promise(resolve => {
+  const status = await new Promise((resolve) => {
     const child = spawn('npx', ['tsx', script, ...args], {
       cwd: repo,
       env,
       stdio: ['ignore', fd, fd],
     })
-    child.on('close', code => resolve(code ?? 1))
+    child.on('close', (code) => resolve(code ?? 1))
     child.on('error', () => resolve(1))
   })
   closeSync(fd)
@@ -235,8 +246,12 @@ async function phase(name, script, args = [], { browser = false } = {}) {
 const results = {}
 results.fresh = await phase('fresh', 'tests/rc1-r03a/verify-hierarchy-local.ts')
 if (results.fresh) {
-  results.browser = await phase('browser', 'tests/rc1-r03a/browser-public-local.ts', [], { browser: true })
-  results.controls = await phase('controls', 'tests/rc1-r03a/verify-hierarchy-local.ts', ['--controls'])
+  results.browser = await phase('browser', 'tests/rc1-r03a/browser-public-local.ts', [], {
+    browser: true,
+  })
+  results.controls = await phase('controls', 'tests/rc1-r03a/verify-hierarchy-local.ts', [
+    '--controls',
+  ])
 } else {
   console.log('[r03a-local] fresh phase failed; browser/controls/restart phases unexecuted')
 }
@@ -247,18 +262,20 @@ if (results.fresh && results.controls) {
     if (proc) {
       proc.kill('SIGTERM')
       await Promise.race([
-        new Promise(r => proc.once('exit', r)),
-        new Promise(r => setTimeout(r, 10000)),
+        new Promise((r) => proc.once('exit', r)),
+        new Promise((r) => setTimeout(r, 10000)),
       ])
       if (proc.exitCode === null) proc.kill('SIGKILL')
     }
   }
   spawnSync('pkill', ['-f', 'run-jobs-worker'])
-  await new Promise(r => setTimeout(r, 1000))
+  await new Promise((r) => setTimeout(r, 1000))
   startWeb()
   startWorker()
   await waitReady('post-restart')
-  results.restart = await phase('restart', 'tests/rc1-r03a/verify-hierarchy-local.ts', ['--restart'])
+  results.restart = await phase('restart', 'tests/rc1-r03a/verify-hierarchy-local.ts', [
+    '--restart',
+  ])
 }
 
 // 7. Teardown + summary.
@@ -267,5 +284,5 @@ if (web) web.kill('SIGTERM')
 if (worker) worker.kill('SIGTERM')
 spawnSync('pkill', ['-f', 'run-jobs-worker'])
 console.log(`[r03a-local] phase results: ${JSON.stringify(results)}`)
-const ok = ['fresh', 'browser', 'controls', 'restart'].every(k => results[k] === true)
+const ok = ['fresh', 'browser', 'controls', 'restart'].every((k) => results[k] === true)
 process.exit(ok ? 0 : 1)

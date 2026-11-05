@@ -45,4 +45,3 @@ export type WebhookDeliveryDiagnosis = {
   backoffDelaySeconds: number | null
   isDeadLetter: boolean
 }
-

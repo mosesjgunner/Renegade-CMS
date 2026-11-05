@@ -48,7 +48,10 @@ if (!existsSync(secretFile)) {
 }
 const payloadSecret = readFileSync(secretFile, 'utf8').trim()
 
-const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).stdout.trim()
+const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], {
+  cwd: repo,
+  encoding: 'utf8',
+}).stdout.trim()
 
 const appEnv = {
   ...process.env,
@@ -104,7 +107,8 @@ const migrate = spawnSync('npm', ['run', 'db:migrate'], {
   stdio: ['ignore', migrateLog, migrateLog],
 })
 closeSync(migrateLog)
-if (migrate.status !== 0) fail(`db:migrate exited ${migrate.status}; see scratch/rc1r03d/migrate.log`)
+if (migrate.status !== 0)
+  fail(`db:migrate exited ${migrate.status}; see scratch/rc1r03d/migrate.log`)
 const migrationCount = psql('SELECT count(*) FROM payload_migrations')
 console.log(`[r03d-local] migrations applied (payload_migrations rows: ${migrationCount})`)
 
@@ -122,7 +126,7 @@ function startWeb() {
     env: appEnv,
     stdio: ['ignore', fd, fd],
   })
-  web.on('exit', code => console.log(`[r03d-local] web process exited (${code})`))
+  web.on('exit', (code) => console.log(`[r03d-local] web process exited (${code})`))
 }
 function startWorker() {
   const fd = openSync(workerLog, 'a')
@@ -154,7 +158,7 @@ async function waitReady(label) {
       console.log(`[r03d-local] web ready (${label})`)
       return
     }
-    await new Promise(r => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 1000))
   }
   fail(`web did not become ready (${label}); see scratch/rc1r03d/web.log`)
 }
@@ -183,7 +187,7 @@ const proxy = createHttpsServer(
           'x-forwarded-for': '127.0.0.1',
         },
       },
-      upstreamRes => {
+      (upstreamRes) => {
         res.writeHead(upstreamRes.statusCode ?? 502, upstreamRes.headers)
         upstreamRes.pipe(res)
       },
@@ -197,7 +201,7 @@ const proxy = createHttpsServer(
   },
 )
 proxy.on('upgrade', (_req, socket) => socket.destroy())
-await new Promise(resolve => proxy.listen(proxyPort, '127.0.0.1', resolve))
+await new Promise((resolve) => proxy.listen(proxyPort, '127.0.0.1', resolve))
 console.log(`[r03d-local] https proxy listening on 127.0.0.1:${proxyPort}`)
 
 // 5. Run a harness phase as a child process with the app environment;
@@ -207,15 +211,22 @@ async function phase(name, script, args = []) {
   const logPath = path.join(scratch, `${name}.log`)
   const fd = openSync(logPath, 'w')
   const env = { ...appEnv }
-  for (const key of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'all_proxy'])
+  for (const key of [
+    'http_proxy',
+    'https_proxy',
+    'HTTP_PROXY',
+    'HTTPS_PROXY',
+    'ALL_PROXY',
+    'all_proxy',
+  ])
     delete env[key]
-  const status = await new Promise(resolve => {
+  const status = await new Promise((resolve) => {
     const child = spawn('npx', ['tsx', script, ...args], {
       cwd: repo,
       env,
       stdio: ['ignore', fd, fd],
     })
-    child.on('close', code => resolve(code ?? 1))
+    child.on('close', (code) => resolve(code ?? 1))
     child.on('error', () => resolve(1))
   })
   closeSync(fd)
@@ -238,14 +249,14 @@ if (results.journey && results.negatives) {
     if (proc) {
       proc.kill('SIGTERM')
       await Promise.race([
-        new Promise(r => proc.once('exit', r)),
-        new Promise(r => setTimeout(r, 10000)),
+        new Promise((r) => proc.once('exit', r)),
+        new Promise((r) => setTimeout(r, 10000)),
       ])
       if (proc.exitCode === null) proc.kill('SIGKILL')
     }
   }
   spawnSync('pkill', ['-f', 'run-jobs-worker'])
-  await new Promise(r => setTimeout(r, 1000))
+  await new Promise((r) => setTimeout(r, 1000))
   const pgRestart = spawnSync('pg_ctlcluster', ['16', 'main', 'restart'], { encoding: 'utf8' })
   if (pgRestart.status !== 0)
     fail(`PostgreSQL cluster restart failed: ${pgRestart.stderr || pgRestart.stdout}`)
@@ -253,7 +264,7 @@ if (results.journey && results.negatives) {
     const probe = spawnSync('psql', [dbUrl, '-Atc', 'SELECT 1'], { encoding: 'utf8' })
     if (probe.status === 0 && probe.stdout.trim() === '1') break
     if (i === 59) fail('PostgreSQL did not accept connections after cluster restart')
-    await new Promise(r => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 1000))
   }
   console.log('[r03d-local] PostgreSQL cluster restarted; disposable database reachable')
   startWeb()
@@ -270,5 +281,5 @@ if (web) web.kill('SIGTERM')
 if (worker) worker.kill('SIGTERM')
 spawnSync('pkill', ['-f', 'run-jobs-worker'])
 console.log(`[r03d-local] phase results: ${JSON.stringify(results)}`)
-const ok = ['journey', 'negatives', 'restart'].every(k => results[k] === true)
+const ok = ['journey', 'negatives', 'restart'].every((k) => results[k] === true)
 process.exit(ok ? 0 : 1)

@@ -268,7 +268,8 @@ describe('M04-C editorial acceptance', () => {
 
     await restoreEditorialRevision(payload, {
       articleId,
-      actor: { id: 'editor-1', role: 'editor' },
+      actor: { id: String(previewUser.id), role: 'editor' },
+      actorUserId: String(previewUser.id),
       revisionId: originalRevisionId,
       now: '2026-08-19T14:00:00.000Z',
     })

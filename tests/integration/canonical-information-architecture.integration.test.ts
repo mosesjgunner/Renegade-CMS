@@ -187,6 +187,12 @@ describe('canonical information architecture integration', () => {
       permalink: { equals: '/notes/demo-field-report#post-1' },
     })
     const forum = await findOne('forums', { slug: { equals: 'introductions' } })
+    const forumPost = await findOne('discussion-posts', {
+      permalink: { equals: '/forums/introductions/welcome-thread#post-1' },
+    })
+    const article = await findOne('content', { slug: { equals: 'demo-field-report' } })
+    expect(forumPost.parent).toBeNull()
+    expect(article.body.root.children.length).toBeGreaterThan(0)
 
     await expect(
       create({
@@ -322,7 +328,7 @@ describe('canonical information architecture integration', () => {
         data: { parent: subcategory.id },
         overrideAccess: true,
       }),
-    ).rejects.toThrow('descendants')
+    ).rejects.toThrow('cannot be its own parent or be moved below a descendant')
 
     const fromPath = `/categories/archive/${randomUUID()}`
     const redirect = await create({
@@ -375,6 +381,19 @@ describe('canonical information architecture integration', () => {
         title: `Expired ${randomUUID()}`,
         slug: `expired-${randomUUID()}`,
         canonicalPath: `/expired/${randomUUID()}`,
+        body: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [{ type: 'text', version: 1, text: 'Retention fixture' }],
+              },
+            ],
+          },
+        },
         status: 'published',
         commentsPolicy: 'open',
         retentionMode: 'expire-at',
@@ -392,6 +411,19 @@ describe('canonical information architecture integration', () => {
         title: `Held ${randomUUID()}`,
         slug: `held-${randomUUID()}`,
         canonicalPath: `/held/${randomUUID()}`,
+        body: {
+          root: {
+            type: 'root',
+            version: 1,
+            children: [
+              {
+                type: 'paragraph',
+                version: 1,
+                children: [{ type: 'text', version: 1, text: 'Retention fixture' }],
+              },
+            ],
+          },
+        },
         status: 'published',
         commentsPolicy: 'open',
         retentionMode: 'expire-at',

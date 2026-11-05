@@ -41,7 +41,12 @@ const api = async (
 ) => {
   const headers: Record<string, string> = { origin: base, ...extraHeaders }
   if (cookie) headers.cookie = cookie
-  if (data && !(data instanceof FormData) && !(data instanceof Uint8Array) && !Buffer.isBuffer(data)) {
+  if (
+    data &&
+    !(data instanceof FormData) &&
+    !(data instanceof Uint8Array) &&
+    !Buffer.isBuffer(data)
+  ) {
     headers['content-type'] = 'application/json'
   }
   const body =
@@ -188,7 +193,9 @@ try {
     const activeList = await json(`/api/media?siteId=${saved.siteAlphaId}`, cookie)
     check(
       'restart default library discovery excludes tombstoned and deleted assets',
-      !activeList.docs.some((d: any) => d.id === saved.tombstonedId || d.id === saved.deletedOrphanId),
+      !activeList.docs.some(
+        (d: any) => d.id === saved.tombstonedId || d.id === saved.deletedOrphanId,
+      ),
     )
     const tombstoneList = await json(
       `/api/media?siteId=${saved.siteAlphaId}&retentionMode=tombstone`,
@@ -221,7 +228,11 @@ try {
     // 1. Provision isolated Sites & Users
     const siteAlpha = await payload.create({
       collection: 'sites',
-      data: { name: '05A Editorial Alpha', slug: `alpha-05a-${stamp}`, lifecycle: 'active' } as never,
+      data: {
+        name: '05A Editorial Alpha',
+        slug: `alpha-05a-${stamp}`,
+        lifecycle: 'active',
+      } as never,
     })
     const siteBeta = await payload.create({
       collection: 'sites',
@@ -376,7 +387,10 @@ try {
       },
       413,
     )
-    check('oversized upload session (>100 MiB) is rejected with 413', Boolean(oversizedSession.error))
+    check(
+      'oversized upload session (>100 MiB) is rejected with 413',
+      Boolean(oversizedSession.error),
+    )
 
     const unsupportedSession = await json(
       '/api/media/sessions',
@@ -389,13 +403,13 @@ try {
       },
       415,
     )
-    check('unsupported extension in upload session is rejected with 415', Boolean(unsupportedSession.error))
+    check(
+      'unsupported extension in upload session is rejected with 415',
+      Boolean(unsupportedSession.error),
+    )
 
     // 5. Chunked upload session creation, interruption, failed-state recovery, and expired cleanup
-    const multiChunkPng = Buffer.concat([
-      imageOriginalBytes,
-      Buffer.alloc(270 * 1024, 0),
-    ])
+    const multiChunkPng = Buffer.concat([imageOriginalBytes, Buffer.alloc(270 * 1024, 0)])
     const multiChunkSha = `sha256:${hash(multiChunkPng)}`
     const sessionRes = await json(
       '/api/media/sessions',
@@ -432,7 +446,10 @@ try {
         'content-range': `bytes 0-${chunk0.byteLength - 1}/${multiChunkPng.byteLength}`,
       },
     )
-    check('uploaded first chunk of resumable session', putChunk0.receivedBytes === chunk0.byteLength)
+    check(
+      'uploaded first chunk of resumable session',
+      putChunk0.receivedBytes === chunk0.byteLength,
+    )
 
     // Premature finalize must fail with 409
     const prematureFinalize = await json(
@@ -442,7 +459,10 @@ try {
       {},
       409,
     )
-    check('premature finalization of incomplete session is rejected with 409', Boolean(prematureFinalize.error))
+    check(
+      'premature finalization of incomplete session is rejected with 409',
+      Boolean(prematureFinalize.error),
+    )
 
     // Simulate interrupted/failed state and verify readUploadSession + recovery on remaining chunk
     await payload.update({
@@ -512,7 +532,10 @@ try {
       },
     )
     const abandonedStagingDir = path.join(process.env.MEDIA_DIR!, '.upload-sessions', abandonedId)
-    check('abandoned session staged chunk directory exists before cleanup', (await stat(abandonedStagingDir)).isDirectory())
+    check(
+      'abandoned session staged chunk directory exists before cleanup',
+      (await stat(abandonedStagingDir)).isDirectory(),
+    )
 
     await payload.update({
       collection: 'media-upload-sessions',
@@ -811,7 +834,10 @@ try {
       },
       409,
     )
-    check('attaching a tombstoned asset to content is refused with 409', Boolean(reattachTombstoned.error))
+    check(
+      'attaching a tombstoned asset to content is refused with 409',
+      Boolean(reattachTombstoned.error),
+    )
 
     // Hard-delete unreferenced orphan asset (chunkedAsset)
     const chunkedAssetDoc = await record('media-assets', chunkedAsset.id)
@@ -831,7 +857,10 @@ try {
 
     // 10. Unauthorized cross-site access denials (Site Beta editor vs Site Alpha assets)
     const crossSiteList = await api(`/api/media?siteId=${siteAlpha.id}`, betaCookie)
-    check('foreign site editor denied listing Site Alpha media with 403', crossSiteList.status === 403)
+    check(
+      'foreign site editor denied listing Site Alpha media with 403',
+      crossSiteList.status === 403,
+    )
 
     const crossSiteDetail = await api(
       `/api/media/${heroOriginal.id}?siteId=${siteAlpha.id}`,
@@ -867,7 +896,10 @@ try {
     check('foreign site editor denied media deletion with 403', crossSiteDelete.status === 403)
 
     const crossSiteSessionRead = await api(`/api/media/sessions/${sessionId}`, betaCookie)
-    check('foreign site editor denied reading foreign upload session with 403', crossSiteSessionRead.status === 403)
+    check(
+      'foreign site editor denied reading foreign upload session with 403',
+      crossSiteSessionRead.status === 403,
+    )
 
     // 11. Real Browser UI Verification (/admin/media and public article page)
     browser = await chromium.launch({ headless: true })
@@ -912,7 +944,9 @@ try {
 
     // Filter by kind=audio in UI and verify audio card is visible
     await page.getByTestId('media-filter-kind').selectOption('audio')
-    await page.getByTestId(`media-card-${audioAsset.id}`).waitFor({ state: 'visible', timeout: 60000 })
+    await page
+      .getByTestId(`media-card-${audioAsset.id}`)
+      .waitFor({ state: 'visible', timeout: 60000 })
     check('Media Library UI kind=audio filter isolates audio fixture in browser', true)
 
     // Reset filter to all

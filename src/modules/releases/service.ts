@@ -558,6 +558,16 @@ async function scheduleReleaseUnlocked(
     release.plannedInstant = input.scheduledFor
     release.scheduledFor = input.scheduledFor
     release.timeZone = input.timeZone
+    // Legacy selections are materialized only here. Evaluate the exact pinned
+    // artifacts and schedule that execution will later verify.
+    snapshot = await evaluateReleaseGates(payload, release as CoordinatedRelease, {
+      actor: { id: input.actorId, role: 'publisher' },
+    })
+    if (snapshot.blockerCount > 0) {
+      throw new Error(
+        `ContentRelease is blocked by unresolved publication-blocking quality or preflight gate issues (${snapshot.blockerCount} blocker(s)).`,
+      )
+    }
   } else if (
     new Date(release.plannedInstant || release.scheduledFor).getTime() !==
     new Date(input.scheduledFor).getTime()

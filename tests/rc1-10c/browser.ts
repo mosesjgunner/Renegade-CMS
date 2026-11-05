@@ -282,7 +282,9 @@ try {
   // Bob visits /messages UI and reads conversation and messages
   await bob.page.goto(`${base}/messages`, { waitUntil: 'networkidle' })
   // Bob sees conversation in list
-  await expect(bob.page.getByRole('button', { name: new RegExp(conversationId.slice(0, 8)) })).toBeVisible()
+  await expect(
+    bob.page.getByRole('button', { name: new RegExp(conversationId.slice(0, 8)) }),
+  ).toBeVisible()
   await bob.page.getByRole('button', { name: new RegExp(conversationId.slice(0, 8)) }).click()
   // Bob observes message 1
   await expect(bob.page.locator('main')).toContainText('Hello Bob! This is private message 1.')
@@ -321,7 +323,9 @@ try {
   // Alice visits /messages and observes Bob reply
   await alice.page.goto(`${base}/messages`, { waitUntil: 'networkidle' })
   await alice.page.getByRole('button', { name: new RegExp(conversationId.slice(0, 8)) }).click()
-  await expect(alice.page.locator('main')).toContainText('Hi Alice! Received message 1 loud and clear.')
+  await expect(alice.page.locator('main')).toContainText(
+    'Hi Alice! Received message 1 loud and clear.',
+  )
   await alice.page.screenshot({ path: `${out}/messages.png` })
   check('Alice views Bob message 2 in /messages UI (saved messages.png)', true)
 
@@ -396,18 +400,24 @@ try {
   check('Subsequent message from Bob to Alice rejected with 403 BLOCKED_COMMUNICATION', true)
 
   // Subsequent direct conversation start attempt between blocked pair -> Rejected 403 BLOCKED_COMMUNICATION
-  const blockedConvoAttempt = await alice.context.request.fetch(`${base}/api/community/conversations`, {
-    method: 'POST',
-    data: {
-      siteId: String(alpha.id),
-      kind: 'direct',
-      targetMemberId: bob.memberId,
+  const blockedConvoAttempt = await alice.context.request.fetch(
+    `${base}/api/community/conversations`,
+    {
+      method: 'POST',
+      data: {
+        siteId: String(alpha.id),
+        kind: 'direct',
+        targetMemberId: bob.memberId,
+      },
+      headers: { origin: base, 'x-member-csrf': await csrf(alice.context) },
     },
-    headers: { origin: base, 'x-member-csrf': await csrf(alice.context) },
-  })
+  )
   assert.equal(blockedConvoAttempt.status(), 403)
   assert.equal((await blockedConvoAttempt.json()).code, 'BLOCKED_COMMUNICATION')
-  check('New direct conversation attempt between blocked members rejected with 403 BLOCKED_COMMUNICATION', true)
+  check(
+    'New direct conversation attempt between blocked members rejected with 403 BLOCKED_COMMUNICATION',
+    true,
+  )
 
   // 8. Group Conversation & Admin Invariants:
   const groupRes = await mutate(
@@ -432,15 +442,26 @@ try {
 
   // 10. Non-Leakage & Privacy Invariants:
   // Anonymous access to private endpoints is rejected with 401
-  const anonMessages = await fetch(`${base}/api/community/messages?conversationId=${conversationId}&siteId=${encodeURIComponent(String(alpha.id))}`)
+  const anonMessages = await fetch(
+    `${base}/api/community/messages?conversationId=${conversationId}&siteId=${encodeURIComponent(String(alpha.id))}`,
+  )
   assert.equal(anonMessages.status, 401)
-  const anonConvos = await fetch(`${base}/api/community/conversations?siteId=${encodeURIComponent(String(alpha.id))}`)
+  const anonConvos = await fetch(
+    `${base}/api/community/conversations?siteId=${encodeURIComponent(String(alpha.id))}`,
+  )
   assert.equal(anonConvos.status, 401)
-  const anonNotifs = await fetch(`${base}/api/community/notifications?siteId=${encodeURIComponent(String(alpha.id))}`)
+  const anonNotifs = await fetch(
+    `${base}/api/community/notifications?siteId=${encodeURIComponent(String(alpha.id))}`,
+  )
   assert.equal(anonNotifs.status, 401)
-  const anonV1Notifs = await fetch(`${base}/api/v1/notifications?siteId=${encodeURIComponent(String(alpha.id))}`)
+  const anonV1Notifs = await fetch(
+    `${base}/api/v1/notifications?siteId=${encodeURIComponent(String(alpha.id))}`,
+  )
   assert.equal(anonV1Notifs.status, 401)
-  check('Anonymous access to private messages, conversations, and notifications rejected with 401', true)
+  check(
+    'Anonymous access to private messages, conversations, and notifications rejected with 401',
+    true,
+  )
 
   // Cross-site / non-member access:
   // Requesting messages with foreign siteId -> 404 Site access denied
@@ -459,7 +480,9 @@ try {
   check('Non-member read attempt rejected with 403 NOT_CONVERSATION_MEMBER', true)
 
   // Public search projection zero-leakage verification:
-  const searchRes = await fetch(`${base}/search?q=private&site=${encodeURIComponent(String(alpha.id))}`)
+  const searchRes = await fetch(
+    `${base}/search?q=private&site=${encodeURIComponent(String(alpha.id))}`,
+  )
   assert.ok(searchRes.status === 200 || searchRes.status === 404)
   const searchHtml = await searchRes.text()
   assert.ok(!searchHtml.includes('Hello Bob! This is private message 1.'))
@@ -476,14 +499,22 @@ try {
     connectionString: 'postgresql://postgres:postgres@127.0.0.1:5457/rc110c_release_acceptance',
   })
   await pgClient.connect()
-  const dbMessages = await pgClient.query('SELECT count(*)::int AS count FROM messages WHERE conversation_id=$1', [conversationId])
+  const dbMessages = await pgClient.query(
+    'SELECT count(*)::int AS count FROM messages WHERE conversation_id=$1',
+    [conversationId],
+  )
   assert.equal(Number(dbMessages.rows[0].count), 2)
-  const dbBlocks = await pgClient.query("SELECT count(*)::int AS count FROM relationships WHERE kind='block' AND status='active'")
+  const dbBlocks = await pgClient.query(
+    "SELECT count(*)::int AS count FROM relationships WHERE kind='block' AND status='active'",
+  )
   assert.equal(Number(dbBlocks.rows[0].count), 1)
   const dbConvos = await pgClient.query('SELECT count(*)::int AS count FROM conversations')
   assert.ok(Number(dbConvos.rows[0].count) >= 2)
   await pgClient.end()
-  check('PostgreSQL snapshot while web is stopped confirms 2 persisted messages and 1 active block', true)
+  check(
+    'PostgreSQL snapshot while web is stopped confirms 2 persisted messages and 1 active block',
+    true,
+  )
 
   // Restart web process
   console.log('Restarting web process...')
@@ -501,16 +532,19 @@ try {
   check('Bob reads 2 persisted conversation messages after web process restart', true)
 
   // Verify block status persists after restart: Alice still cannot message Bob
-  const postRestartBlockAttempt = await alice.context.request.fetch(`${base}/api/community/messages`, {
-    method: 'POST',
-    data: {
-      siteId: String(alpha.id),
-      conversationId,
-      body: 'Alice post-restart attempt',
-      idempotencyKey: `post-restart-${marker}`,
+  const postRestartBlockAttempt = await alice.context.request.fetch(
+    `${base}/api/community/messages`,
+    {
+      method: 'POST',
+      data: {
+        siteId: String(alpha.id),
+        conversationId,
+        body: 'Alice post-restart attempt',
+        idempotencyKey: `post-restart-${marker}`,
+      },
+      headers: { origin: base, 'x-member-csrf': await csrf(alice.context) },
     },
-    headers: { origin: base, 'x-member-csrf': await csrf(alice.context) },
-  })
+  )
   assert.equal(postRestartBlockAttempt.status(), 403)
   assert.equal((await postRestartBlockAttempt.json()).code, 'BLOCKED_COMMUNICATION')
   check('Block relationship persists across restart: Alice message rejected with 403', true)
@@ -533,11 +567,18 @@ try {
   const hint0 = notificationStreamManager.emitHint(String(alpha.id), bob.memberId, 1)
   const hint1 = notificationStreamManager.emitHint(String(alpha.id), bob.memberId, 2)
   const hint2 = notificationStreamManager.emitHint(String(alpha.id), bob.memberId, 3)
-  const recovered = notificationStreamManager.getMissedHints(String(alpha.id), bob.memberId, hint0.id)
+  const recovered = notificationStreamManager.getMissedHints(
+    String(alpha.id),
+    bob.memberId,
+    hint0.id,
+  )
   assert.equal(recovered.length, 2)
   assert.equal(recovered[0].id, hint1.id)
   assert.equal(recovered[1].id, hint2.id)
-  check('Notification stream manager recovers missed hints sequentially upon reconnect with Last-Event-ID', true)
+  check(
+    'Notification stream manager recovers missed hints sequentially upon reconnect with Last-Event-ID',
+    true,
+  )
 
   succeeded = true
 } finally {
@@ -556,7 +597,15 @@ try {
   await writeFile(`${out}/trace.json`, JSON.stringify(summary, null, 2))
   await writeFile(
     `${out}/state.json`,
-    JSON.stringify({ marker, identities: identities.map((i) => ({ memberId: i.memberId, displayName: i.displayName })), timestamp: new Date().toISOString() }, null, 2),
+    JSON.stringify(
+      {
+        marker,
+        identities: identities.map((i) => ({ memberId: i.memberId, displayName: i.displayName })),
+        timestamp: new Date().toISOString(),
+      },
+      null,
+      2,
+    ),
   )
 }
 

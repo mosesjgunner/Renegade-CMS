@@ -9,7 +9,9 @@ export default defineConfig({
     baseURL: 'https://rc1-01b.test:38743',
     browserName: 'chromium',
     ignoreHTTPSErrors: true,
-    launchOptions: { args: ['--host-resolver-rules=MAP rc1-01b.test 127.0.0.1', '--ignore-certificate-errors'] },
+    launchOptions: {
+      args: ['--host-resolver-rules=MAP rc1-01b.test 127.0.0.1', '--ignore-certificate-errors'],
+    },
     trace: 'on',
     screenshot: 'on',
   },

@@ -127,9 +127,12 @@ function createMockPayload(): Payload {
     count: vi.fn(async (args: any) => {
       const col = args.collection
       const andClauses = args.where?.and || []
-      const idClause = andClauses.find((c: any) => c.id?.equals) || (args.where?.id ? { id: args.where.id } : null)
+      const idClause =
+        andClauses.find((c: any) => c.id?.equals) || (args.where?.id ? { id: args.where.id } : null)
       const id = idClause?.id?.equals
-      const siteInClause = andClauses.find((c: any) => c.site?.in) || (args.where?.site ? { site: args.where.site } : null)
+      const siteInClause =
+        andClauses.find((c: any) => c.site?.in) ||
+        (args.where?.site ? { site: args.where.site } : null)
       const siteIn = siteInClause?.site?.in
 
       if (col === 'content') {

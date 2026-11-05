@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  ADAPTER_REGISTRY,
-  getSocialAdapter,
-} from '@/modules/social/worker'
+import { ADAPTER_REGISTRY, getSocialAdapter } from '@/modules/social/worker'
 import {
   getProviderCapabilityTruth,
   socialProviderFor,
@@ -107,7 +104,9 @@ describe('RC1 08A - Provider Setup & Capability Truth', () => {
       expect(allowedDev.isValid).toBe(true)
 
       // Cloud metadata is strictly forbidden even in dev
-      const metadata = validateOutboundUrl('http://169.254.169.254/latest/meta-data', { allowHttpInDev: true })
+      const metadata = validateOutboundUrl('http://169.254.169.254/latest/meta-data', {
+        allowHttpInDev: true,
+      })
       expect(metadata.isValid).toBe(false)
     })
   })

@@ -1,0 +1,13 @@
+{
+  "command": "npm.cmd run typecheck",
+  "exit": 0,
+  "generator": "next typegen",
+  "isolatedDirectory": ".next-typecheck",
+  "tscCommand": "node node_modules/typescript/bin/tsc --noEmit --listFilesOnly",
+  "listedFiles": 5915,
+  "validators": [
+    "C:/Projects/RENEGADE CMS/Renegade-CMS/.next-typecheck/types/validator.ts"
+  ],
+  "validatorSha256": "752e855958440df94b6b0fec1543a5be234bccc0774459d9db98c4533de90282",
+  "oldValidatorTrees": "Retained on disk, excluded from the active candidate graph; no ignoreBuildErrors change"
+}

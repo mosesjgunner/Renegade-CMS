@@ -1,0 +1,140 @@
+{
+  "commands": [
+    {
+      "command": "npm.cmd test -- --reporter=json --outputFile=scratch/rc118a-unit-final.json",
+      "exit": 1,
+      "counts": {
+        "files": 282,
+        "passed": 2072,
+        "failed": 5,
+        "skipped": 0,
+        "total": 2077
+      },
+      "failures": [
+        {
+          "file": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-04-acceptance.test.ts",
+          "assertion": "FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario passes complete 8-stage acceptance lifecycle with blocking issue, waiver, scheduling, worker restart, partial failure, safe retry, and rollback",
+          "error": "Error: Waiver expiry must be a future instant.\n    at waiveGateRule (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\releases\\service.ts:329:11)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\unit\\flow-04-acceptance.test.ts:394:34\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        },
+        {
+          "file": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/payload-domains.test.ts",
+          "assertion": "Payload domain registration registers every existing collection, global, and task exactly once",
+          "error": "AssertionError: expected [ Array(33) ] to deeply equal [ Array(32) ]\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\unit\\payload-domains.test.ts:42:64\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        },
+        {
+          "file": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04d-campaign-commerce.test.ts",
+          "assertion": "04D canonical widgets and safe unconfigured boundaries renders interactive publisher.product-showcase widget with safe unconfigured notice",
+          "error": "AssertionError: expected '<section id=\"publisher-product-showca…' to contain 'Solidarity Heavyweight Tee'\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\unit\\rc1-04d-campaign-commerce.test.ts:244:20\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        },
+        {
+          "file": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-08-command-center-boundaries.test.ts",
+          "assertion": "SHOP-08 affiliate command boundary uses the authenticated actor and labels caller supplied approval as projection only",
+          "error": "AssertionError: expected 403 to be 200 // Object.is equality\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\unit\\shop-08-command-center-boundaries.test.ts:54:29\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        },
+        {
+          "file": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-08-command-center-boundaries.test.ts",
+          "assertion": "SHOP-08 affiliate command boundary cannot assert an external payout result from client data",
+          "error": "AssertionError: expected 403 to be 409 // Object.is equality\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\unit\\shop-08-command-center-boundaries.test.ts:62:29\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        }
+      ]
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/release-inventory.test.ts tests/unit/module-registry.test.ts tests/unit/network-experience.test.ts --reporter=json --outputFile=scratch/rc118a-focused-final.json",
+      "exit": 0,
+      "counts": {
+        "files": 3,
+        "passed": 20,
+        "failed": 0,
+        "skipped": 0,
+        "total": 20
+      }
+    },
+    {
+      "command": "npx.cmd eslint scripts/release-inventory.ts tests/unit/release-inventory.test.ts tests/rc1-18a/operator.mjs src/modules/module-registry.ts --max-warnings=0",
+      "exit": 0
+    },
+    {
+      "command": "npx.cmd prettier --check scripts/release-inventory.ts tests/unit/release-inventory.test.ts tests/rc1-18a/operator.mjs src/modules/module-registry.ts package.json",
+      "exit": 0
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "exit": 2,
+      "diagnostics": 32,
+      "log": "typecheck.log",
+      "first": ".next-rc111a/dev/types/validator.ts(25,44) TS2344: LayoutRoutes conflicts with retained .next-rc110d-turbo route types"
+    },
+    {
+      "command": "npx.cmd tsc --noEmit --project scratch/rc118a/tsconfig.json",
+      "exit": 0,
+      "boundary": "Source-only types with retained generated validators excluded; does not pass mandatory root typecheck",
+      "configuration": {
+        "extends": "../../tsconfig.json",
+        "compilerOptions": {
+          "incremental": false
+        },
+        "include": [
+          "../../src/**/*.ts",
+          "../../src/**/*.tsx",
+          "../../scripts/**/*.ts",
+          "../../tests/**/*.ts",
+          "../../tests/**/*.tsx",
+          "../../*.ts"
+        ],
+        "exclude": [
+          "../../node_modules",
+          "../../.next*/**",
+          "../../.worktrees/**",
+          "../../.phase-a/**",
+          "../../scratch/**"
+        ]
+      }
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    },
+    {
+      "command": "npm.cmd run release:inventory -- --check docs/rc/evidence/rc1/18-pass/18A/inventory.json",
+      "exit": 0,
+      "observedSource": "fb3d77840012d23505b15e64664399da7e657f2d5ffa6bd68a7e1a5a777467c0"
+    }
+  ],
+  "goldenJourneyStepsUnexecuted": 20,
+  "boundary": "Full-unit counts include the focused tests; do not sum them as unique assertions. Historical runner counts are not current runtime results.",
+  "mandatoryGateGroupsWithoutCompleteFinalCandidateClosure": 19,
+  "unexecutedChecks": [
+    "fresh dependency install",
+    "full lint and full formatting",
+    "fresh/upgrade/commerce migrations",
+    "full integration",
+    "production build and presentation bundles",
+    "complete ordinary A-T browser/DB journey",
+    "deployed role/site/object/profile matrix",
+    "current-image Compose/web/worker/security acceptance",
+    "business interruption recovery",
+    "complete independent restore",
+    "conditional approved remote-provider outcomes"
+  ],
+  "attachmentVerification": {
+    "attachments": [
+      {
+        "sha256": "678a7ec992aa0461b4225f4ee5a11c6f09df3796103368c745ed2127d5069167",
+        "goldenDefinition": false,
+        "exactHashMatches": true
+      },
+      {
+        "sha256": "b1afc2b58af94574fcfb0056499c2b6c0324f38788d189477a64c3f63ae82fb9",
+        "goldenDefinition": true,
+        "exactHashMatches": true
+      },
+      {
+        "sha256": "6979083ab678b07c516602d7c03f47b9d3d1c4e25692fdb51ba0e6ca0d1291ba",
+        "goldenDefinition": false,
+        "exactHashMatches": true
+      }
+    ],
+    "goldenStepsMatch": true,
+    "steps": 20
+  }
+}

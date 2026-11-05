@@ -106,7 +106,12 @@ try {
   } else {
     const site = await payload.create({
       collection: 'sites',
-      data: { name: '03C Alpha', slug: 'alpha-03c', host: 'rc1-03c.test', status: 'active' } as never,
+      data: {
+        name: '03C Alpha',
+        slug: 'alpha-03c',
+        host: 'rc1-03c.test',
+        status: 'active',
+      } as never,
     })
     const beta = await payload.create({
       collection: 'sites',

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   approveRelease,
@@ -88,6 +88,11 @@ function createAcceptanceMockPayload() {
 }
 
 describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', () => {
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-10-24T12:00:00.000Z'))
+  })
+  afterEach(() => vi.useRealTimers())
   it('passes complete 8-stage acceptance lifecycle with blocking issue, waiver, scheduling, worker restart, partial failure, safe retry, and rollback', async () => {
     const payload = createAcceptanceMockPayload()
 

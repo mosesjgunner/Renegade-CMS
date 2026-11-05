@@ -992,7 +992,10 @@ export const Content: CollectionConfig = {
             if (req?.payload && req?.user) {
               const hasAccess = await checkOperatorSiteAccess(req.payload, req.user, cookieSite)
               if (!hasAccess) {
-                throw new APIError('You do not have operator permission on the requested active site.', 403)
+                throw new APIError(
+                  'You do not have operator permission on the requested active site.',
+                  403,
+                )
               }
             }
             incoming.site = cookieSite

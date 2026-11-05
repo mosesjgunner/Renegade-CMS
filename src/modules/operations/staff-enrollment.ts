@@ -192,7 +192,10 @@ export async function createStaffEnrollmentToken(
   const emailHash = hashValue(email, config.payloadSecret)
   const validHours = input.validHours ?? 168
   if (!Number.isFinite(validHours) || validHours <= 0 || validHours > 168) {
-    throw new StaffEnrollmentError('INVALID_TOKEN', 'Invitation lifetime must be between 1 hour and 7 days.')
+    throw new StaffEnrollmentError(
+      'INVALID_TOKEN',
+      'Invitation lifetime must be between 1 hour and 7 days.',
+    )
   }
   const expiresAt = new Date(Date.now() + validHours * 3600 * 1000).toISOString()
 
@@ -317,7 +320,10 @@ export async function getStaffEnrollmentDetails(
     throw new StaffEnrollmentError('USER_NOT_FOUND', 'Staff account was not found.')
   }
   if (userDoc.email.toLowerCase() !== record.metadata?.email?.toLowerCase()) {
-    throw new StaffEnrollmentError('WRONG_USER', 'Invitation identity no longer matches the account.')
+    throw new StaffEnrollmentError(
+      'WRONG_USER',
+      'Invitation identity no longer matches the account.',
+    )
   }
   if (!['staff', 'administrator'].includes(String(record.metadata?.role))) {
     throw new StaffEnrollmentError('INVALID_ROLE', 'Invitation role is invalid.')

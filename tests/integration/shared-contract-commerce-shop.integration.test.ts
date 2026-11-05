@@ -772,9 +772,11 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
         return originalCreate(args)
       })
       try {
-        await expect(finalizeVerifiedOrder(payload, settlementInput)).rejects.toThrow(
-          'Deliberate acceptance fulfillment storage failure',
-        )
+        const interrupted = await finalizeVerifiedOrder(payload, settlementInput)
+        expect(interrupted.order.fulfillmentExtension).toMatchObject({
+          status: 'blocked',
+          error: 'Deliberate acceptance fulfillment storage failure',
+        })
       } finally {
         createFault.mockRestore()
       }
@@ -898,6 +900,7 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
               sku: `JKT-${testRunId}-L`,
               title: 'Redesigned Jacket',
               status: 'archived',
+              optionValues: { size: 'L' },
               inventoryPolicy: 'tracked',
               inventoryQuantity: 0,
             },

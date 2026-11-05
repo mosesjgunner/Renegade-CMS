@@ -80,8 +80,7 @@ let sink: ReturnType<typeof netServer> | undefined
 let sinkMode: 'accept' | 'tempfail' = 'accept'
 function decodePart(body: string, encoding: string): string {
   const enc = encoding.toLowerCase()
-  if (enc === 'base64')
-    return Buffer.from(body.replace(/[\r\n\s]/g, ''), 'base64').toString('utf8')
+  if (enc === 'base64') return Buffer.from(body.replace(/[\r\n\s]/g, ''), 'base64').toString('utf8')
   if (enc === 'quoted-printable')
     return body
       .replace(/=\r\n/g, '')
@@ -148,7 +147,8 @@ function startSink(): Promise<void> {
             lines = []
             inData = false
             socket.write('250 captured\r\n')
-          } else if (/^(EHLO|HELO)/i.test(line)) socket.write('250-rc1-09a.local\r\n250 8BITMIME\r\n')
+          } else if (/^(EHLO|HELO)/i.test(line))
+            socket.write('250-rc1-09a.local\r\n250 8BITMIME\r\n')
           else if (/^MAIL FROM:/i.test(line)) socket.write('250 sender accepted\r\n')
           else if (/^RCPT TO:/i.test(line)) {
             if (sinkMode === 'tempfail') {
@@ -178,7 +178,8 @@ async function stopSink(): Promise<void> {
 const mailTo = (email: string, subjectPart?: string) =>
   captured.filter(
     (mail) =>
-      mail.to === email && (!subjectPart || parsed(mail).headers.get('subject')?.includes(subjectPart)),
+      mail.to === email &&
+      (!subjectPart || parsed(mail).headers.get('subject')?.includes(subjectPart)),
   )
 
 // ------------------------------------------------------------------
@@ -250,7 +251,10 @@ const api = async (
           ...(opts.xff ? { 'x-forwarded-for': opts.xff } : {}),
           ...(cookies ? { cookie: cookies } : {}),
           ...(payloadText
-            ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payloadText) }
+            ? {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(payloadText),
+              }
             : {}),
         },
         timeout: 180000,
@@ -296,7 +300,9 @@ const find = async (collection: string, where?: any) =>
     })
   ).docs
 const subscriberByEmail = async (siteId: string, email: string) =>
-  (await find('subscribers', { and: [{ site: { equals: siteId } }, { email: { equals: email } }] }))[0]
+  (
+    await find('subscribers', { and: [{ site: { equals: siteId } }, { email: { equals: email } }] })
+  )[0]
 const deliveriesFor = async (messageId: string) =>
   find('email-deliveries', { message: { equals: messageId } })
 
@@ -339,13 +345,15 @@ try {
       'post-restart: Alpha visitor-one remains unsubscribed with an unsubscribe suppression',
       v1Alpha?.status === 'unsubscribed' &&
         (await isSubscriberSuppressed(payload, alphaId, v1Alpha.emailHash)) &&
-        (await find('suppressions', {
-          and: [
-            { site: { equals: alphaId } },
-            { emailHash: { equals: v1Alpha.emailHash } },
-            { reason: { equals: 'unsubscribe' } },
-          ],
-        })).length === 1,
+        (
+          await find('suppressions', {
+            and: [
+              { site: { equals: alphaId } },
+              { emailHash: { equals: v1Alpha.emailHash } },
+              { reason: { equals: 'unsubscribe' } },
+            ],
+          })
+        ).length === 1,
     )
     const v1Beta = await subscriberByEmail(betaId, V1)
     check(
@@ -360,7 +368,8 @@ try {
     const raceDelivery = await row('email-deliveries', state.raceDeliveryId)
     check(
       'post-restart: suppressed-before-send delivery stays cancelled, never resent',
-      raceDelivery.status === 'cancelled' && raceDelivery.outcome?.code === 'suppressed-before-send',
+      raceDelivery.status === 'cancelled' &&
+        raceDelivery.outcome?.code === 'suppressed-before-send',
     )
     const snapshot = await row('recipient-snapshots', state.campaign1SnapshotId)
     check(
@@ -378,8 +387,9 @@ try {
     await page.getByLabel('Consent to receive emails').check()
     await page.getByRole('button', { name: 'Subscribe', exact: true }).click()
     await page.getByText('Check your inbox to confirm your subscription.').waitFor()
-    await until('post-restart confirmation email captured', async () =>
-      mailTo(V6, 'Confirm your subscription').length === 1,
+    await until(
+      'post-restart confirmation email captured',
+      async () => mailTo(V6, 'Confirm your subscription').length === 1,
     )
     const confirmLink = linksIn(parsed(mailTo(V6)[0]).text).find((link) =>
       link.includes('/subscribe/confirm'),
@@ -495,10 +505,7 @@ try {
       },
       overrideAccess: true,
     })
-    check(
-      'second site created and both canonical origins registered',
-      Boolean(beta?.id),
-    )
+    check('second site created and both canonical origins registered', Boolean(beta?.id))
 
     // Canonical newsletter segment (operator fixture).
     const definition = { predicate: { field: 'consentPurpose', op: 'is', value: 'newsletter' } }
@@ -575,8 +582,9 @@ try {
       'signup auto-resolves the site list (double opt-in) with a pending membership',
       lists.length === 1 && lists[0].doubleOptIn === true && membership1?.status === 'pending',
     )
-    await until('confirmation email reaches the local sink', async () =>
-      mailTo(V1, 'Confirm your subscription').length === 1,
+    await until(
+      'confirmation email reaches the local sink',
+      async () => mailTo(V1, 'Confirm your subscription').length === 1,
     )
     const confirmMail = parsed(mailTo(V1)[0])
     const confirmLink = linksIn(confirmMail.text).find((link) =>
@@ -608,20 +616,20 @@ try {
     })
     check(
       'duplicate signup creates no duplicate subscriber, live token or confirmation email',
-      (await find('subscribers', { and: [{ site: { equals: alphaId } }, { email: { equals: V1 } }] }))
-        .length === 1 &&
+      (
+        await find('subscribers', {
+          and: [{ site: { equals: alphaId } }, { email: { equals: V1 } }],
+        })
+      ).length === 1 &&
         v1Tokens.filter((t: any) => !t.usedAt).length === 1 &&
         mailTo(V1, 'Confirm your subscription').length === 1,
     )
 
     // A second visitor signs up (API path) and never confirms.
-    const v2Response = await api(
-      '/api/subscribers/subscribe',
-      'POST',
-      { email: V2 },
-      202,
-      { cookie: '', xff: '198.51.100.10' },
-    )
+    const v2Response = await api('/api/subscribers/subscribe', 'POST', { email: V2 }, 202, {
+      cookie: '',
+      xff: '198.51.100.10',
+    })
     check(
       'second visitor signup returns pending and persists unconfirmed',
       v2Response.json().status === 'pending' &&
@@ -639,7 +647,10 @@ try {
       await find('subscriber-confirmation-tokens', { subscriber: { equals: v1Pending.id } })
     )[0]
     const confirmedEvents = await find('consent-events', {
-      and: [{ subscriber: { equals: v1Pending.id } }, { event: { equals: 'double-opt-in-confirmed' } }],
+      and: [
+        { subscriber: { equals: v1Pending.id } },
+        { event: { equals: 'double-opt-in-confirmed' } },
+      ],
     })
     check(
       'confirmation activates subscriber and membership and records consent with token evidence',
@@ -707,8 +718,9 @@ try {
       const deliveries = await deliveriesFor(campaign1.messageId)
       return deliveries.length === 1 && deliveries[0].status === 'accepted'
     })
-    await until('campaign 1 email reaches the sink', async () =>
-      mailTo(V1, '09A Campaign One').length === 1,
+    await until(
+      'campaign 1 email reaches the sink',
+      async () => mailTo(V1, '09A Campaign One').length === 1,
     )
     const campaign1Mail = parsed(mailTo(V1, '09A Campaign One')[0])
     const campaign1Hrefs = hrefsIn(campaign1Mail.html)
@@ -724,9 +736,8 @@ try {
     )
     check(
       'no campaign delivery exists for the unconfirmed visitor',
-      (await deliveriesFor(campaign1.messageId)).every(
-        (d: any) => d.recipientEmail !== V2,
-      ) && mailTo(V2, '09A Campaign One').length === 0,
+      (await deliveriesFor(campaign1.messageId)).every((d: any) => d.recipientEmail !== V2) &&
+        mailTo(V2, '09A Campaign One').length === 0,
     )
 
     // ----------------------------------------------------------
@@ -741,9 +752,14 @@ try {
       'preference grant is recorded as consent evidence and keeps the subscriber eligible',
       eligibilityGranted.choices['email:marketing'] === true &&
         eligibilityGranted.eligible === true &&
-        (await find('consent-events', {
-          and: [{ subscriber: { equals: v1Pending.id } }, { event: { equals: 'preference-granted' } }],
-        })).length === 1,
+        (
+          await find('consent-events', {
+            and: [
+              { subscriber: { equals: v1Pending.id } },
+              { event: { equals: 'preference-granted' } },
+            ],
+          })
+        ).length === 1,
     )
     await page.goto(preferencesLink!, { timeout: 180000 })
     await page.getByLabel(/Receive newsletter email/).uncheck()
@@ -755,12 +771,14 @@ try {
       v1Withdrawn?.status === 'unsubscribed' &&
         Boolean(v1Withdrawn?.globalUnsubscribedAt) &&
         (await isSubscriberSuppressed(payload, alphaId, v1Withdrawn.emailHash)) &&
-        (await find('consent-events', {
-          and: [
-            { subscriber: { equals: v1Pending.id } },
-            { event: { equals: 'preference-withdrawn' } },
-          ],
-        })).length === 1,
+        (
+          await find('consent-events', {
+            and: [
+              { subscriber: { equals: v1Pending.id } },
+              { event: { equals: 'preference-withdrawn' } },
+            ],
+          })
+        ).length === 1,
     )
 
     // ----------------------------------------------------------
@@ -805,8 +823,9 @@ try {
     await page.getByLabel('Consent to receive emails').check()
     await page.getByRole('button', { name: 'Subscribe', exact: true }).click()
     await page.getByText('Check your inbox to confirm your subscription.').waitFor()
-    await until('resubscribe confirmation email captured', async () =>
-      mailTo(V1, 'Confirm your subscription').length === 2,
+    await until(
+      'resubscribe confirmation email captured',
+      async () => mailTo(V1, 'Confirm your subscription').length === 2,
     )
     const resubConfirmLink = linksIn(parsed(mailTo(V1, 'Confirm your subscription')[1]).text).find(
       (link) => link.includes('/subscribe/confirm'),
@@ -820,9 +839,11 @@ try {
       're-subscription reconfirms, reactivates and lifts the unsubscribe suppression',
       v1Resubscribed?.status === 'active' &&
         !(await isSubscriberSuppressed(payload, alphaId, v1Resubscribed.emailHash)) &&
-        (await find('consent-events', {
-          and: [{ subscriber: { equals: v1Pending.id } }, { event: { equals: 'resubscribe' } }],
-        })).length === 1,
+        (
+          await find('consent-events', {
+            and: [{ subscriber: { equals: v1Pending.id } }, { event: { equals: 'resubscribe' } }],
+          })
+        ).length === 1,
     )
 
     // ----------------------------------------------------------
@@ -840,8 +861,9 @@ try {
       })
     ).json()
     assert.ok(campaign3.ok && campaign3.messageId, 'campaign 3 scheduled')
-    await until('campaign 3 email reaches the sink', async () =>
-      mailTo(V1, '09A Campaign Three').length === 1,
+    await until(
+      'campaign 3 email reaches the sink',
+      async () => mailTo(V1, '09A Campaign Three').length === 1,
     )
     const campaign3Unsub = hrefsIn(parsed(mailTo(V1, '09A Campaign Three')[0]).html).find((link) =>
       link.includes('/unsubscribe?token='),
@@ -850,7 +872,10 @@ try {
     check('campaign 3 delivers to the reconsented subscriber', true)
 
     sinkMode = 'tempfail'
-    check('mail sink switched to SMTP 450 temporary failure to force a retryable send failure', true)
+    check(
+      'mail sink switched to SMTP 450 temporary failure to force a retryable send failure',
+      true,
+    )
     const campaign4 = (
       await api('/api/admin/audience/campaign', 'POST', {
         action: 'save-and-schedule',
@@ -866,8 +891,11 @@ try {
     await until('campaign 4 delivery queued and attempted against the failing sink', async () => {
       const deliveries = await deliveriesFor(campaign4.messageId)
       raceDelivery = deliveries[0]
-      return deliveries.length === 1 && Number(raceDelivery?.attempts ?? 0) >= 1 &&
+      return (
+        deliveries.length === 1 &&
+        Number(raceDelivery?.attempts ?? 0) >= 1 &&
         raceDelivery?.status === 'queued'
+      )
     })
     check(
       'campaign 4 delivery is queued and attempted but only meets a temporary SMTP failure',
@@ -910,8 +938,9 @@ try {
         String(v1BetaPending?.id) !== String(v1Pending.id) &&
         (await subscriberByEmail(alphaId, V1))?.status === 'unsubscribed',
     )
-    await until('beta confirmation email captured', async () =>
-      mailTo(V1, 'Confirm your subscription').length === 3,
+    await until(
+      'beta confirmation email captured',
+      async () => mailTo(V1, 'Confirm your subscription').length === 3,
     )
     const betaConfirmLink = linksIn(parsed(mailTo(V1, 'Confirm your subscription')[2]).text).find(
       (link) => link.includes('/subscribe/confirm'),
@@ -957,13 +986,9 @@ try {
     )
     const prefsToken = new URL(campaign3Prefs!).searchParams.get('token')!
     const unsubToken = new URL(campaign3Unsub).searchParams.get('token')!
-    const swap1 = await api(
-      '/api/subscribers/unsubscribe',
-      'POST',
-      { token: prefsToken },
-      400,
-      { cookie: '' },
-    )
+    const swap1 = await api('/api/subscribers/unsubscribe', 'POST', { token: prefsToken }, 400, {
+      cookie: '',
+    })
     const swap2 = await api(
       '/api/subscribers/preferences',
       'POST',
@@ -1058,11 +1083,16 @@ try {
     await page.getByText('This address cannot be subscribed.').waitFor()
     check(
       'an address suppressed for bounce cannot sign up again and no subscriber is created',
-      (await find('subscribers', { and: [{ site: { equals: alphaId } }, { email: { equals: V5 } }] }))
-        .length === 0 &&
-        (await find('suppressions', {
-          and: [{ site: { equals: alphaId } }, { reason: { equals: 'bounce' } }],
-        })).length === 1,
+      (
+        await find('subscribers', {
+          and: [{ site: { equals: alphaId } }, { email: { equals: V5 } }],
+        })
+      ).length === 0 &&
+        (
+          await find('suppressions', {
+            and: [{ site: { equals: alphaId } }, { reason: { equals: 'bounce' } }],
+          })
+        ).length === 1,
     )
 
     // ----------------------------------------------------------
@@ -1079,8 +1109,9 @@ try {
     await page.getByLabel('Consent to receive emails').check()
     await page.getByRole('button', { name: 'Subscribe', exact: true }).click()
     await page.getByText('Check your inbox to confirm your subscription.').waitFor()
-    await until('beta visitor-two confirmation email captured', async () =>
-      mailTo(V2, 'Confirm your subscription').length === 2,
+    await until(
+      'beta visitor-two confirmation email captured',
+      async () => mailTo(V2, 'Confirm your subscription').length === 2,
     )
     const betaV2Link = linksIn(parsed(mailTo(V2, 'Confirm your subscription')[1]).text).find(
       (link) => link.includes('/subscribe/confirm'),
@@ -1174,8 +1205,9 @@ try {
       }),
     ])
     assert.ok(dupA.status === 202 && dupB.status === 202)
-    await until('duplicate-pair confirmation email captured', async () =>
-      mailTo(V7, 'Confirm your subscription').length >= 1,
+    await until(
+      'duplicate-pair confirmation email captured',
+      async () => mailTo(V7, 'Confirm your subscription').length >= 1,
     )
     await sleep(4000)
     const v7 = await subscriberByEmail(alphaId, V7)

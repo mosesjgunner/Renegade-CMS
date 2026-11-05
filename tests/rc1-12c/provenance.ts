@@ -47,4 +47,3 @@ if (process.argv.includes('--check')) {
   )
   console.log(`Frozen ${files.length} source files; SHA-256 ${treeHash}`)
 }
-

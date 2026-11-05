@@ -93,7 +93,10 @@ function request(route: string, cookie = '', method = 'GET', body?: any, headers
     headers: {
       origin: base,
       ...(cookie ? { cookie } : {}),
-      ...(body && !(body instanceof FormData) && !(body instanceof URLSearchParams) && typeof body !== 'string'
+      ...(body &&
+      !(body instanceof FormData) &&
+      !(body instanceof URLSearchParams) &&
+      typeof body !== 'string'
         ? { 'content-type': 'application/json' }
         : {}),
       ...headers,
@@ -108,7 +111,14 @@ function request(route: string, cookie = '', method = 'GET', body?: any, headers
     signal: AbortSignal.timeout(240000),
   })
 }
-async function json(route: string, cookie = '', method = 'GET', body?: any, expected = 200, headers: any = {}) {
+async function json(
+  route: string,
+  cookie = '',
+  method = 'GET',
+  body?: any,
+  expected = 200,
+  headers: any = {},
+) {
   const response = await request(route, cookie, method, body, headers)
   const text = await response.text()
   assert.equal(response.status, expected, `${method} ${route}: ${text.slice(0, 1200)}`)
@@ -134,12 +144,16 @@ class Jar {
 }
 
 async function operatorSession(user: any) {
-  const value = await createPasskeySession(user, loadConfig().payloadSecret, async (sid, expires) => {
-    await payload.db.pool.query(
-      'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3)',
-      [sid, user.id, expires],
-    )
-  })
+  const value = await createPasskeySession(
+    user,
+    loadConfig().payloadSecret,
+    async (sid, expires) => {
+      await payload.db.pool.query(
+        'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3)',
+        [sid, user.id, expires],
+      )
+    },
+  )
   return `renegade-passkey=${value.token}`
 }
 
@@ -153,10 +167,7 @@ function spawnLogged(
 ) {
   const child = spawn(
     process.execPath,
-    [
-      ...(importPreload ? ['--import', './tests/rc1-17e/stripe-preload.mjs'] : []),
-      ...args,
-    ],
+    [...(importPreload ? ['--import', './tests/rc1-17e/stripe-preload.mjs'] : []), ...args],
     { env: { ...process.env, ...env }, detached: true, stdio: ['ignore', 'pipe', 'pipe'] },
   )
   const log = createWriteStream(`${out}/${label}.log`)
@@ -170,22 +181,12 @@ async function killGroup(child: ChildProcess, signal: NodeJS.Signals = 'SIGKILL'
   try {
     process.kill(-child.pid, signal)
   } catch {}
-  await Promise.race([
-    new Promise((r) => child.once('exit', r)),
-    sleep(10000),
-  ])
+  await Promise.race([new Promise((r) => child.once('exit', r)), sleep(10000)])
 }
 async function startWeb(label = 'web', preload = true, env: Record<string, string> = {}) {
   const web = spawnLogged(
     label,
-    [
-      'node_modules/next/dist/bin/next',
-      'dev',
-      '--hostname',
-      '127.0.0.1',
-      '--port',
-      '39075',
-    ],
+    ['node_modules/next/dist/bin/next', 'dev', '--hostname', '127.0.0.1', '--port', '39075'],
     env,
     preload,
   )
@@ -216,7 +217,12 @@ function startWorker(label: string, env: Record<string, string> = {}) {
   )
 }
 function startChild(label: string, childArgs: string[], preload = false) {
-  return spawnLogged(label, ['--import', 'tsx', 'tests/rc1-17e/child.ts', ...childArgs], {}, preload)
+  return spawnLogged(
+    label,
+    ['--import', 'tsx', 'tests/rc1-17e/child.ts', ...childArgs],
+    {},
+    preload,
+  )
 }
 async function stopAll() {
   for (const child of children.splice(0)) await killGroup(child).catch(() => undefined)
@@ -239,7 +245,11 @@ function startStripeHarness() {
     for await (const chunk of req) chunks.push(Buffer.from(chunk as Buffer))
     const form = new URLSearchParams(Buffer.concat(chunks).toString())
     const url = req.url ?? ''
-    const call = { method: req.method, path: url, idempotencyKey: req.headers['idempotency-key'] ?? null }
+    const call = {
+      method: req.method,
+      path: url,
+      idempotencyKey: req.headers['idempotency-key'] ?? null,
+    }
     stripe.calls.push(call)
     const sendJson = (value: any, status = 200) => {
       res.setHeader('content-type', 'application/json')
@@ -270,7 +280,9 @@ function startStripeHarness() {
           items: {
             data: [{ id: 'si_17e', price: { id: form.get('line_items[0][price]') } }],
           },
-          metadata: { renegade_member_id: form.get('subscription_data[metadata][renegade_member_id]') ?? '' },
+          metadata: {
+            renegade_member_id: form.get('subscription_data[metadata][renegade_member_id]') ?? '',
+          },
         }
         stripe.subscriptions.set(sub.id, sub)
         const sessionObj = {
@@ -338,7 +350,13 @@ function startStripeHarness() {
 let eventClock = Math.floor(Date.now() / 1000)
 const nextEventTime = () => (eventClock = Math.max(eventClock + 1, Math.floor(Date.now() / 1000)))
 async function signedStripe(eventId: string, type: string, object: any, expected = 202) {
-  const raw = JSON.stringify({ id: eventId, type, created: nextEventTime(), livemode: false, data: { object } })
+  const raw = JSON.stringify({
+    id: eventId,
+    type,
+    created: nextEventTime(),
+    livemode: false,
+    data: { object },
+  })
   const t = Math.floor(Date.now() / 1000)
   const sig = createHmac('sha256', process.env.COMMERCE_STRIPE_TEST_WEBHOOK_SECRET!)
     .update(`${t}.${raw}`)
@@ -508,8 +526,13 @@ async function publicationSection() {
     timeZone: 'UTC',
     idempotencyKey: '17e-pub-crash',
   })
-  const job = (await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-crash' } }))[0]
-  check('schedule created a queued lease job through the editorial service', job?.status === 'queued')
+  const job = (
+    await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-crash' } })
+  )[0]
+  check(
+    'schedule created a queued lease job through the editorial service',
+    job?.status === 'queued',
+  )
   const bundle = await loadBundleByArticleId(payload, articleId)
   const contentId = id(bundle.content.id)
 
@@ -621,7 +644,9 @@ async function publicationSection() {
     timeZone: 'UTC',
     idempotencyKey: '17e-pub-gated',
   })
-  const job2 = (await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-gated' } }))[0]
+  const job2 = (
+    await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-gated' } })
+  )[0]
   let lastResult: any
   for (let i = 0; i < 3; i++)
     lastResult = await executeScheduledPublishJob(payload, String(job2.id), {
@@ -669,7 +694,9 @@ async function publicationSection() {
     timeZone: 'UTC',
     idempotencyKey: '17e-pub-future',
   })
-  const job3 = (await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-future' } }))[0]
+  const job3 = (
+    await find('scheduled-publish-jobs', { idempotencyKey: { equals: '17e-pub-future' } })
+  )[0]
   check('future-dated job remains queued and unpublished', job3.status === 'queued')
   state.publication = { job1: job.id, article1: articleId, job3: job3.id, article3 }
   await saveState()
@@ -740,7 +767,10 @@ async function paymentSection() {
   ).doc.id
   for (const action of ['request-review', 'approve', 'publish'])
     await json('/api/admin/catalog', operator, 'PATCH', { productId: product, action })
-  check('manual product published through the catalog workflow', (await row('products', product)).state === 'published')
+  check(
+    'manual product published through the catalog workflow',
+    (await row('products', product)).state === 'published',
+  )
   // One-time checkout scope binds cart, product merchant and capability
   // merchant together, so the Stripe-harness flow needs its own product sold
   // by the Stripe merchant connection.
@@ -814,16 +844,25 @@ async function paymentSection() {
   const attempt1 = await row('payment-attempts', String(first.initiated.attemptId))
   check(
     'ordinary checkout created an action-required attempt with a provider reference',
-    attempt1.state === 'action-required' && String(attempt1.providerReference).startsWith('det_cs_'),
+    attempt1.state === 'action-required' &&
+      String(attempt1.providerReference).startsWith('det_cs_'),
   )
   const lockClient = await payload.db.pool.connect()
   await lockClient.query('BEGIN')
   await lockClient.query('SELECT id FROM products WHERE id = $1 FOR UPDATE', [product])
-  const confirm = await request('/api/commerce/checkout/test/confirm', first.jar.header(), 'POST', new URLSearchParams({ reference: String(attempt1.providerReference) }))
+  const confirm = await request(
+    '/api/commerce/checkout/test/confirm',
+    first.jar.header(),
+    'POST',
+    new URLSearchParams({ reference: String(attempt1.providerReference) }),
+  )
   check('test confirmation accepted the signed local payment event (303)', confirm.status === 303)
   const event1 = `local-test-paid:${attempt1.id}`
   const inbox1 = (await find('payment-webhook-events', { providerEventId: { equals: event1 } }))[0]
-  check('webhook stored a received inbox event and queued settlement', inbox1?.processingState === 'received')
+  check(
+    'webhook stored a received inbox event and queued settlement',
+    inbox1?.processingState === 'received',
+  )
   const worker1 = startWorker('pay-crash')
   await until('settlement interrupted mid-finalize', async () => {
     const inbox = await row('payment-webhook-events', inbox1.id)
@@ -881,7 +920,7 @@ async function paymentSection() {
       providerReference: String(attempt1.providerReference),
       amountMinor: String(attempt1.amountMinor),
       currency: String(attempt1.currency),
-      secret: process.env[['COMMERCE','TEST','WEBHOOK','SECRET'].join('_')] as string,
+      secret: process.env[['COMMERCE', 'TEST', 'WEBHOOK', 'SECRET'].join('_')] as string,
     })
     const response = await request('/api/commerce/webhooks/deterministic-test', '', 'POST', raw, {
       'content-type': 'application/json',
@@ -893,7 +932,8 @@ async function paymentSection() {
     'duplicate webhook replay is acknowledged without a second inbox row, order or charge effect',
     replay.status === 200 &&
       replay.body.replay === true &&
-      (await find('payment-webhook-events', { providerEventId: { equals: event1 } })).length === 1 &&
+      (await find('payment-webhook-events', { providerEventId: { equals: event1 } })).length ===
+        1 &&
       (await find('orders', { checkoutSession: { equals: session1 } })).length === 1,
   )
 
@@ -912,10 +952,16 @@ async function paymentSection() {
   const failedSig = createHmac('sha256', process.env.COMMERCE_TEST_WEBHOOK_SECRET!)
     .update(failedRaw)
     .digest('hex')
-  const failedResponse = await request('/api/commerce/webhooks/deterministic-test', '', 'POST', failedRaw, {
-    'content-type': 'application/json',
-    'x-commerce-signature': failedSig,
-  })
+  const failedResponse = await request(
+    '/api/commerce/webhooks/deterministic-test',
+    '',
+    'POST',
+    failedRaw,
+    {
+      'content-type': 'application/json',
+      'x-commerce-signature': failedSig,
+    },
+  )
   check('signed failed event accepted into the inbox (202)', failedResponse.status === 202)
   const worker3 = startWorker('pay-failed')
   await until(
@@ -947,7 +993,10 @@ async function paymentSection() {
   )
   const attemptKey = String(attempt3.idempotencyKey)
   const providerSession = stripe.sessionsByKey.get(attemptKey)
-  check('provider harness did create exactly one session for the idempotency key', Boolean(providerSession))
+  check(
+    'provider harness did create exactly one session for the idempotency key',
+    Boolean(providerSession),
+  )
   providerSession.payment_status = 'paid'
   providerSession.status = 'complete'
   const reconcileChild = startChild('pay-reconcile', ['reconcile-payments'], true)
@@ -966,7 +1015,8 @@ async function paymentSection() {
   const worker4 = startWorker('pay-reconcile-worker')
   await until(
     'reconciled settlement completes',
-    async () => (await row('payment-webhook-events', reconcileEvents[0].id)).processingState === 'processed',
+    async () =>
+      (await row('payment-webhook-events', reconcileEvents[0].id)).processingState === 'processed',
     180000,
   )
   await killGroup(worker4)
@@ -980,9 +1030,11 @@ async function paymentSection() {
   check(
     'second reconciliation is a no-op: no new session, inbox event or order',
     sessionCreates.length === 2 &&
-      (await find('payment-webhook-events', {
-        providerEventId: { equals: `reconcile:${attempt3.id}:succeeded` },
-      })).length === 1 &&
+      (
+        await find('payment-webhook-events', {
+          providerEventId: { equals: `reconcile:${attempt3.id}:succeeded` },
+        })
+      ).length === 1 &&
       (await find('orders', { checkoutSession: { equals: session3 } })).length === 1,
   )
   state.payment = {
@@ -1070,8 +1122,7 @@ async function subscriptionSection() {
   const orderId = String(checkout.orderId ?? id(subscription.settings?.orderId))
   check(
     'signed subscription-created event grants exactly the two plan entitlements and does not fake payment',
-    grantsAfterCreate.length === 2 &&
-      (await row('orders', orderId)).state === 'pending-payment',
+    grantsAfterCreate.length === 2 && (await row('orders', orderId)).state === 'pending-payment',
   )
   // Crash at the grant/settlement boundary: the provider reconcile call hangs
   // inside the webhook transaction; the web process is SIGKILLed mid-flight.
@@ -1089,7 +1140,11 @@ async function subscriptionSection() {
   const inflight = signedStripe('evt-17e-invoice-paid', 'invoice.paid', invoiceObject, 202).catch(
     (e) => ({ error: String(e) }),
   )
-  await until('provider reconcile blocked inside the webhook transaction', async () => stripe.subscriptionBlocked, 120000)
+  await until(
+    'provider reconcile blocked inside the webhook transaction',
+    async () => stripe.subscriptionBlocked,
+    120000,
+  )
   await killGroup(web)
   await sleep(3000)
   const eventsAfterKill = await find('subscription-events', {
@@ -1127,9 +1182,17 @@ async function subscriptionSection() {
         .length === 2,
   )
   const versionSettled = Number((await row('subscriptions', subscription.id)).version ?? 1)
-  const child1 = startChild('sub-reconcile-1', ['reconcile-subscription', String(subscription.id)], true)
+  const child1 = startChild(
+    'sub-reconcile-1',
+    ['reconcile-subscription', String(subscription.id)],
+    true,
+  )
   await new Promise((r) => child1.once('exit', r))
-  const child2 = startChild('sub-reconcile-2', ['reconcile-subscription', String(subscription.id)], true)
+  const child2 = startChild(
+    'sub-reconcile-2',
+    ['reconcile-subscription', String(subscription.id)],
+    true,
+  )
   await new Promise((r) => child2.once('exit', r))
   check(
     'worker subscription reconciliation is idempotent: no version bump, event or duplicate grant on replay',
@@ -1280,7 +1343,10 @@ async function fulfillmentSection() {
   })
   for (const action of ['request-review', 'approve', 'publish'])
     await json('/api/admin/catalog', operator, 'PATCH', { productId: podProduct, action })
-  check('POD product mapped and published', (await row('products', podProduct)).state === 'published')
+  check(
+    'POD product mapped and published',
+    (await row('products', podProduct)).state === 'published',
+  )
 
   async function podOrder() {
     const jar = new Jar()
@@ -1309,7 +1375,9 @@ async function fulfillmentSection() {
     await until(
       'paid POD order planned with a held job',
       async () => {
-        order = (await find('orders', { checkoutSession: { equals: String(initiated.sessionId) } }))[0]
+        order = (
+          await find('orders', { checkoutSession: { equals: String(initiated.sessionId) } })
+        )[0]
         if (!order) return false
         const jobs = await find('pod-jobs', { order: { equals: order.id } })
         return jobs.length === 1
@@ -1535,7 +1603,8 @@ async function emailSmtpSection() {
   )
   await until(
     'dispatch lease expires',
-    async () => Date.parse((await row('email-deliveries', crash.delivery.id)).leaseUntil) < Date.now(),
+    async () =>
+      Date.parse((await row('email-deliveries', crash.delivery.id)).leaseUntil) < Date.now(),
     120000,
     2000,
   )
@@ -1684,7 +1753,9 @@ async function emailDevSection() {
     const after = await row('email-deliveries', state.emailUnknown.deliveryId)
     check(
       'a different provider never reconciles or resends an interrupted SMTP delivery',
-      before.status === 'unknown' && after.status === 'unknown' && after.attempts === before.attempts,
+      before.status === 'unknown' &&
+        after.status === 'unknown' &&
+        after.attempts === before.attempts,
     )
   }
   await stopAll()

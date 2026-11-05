@@ -88,6 +88,19 @@ beforeAll(async () => {
     data: { email: `rc08b-owner-${suffix}@example.test`, role: 'owner' },
     overrideAccess: true,
   })
+  const ownerMemberId = typeof owner.member === 'object' ? owner.member.id : owner.member
+  const ownerGrants = await payload.find({
+    collection: 'member-site-roles',
+    where: { and: [{ member: { equals: ownerMemberId } }, { site: { equals: site.id } }] },
+    overrideAccess: true,
+  } as never)
+  if (!ownerGrants.docs.length) {
+    await payload.create({
+      collection: 'member-site-roles',
+      data: { member: ownerMemberId, site: site.id, role: 'community-manager' },
+      overrideAccess: true,
+    } as never)
+  }
   const publication = await payload.create({
     collection: 'publications',
     data: {

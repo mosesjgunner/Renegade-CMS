@@ -85,7 +85,7 @@ const api = async (
           method,
           headers: {
             origin: base,
-          host: alphaHost,
+            host: alphaHost,
             ...(cookie ? { cookie } : {}),
             ...(data ? { 'content-type': 'application/json' } : {}),
             ...headers,
@@ -322,7 +322,10 @@ try {
       'POST',
       {
         canonicalOrigin: base,
-        canonicalOriginsBySite: { [site.id]: base, [foreign.id]: 'https://beta.rc1-03b.test:38760' },
+        canonicalOriginsBySite: {
+          [site.id]: base,
+          [foreign.id]: 'https://beta.rc1-03b.test:38760',
+        },
         launchState: 'live',
         indexingMode: 'index',
       },

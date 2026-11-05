@@ -290,7 +290,10 @@ try {
   // Negative 6b: Foreign moderator Dan (Beta) tries to access Site Alpha moderation -> 403 denied
   const danOverreach = await dan.context.request.get(`${base}/api/community/moderation`)
   assert.equal(danOverreach.status(), 403)
-  check('Negative test: Staff overreach prevented; Beta moderator Dan denied Site Alpha queue with 403', true)
+  check(
+    'Negative test: Staff overreach prevented; Beta moderator Dan denied Site Alpha queue with 403',
+    true,
+  )
 
   // Negative 6c: Wrong site report submission -> 404 denied
   const wrongSiteReport = await bob.context.request.fetch(`${base}/api/community/reports`, {
@@ -329,11 +332,17 @@ try {
 
   // Verify in PostgreSQL that DB records Bob's actual member ID and NOT the spoofed ID
   const reportRow = (
-    await pgClient.query(`SELECT id, reporter_id, parent_case_id, status FROM community_reports WHERE id = $1`, [reportId])
+    await pgClient.query(
+      `SELECT id, reporter_id, parent_case_id, status FROM community_reports WHERE id = $1`,
+      [reportId],
+    )
   ).rows[0]
   assert.equal(reportRow.reporter_id, bob.memberId)
   assert.notEqual(reportRow.reporter_id, spoofedId)
-  check('Negative test: Reporter impersonation rejected; DB binds report to authenticated member ID', true)
+  check(
+    'Negative test: Reporter impersonation rejected; DB binds report to authenticated member ID',
+    true,
+  )
 
   // Verify parent case exists and is open
   const caseRow = (
@@ -344,7 +353,9 @@ try {
 
   // 8. Moderator Charlie Triage & Resolution Journey in UI
   await charlie.page.goto(`${base}/moderation`, { waitUntil: 'domcontentloaded' })
-  await expect(charlie.page.getByRole('heading', { name: 'Community Moderation Center' })).toBeVisible()
+  await expect(
+    charlie.page.getByRole('heading', { name: 'Community Moderation Center' }),
+  ).toBeVisible()
   check('Charlie loads /moderation UI console', true)
 
   // Charlie observes the pending report in UI list
@@ -362,7 +373,9 @@ try {
 
   // Charlie selects moderation action 'Remove Content'
   await charlie.page.locator('form select').first().selectOption('remove')
-  await charlie.page.locator('form textarea').fill('Defamatory comment removed per community standards.')
+  await charlie.page
+    .locator('form textarea')
+    .fill('Defamatory comment removed per community standards.')
 
   // Capture screenshot of moderation console before executing action
   await charlie.page.screenshot({ path: `${out}/moderation-console.png`, fullPage: true })
@@ -371,14 +384,20 @@ try {
   // Execute decision
   await charlie.page.getByRole('button', { name: 'Execute Decision' }).click()
   const statusAlert = charlie.page.locator('[role="status"]')
-  await expect(statusAlert).toContainText("Action 'remove' successfully applied and recorded to immutable audit log.")
+  await expect(statusAlert).toContainText(
+    "Action 'remove' successfully applied and recorded to immutable audit log.",
+  )
   check('Moderator Charlie executes Remove Content action with recorded justification', true)
 
   // 9. Inspect Cryptographic Audit Log & Consequence
   // Charlie switches to "Audit Trail & Sanctions" tab in UI
   await charlie.page.getByRole('button', { name: /Audit Trail & Sanctions/ }).click()
   await expect(charlie.page.locator('text=Cryptographic Audit Log Integrity')).toBeVisible()
-  await expect(charlie.page.locator('text=All audit entries conform to the trigger-derived SHA-256 hash chain.')).toBeVisible()
+  await expect(
+    charlie.page.locator(
+      'text=All audit entries conform to the trigger-derived SHA-256 hash chain.',
+    ),
+  ).toBeVisible()
   await expect(charlie.page.getByRole('cell', { name: 'remove', exact: true })).toBeVisible()
 
   // Capture screenshot of verified audit trail
@@ -387,18 +406,29 @@ try {
 
   // 10. Direct Database Persistence & Cryptographic Hash Chain Assertions
   // Verify comment status is deleted
-  const commentDb = (await pgClient.query(`SELECT status FROM comments WHERE id = $1`, [commentId])).rows[0]
+  const commentDb = (await pgClient.query(`SELECT status FROM comments WHERE id = $1`, [commentId]))
+    .rows[0]
   assert.equal(commentDb.status, 'deleted')
   check('Actual persisted state: comment status updated to deleted (tombstone)', true)
 
   // Verify parent case closed and report resolved
-  const caseDb = (await pgClient.query(`SELECT status, closed_by_member_id, disposition FROM moderation_cases WHERE id = $1`, [caseId])).rows[0]
+  const caseDb = (
+    await pgClient.query(
+      `SELECT status, closed_by_member_id, disposition FROM moderation_cases WHERE id = $1`,
+      [caseId],
+    )
+  ).rows[0]
   assert.equal(caseDb.status, 'closed')
   assert.equal(caseDb.closed_by_member_id, charlie.memberId)
   assert.equal(caseDb.disposition, 'remove')
-  check('Actual persisted state: parent case closed with Charlie member ID and remove disposition', true)
+  check(
+    'Actual persisted state: parent case closed with Charlie member ID and remove disposition',
+    true,
+  )
 
-  const reportDb = (await pgClient.query(`SELECT status FROM community_reports WHERE id = $1`, [reportId])).rows[0]
+  const reportDb = (
+    await pgClient.query(`SELECT status FROM community_reports WHERE id = $1`, [reportId])
+  ).rows[0]
   assert.equal(reportDb.status, 'resolved')
   check('Actual persisted state: community report marked resolved', true)
 
@@ -409,7 +439,9 @@ try {
 
   // Negative test: Hidden content disclosure prevention
   // Anonymous viewer attempts to fetch comment directly -> status deleted, no leaked raw text
-  const anonView = (await pgClient.query(`SELECT status, body_raw FROM comments WHERE id = $1`, [commentId])).rows[0]
+  const anonView = (
+    await pgClient.query(`SELECT status, body_raw FROM comments WHERE id = $1`, [commentId])
+  ).rows[0]
   assert.equal(anonView.status, 'deleted')
   check('Negative test: Deleted comment content is suppressed from member/public visibility', true)
 
@@ -434,7 +466,9 @@ try {
   check('Charlie executes reinstate action via supported operator API', true)
 
   // Verify comment restored to visible
-  const restoredComment = (await pgClient.query(`SELECT status FROM comments WHERE id = $1`, [commentId])).rows[0]
+  const restoredComment = (
+    await pgClient.query(`SELECT status FROM comments WHERE id = $1`, [commentId])
+  ).rows[0]
   assert.equal(restoredComment.status, 'visible')
   check('Actual persisted state: comment status restored to visible following reinstatement', true)
 
@@ -465,7 +499,10 @@ try {
   assert.equal(postRestartBobDenied.status(), 403)
   const postRestartDanDenied = await dan.context.request.get(`${base}/api/community/moderation`)
   assert.equal(postRestartDanDenied.status(), 403)
-  check('Role boundaries persist across server restart: non-moderators strictly denied with 403', true)
+  check(
+    'Role boundaries persist across server restart: non-moderators strictly denied with 403',
+    true,
+  )
 
   await pgClient.end()
   succeeded = true

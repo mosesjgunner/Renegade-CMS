@@ -60,7 +60,9 @@ export default function EmailComposer() {
   // Step 1: Article derivation & copy
   const [selectedArticleId, setSelectedArticleId] = useState<string>('')
   const [subject, setSubject] = useState<string>('Freedom Act Update: Key Developments')
-  const [preheader, setPreheader] = useState<string>('Essential updates from the Renegade movement.')
+  const [preheader, setPreheader] = useState<string>(
+    'Essential updates from the Renegade movement.',
+  )
   const [headingText, setHeadingText] = useState<string>('Freedom Act Update')
   const [bodyText, setBodyText] = useState<string>(
     'We are excited to share key updates on our ongoing legislative initiatives and grassroots campaigns.',
@@ -82,9 +84,15 @@ export default function EmailComposer() {
   const [accentColor, setAccentColor] = useState<string>('#164e9b')
 
   // Legal block (mandatory)
-  const [legalAddress, setLegalAddress] = useState<string>('123 Renegade Way, Suite 100, Washington, DC 20001')
-  const [preferenceUrl, setPreferenceUrl] = useState<string>('https://renegadeparty.org/audience/preferences')
-  const [unsubscribeUrl, setUnsubscribeUrl] = useState<string>('https://renegadeparty.org/audience/unsubscribe')
+  const [legalAddress, setLegalAddress] = useState<string>(
+    '123 Renegade Way, Suite 100, Washington, DC 20001',
+  )
+  const [preferenceUrl, setPreferenceUrl] = useState<string>(
+    'https://renegadeparty.org/audience/preferences',
+  )
+  const [unsubscribeUrl, setUnsubscribeUrl] = useState<string>(
+    'https://renegadeparty.org/audience/unsubscribe',
+  )
 
   // Step 3: Audience Segment & Targeting
   const [selectedSegmentId, setSelectedSegmentId] = useState<string>('')
@@ -235,7 +243,9 @@ export default function EmailComposer() {
 
     setSubject(article.title)
     setHeadingText(article.title)
-    setPreheader(article.summary ? article.summary.slice(0, 140) : `Read our latest story: ${article.title}`)
+    setPreheader(
+      article.summary ? article.summary.slice(0, 140) : `Read our latest story: ${article.title}`,
+    )
     const derivedBody =
       article.summary ||
       'We are pleased to share our newest report with you. Read key takeaways and explore our interactive resources below.'
@@ -361,7 +371,9 @@ export default function EmailComposer() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Test send failed.')
-      setTestSendStatus(`Test send queued successfully (Delivery ID: ${data.deliveryId}). Captured in local mail sink.`)
+      setTestSendStatus(
+        `Test send queued successfully (Delivery ID: ${data.deliveryId}). Captured in local mail sink.`,
+      )
     } catch (err: unknown) {
       setTestSendStatus(`Test send failed: ${String(err)}`)
     } finally {
@@ -479,8 +491,8 @@ export default function EmailComposer() {
             Newsletter & Campaign Composer
           </h1>
           <p style={{ margin: 0, fontSize: 14, color: '#64748b' }}>
-            Site: <strong>{site?.name || 'Loading...'}</strong> ({site?.slug || '...'}) · AUD-03 deterministic MIME
-            projection
+            Site: <strong>{site?.name || 'Loading...'}</strong> ({site?.slug || '...'}) · AUD-03
+            deterministic MIME projection
           </p>
         </div>
         <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -574,7 +586,9 @@ export default function EmailComposer() {
       )}
 
       {/* Main Grid: Form on Left, Preview on Right */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 28, alignItems: 'start' }}>
+      <div
+        style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 28, alignItems: 'start' }}
+      >
         {/* Left Column: Form Controls */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
           {/* Section 1: Article Source Derivation */}
@@ -591,7 +605,8 @@ export default function EmailComposer() {
               1. Article Source & Derivation
             </h2>
             <p style={{ margin: '0 0 14px', fontSize: 13, color: '#64748b' }}>
-              Select a published canonical article to populate newsletter title, summary, and pinned content card.
+              Select a published canonical article to populate newsletter title, summary, and pinned
+              content card.
             </p>
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
               <select
@@ -743,18 +758,31 @@ export default function EmailComposer() {
                     padding: 12,
                   }}
                 >
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#0369a1', textTransform: 'uppercase' }}>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: '#0369a1',
+                      textTransform: 'uppercase',
+                    }}
+                  >
                     Pinned Content Card
                   </span>
-                  <p style={{ margin: '4px 0 2px', fontWeight: 600, fontSize: 14 }}>{pinnedCard.title}</p>
-                  <p style={{ margin: '0 0 6px', fontSize: 12, color: '#64748b' }}>{pinnedCard.summary}</p>
+                  <p style={{ margin: '4px 0 2px', fontWeight: 600, fontSize: 14 }}>
+                    {pinnedCard.title}
+                  </p>
+                  <p style={{ margin: '0 0 6px', fontSize: 12, color: '#64748b' }}>
+                    {pinnedCard.summary}
+                  </p>
                   <span style={{ fontSize: 12, color: '#2563eb' }}>{pinnedCard.url}</span>
                 </div>
               )}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 10 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label
+                    style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}
+                  >
                     Button Label
                   </label>
                   <input
@@ -772,7 +800,9 @@ export default function EmailComposer() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                  <label
+                    style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}
+                  >
                     Button Link (Absolute URL)
                   </label>
                   <input
@@ -802,7 +832,9 @@ export default function EmailComposer() {
                 }}
               >
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}>
+                  <label
+                    style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}
+                  >
                     Background
                   </label>
                   <input
@@ -810,11 +842,19 @@ export default function EmailComposer() {
                     data-testid="token-bg"
                     value={bgColor}
                     onChange={(e) => setBgColor(e.target.value)}
-                    style={{ width: '100%', height: 32, cursor: 'pointer', border: 'none', background: 'none' }}
+                    style={{
+                      width: '100%',
+                      height: 32,
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}>
+                  <label
+                    style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}
+                  >
                     Foreground
                   </label>
                   <input
@@ -822,17 +862,33 @@ export default function EmailComposer() {
                     data-testid="token-fg"
                     value={fgColor}
                     onChange={(e) => setFgColor(e.target.value)}
-                    style={{ width: '100%', height: 32, cursor: 'pointer', border: 'none', background: 'none' }}
+                    style={{
+                      width: '100%',
+                      height: 32,
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}>Accent</label>
+                  <label
+                    style={{ display: 'block', fontSize: 11, fontWeight: 600, color: '#64748b' }}
+                  >
+                    Accent
+                  </label>
                   <input
                     type="color"
                     data-testid="token-accent"
                     value={accentColor}
                     onChange={(e) => setAccentColor(e.target.value)}
-                    style={{ width: '100%', height: 32, cursor: 'pointer', border: 'none', background: 'none' }}
+                    style={{
+                      width: '100%',
+                      height: 32,
+                      cursor: 'pointer',
+                      border: 'none',
+                      background: 'none',
+                    }}
                   />
                 </div>
               </div>
@@ -847,14 +903,20 @@ export default function EmailComposer() {
                   marginTop: 4,
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
                   <span style={{ fontSize: 12, fontWeight: 700, color: '#334155' }}>
                     Mandatory Legal Preference & Unsubscribe Footer
                   </span>
-                  <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>CAN-SPAM / GDPR Invariant</span>
+                  <span style={{ fontSize: 11, color: '#16a34a', fontWeight: 600 }}>
+                    CAN-SPAM / GDPR Invariant
+                  </span>
                 </div>
                 <div style={{ marginTop: 8 }}>
-                  <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>Physical Mailing Address</label>
+                  <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>
+                    Physical Mailing Address
+                  </label>
                   <input
                     type="text"
                     data-testid="block-legal-address"
@@ -869,9 +931,13 @@ export default function EmailComposer() {
                     }}
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}>
+                <div
+                  style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}
+                >
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>Preferences URL</label>
+                    <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>
+                      Preferences URL
+                    </label>
                     <input
                       type="url"
                       data-testid="block-legal-pref"
@@ -887,7 +953,9 @@ export default function EmailComposer() {
                     />
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>Unsubscribe URL</label>
+                    <label style={{ display: 'block', fontSize: 11, color: '#64748b' }}>
+                      Unsubscribe URL
+                    </label>
                     <input
                       type="url"
                       data-testid="block-legal-unsub"
@@ -942,8 +1010,8 @@ export default function EmailComposer() {
               3. Target Audience Segment
             </h2>
             <p style={{ margin: '0 0 12px', fontSize: 13, color: '#64748b' }}>
-              Choose an approved segment. The system evaluates active consent, excludes suppressions, and deduplicates
-              recipients.
+              Choose an approved segment. The system evaluates active consent, excludes
+              suppressions, and deduplicates recipients.
             </p>
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
@@ -1007,7 +1075,9 @@ export default function EmailComposer() {
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>Live Audience Projection</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#0f172a' }}>
+                    Live Audience Projection
+                  </span>
                   <span
                     data-testid="count-eligible-consented"
                     style={{
@@ -1032,33 +1102,80 @@ export default function EmailComposer() {
                     fontSize: 12,
                   }}
                 >
-                  <div style={{ background: '#ffffff', padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: 8,
+                      borderRadius: 6,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div style={{ color: '#64748b' }}>Total</div>
-                    <strong data-testid="count-total-matched" style={{ fontSize: 16, color: '#0f172a' }}>
+                    <strong
+                      data-testid="count-total-matched"
+                      style={{ fontSize: 16, color: '#0f172a' }}
+                    >
                       {evaluationCounts.totalSubscribers}
                     </strong>
                   </div>
-                  <div style={{ background: '#ffffff', padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: 8,
+                      borderRadius: 6,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div style={{ color: '#64748b' }}>Matched</div>
                     <strong style={{ fontSize: 16, color: '#0f172a' }}>
                       {evaluationCounts.matchedSubscribers}
                     </strong>
                   </div>
-                  <div style={{ background: '#ffffff', padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: 8,
+                      borderRadius: 6,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div style={{ color: '#64748b' }}>Pending</div>
-                    <strong data-testid="count-unconsented" style={{ fontSize: 16, color: '#d97706' }}>
+                    <strong
+                      data-testid="count-unconsented"
+                      style={{ fontSize: 16, color: '#d97706' }}
+                    >
                       {evaluationCounts.unconsentedOrPending}
                     </strong>
                   </div>
-                  <div style={{ background: '#ffffff', padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: 8,
+                      borderRadius: 6,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div style={{ color: '#64748b' }}>Suppressed</div>
-                    <strong data-testid="count-suppressed" style={{ fontSize: 16, color: '#ef4444' }}>
+                    <strong
+                      data-testid="count-suppressed"
+                      style={{ fontSize: 16, color: '#ef4444' }}
+                    >
                       {evaluationCounts.suppressed}
                     </strong>
                   </div>
-                  <div style={{ background: '#ffffff', padding: 8, borderRadius: 6, border: '1px solid #e2e8f0' }}>
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: 8,
+                      borderRadius: 6,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div style={{ color: '#64748b' }}>Deduplicated</div>
-                    <strong data-testid="count-duplicates" style={{ fontSize: 16, color: '#2563eb' }}>
+                    <strong
+                      data-testid="count-duplicates"
+                      style={{ fontSize: 16, color: '#2563eb' }}
+                    >
                       {evaluationCounts.duplicates}
                     </strong>
                   </div>
@@ -1077,7 +1194,8 @@ export default function EmailComposer() {
                       color: '#92400e',
                     }}
                   >
-                    ⚠️ <strong>Empty audience:</strong> 0 eligible consented recipients found. Messages cannot be delivered to an empty audience.
+                    ⚠️ <strong>Empty audience:</strong> 0 eligible consented recipients found.
+                    Messages cannot be delivered to an empty audience.
                   </div>
                 )}
               </div>
@@ -1131,11 +1249,17 @@ export default function EmailComposer() {
                   <p style={{ margin: '0 0 4px', fontWeight: 600, color: '#334155' }}>
                     Immutable Recipient Snapshot:
                   </p>
-                  <code data-testid="snapshot-hash" style={{ color: '#0369a1', wordBreak: 'break-all' }}>
+                  <code
+                    data-testid="snapshot-hash"
+                    style={{ color: '#0369a1', wordBreak: 'break-all' }}
+                  >
                     {snapshotHash}
                   </code>
                   {frozenRecipients !== null && (
-                    <p data-testid="frozen-recipients" style={{ margin: '4px 0 0', color: '#166534', fontWeight: 600 }}>
+                    <p
+                      data-testid="frozen-recipients"
+                      style={{ margin: '4px 0 0', color: '#166534', fontWeight: 600 }}
+                    >
                       Frozen Recipients: {frozenRecipients}
                     </p>
                   )}
@@ -1382,7 +1506,9 @@ export default function EmailComposer() {
               boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             }}
           >
-            <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600 }}>Send Operator Test Email</h3>
+            <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600 }}>
+              Send Operator Test Email
+            </h3>
             <p style={{ margin: '0 0 10px', fontSize: 12, color: '#64748b' }}>
               Sends a live test message through the configured local mail sink.
             </p>
@@ -1423,7 +1549,11 @@ export default function EmailComposer() {
             {testSendStatus && (
               <p
                 data-testid="test-send-status"
-                style={{ margin: '8px 0 0', fontSize: 12, color: testSendStatus.includes('failed') ? '#dc2626' : '#16a34a' }}
+                style={{
+                  margin: '8px 0 0',
+                  fontSize: 12,
+                  color: testSendStatus.includes('failed') ? '#dc2626' : '#16a34a',
+                }}
               >
                 {testSendStatus}
               </p>
@@ -1453,7 +1583,9 @@ export default function EmailComposer() {
             style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}
           >
             <thead>
-              <tr style={{ borderBottom: '2px solid #f1f5f9', textAlign: 'left', color: '#64748b' }}>
+              <tr
+                style={{ borderBottom: '2px solid #f1f5f9', textAlign: 'left', color: '#64748b' }}
+              >
                 <th style={{ padding: '8px 10px' }}>Subject</th>
                 <th style={{ padding: '8px 10px' }}>Status</th>
                 <th style={{ padding: '8px 10px' }}>Kind</th>
@@ -1464,7 +1596,9 @@ export default function EmailComposer() {
             <tbody>
               {campaigns.map((c) => (
                 <tr key={c.id} style={{ borderBottom: '1px solid #f8fafc' }}>
-                  <td style={{ padding: '10px 10px', fontWeight: 600, color: '#0f172a' }}>{c.subject}</td>
+                  <td style={{ padding: '10px 10px', fontWeight: 600, color: '#0f172a' }}>
+                    {c.subject}
+                  </td>
                   <td style={{ padding: '10px 10px' }}>
                     <span
                       style={{
@@ -1504,7 +1638,9 @@ export default function EmailComposer() {
         )}
 
         <div style={{ marginTop: 24, paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
-          <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600 }}>Delivery Recovery / Retry</h3>
+          <h3 style={{ margin: '0 0 8px', fontSize: 14, fontWeight: 600 }}>
+            Delivery Recovery / Retry
+          </h3>
           <p style={{ margin: '0 0 10px', fontSize: 13, color: '#64748b' }}>
             Inspect deliveries in{' '}
             <Link href="/admin/collections/email-deliveries" style={{ color: '#2563eb' }}>
@@ -1519,7 +1655,13 @@ export default function EmailComposer() {
               placeholder="Delivery UUID..."
               value={retryDeliveryId}
               onChange={(e) => setRetryDeliveryId(e.target.value)}
-              style={{ flex: 1, padding: '7px 10px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: 13 }}
+              style={{
+                flex: 1,
+                padding: '7px 10px',
+                borderRadius: 6,
+                border: '1px solid #cbd5e1',
+                fontSize: 13,
+              }}
             />
             <button
               type="submit"
@@ -1537,7 +1679,11 @@ export default function EmailComposer() {
               Retry Delivery
             </button>
           </form>
-          {retryStatus && <p role="status" style={{ margin: '8px 0 0', fontSize: 13, color: '#334155' }}>{retryStatus}</p>}
+          {retryStatus && (
+            <p role="status" style={{ margin: '8px 0 0', fontSize: 13, color: '#334155' }}>
+              {retryStatus}
+            </p>
+          )}
         </div>
       </section>
     </main>

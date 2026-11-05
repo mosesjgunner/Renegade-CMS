@@ -23,4 +23,3 @@ writeFileSync(
   JSON.stringify(manifest, null, 2),
 )
 console.log(manifest.baseCommit, files.length, manifest.overlaySha256)
-

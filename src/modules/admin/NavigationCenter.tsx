@@ -38,7 +38,10 @@ export default function NavigationCenter() {
   const [publicationId, setPublicationId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null)
+  const [message, setMessage] = useState<{
+    text: string
+    type: 'success' | 'error' | 'info'
+  } | null>(null)
 
   const loadNavigation = async (siteId?: string) => {
     setLoading(true)
@@ -58,7 +61,10 @@ export default function NavigationCenter() {
       if (data.publicationId) setPublicationId(data.publicationId)
       if (data.siteId && !siteId) setSelectedSiteId(data.siteId)
     } catch (err) {
-      setMessage({ text: err instanceof Error ? err.message : 'Could not load menus.', type: 'error' })
+      setMessage({
+        text: err instanceof Error ? err.message : 'Could not load menus.',
+        type: 'error',
+      })
     } finally {
       setLoading(false)
     }
@@ -301,7 +307,10 @@ export default function NavigationCenter() {
             gap: '0.75rem',
           }}
         >
-          <label htmlFor="nav-site-select" style={{ fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>
+          <label
+            htmlFor="nav-site-select"
+            style={{ fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}
+          >
             Target Site:
           </label>
           <select

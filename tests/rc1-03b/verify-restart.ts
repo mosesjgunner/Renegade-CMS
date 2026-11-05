@@ -23,7 +23,11 @@ async function run() {
   assert.equal(authorMark.displayName, 'Mark Columnist')
 
   console.log('3. Checking Articles & Page...')
-  const article1 = await payload.findByID({ collection: 'content', id: savedState.article1.id, depth: 2 })
+  const article1 = await payload.findByID({
+    collection: 'content',
+    id: savedState.article1.id,
+    depth: 2,
+  })
   assert.equal(article1.title, savedState.article1.title)
   assert.equal(article1.status, 'draft')
   assert.equal((article1.authors as any[])[0].author.displayName, 'Jane Author')
@@ -36,7 +40,10 @@ async function run() {
   assert.equal(page1.contentType, 'page')
 
   console.log('4. Checking Revision Records & Family Companion...')
-  const family1 = await payload.findByID({ collection: 'article-family-content', id: savedState.family1.id })
+  const family1 = await payload.findByID({
+    collection: 'article-family-content',
+    id: savedState.family1.id,
+  })
   assert.equal(family1.currentRevisionSequence, savedState.family1.currentRevisionSequence)
 
   const revisions = await payload.find({
@@ -47,7 +54,9 @@ async function run() {
   assert.equal(revisions.totalDocs, savedState.totalRevisionsArticle1)
   assert.equal(revisions.docs[2].reason, 'restored')
 
-  console.log('✓ Container restart persistence verified: all articles, pages, authors, and revision histories intact.')
+  console.log(
+    '✓ Container restart persistence verified: all articles, pages, authors, and revision histories intact.',
+  )
   process.exit(0)
 }
 

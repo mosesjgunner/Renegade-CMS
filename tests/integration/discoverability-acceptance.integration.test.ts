@@ -1,3 +1,4 @@
+import { fixtureRichText } from '../helpers/fixture-rich-text'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -35,6 +36,7 @@ describe('discoverability acceptance', () => {
         site: source.site,
         publication: source.publication,
         contentType: 'page',
+        body: fixtureRichText(),
         title: phrase,
         slug: `discoverability-${suffix}`,
         canonicalPath: `/discoverability-${suffix}`,
@@ -79,8 +81,15 @@ describe('discoverability acceptance', () => {
       data: { status: 'draft' },
       overrideAccess: true,
     } as never)
+    const unpublished = await payload.findByID({
+      collection: 'content',
+      id: created.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+    expect(unpublished.status).toBe('draft')
     const afterUnpublish = documents.map((item) =>
-      item.id === created.id ? { ...item, status: 'draft' } : item,
+      item.id === created.id ? { ...item, status: unpublished.status } : item,
     )
     expect(
       queryLocalSearch({ documents: afterUnpublish, query: phrase, siteId: String(source.site) })
@@ -121,10 +130,28 @@ describe('discoverability acceptance', () => {
       id: rule.id,
       overrideAccess: true,
     } as never)
-    await payload.delete({ collection: 'content', id: created.id, overrideAccess: true } as never)
+    await expect(
+      payload.delete({ collection: 'content', id: created.id, overrideAccess: true } as never),
+    ).rejects.toThrow('editorial revision history cannot be deleted')
+    await payload.update({
+      collection: 'content',
+      id: created.id,
+      data: { status: 'archived' },
+      overrideAccess: true,
+    } as never)
+    const archived = await payload.findByID({
+      collection: 'content',
+      id: created.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+    expect(archived.status).toBe('archived')
+
     expect(
       queryLocalSearch({
-        documents: documents.filter((item) => item.id !== created.id),
+        documents: documents.map((item) =>
+          item.id === created.id ? { ...item, status: archived.status } : item,
+        ),
         query: phrase,
         siteId: String(source.site),
       }).total,

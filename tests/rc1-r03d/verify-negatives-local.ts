@@ -37,7 +37,14 @@ const check = (name: string, value: unknown) => {
 // Local transport alignment (R-03C precedent, as in verify-local.ts):
 // API calls go through the local HTTPS proxy by loopback IP with the
 // proxy Host header and the calling context's own session cookie.
-const req = async (context: any, route: string, method = 'GET', data?: any, status = 200, origin = base) => {
+const req = async (
+  context: any,
+  route: string,
+  method = 'GET',
+  data?: any,
+  status = 200,
+  origin = base,
+) => {
   const cookies = (await context.cookies(base)).map((c: any) => `${c.name}=${c.value}`).join('; ')
   const payloadText = data === undefined ? undefined : JSON.stringify(data)
   const result = await new Promise<{ status: number; text: string }>((resolve, reject) => {
@@ -53,7 +60,10 @@ const req = async (context: any, route: string, method = 'GET', data?: any, stat
           origin,
           cookie: cookies,
           ...(payloadText
-            ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payloadText) }
+            ? {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(payloadText),
+              }
             : {}),
         },
         timeout: 180000,
@@ -83,7 +93,8 @@ try {
   const sites = (await req(owner, '/api/sites?limit=50')).docs
   const site = sites.find((row: any) => row.slug === 'operator-dispatch-03d')
   const before = await req(owner, `/api/migration/legacy/report/${report.runId}`)
-  const beforeCount = (await req(owner, `/api/content?where[site][equals]=${report.siteId}`)).totalDocs
+  const beforeCount = (await req(owner, `/api/content?where[site][equals]=${report.siteId}`))
+    .totalDocs
   for (const [route, method, data] of [
     [`/api/migration/export?siteId=${report.siteId}`, 'GET'],
     [`/api/migration/legacy/report/${report.runId}`, 'GET'],
@@ -92,11 +103,17 @@ try {
     await req(anon, route, method, data, 403)
     check(`anonymous denied ${route}`, true)
   }
-  const invitation = await req(owner, '/api/admin/staff/invite', 'POST', {
-    email: `staff-${Date.now()}@rc103d.test`,
-    role: 'staff',
-    siteId: site.id,
-  }, 201)
+  const invitation = await req(
+    owner,
+    '/api/admin/staff/invite',
+    'POST',
+    {
+      email: `staff-${Date.now()}@rc103d.test`,
+      role: 'staff',
+      siteId: site.id,
+    },
+    201,
+  )
   const page = await staff.newPage()
   page.setDefaultTimeout(120000)
   await page.goto(base + '/login', { waitUntil: 'domcontentloaded', timeout: 180000 })
@@ -113,7 +130,9 @@ try {
     },
   })
   const enrollment = { enrollmentToken: invitation.enrollmentToken, siteId: site.id }
-  const options = (await req(staff, '/api/auth/passkey/enroll', 'POST', { ...enrollment, action: 'options' })).options
+  const options = (
+    await req(staff, '/api/auth/passkey/enroll', 'POST', { ...enrollment, action: 'options' })
+  ).options
   // tsx/esbuild compiles the evaluate callback below with a __name
   // helper reference that does not exist in the browser; shim it.
   await page.evaluate('window.__name = (fn) => fn')
@@ -127,7 +146,9 @@ try {
         .replace(/=+$/, '')
     options.challenge = decode(options.challenge)
     options.user.id = decode(options.user.id)
-    const result = (await navigator.credentials.create({ publicKey: options })) as PublicKeyCredential
+    const result = (await navigator.credentials.create({
+      publicKey: options,
+    })) as PublicKeyCredential
     const response = result.response as AuthenticatorAttestationResponse
     return {
       id: result.id,
@@ -140,7 +161,11 @@ try {
       },
     }
   }, options)
-  await req(staff, '/api/auth/passkey/enroll', 'POST', { ...enrollment, action: 'complete', credential })
+  await req(staff, '/api/auth/passkey/enroll', 'POST', {
+    ...enrollment,
+    action: 'complete',
+    credential,
+  })
   await page.waitForFunction(() =>
     Object.keys(document.querySelector('input[type="email"]') ?? {}).some((key) =>
       key.startsWith('__reactProps'),
@@ -148,9 +173,12 @@ try {
   )
   await page.getByLabel('Owner / Staff Email').click()
   await page.getByLabel('Owner / Staff Email').fill(invitation.user.email)
-  const completed = page.waitForResponse((response) => response.url().includes('/api/auth/passkey/complete'), {
-    timeout: 180000,
-  })
+  const completed = page.waitForResponse(
+    (response) => response.url().includes('/api/auth/passkey/complete'),
+    {
+      timeout: 180000,
+    },
+  )
   await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
   assert.equal((await completed).status(), 200)
   check(
@@ -163,8 +191,19 @@ try {
     [`/api/migration/legacy/verify/${report.runId}`, 'POST'],
     [`/api/migration/legacy/activate/${report.runId}`, 'POST'],
     [`/api/migration/legacy/rollback/${report.runId}`, 'POST'],
-    ['/api/migration/legacy/execute', 'POST', { pkg: { wxr: 'x' }, options: { targetSiteMode: 'existing-site', targetSiteId: report.siteId } }],
-    ['/api/migration/legacy/execute', 'POST', { pkg: { wxr: 'x' }, options: { targetSiteMode: 'new-isolated-site' } }],
+    [
+      '/api/migration/legacy/execute',
+      'POST',
+      {
+        pkg: { wxr: 'x' },
+        options: { targetSiteMode: 'existing-site', targetSiteId: report.siteId },
+      },
+    ],
+    [
+      '/api/migration/legacy/execute',
+      'POST',
+      { pkg: { wxr: 'x' }, options: { targetSiteMode: 'new-isolated-site' } },
+    ],
   ] as const) {
     await req(staff, route, method, data, 403)
     check(`foreign site or unauthorized creation denied ${route}`, true)
@@ -176,13 +215,24 @@ try {
       .filter((row: any) => row.collection === 'content')
       .every((row: any) => row.data.site === site.id),
   )
-  await req(owner, '/api/migration/legacy/execute', 'POST', { pkg: { wxr: 'x' } }, 403, 'https://foreign.invalid')
+  await req(
+    owner,
+    '/api/migration/legacy/execute',
+    'POST',
+    { pkg: { wxr: 'x' } },
+    403,
+    'https://foreign.invalid',
+  )
   check('cross-origin mutation denied for authenticated owner', true)
   const after = await req(owner, `/api/migration/legacy/report/${report.runId}`)
-  check('denied mutations preserve exact persisted migration report', JSON.stringify(before) === JSON.stringify(after))
+  check(
+    'denied mutations preserve exact persisted migration report',
+    JSON.stringify(before) === JSON.stringify(after),
+  )
   check(
     'denied mutations preserve content count',
-    (await req(owner, `/api/content?where[site][equals]=${report.siteId}`)).totalDocs === beforeCount,
+    (await req(owner, `/api/content?where[site][equals]=${report.siteId}`)).totalDocs ===
+      beforeCount,
   )
   success = true
 } catch (error) {

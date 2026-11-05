@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
+import sharp from 'sharp'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
@@ -26,6 +27,7 @@ import {
   inspectLegacySite,
   dryRunPreflight,
   executeLegacyMigration,
+  verifyLegacyMigration,
   activateLegacyMigration,
   rollbackLegacyMigration,
 } from '../../src/modules/portability/legacy-migration/pipeline'
@@ -356,13 +358,33 @@ describe('PRE-06 Presentation Pass Gate — PostgreSQL Integration Suite', () =>
 
   describe('3. Legacy site migration end-to-end integration and quarantine boundary', () => {
     it('executes preflight, imports into isolated site, verifies database, activates, and rolls back cleanly', async () => {
-      const store = new PayloadLegacyMigrationStore(payload)
+      const actor = await payload.findByID({
+        collection: 'users',
+        id: demo.userId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const store = new PayloadLegacyMigrationStore(payload, actor)
       const fixtureDir = path.resolve(__dirname, '../fixtures/legacy-migration')
       const wxr = readFileSync(path.join(fixtureDir, 'wordpress-fixture.xml'), 'utf8')
       const themeMapping = JSON.parse(
         readFileSync(path.join(fixtureDir, 'theme-mapping.json'), 'utf8'),
       )
-      const pkg = { wxr, themeMapping }
+      const pkg = {
+        wxr,
+        themeMapping,
+        mediaFiles: {
+          'tribune-hero.png': {
+            buffer: await sharp({
+              create: { width: 2, height: 2, channels: 3, background: '#336699' },
+            })
+              .png()
+              .toBuffer(),
+            fileName: 'tribune-hero.png',
+            mimeType: 'image/png',
+          },
+        },
+      }
 
       // 1. Inspect
       const inspectResult = inspectLegacySite(pkg)
@@ -399,6 +421,8 @@ describe('PRE-06 Presentation Pass Gate — PostgreSQL Integration Suite', () =>
       expect(quarantine.some((q) => q.kind === 'script')).toBe(true)
 
       // 4. Deliberate Activation
+      const verified = await verifyLegacyMigration(executed.runId, store)
+      expect(verified.stage).toBe('verified')
       const activated = await activateLegacyMigration(executed.runId, store, 'test-actor-gate')
       expect(activated.stage).toBe('activated')
 

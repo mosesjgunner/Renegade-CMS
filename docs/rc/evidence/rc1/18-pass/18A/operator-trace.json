@@ -1,0 +1,60 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "persistedSha256": "5f6764a8166f1b3acb06428a1752af646f4695399480d905dc4cda5965c1a4bb",
+  "observed": {
+    "preceding": 66,
+    "modules": 17,
+    "routes": 293,
+    "gates": 19,
+    "journey": 20,
+    "status": "NOT READY",
+    "firstBlocker": "09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md"
+  },
+  "commands": [
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --output docs/rc/evidence/rc1/18-pass/18A/inventory.json",
+      "exit": 0,
+      "stdout": "{\"status\":\"NOT READY\",\"source\":\"fb3d77840012d23505b15e64664399da7e657f2d5ffa6bd68a7e1a5a777467c0\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check docs/rc/evidence/rc1/18-pass/18A/inventory.json",
+      "exit": 0,
+      "stdout": "{\"status\":\"NOT READY\",\"source\":\"fb3d77840012d23505b15e64664399da7e657f2d5ffa6bd68a7e1a5a777467c0\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --output docs/rc/evidence/rc1/18-pass/18A/inventory.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "EEXIST: file already exists, open 'C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\docs\\rc\\evidence\\rc1\\18-pass\\18A\\inventory.json'"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/forged.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Inventory drift or tampering: regenerate into a NEW artifact; release readiness denied"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/stale.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Inventory drift or tampering: regenerate into a NEW artifact; release readiness denied"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --require-ready docs/rc/evidence/rc1/18-pass/18A/inventory.json",
+      "exit": 2,
+      "stdout": "{\"status\":\"NOT READY\",\"source\":\"fb3d77840012d23505b15e64664399da7e657f2d5ffa6bd68a7e1a5a777467c0\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/absent.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118a\\absent.json'"
+    }
+  ],
+  "boundary": "Filesystem operator tool; separate process restart/refetch and retry denial. Application role/site/browser/worker/DB acceptance unexecuted in 18A."
+}

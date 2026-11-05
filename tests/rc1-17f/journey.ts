@@ -122,7 +122,11 @@ async function freshPhase() {
     ...process.env,
     DATABASE_URL: FRESH_URL,
   })
-  check('operator command `npm run db:status` runs against the fresh database', status.code === 0, `exit ${status.code}`)
+  check(
+    'operator command `npm run db:status` runs against the fresh database',
+    status.code === 0,
+    `exit ${status.code}`,
+  )
   observe('dbStatusTail', status.stdout.trim().split('\n').slice(-4).join('\n'))
   await (await pool).end()
   await finish({
@@ -234,7 +238,10 @@ async function driftPhase() {
   }
   const empty = (x: { onlyInA: string[]; onlyInB: string[] }) =>
     x.onlyInA.length === 0 && x.onlyInB.length === 0
-  check('schema drift: table sets converge between fresh install and fixture upgrade', empty(d.tables))
+  check(
+    'schema drift: table sets converge between fresh install and fixture upgrade',
+    empty(d.tables),
+  )
   check('schema drift: column sets (type/nullability/default) converge', empty(d.columns))
   check('schema drift: enum label sets converge', empty(d.enums))
   check('schema drift: index definitions converge', empty(d.indexes))
@@ -288,7 +295,10 @@ async function additivePhase() {
         hits.push({
           migration: name,
           pattern: label,
-          snippet: upRegion.slice(Math.max(0, at - 60), at + 100).replace(/\s+/g, ' ').trim(),
+          snippet: upRegion
+            .slice(Math.max(0, at - 60), at + 100)
+            .replace(/\s+/g, ' ')
+            .trim(),
         })
       }
     }
@@ -382,9 +392,9 @@ async function rollbackPhase() {
   try {
     // -- Pre-upgrade state: baseline schema + sentinel fixture data.
     await db.migrate({ migrations: migrations.slice(0, baselineIndex + 1) })
-    const state0 = (
-      await pool.query('SELECT name FROM payload_migrations ORDER BY name')
-    ).rows.map((r) => r.name as string)
+    const state0 = (await pool.query('SELECT name FROM payload_migrations ORDER BY name')).rows.map(
+      (r) => r.name as string,
+    )
     check(
       'rollback fixture database migrated to the synthetic baseline only',
       state0.length === baselineIndex + 1,
@@ -394,13 +404,90 @@ async function rollbackPhase() {
     // at the baseline schema, filling NOT NULL columns from known values or
     // type-appropriate sentinels.
     const known: Record<string, Record<string, unknown>> = {
-      sites: { id: IDS.site, name: 'Rollback Sentinel Site', slug: 'rollback-sentinel', lifecycle: 'active', created_at: TS, updated_at: TS },
-      members: { id: IDS.member, display_name: 'Rollback Sentinel Member', email: 'rollback-sentinel@example.test', status: 'active', created_at: TS, updated_at: TS },
-      profiles: { id: IDS.profile, member_id: IDS.member, display_name: 'Rollback Sentinel Member', handle: 'rollback-sentinel', visibility: 'public', created_at: TS, updated_at: TS },
-      spaces: { id: IDS.space, site_id: IDS.site, member_id: IDS.member, profile_id: IDS.profile, handle: 'rollback-sentinel', canonical_path: '/members/rollback-sentinel', display_name: 'Rollback Sentinel Space', visibility: 'public', moderation_state: 'clear', transfer_state: 'none', created_at: TS, updated_at: TS },
-      publications: { id: IDS.publication, site_id: IDS.site, owner_id: IDS.member, space_id: IDS.space, name: 'Rollback Sentinel Publication', slug: 'rollback-sentinel', canonical_base_path: '/blogs/rollback-sentinel', status: 'active', visibility: 'public', created_at: TS, updated_at: TS },
-      media_assets: { id: IDS.media, site_id: IDS.site, publication_id: IDS.publication, space_id: IDS.space, owner_id: IDS.member, title: 'Rollback sentinel image', kind: 'image', storage_location: 'local://rollback-sentinel/image.jpg', storage_provider: 'local', mime_type: 'image/jpeg', alt_text: 'A rollback sentinel image', created_at: TS, updated_at: TS },
-      content: { id: IDS.content, site_id: IDS.site, publication_id: IDS.publication, space_id: IDS.space, owner_id: IDS.member, content_type: 'article', title: 'Rollback Sentinel Article', slug: 'rollback-sentinel-article', canonical_path: '/blogs/rollback-sentinel/rollback-sentinel-article', summary: 'Pre-upgrade editorial content.', status: 'published', published_at: TS, hero_media_id: IDS.media, created_at: TS, updated_at: TS },
+      sites: {
+        id: IDS.site,
+        name: 'Rollback Sentinel Site',
+        slug: 'rollback-sentinel',
+        lifecycle: 'active',
+        created_at: TS,
+        updated_at: TS,
+      },
+      members: {
+        id: IDS.member,
+        display_name: 'Rollback Sentinel Member',
+        email: 'rollback-sentinel@example.test',
+        status: 'active',
+        created_at: TS,
+        updated_at: TS,
+      },
+      profiles: {
+        id: IDS.profile,
+        member_id: IDS.member,
+        display_name: 'Rollback Sentinel Member',
+        handle: 'rollback-sentinel',
+        visibility: 'public',
+        created_at: TS,
+        updated_at: TS,
+      },
+      spaces: {
+        id: IDS.space,
+        site_id: IDS.site,
+        member_id: IDS.member,
+        profile_id: IDS.profile,
+        handle: 'rollback-sentinel',
+        canonical_path: '/members/rollback-sentinel',
+        display_name: 'Rollback Sentinel Space',
+        visibility: 'public',
+        moderation_state: 'clear',
+        transfer_state: 'none',
+        created_at: TS,
+        updated_at: TS,
+      },
+      publications: {
+        id: IDS.publication,
+        site_id: IDS.site,
+        owner_id: IDS.member,
+        space_id: IDS.space,
+        name: 'Rollback Sentinel Publication',
+        slug: 'rollback-sentinel',
+        canonical_base_path: '/blogs/rollback-sentinel',
+        status: 'active',
+        visibility: 'public',
+        created_at: TS,
+        updated_at: TS,
+      },
+      media_assets: {
+        id: IDS.media,
+        site_id: IDS.site,
+        publication_id: IDS.publication,
+        space_id: IDS.space,
+        owner_id: IDS.member,
+        title: 'Rollback sentinel image',
+        kind: 'image',
+        storage_location: 'local://rollback-sentinel/image.jpg',
+        storage_provider: 'local',
+        mime_type: 'image/jpeg',
+        alt_text: 'A rollback sentinel image',
+        created_at: TS,
+        updated_at: TS,
+      },
+      content: {
+        id: IDS.content,
+        site_id: IDS.site,
+        publication_id: IDS.publication,
+        space_id: IDS.space,
+        owner_id: IDS.member,
+        content_type: 'article',
+        title: 'Rollback Sentinel Article',
+        slug: 'rollback-sentinel-article',
+        canonical_path: '/blogs/rollback-sentinel/rollback-sentinel-article',
+        summary: 'Pre-upgrade editorial content.',
+        status: 'published',
+        published_at: TS,
+        hero_media_id: IDS.media,
+        created_at: TS,
+        updated_at: TS,
+      },
     }
     const insertFixture = async (table: string) => {
       const cols = (
@@ -439,7 +526,15 @@ async function rollbackPhase() {
         values,
       )
     }
-    for (const table of ['sites', 'members', 'profiles', 'spaces', 'publications', 'media_assets', 'content'])
+    for (const table of [
+      'sites',
+      'members',
+      'profiles',
+      'spaces',
+      'publications',
+      'media_assets',
+      'content',
+    ])
       await insertFixture(table)
     const rowHash = async (p: { query: typeof pool.query }, table: string, id: string) =>
       (await p.query(`SELECT md5(row_to_json(t)::text) AS h FROM "${table}" t WHERE id = $1`, [id]))
@@ -452,14 +547,25 @@ async function rollbackPhase() {
       ['content', IDS.content],
     ] as const)
       hashes0[table] = await rowHash(pool, table, id)
-    check('baseline sentinel fixture rows inserted (site/member/media/content)', Object.values(hashes0).every(Boolean))
+    check(
+      'baseline sentinel fixture rows inserted (site/member/media/content)',
+      Object.values(hashes0).every(Boolean),
+    )
 
     // Sentinel media on disk.
     const mediaDir = path.resolve(process.env.MEDIA_DIR!)
-    await writeFile(path.join(mediaDir, 'sentinel-a.bin'), Buffer.from('rollback-sentinel-a\0'.repeat(64)))
-    await writeFile(path.join(mediaDir, 'sentinel-b.bin'), Buffer.from('rollback-sentinel-b\0'.repeat(64)))
+    await writeFile(
+      path.join(mediaDir, 'sentinel-a.bin'),
+      Buffer.from('rollback-sentinel-a\0'.repeat(64)),
+    )
+    await writeFile(
+      path.join(mediaDir, 'sentinel-b.bin'),
+      Buffer.from('rollback-sentinel-b\0'.repeat(64)),
+    )
     const mediaHash = async (dir: string, file: string) =>
-      createHash('sha256').update(await readFile(path.join(dir, file))).digest('hex')
+      createHash('sha256')
+        .update(await readFile(path.join(dir, file)))
+        .digest('hex')
     const media0 = {
       'sentinel-a.bin': await mediaHash(mediaDir, 'sentinel-a.bin'),
       'sentinel-b.bin': await mediaHash(mediaDir, 'sentinel-b.bin'),
@@ -474,12 +580,32 @@ async function rollbackPhase() {
     const pgEnv = { ...process.env, PGPASSWORD: 'postgres' }
     await execFileAsync(
       'pg_dump',
-      ['-h', '127.0.0.1', '-U', 'postgres', '-Fc', '-d', dbName(ROLLBACK_URL), '-f', path.join(archive, 'database.dump')],
+      [
+        '-h',
+        '127.0.0.1',
+        '-U',
+        'postgres',
+        '-Fc',
+        '-d',
+        dbName(ROLLBACK_URL),
+        '-f',
+        path.join(archive, 'database.dump'),
+      ],
       { env: pgEnv, maxBuffer: 1024 * 1024 * 64 },
     )
     await execFileAsync(
       'tar',
-      ['-C', mediaDir, '--exclude=./.upload-sessions', '--exclude=.upload-sessions', '--exclude=./.renegade/backup-status.json', '--exclude=.renegade/backup-status.json', '-czf', path.join(archive, 'media.tar.gz'), '.'],
+      [
+        '-C',
+        mediaDir,
+        '--exclude=./.upload-sessions',
+        '--exclude=.upload-sessions',
+        '--exclude=./.renegade/backup-status.json',
+        '--exclude=.renegade/backup-status.json',
+        '-czf',
+        path.join(archive, 'media.tar.gz'),
+        '.',
+      ],
       { maxBuffer: 1024 * 1024 * 64 },
     )
     const pgVersion = (await pool.query('SHOW server_version')).rows[0].server_version as string
@@ -498,7 +624,9 @@ async function rollbackPhase() {
       migrationState: state0,
       installation: { storageDriver: 'local', mediaDir, imageTag: null },
     })
-    await writeFile(path.join(archive, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, { mode: 0o600 })
+    await writeFile(path.join(archive, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, {
+      mode: 0o600,
+    })
     const verified = await backupModule.verifyOperationalBackup(archive)
     check(
       'pre-upgrade backup archive created and verified by the product backup module',
@@ -521,25 +649,49 @@ async function rollbackPhase() {
         }),
       /Restore the pre-upgrade operational backup instead/,
     )
-    check('image-rollback guard refuses when the ledger moved, directing the operator to restore the backup', true)
-    assert.doesNotThrow(() =>
-      lifecycle.assertRestoreVersionCompatibility({ archiveVersion: pkg.version, targetVersion: pkg.version }),
+    check(
+      'image-rollback guard refuses when the ledger moved, directing the operator to restore the backup',
+      true,
     )
     assert.doesNotThrow(() =>
-      lifecycle.assertRestoreVersionCompatibility({ archiveVersion: '0.1.0', targetVersion: '0.2.0' }),
-    )
-    assert.throws(() =>
-      lifecycle.assertRestoreVersionCompatibility({ archiveVersion: '1.0.0', targetVersion: '0.1.0' }),
-    )
-    assert.throws(() =>
-      lifecycle.assertRestoreVersionCompatibility({ archiveVersion: '0.2.0', targetVersion: '0.1.0' }),
-    )
-    check('restore version guard: same-version and same-major forward restores pass; cross-major and newer-into-older are refused', true)
-    assert.throws(() =>
-      lifecycle.assertDestructiveOperationAuthorized({ operation: 'rollback', maintenanceWindowConfirmed: false }),
+      lifecycle.assertRestoreVersionCompatibility({
+        archiveVersion: pkg.version,
+        targetVersion: pkg.version,
+      }),
     )
     assert.doesNotThrow(() =>
-      lifecycle.assertDestructiveOperationAuthorized({ operation: 'rollback', maintenanceWindowConfirmed: true }),
+      lifecycle.assertRestoreVersionCompatibility({
+        archiveVersion: '0.1.0',
+        targetVersion: '0.2.0',
+      }),
+    )
+    assert.throws(() =>
+      lifecycle.assertRestoreVersionCompatibility({
+        archiveVersion: '1.0.0',
+        targetVersion: '0.1.0',
+      }),
+    )
+    assert.throws(() =>
+      lifecycle.assertRestoreVersionCompatibility({
+        archiveVersion: '0.2.0',
+        targetVersion: '0.1.0',
+      }),
+    )
+    check(
+      'restore version guard: same-version and same-major forward restores pass; cross-major and newer-into-older are refused',
+      true,
+    )
+    assert.throws(() =>
+      lifecycle.assertDestructiveOperationAuthorized({
+        operation: 'rollback',
+        maintenanceWindowConfirmed: false,
+      }),
+    )
+    assert.doesNotThrow(() =>
+      lifecycle.assertDestructiveOperationAuthorized({
+        operation: 'rollback',
+        maintenanceWindowConfirmed: true,
+      }),
     )
     check('destructive-operation guard requires an explicitly confirmed maintenance window', true)
     const plan = lifecycle.createUpgradePlan({
@@ -569,21 +721,42 @@ async function rollbackPhase() {
     dumpBytes[128] = dumpBytes[128] ^ 0xff
     await writeFile(dumpPath, dumpBytes)
     await assert.rejects(() => backupModule.verifyOperationalBackup(corrupt), /checksum mismatch/)
-    check('corrupted pre-upgrade archive is rejected by checksum verification before any restore', true)
+    check(
+      'corrupted pre-upgrade archive is rejected by checksum verification before any restore',
+      true,
+    )
 
     // -- Upgrade in place; data must survive.
     await db.migrate({ migrations })
     const stateNow = (
       await pool.query('SELECT name FROM payload_migrations ORDER BY name')
     ).rows.map((r) => r.name as string)
-    check('in-place upgrade applies every remaining migration', stateNow.length === migrations.length, `${state0.length} -> ${stateNow.length}`)
+    check(
+      'in-place upgrade applies every remaining migration',
+      stateNow.length === migrations.length,
+      `${state0.length} -> ${stateNow.length}`,
+    )
     const hashesAfterUpgrade: Record<string, string> = {}
     for (const table of Object.keys(hashes0))
-      hashesAfterUpgrade[table] = await rowHash(pool, table, IDS[table === 'sites' ? 'site' : table === 'members' ? 'member' : table === 'media_assets' ? 'media' : 'content'])
+      hashesAfterUpgrade[table] = await rowHash(
+        pool,
+        table,
+        IDS[
+          table === 'sites'
+            ? 'site'
+            : table === 'members'
+              ? 'member'
+              : table === 'media_assets'
+                ? 'media'
+                : 'content'
+        ],
+      )
     // Note: additive migrations may add columns (row_to_json grows), so compare
     // identity-bearing fields rather than whole-row hashes after an upgrade.
     const contentAfter = (
-      await pool.query('SELECT slug, canonical_path, title FROM content WHERE id = $1', [IDS.content])
+      await pool.query('SELECT slug, canonical_path, title FROM content WHERE id = $1', [
+        IDS.content,
+      ])
     ).rows[0]
     check(
       'sentinel content survives the in-place upgrade with identity and canonical data intact',
@@ -591,7 +764,10 @@ async function rollbackPhase() {
         contentAfter?.canonical_path === '/blogs/rollback-sentinel/rollback-sentinel-article' &&
         contentAfter?.title === 'Rollback Sentinel Article',
     )
-    observe('wholeRowHashMayGrowWithAdditiveColumns', { before: hashes0, after: hashesAfterUpgrade })
+    observe('wholeRowHashMayGrowWithAdditiveColumns', {
+      before: hashes0,
+      after: hashesAfterUpgrade,
+    })
 
     // -- The supported rollback for a schema-changing upgrade is restore.
     assert.throws(
@@ -602,17 +778,34 @@ async function rollbackPhase() {
         }),
       /Restore the pre-upgrade operational backup instead/,
     )
-    check('after the schema-changing upgrade, image rollback is refused on the real ledger states', true)
+    check(
+      'after the schema-changing upgrade, image rollback is refused on the real ledger states',
+      true,
+    )
     await execFileAsync(
       'pg_restore',
-      ['-h', '127.0.0.1', '-U', 'postgres', '-d', dbName(RESTORED_URL), path.join(archive, 'database.dump')],
+      [
+        '-h',
+        '127.0.0.1',
+        '-U',
+        'postgres',
+        '-d',
+        dbName(RESTORED_URL),
+        path.join(archive, 'database.dump'),
+      ],
       { env: pgEnv, maxBuffer: 1024 * 1024 * 64 },
     )
     const restoredMedia = path.resolve(`${scratch}/restored-media`)
     await mkdir(restoredMedia, { recursive: true })
     // --no-same-owner: this sandbox denies chown even to root; file bytes are
     // what the byte-identity check below verifies.
-    await execFileAsync('tar', ['--no-same-owner', '-xzf', path.join(archive, 'media.tar.gz'), '-C', restoredMedia])
+    await execFileAsync('tar', [
+      '--no-same-owner',
+      '-xzf',
+      path.join(archive, 'media.tar.gz'),
+      '-C',
+      restoredMedia,
+    ])
     const restoredPool = await poolFor(RESTORED_URL)
     const restoredState = (
       await restoredPool.query('SELECT name FROM payload_migrations ORDER BY name')
@@ -674,7 +867,11 @@ async function webPhase() {
         ready = 0
       }
     }
-    check('web boots on the fixture-upgraded database and reports ready', ready === 200, `status ${ready}`)
+    check(
+      'web boots on the fixture-upgraded database and reports ready',
+      ready === 200,
+      `status ${ready}`,
+    )
     const home = await fetch(`http://127.0.0.1:${port}/`)
     observe('homepageStatusOnUpgradedDb', home.status)
     const article = await fetch(

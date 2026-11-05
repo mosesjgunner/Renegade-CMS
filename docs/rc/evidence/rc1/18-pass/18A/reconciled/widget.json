@@ -1,0 +1,28 @@
+{
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "cases": [
+    "loading then fetched fixture name/price/link/availability",
+    "empty catalog with no invented products",
+    "HTTP 503 with safe unavailable state and no products"
+  ],
+  "requests": [
+    {
+      "path": "/api/catalog",
+      "mode": "products",
+      "cookie": null
+    },
+    {
+      "path": "/api/catalog",
+      "mode": "empty",
+      "cookie": null
+    },
+    {
+      "path": "/api/catalog",
+      "mode": "error",
+      "cookie": null
+    }
+  ],
+  "boundary": "Real Chromium and actual widget; isolated loopback catalog fixture only, not a persisted product or provider outcome"
+}

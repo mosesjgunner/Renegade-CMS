@@ -152,7 +152,9 @@ describe('RC1 08B - Social Composer, Approval Gates & Scheduling', () => {
         idempotencyKey: 'km4',
       })
       expect(tooManyAttachmentsReport.isValid).toBe(false)
-      expect(tooManyAttachmentsReport.errors.some((e) => e.code === 'TOO_MANY_ATTACHMENTS')).toBe(true)
+      expect(tooManyAttachmentsReport.errors.some((e) => e.code === 'TOO_MANY_ATTACHMENTS')).toBe(
+        true,
+      )
     })
   })
 

@@ -1,0 +1,1486 @@
+{
+  "source": {
+    "baseCommit": "3b6911e9e4bc6bf442fe6aefc044e64aa315bc1e",
+    "treeHash": "81214f64e8de58469a2284819183fb09cbd49018a80308f4bf980cf181a82385"
+  },
+  "commands": [
+    {
+      "command": "npm.cmd test -- --reporter=json --outputFile=scratch/rc118a-repair/final-unit.json",
+      "exit": 0,
+      "counts": {
+        "files": 282,
+        "passed": 2081,
+        "failed": 0,
+        "skipped": 0,
+        "total": 2081
+      },
+      "rawReportSha256": "2c66df729bea99b09a4c5b3e400e2d3e26382e721d739a90749bcc0ed8b2d534",
+      "suites": [
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/active-site-route.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/activitypub.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/admin-publishing-scope.test.tsx",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/admin-request-origin.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/adversarial-cross-site-matrix.test.ts",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-adapters.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-credential-keyring.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-egress.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-gateway.test.ts",
+          "passed": 16,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-media-metadata.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-workflows.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/ai-writer-review.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/analytics-15a.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/analytics-15b.test.ts",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/analytics-attribution-experiments.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/analytics-contracts.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/analytics-privacy-runtime.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/article-route-hierarchy.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-01-audience-evidence.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-03-email-composer.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-04-engine.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-06-telecom.test.ts",
+          "passed": 21,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-07-audience-command.test.ts",
+          "passed": 35,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/audience-contracts.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/audience-interrupted-delivery.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/audience-newsletter-workflow.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/audience-webhook-ordering.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/authorization-matrix.test.ts",
+          "passed": 28,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/build-provenance.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/calendar-graphics-contracts.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/calendar-lifecycle-boundary.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/capabilities.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-00-community-policy.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-02-profile-projection.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-02-relationship-policy.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03-comments-lifecycle.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03a-comment-identity.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03b-comment-composer.test.ts",
+          "passed": 26,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03c-comment-reactions.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03d-thread-lifecycle.test.ts",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-04a-forum-space-access.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-04b-forum-composer.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-04c-forum-browsing.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-04d-forum-topic-operations.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-05a-moderation-reports.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-05b-moderation-actions.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-05c-moderation-appeals-audit.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-05d-abuse-triage.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06b-inbox-notifications.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06c-digests-and-outbox.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06d-realtime-hints-and-repair.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-07a-conversations.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-07b-message-requests.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-07c-message-attachments.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-07d-group-administration.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-server-headers.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-canonical-contract.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-cart-access.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-checkout.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-contracts.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-dashboard-scope.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-merchant-selection.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-pos.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-prompt13.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-reconcile-scope.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-stale-jobs.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/commerce-webhook-retry.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/community-admin-actor.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/config.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/connection-runtime.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/content-archives.test.tsx",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/content-hierarchy.test.tsx",
+          "passed": 24,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/content-publication-references.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/contracts.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/digital-delivery-readiness.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-00-discovery-contract.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-01-publisher-workflow.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-02-schema-graph.test.ts",
+          "passed": 22,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-03-crawler-infrastructure.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-ai-boundary.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-cannibalization.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-cross-checks.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-persisted-lifecycle.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-redirect-manager.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/disc-05-rendered-audit.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/discovery-contracts.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-01-security-and-contracts.test.ts",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-02-core-adapters.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-03-meta-visual-adapters.test.ts",
+          "passed": 18,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-03-social-command-center.test.tsx",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-04-video-monetized-and-analytics.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-05-social-api-routes.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-06-telegram-discord-adapters.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/dist-07-queue-worker.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/donation-admin-scope.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/donation-ingestion.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/donation-ui-accessibility.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/editorial-contracts.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/editorial-markdown.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/editorial-workflow-permissions.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/editorial-workflow.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/email-delivery.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-and-auxiliary-15d.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-contracts.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/execution-foundation.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/experiments-15c.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/extension-api.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/extension-kernel.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/extension-lifecycle.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/external-boundary-security.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-00-workflow-contract.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-01-cmos-workflow.test.ts",
+          "passed": 16,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-03-scheduling-calendar.test.ts",
+          "passed": 16,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-04-acceptance.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-04-coordinated-releases.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-05-localization-workflow.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/flow-06-command-center.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/fulfillment-provider-boundaries.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/host-theme-cycle.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/information-architecture.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/installation-readiness.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/integrations-operational-ux.test.ts",
+          "passed": 23,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/integrations-service.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/logging.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/long-form-quality.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-00-media-contract.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-01-backup-media.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-01-s3-storage.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-01-upload-sessions.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-02-dam-governance.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-03-variant-engine.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-04-audio-metadata.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-05-video.test.tsx",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-06-command-center.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/med-ext-01-minipaint.test.tsx",
+          "passed": 22,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/media-contracts.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/media-publishing-workflows.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/media-storage.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/member-identity.test.ts",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/module-profiles-acceptance.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/module-registry.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/modules-and-federation-15e.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/network-experience.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/network-foundation.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/onboarding.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operational-backup.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operational-compose.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operational-image-provenance.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operational-lifecycle.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operational-process.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/operations-diagnostics.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/owner-recovery.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/package-contracts.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/package-workflow.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/page-builder.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/payload-domains.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/persisted-review-comments.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/phase-a-access.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/phase-a-media.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pod-production-key.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/portability-contracts.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/portability-workflow.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-00-presentation.test.tsx",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-01-themes.test.ts",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-03-visual-editor.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-04-reusable-composition.test.ts",
+          "passed": 17,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-05-legacy-migration.test.ts",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pre-06-presentation-pass-gate.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/production-installer.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/production-module-config.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/progressive-disclosure.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/prompt14-contracts.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/pub-04-publishing-floor.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/public-api-webhooks.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/public-contracts.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/public-experiment-configuration.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/public-navigation.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/publishing-pass.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc01-admin-truth.test.tsx",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-content-preview.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-event-schema.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-layout-visibility.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-local-audit.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-public-queries.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-published-revision.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc02-related-content.test.ts",
+          "passed": 1,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc06-auth-attacks.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-event-privacy.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-safety.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08d-lock-projection.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-03b-current.test.tsx",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-03d-portability.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04a-layout-media.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04a-visual-editor.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04b-template-scope.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04b-theme-boundaries.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04c-starter.test.ts",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04d-campaign-commerce.test.ts",
+          "passed": 21,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-04e-presentation-regression.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-05a-media-lifecycle.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-05b-private-media.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-05c-editor.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-05c-public-versions.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-05c-variants.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-06a-metadata-schema-indexing.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-06b-discovery.test.tsx",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-06c-search-redirects.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-07a-review.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-07b-scheduler-worker.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-07c-releases.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-08a-social-providers.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-08b-social-composer.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-08c-current.test.ts",
+          "passed": 16,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-08c-social-dispatch.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09b-campaigns-templates.test.ts",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09c-delivery.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09c-telecom.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09d-crm-metrics.test.ts",
+          "passed": 14,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09d-reporting.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-09d-segments.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-10b-discussion-boundaries.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-10b-discussion-operations.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-10b-routes.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-10c-messaging-privacy.test.ts",
+          "passed": 12,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-10d-moderation-lifecycle.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-11a-catalog-write.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-11b-cart-boundaries.test.ts",
+          "passed": 20,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-11c-checkout-settlement.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-11d-digital-revocation.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-11e-commerce-acceptance.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12a-plan-boundaries.test.ts",
+          "passed": 21,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12b-provider.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12b-renewal.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12c-donations-acceptance.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12d-financial-boundaries.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-12d-projection-routes.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-13a-fulfillment-eligibility.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-13b-adapters.test.ts",
+          "passed": 19,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-13b-operator.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-13b-provider-truth.test.ts",
+          "passed": 23,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-13c-fulfillment-lifecycle.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-17a-security.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-17a-user-scope.test.ts",
+          "passed": 13,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-17b-security.test.ts",
+          "passed": 16,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-17e-schedule-health.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc1-r08-social-local-origins.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/readiness-probe.unit.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/realtime-collaboration.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/redirect-admin-scope.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/refund-reconciliation.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/related-site-access.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/release-inventory.test.ts",
+          "passed": 8,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/releases-service.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rich-editor-draft-preview.test.tsx",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/security-negative-matrix.test.ts",
+          "passed": 18,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/semantic-url-backfill.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/semantic-url.test.ts",
+          "passed": 5,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-01-catalog-workflows.test.ts",
+          "passed": 18,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-02-carts-and-proposals.test.ts",
+          "passed": 10,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-02-tampering-and-invariants.test.ts",
+          "passed": 9,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-03-pod-fulfillment.test.ts",
+          "passed": 26,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-04-local-test-checkout.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-04-payment-operations.test.ts",
+          "passed": 22,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-06-affiliate-and-referrals.test.ts",
+          "passed": 20,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-07-donation-checkout-route.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-07-donations-contract.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-08-command-center-boundaries.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/site-settings-multisite.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/social-contracts.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/staff-enrollment.test.ts",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/staff-invite-route.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/starter-definitions.test.ts",
+          "passed": 15,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/subscription-contract.test.ts",
+          "passed": 7,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/subscription-plans.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/subscription-provider-plan-mapping.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/subscription-service.test.ts",
+          "passed": 3,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/team-collaboration.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/telecom-admin-simulate.test.ts",
+          "passed": 6,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/tenant-isolation.test.ts",
+          "passed": 11,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/theme-preview-identity.test.ts",
+          "passed": 4,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/verification-contract.test.ts",
+          "passed": 2,
+          "failed": 0
+        },
+        {
+          "path": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/webhooks-16b.test.ts",
+          "passed": 13,
+          "failed": 0
+        }
+      ]
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "exit": 0,
+      "details": "types.json: fresh isolated route generation plus full tsc; 5915 files and the active route validator"
+    },
+    {
+      "command": "npx.cmd eslint scripts/typecheck.mjs scripts/release-inventory.ts tests/rc1-18a tests/unit/release-inventory.test.ts tests/unit/flow-04-acceptance.test.ts tests/unit/payload-domains.test.ts tests/unit/rc1-04d-campaign-commerce.test.ts tests/unit/shop-08-command-center-boundaries.test.ts src/modules/module-registry.ts --max-warnings=0",
+      "exit": 0
+    },
+    {
+      "command": "npx.cmd prettier --check scripts/typecheck.mjs scripts/release-inventory.ts tests/rc1-18a/operator.mjs tests/rc1-18a/catalog-widget.mjs tests/unit/release-inventory.test.ts tests/unit/flow-04-acceptance.test.ts tests/unit/payload-domains.test.ts tests/unit/rc1-04d-campaign-commerce.test.ts tests/unit/shop-08-command-center-boundaries.test.ts src/modules/module-registry.ts package.json tsconfig.json",
+      "exit": 0
+    },
+    {
+      "command": "node tests/rc1-18a/operator.mjs docs/rc/evidence/rc1/18-pass/18A/reconciled",
+      "exit": 0,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "trace": "operator-trace.json"
+    },
+    {
+      "command": "node tests/rc1-18a/catalog-widget.mjs",
+      "exit": 0,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "trace": "widget.json"
+    },
+    {
+      "command": "git diff --check",
+      "exit": 0
+    },
+    {
+      "command": "npm.cmd run release:inventory -- --require-complete docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 0,
+      "inventoryStatus": "PASS",
+      "releaseStatus": "NOT READY",
+      "releaseTagAllowed": false
+    }
+  ],
+  "boundary": "18A inventory/operator acceptance only. Unit, widget and operator counts have distinct meanings. No final application/DB/golden/image/remote-provider acceptance is asserted.",
+  "changedTrackedPaths": [
+    "docs/rc/RC1-70-SUBPASS-LEDGER.md",
+    "docs/rc/RC1-ACCEPTANCE-MATRIX.md",
+    "docs/rc/RC1-SCOPE.md",
+    "next-env.d.ts",
+    "package.json",
+    "src/modules/module-registry.ts",
+    "tests/unit/flow-04-acceptance.test.ts",
+    "tests/unit/payload-domains.test.ts",
+    "tests/unit/rc1-04d-campaign-commerce.test.ts",
+    "tests/unit/shop-08-command-center-boundaries.test.ts",
+    "tsconfig.json"
+  ]
+}

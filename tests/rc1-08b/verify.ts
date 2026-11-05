@@ -128,7 +128,10 @@ try {
     })
     check('restart: Draft 1 persisted across restart', Boolean(persistedDraft1))
     check('restart: Draft 1 status remains scheduled', persistedDraft1.status === 'scheduled')
-    check('restart: Draft 1 canonicalUrl preserved', persistedDraft1.canonicalUrl === 'https://renegadeparty.org/releases/v1')
+    check(
+      'restart: Draft 1 canonicalUrl preserved',
+      persistedDraft1.canonicalUrl === 'https://renegadeparty.org/releases/v1',
+    )
 
     // 2. Verify variants for Draft 1 persisted with approvalHash
     const persistedVariants = await payload.find({
@@ -140,7 +143,10 @@ try {
     check('restart: 2 variants for Draft 1 preserved', persistedVariants.docs.length === 2)
     for (const v of persistedVariants.docs) {
       check(`restart: variant ${v.network} status remains scheduled`, v.status === 'scheduled')
-      check(`restart: variant ${v.network} approvalHash preserved`, Boolean(v.approvalHash && v.approvalHash.startsWith('sha256:')))
+      check(
+        `restart: variant ${v.network} approvalHash preserved`,
+        Boolean(v.approvalHash && v.approvalHash.startsWith('sha256:')),
+      )
     }
 
     // 3. Verify queue items for Draft 1 persisted
@@ -178,23 +184,39 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check('restart: Draft 2 has 0 queue items (unsent policy preserved)', draft2Queue.docs.length === 0)
+    check(
+      'restart: Draft 2 has 0 queue items (unsent policy preserved)',
+      draft2Queue.docs.length === 0,
+    )
 
     // 5. Query admin API after restart to verify refetch
-    const apiRes = await api(`/api/admin/social/drafts?draftId=${state.draft1Id}`, 'GET', undefined, ownCookie, 200)
+    const apiRes = await api(
+      `/api/admin/social/drafts?draftId=${state.draft1Id}`,
+      'GET',
+      undefined,
+      ownCookie,
+      200,
+    )
     const apiData = apiRes.json()
-    check('restart: GET /api/admin/social/drafts?draftId returns draft, variants, and queueItems',
-      apiData.draft.id === state.draft1Id && apiData.variants.length === 2 && apiData.queueItems.length === 2,
+    check(
+      'restart: GET /api/admin/social/drafts?draftId returns draft, variants, and queueItems',
+      apiData.draft.id === state.draft1Id &&
+        apiData.variants.length === 2 &&
+        apiData.queueItems.length === 2,
     )
 
     await writeFile(
       `${out}/persistence-final.json`,
-      JSON.stringify({
-        draft1: persistedDraft1,
-        variants1: persistedVariants.docs,
-        queueItems1: persistedQueue.docs,
-        draft2: persistedDraft2,
-      }, null, 2),
+      JSON.stringify(
+        {
+          draft1: persistedDraft1,
+          variants1: persistedVariants.docs,
+          queueItems1: persistedQueue.docs,
+          draft2: persistedDraft2,
+        },
+        null,
+        2,
+      ),
     )
     succeeded = true
   } else {
@@ -202,7 +224,11 @@ try {
     // 1. Create Sites & Users
     const site = await payload.create({
       collection: 'sites',
-      data: { name: '08B Composer Alpha Site', slug: `composer-alpha-${Date.now()}`, lifecycle: 'active' },
+      data: {
+        name: '08B Composer Alpha Site',
+        slug: `composer-alpha-${Date.now()}`,
+        lifecycle: 'active',
+      },
     })
     const foreignSite = await payload.create({
       collection: 'sites',
@@ -300,14 +326,20 @@ try {
       400,
     )
     const overLimitJson = overLimitRes.json()
-    check('negative validation: text > 300 on Bluesky rejected with 400',
+    check(
+      'negative validation: text > 300 on Bluesky rejected with 400',
       overLimitJson.error.includes('BLUESKY:') && overLimitJson.error.includes('300'),
     )
 
     // 5. Browser UI Journey: Create Draft 1 with per-network variants, submit review, approve, schedule
     console.log('Navigating Playwright browser to /admin/social...')
     await page.context().addCookies([
-      { name: 'renegade-passkey', value: (await session(owner)).split('=')[1], domain: 'localhost', path: '/' },
+      {
+        name: 'renegade-passkey',
+        value: (await session(owner)).split('=')[1],
+        domain: 'localhost',
+        path: '/',
+      },
       { name: 'renegade-active-site', value: String(site.id), domain: 'localhost', path: '/' },
     ])
 
@@ -371,7 +403,10 @@ try {
       overrideAccess: true,
     })
     check('db: draft 1 persisted with status=draft', dbDraft1.status === 'draft')
-    check('db: draft 1 canonicalUrl matches', dbDraft1.canonicalUrl === 'https://renegadeparty.org/releases/v1')
+    check(
+      'db: draft 1 canonicalUrl matches',
+      dbDraft1.canonicalUrl === 'https://renegadeparty.org/releases/v1',
+    )
 
     const dbVariants1 = await payload.find({
       collection: 'social-network-variants',
@@ -382,7 +417,10 @@ try {
     check('db: 2 variants created for draft 1', dbVariants1.docs.length === 2)
     const bskyVar = dbVariants1.docs.find((v: any) => v.network === 'bluesky')
     const mastoVar = dbVariants1.docs.find((v: any) => v.network === 'activitypub')
-    check('db: Bluesky tailored copy persisted', bskyVar.text.includes('#RenegadeCMS @renegade.bsky.social'))
+    check(
+      'db: Bluesky tailored copy persisted',
+      bskyVar.text.includes('#RenegadeCMS @renegade.bsky.social'),
+    )
     check('db: Mastodon tailored copy persisted', mastoVar.text.includes('#ActivityPub'))
 
     // 6. Submit Draft 1 for Review via UI
@@ -406,7 +444,10 @@ try {
       staffCookie,
       403,
     )
-    check('forbidden: staff role cannot approve social drafts (403)', staffApproveAttempt.response.status === 403)
+    check(
+      'forbidden: staff role cannot approve social drafts (403)',
+      staffApproveAttempt.response.status === 403,
+    )
 
     // 8. Approve Draft 1 as Owner via UI
     await page.click('[data-testid="approve-draft-btn"]')
@@ -428,7 +469,10 @@ try {
       overrideAccess: true,
     })
     for (const v of dbApprovedVariants.docs) {
-      check(`db: variant ${v.network} has valid approvalHash`, Boolean(v.approvalHash && v.approvalHash.startsWith('sha256:')))
+      check(
+        `db: variant ${v.network} has valid approvalHash`,
+        Boolean(v.approvalHash && v.approvalHash.startsWith('sha256:')),
+      )
       check(`db: variant ${v.network} approvedBy set`, Boolean(v.approvedBy))
     }
 
@@ -440,7 +484,10 @@ try {
       staffCookie,
       403,
     )
-    check('forbidden: staff role cannot schedule release distribution (403)', staffScheduleAttempt.response.status === 403)
+    check(
+      'forbidden: staff role cannot schedule release distribution (403)',
+      staffScheduleAttempt.response.status === 403,
+    )
 
     // 10. Schedule Draft 1 via UI
     await page.waitForSelector('[data-testid="schedule-draft-btn"]')
@@ -462,7 +509,10 @@ try {
     check('db: exactly 2 social-queue-items created for draft 1', dbQueue.docs.length === 2)
     for (const q of dbQueue.docs) {
       check(`db: queue item ${q.id} status is scheduled`, q.status === 'scheduled')
-      check(`db: queue item ${q.id} has deterministic idempotencyKey`, q.idempotencyKey.includes(draft1Id))
+      check(
+        `db: queue item ${q.id} has deterministic idempotencyKey`,
+        q.idempotencyKey.includes(draft1Id),
+      )
     }
 
     // Take screenshot of scheduled state in UI
@@ -480,7 +530,11 @@ try {
         canonicalUrl: 'https://renegadeparty.org/speculative',
         variants: [
           { accountId: bskyAccount.id, network: 'bluesky', text: 'Speculative draft for Bluesky' },
-          { accountId: mastoAccount.id, network: 'activitypub', text: 'Speculative draft for Mastodon' },
+          {
+            accountId: mastoAccount.id,
+            network: 'activitypub',
+            text: 'Speculative draft for Mastodon',
+          },
         ],
       },
       staffCookie,
@@ -491,7 +545,13 @@ try {
     check(`created Draft 2: ${draft2Id}`, Boolean(draft2Id))
 
     // Submit Draft 2 for review
-    await api('/api/admin/social/drafts', 'POST', { action: 'submit-review', draftId: draft2Id }, staffCookie, 200)
+    await api(
+      '/api/admin/social/drafts',
+      'POST',
+      { action: 'submit-review', draftId: draft2Id },
+      staffCookie,
+      200,
+    )
 
     // Owner declines Draft 2
     const declineRes = await api(
@@ -528,10 +588,19 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check('db: declined draft 2 has 0 queue items (remains unsent)', dbDraft2Queue.docs.length === 0)
+    check(
+      'db: declined draft 2 has 0 queue items (remains unsent)',
+      dbDraft2Queue.docs.length === 0,
+    )
 
     // Attempting to schedule cancelled draft is rejected
-    await api('/api/admin/social/drafts', 'POST', { action: 'schedule', draftId: draft2Id }, ownerCookie, 400)
+    await api(
+      '/api/admin/social/drafts',
+      'POST',
+      { action: 'schedule', draftId: draft2Id },
+      ownerCookie,
+      400,
+    )
     check('scheduling cancelled draft rejected with 400', true)
 
     // 12. Save State for Restart Verification

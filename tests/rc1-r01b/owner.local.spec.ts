@@ -22,7 +22,11 @@ const evidenceDir = 'docs/rc/evidence/rc1/repairs/R-01B'
 
 function setupToken(): string {
   const logs = readFileSync(webLog, 'utf8')
-  const matches = [...logs.matchAll(/Renegade CMS setup token \(expires in 15 minutes; use once\): ([A-Za-z0-9_-]{43})/g)]
+  const matches = [
+    ...logs.matchAll(
+      /Renegade CMS setup token \(expires in 15 minutes; use once\): ([A-Za-z0-9_-]{43})/g,
+    ),
+  ]
   const token = matches.at(-1)?.[1]
   if (!token) throw new Error('Setup token missing from supported web logs')
   return token
@@ -37,7 +41,9 @@ function recoverToken(): string {
   if (command.status !== 0)
     throw new Error('Local installation recovery failed: ' + (command.stderr || command.stdout))
   const output = command.stdout + command.stderr
-  const token = output.match(/Renegade CMS setup token \(expires in 15 minutes; use once\): ([A-Za-z0-9_-]{43})/)?.[1]
+  const token = output.match(
+    /Renegade CMS setup token \(expires in 15 minutes; use once\): ([A-Za-z0-9_-]{43})/,
+  )?.[1]
   if (!token) throw new Error('Recovery command did not provide a setup token')
   return token
 }
@@ -85,7 +91,7 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
   context,
 }) => {
   const errors: string[] = []
-  page.on('pageerror', error => errors.push(error.message))
+  page.on('pageerror', (error) => errors.push(error.message))
 
   const cdp = await context.newCDPSession(page)
   await cdp.send('WebAuthn.enable')
@@ -102,14 +108,26 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
 
   // 1. Initial reaching of /setup and token issuance
   await page.goto('/setup')
-  await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toBeVisible({ timeout: 15000 })
+  await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toBeVisible({
+    timeout: 15000,
+  })
   const first = setupToken()
   expect(first).toMatch(/^[A-Za-z0-9_-]{43}$/)
   const before = state()
-  expect(before).toMatchObject({ installation: 'incomplete', users: 0, passkeys: 0, codes: 0, sites: 0, grants: 0 })
+  expect(before).toMatchObject({
+    installation: 'incomplete',
+    users: 0,
+    passkeys: 0,
+    codes: 0,
+    sites: 0,
+    grants: 0,
+  })
 
   // 2. Denial: Invalid setup token
-  const bad = await post(page, '/api/setup/options', { email: ownerEmail, token: 'wrong-token-value-that-fails' })
+  const bad = await post(page, '/api/setup/options', {
+    email: ownerEmail,
+    token: 'wrong-token-value-that-fails',
+  })
   expect(bad.status).toBe(400)
   expect(state()).toEqual(before)
 
@@ -151,14 +169,18 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
 
   // 6. Denials: Wrong WebAuthn challenge and wrong origin
   let rejected = false
-  await page.route('**/api/setup/complete', async route => {
+  await page.route('**/api/setup/complete', async (route) => {
     if (!rejected) {
       rejected = true
       const body = route.request().postDataJSON()
-      const data = JSON.parse(Buffer.from(body.credential.response.clientDataJSON, 'base64url').toString())
+      const data = JSON.parse(
+        Buffer.from(body.credential.response.clientDataJSON, 'base64url').toString(),
+      )
       for (const change of [{ challenge: 'invalid' }, { origin: 'https://wrong-origin.test' }]) {
         const mutated = structuredClone(body)
-        mutated.credential.response.clientDataJSON = Buffer.from(JSON.stringify({ ...data, ...change })).toString('base64url')
+        mutated.credential.response.clientDataJSON = Buffer.from(
+          JSON.stringify({ ...data, ...change }),
+        ).toString('base64url')
         const denied = await post(page, '/api/setup/complete', mutated)
         expect(denied.status).toBe(400)
         expect(state()).toEqual({ ...before, installation: 'installing' })
@@ -169,13 +191,15 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
 
   // 7. Enrolling passkey & site creation
   await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
-  await expect(page.getByRole('heading', { name: 'Your site is ready to shape.' })).toBeVisible({ timeout: 30000 })
+  await expect(page.getByRole('heading', { name: 'Your site is ready to shape.' })).toBeVisible({
+    timeout: 30000,
+  })
   await page.screenshot({ path: `${evidenceDir}/setup-local.png`, fullPage: true })
 
   const codes = await page.locator('ul.font-mono > li').allTextContents()
   expect(codes).toHaveLength(10)
   expect(new Set(codes).size).toBe(10)
-  expect(codes.every(c => /^[A-F0-9]{20}$/.test(c))).toBe(true)
+  expect(codes.every((c) => /^[A-F0-9]{20}$/.test(c))).toBe(true)
 
   // Persisted database state after setup
   expect(state()).toMatchObject({
@@ -204,7 +228,7 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
 
   // 9. Clean Browser Context Passkey Login
   const cleanPage = await context.newPage()
-  cleanPage.on('pageerror', error => errors.push(error.message))
+  cleanPage.on('pageerror', (error) => errors.push(error.message))
   const cleanCdp = await context.newCDPSession(cleanPage)
   await cleanCdp.send('WebAuthn.enable')
   const { authenticatorId: cleanAuthId } = await cleanCdp.send('WebAuthn.addVirtualAuthenticator', {
@@ -254,7 +278,10 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
   })
 
   // Denial: Replaying the used recovery code must be denied
-  const replay = await post(cleanPage, '/api/auth/recovery', { email: ownerEmail, recoveryCode: codes[0] })
+  const replay = await post(cleanPage, '/api/auth/recovery', {
+    email: ownerEmail,
+    recoveryCode: codes[0],
+  })
   expect(replay.status).toBe(400)
   expect(state().used_codes).toBe(1)
 
@@ -271,7 +298,7 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
       down = true
       break
     }
-    await new Promise(r => setTimeout(r, 500))
+    await new Promise((r) => setTimeout(r, 500))
   }
   expect(down).toBe(true)
   let ready = false
@@ -281,7 +308,7 @@ test('ordinary owner setup, passkey login, recovery and state persistence (R-01B
       ready = true
       break
     }
-    await new Promise(r => setTimeout(r, 1000))
+    await new Promise((r) => setTimeout(r, 1000))
   }
   expect(ready).toBe(true)
 

@@ -30,8 +30,7 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const publicationId = searchParams.get('publicationId')
-  const siteId =
-    searchParams.get('siteId') || readCookie(request.headers, 'renegade-active-site')
+  const siteId = searchParams.get('siteId') || readCookie(request.headers, 'renegade-active-site')
   const grant = await resolveOperatorGrantContext(payload, auth.user)
   if (
     !grant.authorized ||
@@ -76,48 +75,54 @@ export async function GET(request: Request) {
     overrideAccess: true,
   })
 
-    const resolvedPubSite = pub ? (typeof pub.site === 'string' ? pub.site : (pub.site as { id?: string })?.id) : siteId ?? null
-    return NextResponse.json({
-      publicationId: pub?.id ?? null,
-      siteId: resolvedPubSite,
-      navigation,
-      targets: targetContent.docs.map((doc) => ({
-        id: doc.id,
-        title: doc.title,
-        canonicalPath: doc.canonicalPath,
-        contentType: doc.contentType,
-      })),
-    })
+  const resolvedPubSite = pub
+    ? typeof pub.site === 'string'
+      ? pub.site
+      : (pub.site as { id?: string })?.id
+    : (siteId ?? null)
+  return NextResponse.json({
+    publicationId: pub?.id ?? null,
+    siteId: resolvedPubSite,
+    navigation,
+    targets: targetContent.docs.map((doc) => ({
+      id: doc.id,
+      title: doc.title,
+      canonicalPath: doc.canonicalPath,
+      contentType: doc.contentType,
+    })),
+  })
+}
+
+export async function POST(request: Request) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  export async function POST(request: Request) {
-    const payload = await getPayload({ config })
-    const auth = await payload.auth({ headers: request.headers })
-    if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const body = (await request.json()) as {
+      publicationId?: string
+      siteId?: string
+      navigation: unknown
     }
+    const effectiveSiteId = body.siteId || readCookie(request.headers, 'renegade-active-site')
 
-    try {
-      const body = (await request.json()) as {
-        publicationId?: string
-        siteId?: string
-        navigation: unknown
-      }
-      const effectiveSiteId = body.siteId || readCookie(request.headers, 'renegade-active-site')
+    const validated = validateNavigation(body.navigation)
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (
+      !grant.authorized ||
+      (effectiveSiteId &&
+        !grant.isGlobalOwner &&
+        !grant.authorizedSiteIds.includes(effectiveSiteId))
+    )
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
-      const validated = validateNavigation(body.navigation)
-      const grant = await resolveOperatorGrantContext(payload, auth.user)
-      if (
-        !grant.authorized ||
-        (effectiveSiteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(effectiveSiteId))
-      )
-        return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
-
-      let targetPublicationId = body.publicationId
-      if (!targetPublicationId) {
-        const pubWhere = effectiveSiteId
-          ? { site: { equals: effectiveSiteId } }
-          : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
+    let targetPublicationId = body.publicationId
+    if (!targetPublicationId) {
+      const pubWhere = effectiveSiteId
+        ? { site: { equals: effectiveSiteId } }
+        : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
       const pubs = await payload.find({
         collection: 'publications',
         where: {

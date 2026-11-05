@@ -35,14 +35,20 @@ const builderManifestPath = `${root}/builder/[id]/page_client-reference-manifest
 if (existsSync(publicManifestPath)) {
   const publicGraph = readFileSync(publicManifestPath, 'utf8')
   for (const marker of markers) {
-    assert.ok(!publicGraph.includes(marker), `Public route client-reference manifest excludes ${marker}`)
+    assert.ok(
+      !publicGraph.includes(marker),
+      `Public route client-reference manifest excludes ${marker}`,
+    )
   }
   publicManifestSha = createHash('sha256').update(publicGraph).digest('hex')
 }
 
 if (existsSync(builderManifestPath)) {
   const builderGraph = readFileSync(builderManifestPath, 'utf8')
-  assert.ok(builderGraph.includes('BuilderShell.tsx'), 'Builder route client-reference manifest contains BuilderShell.tsx')
+  assert.ok(
+    builderGraph.includes('BuilderShell.tsx'),
+    'Builder route client-reference manifest contains BuilderShell.tsx',
+  )
   builderManifestSha = createHash('sha256').update(builderGraph).digest('hex')
 }
 

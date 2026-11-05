@@ -423,9 +423,7 @@ async function phaseStackA() {
   check(
     'a',
     'owner uploads media over HTTP into site Alpha (201)' +
-      (up.status === 201
-        ? ''
-        : ` - got ${up.status}: ${String(up.text ?? '').slice(0, 200)}`),
+      (up.status === 201 ? '' : ` - got ${up.status}: ${String(up.text ?? '').slice(0, 200)}`),
     up.status === 201 && up.json?.asset?.id,
   )
   state.a.assetId = String(up.json.asset.id)

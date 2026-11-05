@@ -90,7 +90,10 @@ try {
   const importedOriginal = await byTitle(sourceOriginal.title)
   const importedEdited = await byTitle(sourceEdited.title)
   const importedCopy = await byTitle(sourceCopy.title)
-  check('restored original, edited and copy assets all exist', Boolean(importedOriginal && importedEdited && importedCopy))
+  check(
+    'restored original, edited and copy assets all exist',
+    Boolean(importedOriginal && importedEdited && importedCopy),
+  )
   check(
     'restored assets live under new ids in the target installation',
     importedOriginal.id !== sourceOriginal.id &&

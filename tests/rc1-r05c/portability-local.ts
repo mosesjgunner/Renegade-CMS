@@ -10,9 +10,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 assert.equal(process.env.RC1R05C_DISPOSABLE, 'yes')
-const state = JSON.parse(
-  await readFile('docs/rc/evidence/rc1/repairs/R-05C/state.json', 'utf8'),
-)
+const state = JSON.parse(await readFile('docs/rc/evidence/rc1/repairs/R-05C/state.json', 'utf8'))
 const importing = process.argv.includes('--restore')
 assert.ok(
   process.env.DATABASE_URL?.endsWith(importing ? '/rc1r05c_restore' : '/rc1r05c_main'),
@@ -23,7 +21,11 @@ try {
   const target = importing
     ? await payload.create({
         collection: 'sites',
-        data: { name: '05C restored', slug: `05c-restored-${state.stamp}`, lifecycle: 'active' } as never,
+        data: {
+          name: '05C restored',
+          slug: `05c-restored-${state.stamp}`,
+          lifecycle: 'active',
+        } as never,
       })
     : null
   if (target)
@@ -41,9 +43,7 @@ try {
     '05'.repeat(32),
     importing ? '--target-site-id' : '--site-id',
     target?.id ?? state.siteId,
-    ...(importing
-      ? ['--apply', '--checkpoint', 'scratch/rc1r05c/import-checkpoint.json']
-      : []),
+    ...(importing ? ['--apply', '--checkpoint', 'scratch/rc1r05c/import-checkpoint.json'] : []),
   ]
   await import('../../src/scripts/portability')
 } finally {

@@ -246,7 +246,7 @@ describe('MED-03 image variant lifecycle & governance integration', () => {
 
     expect(deliveryRes.status).toBe(200)
     expect(deliveryRes.headers.get('Content-Type')).toBe('image/webp')
-    expect(deliveryRes.headers.get('Cache-Control')).toBe('public, max-age=31536000, immutable')
+    expect(deliveryRes.headers.get('Cache-Control')).toBe('public, max-age=0, must-revalidate')
     const etag = deliveryRes.headers.get('ETag')
     expect(etag).toBeTruthy()
 

@@ -418,7 +418,9 @@ async function provisionStarterContent(
       slug: 'welcome-draft',
       canonicalPath: '/articles/welcome-draft',
       summary: 'A private starter draft. Edit it or delete it whenever you are ready.',
-      body: toLexicalDocument('A private starter draft. Edit it or delete it whenever you are ready.'),
+      body: toLexicalDocument(
+        'A private starter draft. Edit it or delete it whenever you are ready.',
+      ),
       status: 'draft',
       commentsPolicy: defaultComments,
       importSourceSystem: 'onboarding-starter',

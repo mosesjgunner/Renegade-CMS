@@ -176,6 +176,17 @@ describe('Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary 
     })
 
     // 4. Create explicit member-site-roles for scoped authority
+    for (const [member, site] of [
+      [memberOwnerA.id, siteAId],
+      [memberOwnerB.id, siteBId],
+    ]) {
+      await payload.create({
+        collection: 'member-site-roles',
+        data: { member, site, role: 'community-manager' },
+        overrideAccess: true,
+      } as never)
+    }
+
     await payload.create({
       collection: 'member-site-roles',
       data: {
@@ -372,9 +383,12 @@ describe('Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary 
   })
 
   describe('1. Operator Grant Resolution & Canonical Hierarchy', () => {
-    it('resolves Owner as superuser with authority over sites', async () => {
+    it('resolves Owner with explicit site authority', async () => {
       const grant = await resolveOperatorGrantContext(payload, ownerAUser)
       expect(grant.authorized).toBe(true)
+      expect(grant.authorizedSiteIds).toContain(siteAId)
+      expect(grant.authorizedSiteIds).not.toContain(siteBId)
+      expect(grant.isGlobalOwner).toBe(false)
     })
 
     it('resolves Administrator bounded strictly to Site A', async () => {

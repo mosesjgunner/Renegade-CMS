@@ -1,3 +1,4 @@
+import { fixtureRichText } from '../helpers/fixture-rich-text'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomUUID } from 'node:crypto'
 import { mkdtemp, rm } from 'node:fs/promises'
@@ -137,11 +138,15 @@ beforeAll(async () => {
   const member = membersResult.docs[0] as any
   expect(member).toBeTruthy()
 
-  user = {
-    role: 'owner',
-    member: member.id,
-    site: { id: site.id },
-  }
+  const users = await payload.find({
+    collection: 'users',
+    where: { email: { equals: 'river@example.test' } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  user = users.docs[0]
+  expect(user?.role).toBe('staff')
 })
 
 afterAll(async () => {
@@ -161,6 +166,24 @@ describe('MED-06 Media Pass Release Gate — Comprehensive Acceptance Integratio
       APP_URL: 'http://localhost:3000',
       MEDIA_DIR: testMediaDir,
     })
+
+    const foreignSite = await payload.create({
+      collection: 'sites',
+      data: {
+        name: 'Foreign media test',
+        slug: `foreign-media-${randomUUID()}`,
+        lifecycle: 'active',
+      },
+      overrideAccess: true,
+    } as never)
+    await expect(
+      createUploadSession(payload, appConfig, {
+        user,
+        scope: { kind: 'site', siteId: String(foreignSite.id) },
+        filename: 'forbidden.png',
+        size: 1,
+      }),
+    ).rejects.toThrow('Site scope access denied')
 
     // =========================================================================
     // STEP 1: Upload real Image, PDF, Audio, and Video files via durable sessions
@@ -254,6 +277,7 @@ describe('MED-06 Media Pass Release Gate — Comprehensive Acceptance Integratio
       data: {
         site: site.id,
         contentType: 'article',
+        body: fixtureRichText(),
         title: 'Decentralized Publishing Manifesto',
         slug: `manifesto-${randomUUID().slice(0, 8)}`,
         status: 'draft',

@@ -1,0 +1,66 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "persistedSha256": "7acb968f2ea384fb9191444cc2415b4e49f9afcf41473a9d00960de382ab8739",
+  "observed": {
+    "preceding": 66,
+    "modules": 17,
+    "routes": 293,
+    "gates": 19,
+    "journey": 20,
+    "status": "NOT READY",
+    "firstBlocker": "09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md"
+  },
+  "commands": [
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --output docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 0,
+      "stdout": "{\"status\":\"NOT READY\",\"inventoryStatus\":\"PASS\",\"source\":\"81214f64e8de58469a2284819183fb09cbd49018a80308f4bf980cf181a82385\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 0,
+      "stdout": "{\"status\":\"NOT READY\",\"inventoryStatus\":\"PASS\",\"source\":\"81214f64e8de58469a2284819183fb09cbd49018a80308f4bf980cf181a82385\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --require-complete docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 0,
+      "stdout": "{\"status\":\"NOT READY\",\"inventoryStatus\":\"PASS\",\"source\":\"81214f64e8de58469a2284819183fb09cbd49018a80308f4bf980cf181a82385\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --output docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "EEXIST: file already exists, open 'C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\docs\\rc\\evidence\\rc1\\18-pass\\18A\\reconciled\\inventory.json'"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/forged.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Inventory drift or tampering: regenerate into a NEW artifact; release readiness denied"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/stale.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Inventory drift or tampering: regenerate into a NEW artifact; release readiness denied"
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --require-ready docs/rc/evidence/rc1/18-pass/18A/reconciled/inventory.json",
+      "exit": 2,
+      "stdout": "{\"status\":\"NOT READY\",\"inventoryStatus\":\"PASS\",\"source\":\"81214f64e8de58469a2284819183fb09cbd49018a80308f4bf980cf181a82385\",\"preceding\":66,\"modules\":17,\"routes\":293,\"gates\":19,\"journey\":20,\"firstBlocker\":\"09D: NOT READY (2026-10-26; tag blocker FIXED); see docs/rc/evidence/rc1/18-pass/09D/RESULT.md\",\"releaseTagAllowed\":false}",
+      "stderr": ""
+    },
+    {
+      "command": "node --import tsx scripts/release-inventory.ts --check scratch/rc118a/absent.json",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118a\\absent.json'"
+    }
+  ],
+  "boundary": "Filesystem operator tool; separate process restart/refetch and retry denial. Application role/site/browser/worker/DB acceptance unexecuted in 18A."
+}

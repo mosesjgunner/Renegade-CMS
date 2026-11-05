@@ -8,13 +8,8 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 
 import { createPasskeySession } from '../../src/modules/operations/passkey-auth'
-import {
-  scanLocal,
-  type QualityFinding,
-} from '../../src/modules/quality/contracts'
-import {
-  persistQualityFindings,
-} from '../../src/modules/quality/service'
+import { scanLocal, type QualityFinding } from '../../src/modules/quality/contracts'
+import { persistQualityFindings } from '../../src/modules/quality/service'
 import { publicTimelineEntries } from '../../src/modules/events/timeline'
 
 assert.equal(
@@ -395,7 +390,8 @@ try {
       collection: 'article-family-content',
       data: {
         content: article.id,
-        plainTextProjection: 'Renegade CMS architecture establishes deterministic boundary contracts.',
+        plainTextProjection:
+          'Renegade CMS architecture establishes deterministic boundary contracts.',
         documentHash: 'hash-15d-001',
         document: {
           root: {
@@ -507,7 +503,10 @@ try {
     // 14. Public /calendar month page via Chromium
     await page.goto(`${base}/calendar?month=2027-04`, { waitUntil: 'networkidle' })
     const calendarTitle = await page.getByRole('heading', { level: 1 }).innerText()
-    const calendarDay15 = page.locator('li').filter({ hasText: '15' }).filter({ hasText: 'RC1 Community Summit 2027' })
+    const calendarDay15 = page
+      .locator('li')
+      .filter({ hasText: '15' })
+      .filter({ hasText: 'RC1 Community Summit 2027' })
     const day15Rendered = await calendarDay15.isVisible()
     check(
       '14. Public /calendar places published event on April 15th with America/New_York timezone',
@@ -527,8 +526,14 @@ try {
     assert.ok(feedIcs.includes('LOCATION:Metropolitan Hall\\, 123 Main St\\, New York\\, NY'))
     assert.ok(!feedIcs.includes('Future Secret Keynote'), 'ICS feed must not leak scheduled events')
     assert.ok(!feedIcs.includes('Cancelled Workshop'), 'ICS feed must not leak cancelled events')
-    assert.ok(!feedIcs.includes('Beta Exclusive Gathering'), 'ICS feed must not leak foreign site events')
-    check('15. /events/feed.ics returns RFC 5545 VCALENDAR feed filtering private/foreign events', true)
+    assert.ok(
+      !feedIcs.includes('Beta Exclusive Gathering'),
+      'ICS feed must not leak foreign site events',
+    )
+    check(
+      '15. /events/feed.ics returns RFC 5545 VCALENDAR feed filtering private/foreign events',
+      true,
+    )
 
     // 16. Single Event ICS Download via HTTP GET
     const singleIcsRes = await fetch(`${base}/events/rc1-community-summit-2027/ics`, {
@@ -538,7 +543,9 @@ try {
     assert.ok(singleIcsRes.headers.get('content-type')?.includes('text/calendar'))
     const singleIcs = await singleIcsRes.text()
     assert.ok(singleIcs.includes('BEGIN:VEVENT'))
-    assert.ok(singleIcs.includes('ORGANIZER;CN="Renegade Foundation":https://foundation.example.test'))
+    assert.ok(
+      singleIcs.includes('ORGANIZER;CN="Renegade Foundation":https://foundation.example.test'),
+    )
     check('16. /events/[slug]/ics returns single event VCALENDAR download', true)
 
     // 17. Single Event Page Rendering & Schema.org JSON-LD via Chromium
@@ -550,11 +557,16 @@ try {
     const jsonLdContent = await page.locator('script[type="application/ld+json"]').innerText()
     const schemaObj = JSON.parse(jsonLdContent)
     const eventNode = (Array.isArray(schemaObj) ? schemaObj : [schemaObj]).find(
-      (n: any) => n['@type'] === 'Event' || (Array.isArray(n['@graph']) && n['@graph'].some((g: any) => g['@type'] === 'Event')),
+      (n: any) =>
+        n['@type'] === 'Event' ||
+        (Array.isArray(n['@graph']) && n['@graph'].some((g: any) => g['@type'] === 'Event')),
     )
     check(
       '17. /events/[slug] renders event detail view, ICS link, and Schema.org JSON-LD structured data',
-      eventHeading.includes('RC1 Community Summit 2027') && hasVenue && hasIcsLink && Boolean(eventNode),
+      eventHeading.includes('RC1 Community Summit 2027') &&
+        hasVenue &&
+        hasIcsLink &&
+        Boolean(eventNode),
     )
 
     // 18. Negative: Access private/scheduled/cancelled event pages
@@ -582,22 +594,102 @@ try {
     // 20. Auxiliary Route Audit & Working Disposition
     const auxiliaryRoutes = [
       { path: '/events', status: 200, disposition: 'working', description: 'Public events list' },
-      { path: '/events/feed.ics', status: 200, disposition: 'working', description: 'ICS subscription feed' },
-      { path: '/events/rc1-community-summit-2027/ics', status: 200, disposition: 'working', description: 'Event occurrence ICS' },
-      { path: '/events/rc1-community-summit-2027', status: 200, disposition: 'working', description: 'Event detail page' },
-      { path: '/events/renegade-milestones', status: 200, disposition: 'working', description: 'Timeline detail view' },
-      { path: '/calendar', status: 200, disposition: 'working', description: 'Month event calendar' },
-      { path: '/forums', status: 200, disposition: 'working', description: 'Community discussion forums' },
-      { path: '/store', status: 200, disposition: 'working', description: 'Commerce store showcase' },
-      { path: '/network', status: 200, disposition: 'working', description: 'Network connections overview' },
-      { path: '/connections', status: 307, disposition: 'working', description: 'Operator connections center (auth-gated redirect)' },
-      { path: '/moderation', status: 307, disposition: 'working', description: 'Moderation center (auth-gated redirect)' },
-      { path: '/notifications', status: 307, disposition: 'working', description: 'In-app notifications (auth-gated redirect)' },
-      { path: '/subscribe', status: 200, disposition: 'working', description: 'Newsletter subscription form' },
-      { path: '/unsubscribe', status: 200, disposition: 'working', description: 'Newsletter unsubscribe form' },
-      { path: '/preferences', status: 200, disposition: 'working', description: 'Subscriber preference center' },
-      { path: '/podcasts/missing-show', status: 404, disposition: 'readonly-unpopulated', description: 'Media studio unpopulated route' },
-      { path: '/videos', status: 200, disposition: 'working', description: 'Video channel directory' },
+      {
+        path: '/events/feed.ics',
+        status: 200,
+        disposition: 'working',
+        description: 'ICS subscription feed',
+      },
+      {
+        path: '/events/rc1-community-summit-2027/ics',
+        status: 200,
+        disposition: 'working',
+        description: 'Event occurrence ICS',
+      },
+      {
+        path: '/events/rc1-community-summit-2027',
+        status: 200,
+        disposition: 'working',
+        description: 'Event detail page',
+      },
+      {
+        path: '/events/renegade-milestones',
+        status: 200,
+        disposition: 'working',
+        description: 'Timeline detail view',
+      },
+      {
+        path: '/calendar',
+        status: 200,
+        disposition: 'working',
+        description: 'Month event calendar',
+      },
+      {
+        path: '/forums',
+        status: 200,
+        disposition: 'working',
+        description: 'Community discussion forums',
+      },
+      {
+        path: '/store',
+        status: 200,
+        disposition: 'working',
+        description: 'Commerce store showcase',
+      },
+      {
+        path: '/network',
+        status: 200,
+        disposition: 'working',
+        description: 'Network connections overview',
+      },
+      {
+        path: '/connections',
+        status: 307,
+        disposition: 'working',
+        description: 'Operator connections center (auth-gated redirect)',
+      },
+      {
+        path: '/moderation',
+        status: 307,
+        disposition: 'working',
+        description: 'Moderation center (auth-gated redirect)',
+      },
+      {
+        path: '/notifications',
+        status: 307,
+        disposition: 'working',
+        description: 'In-app notifications (auth-gated redirect)',
+      },
+      {
+        path: '/subscribe',
+        status: 200,
+        disposition: 'working',
+        description: 'Newsletter subscription form',
+      },
+      {
+        path: '/unsubscribe',
+        status: 200,
+        disposition: 'working',
+        description: 'Newsletter unsubscribe form',
+      },
+      {
+        path: '/preferences',
+        status: 200,
+        disposition: 'working',
+        description: 'Subscriber preference center',
+      },
+      {
+        path: '/podcasts/missing-show',
+        status: 404,
+        disposition: 'readonly-unpopulated',
+        description: 'Media studio unpopulated route',
+      },
+      {
+        path: '/videos',
+        status: 200,
+        disposition: 'working',
+        description: 'Video channel directory',
+      },
     ]
 
     for (const route of auxiliaryRoutes) {
@@ -612,7 +704,10 @@ try {
       )
     }
     await writeFile(`${out}/auxiliary-routes.json`, JSON.stringify(auxiliaryRoutes, null, 2))
-    check('20. All 17 auxiliary route paths verified with truthful working/readonly dispositions', true)
+    check(
+      '20. All 17 auxiliary route paths verified with truthful working/readonly dispositions',
+      true,
+    )
 
     await save()
     await writeFile(`${out}/journey-trace.json`, JSON.stringify(trace, null, 2))
@@ -628,7 +723,10 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check('R1. Published event record survives PostgreSQL container restart', ev?.title === 'RC1 Community Summit 2027')
+    check(
+      'R1. Published event record survives PostgreSQL container restart',
+      ev?.title === 'RC1 Community Summit 2027',
+    )
 
     // R2. Verify Timeline Alpha survives restart
     const tl = await payload.findByID({
@@ -698,11 +796,12 @@ try {
 
     // R8. Render Month Calendar in Chromium after restart
     await page.goto(`${base}/calendar?month=2027-04`, { waitUntil: 'networkidle' })
-    const day15 = await page.locator('li').filter({ hasText: '15' }).filter({ hasText: 'RC1 Community Summit 2027' }).isVisible()
-    check(
-      'R8. Month calendar grid displays scheduled event on April 15th after restart',
-      day15,
-    )
+    const day15 = await page
+      .locator('li')
+      .filter({ hasText: '15' })
+      .filter({ hasText: 'RC1 Community Summit 2027' })
+      .isVisible()
+    check('R8. Month calendar grid displays scheduled event on April 15th after restart', day15)
 
     await writeFile(`${out}/restart-trace.json`, JSON.stringify(trace, null, 2))
     console.log(`\nRESTART VERIFICATION COMPLETED: ${trace.length} checks passed.`)

@@ -7,10 +7,7 @@ import {
   estimateReadingTimeMinutes,
   buildTableOfContents,
 } from '@/modules/editorial/presentation'
-import {
-  hashRichTextDocument,
-  type RichTextDocument,
-} from '@/modules/editorial/contracts'
+import { hashRichTextDocument, type RichTextDocument } from '@/modules/editorial/contracts'
 import { hashPreviewToken } from '@/modules/editorial/persistence'
 import { EditorialWorkflow } from '@/modules/editorial/workflow'
 import { canRenderPublic, canDiscoverPublic } from '@/modules/public/contracts'
@@ -69,7 +66,9 @@ describe('03B / Lexical Rich-Text & Formatting Invariants', () => {
     expect(html).toContain('<strong>bold formatting</strong>')
     expect(html).toContain('<em>italic emphasis</em>')
     expect(html).toContain('<code>inline code</code>')
-    expect(html).toContain('<a href="https://example.com/guide" rel="noreferrer">safe external reference</a>')
+    expect(html).toContain(
+      '<a href="https://example.com/guide" rel="noreferrer">safe external reference</a>',
+    )
     expect(html).toContain('<blockquote>A verified quote from the author.</blockquote>')
     expect(html).toContain('<ul><li>First bullet point</li><li>Second bullet point</li></ul>')
     expect(html).toContain('<hr/>')
@@ -219,7 +218,9 @@ describe('03B / Plain-text Extraction & Presentation Projections', () => {
 
 describe('03B / Workflow Revisions & Restoration Invariants', () => {
   it('preserves immutable revision history and links restoredFromRevision on restore', () => {
-    const initialBody = { root: { type: 'root', children: [{ type: 'text', text: 'Initial Draft Body' }] } }
+    const initialBody = {
+      root: { type: 'root', children: [{ type: 'text', text: 'Initial Draft Body' }] },
+    }
     const doc1: RichTextDocument = {
       format: 'payload-lexical',
       schemaVersion: 1,
@@ -241,7 +242,12 @@ describe('03B / Workflow Revisions & Restoration Invariants', () => {
     expect(workflow.article.status).toBe('draft')
 
     // Edit 1: Author modifies the article
-    const updatedBody = { root: { type: 'root', children: [{ type: 'text', text: 'Revised Article Body with Updates' }] } }
+    const updatedBody = {
+      root: {
+        type: 'root',
+        children: [{ type: 'text', text: 'Revised Article Body with Updates' }],
+      },
+    }
     const doc2: RichTextDocument = {
       format: 'payload-lexical',
       schemaVersion: 1,
@@ -269,7 +275,7 @@ describe('03B / Workflow Revisions & Restoration Invariants', () => {
     workflow.restore(
       { id: 'editor-user-1', role: 'editor' },
       revision1Id,
-      '2026-10-18T00:20:00.000Z'
+      '2026-10-18T00:20:00.000Z',
     )
 
     expect(workflow.article.revisions).toHaveLength(3)
@@ -320,10 +326,23 @@ describe('03B / Preview Tokens & Non-Indexing Contracts', () => {
       taxonomy: { topics: [], categories: [], tags: [] },
       breadcrumbs: [],
       media: {},
-      revisions: { entityId: 'content-1', collection: 'content', publishedRevisionId: null, presentationRevisionId: 'content-1' },
+      revisions: {
+        entityId: 'content-1',
+        collection: 'content',
+        publishedRevisionId: null,
+        presentationRevisionId: 'content-1',
+      },
       search: { eligible: false, bodyProjection: '', visibility: 'hidden' },
       redirect: { isRedirect: false, targetUrl: null, statusCode: null, isTombstone: false },
-      schema: { eligible: false, schemaType: 'article', fallbackType: 'article', eligibilityReason: 'draft', validationIssues: [], inspection: null, jsonLd: {} },
+      schema: {
+        eligible: false,
+        schemaType: 'article',
+        fallbackType: 'article',
+        eligibilityReason: 'draft',
+        validationIssues: [],
+        inspection: null,
+        jsonLd: {},
+      },
       issues: [],
     } as unknown as DiscoveryDocument
 
@@ -385,7 +404,10 @@ describe('03B / Document Locking & Concurrent Collision Projection', () => {
             {
               id: 'lock-1',
               document: { value: 'content-1', relationTo: 'content' },
-              user: { value: { id: ownerUserId, email: 'owner@renegadeparty.org' }, relationTo: 'users' },
+              user: {
+                value: { id: ownerUserId, email: 'owner@renegadeparty.org' },
+                relationTo: 'users',
+              },
             },
           ],
         })),

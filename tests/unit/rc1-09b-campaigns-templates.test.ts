@@ -278,7 +278,10 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
           return { docs: [] }
         },
         create: async ({ collection, data }: { collection: string; data: MockDoc }) => {
-          const doc = { id: `${collection}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`, ...data }
+          const doc = {
+            id: `${collection}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+            ...data,
+          }
           if (collection === 'recipient-snapshots') createdSnapshots.push(doc)
           if (collection === 'email-deliveries') createdDeliveries.push(doc)
           return doc
@@ -314,15 +317,45 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
           // 1. Active consented
           { id: 'sub-1', site: siteId, email: emailDup, emailHash: hashDup, status: 'active' },
           // 2. Duplicate email (different subscriber ID, same normalized email) -> must deduplicate!
-          { id: 'sub-2-dup', site: siteId, email: emailDup.toUpperCase(), emailHash: hashDup, status: 'active' },
+          {
+            id: 'sub-2-dup',
+            site: siteId,
+            email: emailDup.toUpperCase(),
+            emailHash: hashDup,
+            status: 'active',
+          },
           // 3. Second valid active consented
-          { id: 'sub-3', site: siteId, email: emailValid2, emailHash: hashValid2, status: 'active' },
+          {
+            id: 'sub-3',
+            site: siteId,
+            email: emailValid2,
+            emailHash: hashValid2,
+            status: 'active',
+          },
           // 4. Suppressed subscriber -> must exclude!
-          { id: 'sub-4-supp', site: siteId, email: emailSuppressed, emailHash: hashSuppressed, status: 'active' },
+          {
+            id: 'sub-4-supp',
+            site: siteId,
+            email: emailSuppressed,
+            emailHash: hashSuppressed,
+            status: 'active',
+          },
           // 5. Pending subscriber (unconsented) -> must exclude!
-          { id: 'sub-5-pending', site: siteId, email: emailPending, emailHash: hashPending, status: 'pending' },
+          {
+            id: 'sub-5-pending',
+            site: siteId,
+            email: emailPending,
+            emailHash: hashPending,
+            status: 'pending',
+          },
           // 6. Unsubscribed subscriber -> must exclude!
-          { id: 'sub-6-unsub', site: siteId, email: 'unsub@example.test', emailHash: audienceDigest('unsub@example.test'), status: 'unsubscribed' },
+          {
+            id: 'sub-6-unsub',
+            site: siteId,
+            email: 'unsub@example.test',
+            emailHash: audienceDigest('unsub@example.test'),
+            status: 'unsubscribed',
+          },
         ],
         memberships: [
           { subscriber: 'sub-1', audienceList: 'list-all', status: 'active' },
@@ -358,7 +391,13 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
       const mockPayload = makeMockPayload({
         siteId,
         subscribers: [
-          { id: 'sub-1', site: siteId, email: 'user@example.test', emailHash: audienceDigest('user@example.test'), status: 'active' },
+          {
+            id: 'sub-1',
+            site: siteId,
+            email: 'user@example.test',
+            emailHash: audienceDigest('user@example.test'),
+            status: 'active',
+          },
         ],
       })
 
@@ -394,11 +433,15 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
       const mockPayload = makeMockPayload({
         siteId,
         subscribers: [
-          { id: 'sub-1', site: siteId, email: 'supporter@renegadeparty.org', emailHash: audienceDigest('supporter@renegadeparty.org'), status: 'active' },
+          {
+            id: 'sub-1',
+            site: siteId,
+            email: 'supporter@renegadeparty.org',
+            emailHash: audienceDigest('supporter@renegadeparty.org'),
+            status: 'active',
+          },
         ],
-        memberships: [
-          { subscriber: 'sub-1', audienceList: 'list-all', status: 'active' },
-        ],
+        memberships: [{ subscriber: 'sub-1', audienceList: 'list-all', status: 'active' }],
       })
 
       const snapshot = await createRecipientSnapshot(mockPayload as never, {
@@ -425,8 +468,20 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
       const mockPayload = makeMockPayload({
         siteId,
         subscribers: [
-          { id: 'sub-1', site: siteId, email: 'supporter1@renegadeparty.org', emailHash: audienceDigest('supporter1@renegadeparty.org'), status: 'active' },
-          { id: 'sub-2', site: siteId, email: 'supporter2@renegadeparty.org', emailHash: audienceDigest('supporter2@renegadeparty.org'), status: 'active' },
+          {
+            id: 'sub-1',
+            site: siteId,
+            email: 'supporter1@renegadeparty.org',
+            emailHash: audienceDigest('supporter1@renegadeparty.org'),
+            status: 'active',
+          },
+          {
+            id: 'sub-2',
+            site: siteId,
+            email: 'supporter2@renegadeparty.org',
+            emailHash: audienceDigest('supporter2@renegadeparty.org'),
+            status: 'active',
+          },
         ],
         memberships: [
           { subscriber: 'sub-1', audienceList: 'list-all', status: 'active' },

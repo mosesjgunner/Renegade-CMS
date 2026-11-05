@@ -12,9 +12,15 @@ export default function LegacyMigrationReview({
   const [loading, setLoading] = useState(false)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const [wxrInput, setWxrInput] = useState('')
-  const [mediaFiles, setMediaFiles] = useState<Record<string, {
-    fileName: string; buffer: { type: 'Buffer'; data: number[] }
-  }>>({})
+  const [mediaFiles, setMediaFiles] = useState<
+    Record<
+      string,
+      {
+        fileName: string
+        buffer: { type: 'Buffer'; data: number[] }
+      }
+    >
+  >({})
   const [activeTab, setActiveTab] = useState<
     'content' | 'presentation' | 'redirects' | 'quarantine'
   >('content')
@@ -345,32 +351,57 @@ export default function LegacyMigrationReview({
             isolated site.
           </p>
           <p style={{ fontSize: '14px', color: '#64748b' }}>
-            Supports WXR 1.0?1.2 articles, pages, author mapping, taxonomy, acquired images and URL redirects.
-            Headings, paragraphs and quotes become editable prose; other HTML becomes text.
-            Plugin/PHP/script artifacts are quarantined. Templates require review; arbitrary WordPress themes do not convert.
-            Import requires authority over all sites because author identities are global.
+            Supports WXR 1.0?1.2 articles, pages, author mapping, taxonomy, acquired images and URL
+            redirects. Headings, paragraphs and quotes become editable prose; other HTML becomes
+            text. Plugin/PHP/script artifacts are quarantined. Templates require review; arbitrary
+            WordPress themes do not convert. Import requires authority over all sites because author
+            identities are global.
           </p>
           <label>
             WordPress WXR XML file
-            <input type="file" accept=".xml,text/xml,application/xml" onChange={async (event) => {
-              const file = event.target.files?.[0]
-              if (!file) return
-              if (file.size > 10 * 1024 * 1024) { setActionMessage('WXR file exceeds the 10 MB limit.'); return }
-              setWxrInput(await file.text())
-            }} />
+            <input
+              type="file"
+              accept=".xml,text/xml,application/xml"
+              onChange={async (event) => {
+                const file = event.target.files?.[0]
+                if (!file) return
+                if (file.size > 10 * 1024 * 1024) {
+                  setActionMessage('WXR file exceeds the 10 MB limit.')
+                  return
+                }
+                setWxrInput(await file.text())
+              }}
+            />
           </label>
           <label>
             Original media files (match exported filenames; no remote download)
-            <input type="file" multiple onChange={async (event) => {
-              const files = Array.from(event.target.files ?? [])
-              if (files.reduce((total, file) => total + file.size, 0) > 25 * 1024 * 1024) {
-                setActionMessage('Select at most 25 MB of local media per import.'); return
-              }
-              const entries = await Promise.all(files.map(async (file) => [file.name, {
-                fileName: file.name, buffer: { type: 'Buffer' as const, data: Array.from(new Uint8Array(await file.arrayBuffer())) },
-              }] as const))
-              setMediaFiles(Object.fromEntries(entries))
-            }} />
+            <input
+              type="file"
+              multiple
+              onChange={async (event) => {
+                const files = Array.from(event.target.files ?? [])
+                if (files.reduce((total, file) => total + file.size, 0) > 25 * 1024 * 1024) {
+                  setActionMessage('Select at most 25 MB of local media per import.')
+                  return
+                }
+                const entries = await Promise.all(
+                  files.map(
+                    async (file) =>
+                      [
+                        file.name,
+                        {
+                          fileName: file.name,
+                          buffer: {
+                            type: 'Buffer' as const,
+                            data: Array.from(new Uint8Array(await file.arrayBuffer())),
+                          },
+                        },
+                      ] as const,
+                  ),
+                )
+                setMediaFiles(Object.fromEntries(entries))
+              }}
+            />
           </label>
           <textarea
             data-testid="wxr-input-textarea"

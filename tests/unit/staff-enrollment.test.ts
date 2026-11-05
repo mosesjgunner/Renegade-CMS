@@ -361,8 +361,17 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
         ?.afterChange?.[0]
       expect(hook).toBeDefined()
       await hook!({
-        doc: { id: 'pending-user', email: 'pending@test.com', role: 'staff', member: 'pending-member' },
-        req: { payload, context: { pendingStaffInvitation: true, skipEnrollmentToken: true }, user: users['user-owner'] },
+        doc: {
+          id: 'pending-user',
+          email: 'pending@test.com',
+          role: 'staff',
+          member: 'pending-member',
+        },
+        req: {
+          payload,
+          context: { pendingStaffInvitation: true, skipEnrollmentToken: true },
+          user: users['user-owner'],
+        },
         operation: 'create',
       } as never)
       expect(memberSiteRoles).toEqual(before)

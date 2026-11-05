@@ -19,9 +19,11 @@ describe('R-08-SOCIAL: allowlisted local adapter origins in production', () => {
   it('permits an allowlisted loopback origin over HTTP in production when the caller opts in', () => {
     vi.stubEnv('NODE_ENV', 'production')
     vi.stubEnv('SOCIAL_LOCAL_ADAPTER_ORIGINS', 'http://127.0.0.1:3141')
-    expect(validateOutboundUrl('http://127.0.0.1:3141/xrpc/com.atproto.server.createSession', {
-      allowHttpInDev: true,
-    }).isValid).toBe(true)
+    expect(
+      validateOutboundUrl('http://127.0.0.1:3141/xrpc/com.atproto.server.createSession', {
+        allowHttpInDev: true,
+      }).isValid,
+    ).toBe(true)
   })
 
   it('still blocks a non-allowlisted loopback origin in production', () => {
@@ -57,8 +59,8 @@ describe('R-08-SOCIAL: allowlisted local adapter origins in production', () => {
   it('dev/test behavior is unchanged for non-allowlisted loopback when the caller opts in', () => {
     vi.stubEnv('NODE_ENV', 'test')
     vi.stubEnv('SOCIAL_LOCAL_ADAPTER_ORIGINS', '')
-    expect(
-      validateOutboundUrl('http://127.0.0.1:3130', { allowHttpInDev: true }).isValid,
-    ).toBe(true)
+    expect(validateOutboundUrl('http://127.0.0.1:3130', { allowHttpInDev: true }).isValid).toBe(
+      true,
+    )
   })
 })

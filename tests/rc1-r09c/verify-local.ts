@@ -54,7 +54,10 @@ import {
   queueTelecomCampaignDeliveries,
 } from '../../src/modules/telecom/service'
 import { selectTelecomAdapter, telecomDeliveryTask } from '../../src/modules/telecom/tasks'
-import { getTelecomEmulatorReceipts, resetTelecomEmulator } from '../../src/modules/telecom/emulator'
+import {
+  getTelecomEmulatorReceipts,
+  resetTelecomEmulator,
+} from '../../src/modules/telecom/emulator'
 import { telecomDigest } from '../../src/modules/telecom/contracts'
 
 assert.equal(process.env.RC1R09C_DISPOSABLE, 'yes')
@@ -102,8 +105,7 @@ let holdSeen = false
 let sink: ReturnType<typeof netServer> | undefined
 function decodePart(body: string, encoding: string): string {
   const enc = encoding.toLowerCase()
-  if (enc === 'base64')
-    return Buffer.from(body.replace(/[\r\n\s]/g, ''), 'base64').toString('utf8')
+  if (enc === 'base64') return Buffer.from(body.replace(/[\r\n\s]/g, ''), 'base64').toString('utf8')
   if (enc === 'quoted-printable')
     return body
       .replace(/=\r\n/g, '')
@@ -192,7 +194,8 @@ function startSink(): Promise<void> {
               continue
             }
             socket.write(`250 captured-${captured.length}\r\n`)
-          } else if (/^(EHLO|HELO)/i.test(line)) socket.write('250-rc1-09c.local\r\n250 8BITMIME\r\n')
+          } else if (/^(EHLO|HELO)/i.test(line))
+            socket.write('250-rc1-09c.local\r\n250 8BITMIME\r\n')
           else if (/^MAIL FROM:/i.test(line)) socket.write('250 sender accepted\r\n')
           else if (/^RCPT TO:/i.test(line)) {
             to = /<([^>]+)>/.exec(line)?.[1] ?? ''
@@ -229,7 +232,8 @@ async function stopSink(): Promise<void> {
 const mailTo = (email: string, subjectPart?: string) =>
   captured.filter(
     (mail) =>
-      mail.to === email && (!subjectPart || parsed(mail).headers.get('subject')?.includes(subjectPart)),
+      mail.to === email &&
+      (!subjectPart || parsed(mail).headers.get('subject')?.includes(subjectPart)),
   )
 const dataCount = (email: string) => captured.filter((mail) => mail.to === email).length
 
@@ -332,7 +336,10 @@ const api = async (
           ...(opts.xff ? { 'x-forwarded-for': opts.xff } : {}),
           ...(cookies ? { cookie: cookies } : {}),
           ...(payloadText
-            ? { 'content-type': 'application/json', 'content-length': Buffer.byteLength(payloadText) }
+            ? {
+                'content-type': 'application/json',
+                'content-length': Buffer.byteLength(payloadText),
+              }
             : {}),
         },
         timeout: 180000,
@@ -378,7 +385,9 @@ const find = async (collection: string, where?: any) =>
     })
   ).docs
 const subscriberByEmail = async (siteId: string, email: string) =>
-  (await find('subscribers', { and: [{ site: { equals: siteId } }, { email: { equals: email } }] }))[0]
+  (
+    await find('subscribers', { and: [{ site: { equals: siteId } }, { email: { equals: email } }] })
+  )[0]
 const deliveriesFor = async (messageId: string) =>
   find('email-deliveries', { message: { equals: messageId } })
 const deliveryByRecipient = async (email: string) =>
@@ -476,8 +485,7 @@ try {
     })
     check(
       'post-restart: fresh dispatch still reaches the sink exactly once',
-      dataCount(ENCORE) === 1 &&
-        (await row('email-deliveries', encore.deliveryId)).attempts === 1,
+      dataCount(ENCORE) === 1 && (await row('email-deliveries', encore.deliveryId)).attempts === 1,
     )
     await stopWorker()
     succeeded = true
@@ -590,8 +598,9 @@ try {
     // ----------------------------------------------------------
     const signupAndConfirm = async (email: string, xff: string) => {
       await api('/api/subscribers/subscribe', 'POST', { email }, 202, { cookie: '', xff })
-      await until(`confirmation email captured for ${email}`, async () =>
-        mailTo(email, 'Confirm your subscription').length === 1,
+      await until(
+        `confirmation email captured for ${email}`,
+        async () => mailTo(email, 'Confirm your subscription').length === 1,
       )
       const link = linksIn(parsed(mailTo(email)[0]).text).find((l) =>
         l.includes('/subscribe/confirm'),
@@ -664,8 +673,11 @@ try {
       const deliveries = await deliveriesFor(campaign.messageId)
       return deliveries.length === 2 && deliveries.every((d: any) => d.status === 'accepted')
     })
-    await until('campaign mail reaches both subscribers', async () =>
-      mailTo(SUB1, '09C Campaign One').length === 1 && mailTo(SUB2, '09C Campaign One').length === 1,
+    await until(
+      'campaign mail reaches both subscribers',
+      async () =>
+        mailTo(SUB1, '09C Campaign One').length === 1 &&
+        mailTo(SUB2, '09C Campaign One').length === 1,
     )
     const campaignDeliveries = await deliveriesFor(campaign.messageId)
     const sub1Delivery = campaignDeliveries.find((d: any) => d.recipientEmail === SUB1)
@@ -723,8 +735,9 @@ try {
     // -- accepted: happy path + retry refusals -------------------
     const acceptedId = await testSend(ACCEPTED)
     check('operator test-send creates a queued persisted delivery', Boolean(acceptedId))
-    await until('accepted delivery accepted', async () =>
-      (await row('email-deliveries', acceptedId)).status === 'accepted',
+    await until(
+      'accepted delivery accepted',
+      async () => (await row('email-deliveries', acceptedId)).status === 'accepted',
     )
     check(
       'accepted: one attempt, one DATA, recorded Message-ID matches the wire',
@@ -748,8 +761,9 @@ try {
 
     // -- temporary: one 451, automatic retry succeeds ------------
     const temporaryId = await testSend(TEMPORARY)
-    await until('temporary delivery accepted after one retry', async () =>
-      (await row('email-deliveries', temporaryId)).status === 'accepted',
+    await until(
+      'temporary delivery accepted after one retry',
+      async () => (await row('email-deliveries', temporaryId)).status === 'accepted',
     )
     const temporaryRow = await row('email-deliveries', temporaryId)
     check(
@@ -767,8 +781,9 @@ try {
 
     // -- recover: 451 x4 -> dead-letter -> operator retry --------
     const recoverId = await testSend(RECOVER)
-    await until('recoverable delivery exhausts its automatic budget', async () =>
-      (await row('email-deliveries', recoverId)).status === 'dead-letter',
+    await until(
+      'recoverable delivery exhausts its automatic budget',
+      async () => (await row('email-deliveries', recoverId)).status === 'dead-letter',
     )
     const recoverDead = await row('email-deliveries', recoverId)
     check(
@@ -779,8 +794,9 @@ try {
     )
     await retry(recoverId, 200)
     check('operator retry grants a fresh budget to a dead-lettered delivery', true)
-    await until('operator-retried delivery accepted', async () =>
-      (await row('email-deliveries', recoverId)).status === 'accepted',
+    await until(
+      'operator-retried delivery accepted',
+      async () => (await row('email-deliveries', recoverId)).status === 'accepted',
     )
     const recoverRow = await row('email-deliveries', recoverId)
     check(
@@ -799,8 +815,9 @@ try {
 
     // -- permanent: 550 -> failed, never retried -----------------
     const permanentId = await testSend(PERMANENT)
-    await until('permanent delivery failed', async () =>
-      (await row('email-deliveries', permanentId)).status === 'failed',
+    await until(
+      'permanent delivery failed',
+      async () => (await row('email-deliveries', permanentId)).status === 'failed',
     )
     const permanentRow = await row('email-deliveries', permanentId)
     check(
@@ -824,8 +841,9 @@ try {
     // -- exhaust: dead-letter, retry queued while worker is down,
     //    suppression lands before dispatch -> cancelled ----------
     const exhaustId = await testSend(EXHAUST)
-    await until('exhaust delivery dead-letters', async () =>
-      (await row('email-deliveries', exhaustId)).status === 'dead-letter',
+    await until(
+      'exhaust delivery dead-letters',
+      async () => (await row('email-deliveries', exhaustId)).status === 'dead-letter',
     )
     check(
       'exhaustion persists four attempts and zero DATA',
@@ -867,8 +885,9 @@ try {
 
     // -- unknown: DATA captured, response lost --------------------
     const unknownId = await testSend(UNKNOWN)
-    await until('lost-response delivery quarantined unknown', async () =>
-      (await row('email-deliveries', unknownId)).status === 'unknown',
+    await until(
+      'lost-response delivery quarantined unknown',
+      async () => (await row('email-deliveries', unknownId)).status === 'unknown',
     )
     const unknownRow = await row('email-deliveries', unknownId)
     check(
@@ -985,8 +1004,9 @@ try {
       messageId: betaMessage.id,
       recipientEmail: EXHAUST_BETA,
     })
-    await until('beta delivery dead-letters', async () =>
-      (await row('email-deliveries', betaDelivery.id)).status === 'dead-letter',
+    await until(
+      'beta delivery dead-letters',
+      async () => (await row('email-deliveries', betaDelivery.id)).status === 'dead-letter',
     )
     await retry(String(betaDelivery.id), 400)
     check(
@@ -1056,7 +1076,11 @@ try {
     check(
       'controlled bounce event marks the delivery bounced and suppresses the address',
       bouncedRow.status === 'bounced' &&
-        (await isSubscriberSuppressed(payload, alphaId, (await subscriberByEmail(alphaId, SUB1)).emailHash)),
+        (await isSubscriberSuppressed(
+          payload,
+          alphaId,
+          (await subscriberByEmail(alphaId, SUB1)).emailHash,
+        )),
     )
     await processProviderSuppressionEvent(payload, {
       siteId: alphaId,
@@ -1119,12 +1143,14 @@ try {
       'duplicate queue commands return the same delivery ID',
       String(dedupFirst.id) === String(dedupSecond.id),
     )
-    await until('dedup delivery accepted', async () =>
-      (await row('email-deliveries', dedupFirst.id)).status === 'accepted',
+    await until(
+      'dedup delivery accepted',
+      async () => (await row('email-deliveries', dedupFirst.id)).status === 'accepted',
     )
     check(
       'deduplicated command yields one attempt and one DATA',
-      Number((await row('email-deliveries', dedupFirst.id)).attempts) === 1 && dataCount(DEDUP) === 1,
+      Number((await row('email-deliveries', dedupFirst.id)).attempts) === 1 &&
+        dataCount(DEDUP) === 1,
     )
     failureTable.push({
       scenario: 'duplicate-queue-command',
@@ -1173,7 +1199,8 @@ try {
     })
     const hour = new Date().getUTCHours()
     const offset = ((2 - hour + 36) % 24) - 12
-    const quietZone = offset === 0 ? 'Etc/GMT' : `Etc/GMT${offset > 0 ? '-' : '+'}${Math.abs(offset)}`
+    const quietZone =
+      offset === 0 ? 'Etc/GMT' : `Etc/GMT${offset > 0 ? '-' : '+'}${Math.abs(offset)}`
     await tCreate('profiles', {
       member: member.id,
       handle: 'rc109c-recipient',
@@ -1382,8 +1409,16 @@ try {
     }))
     const telecomTerminal = [
       { id: String(allowedDelivery.id), status: 'accepted', attempts: 1 },
-      { id: String(followDelivery.id), status: 'cancelled', attempts: Number((await tGet(followDelivery.id)).attempts) },
-      { id: String(stoppedDelivery.id), status: 'cancelled', attempts: Number((await tGet(stoppedDelivery.id)).attempts) },
+      {
+        id: String(followDelivery.id),
+        status: 'cancelled',
+        attempts: Number((await tGet(followDelivery.id)).attempts),
+      },
+      {
+        id: String(stoppedDelivery.id),
+        status: 'cancelled',
+        attempts: Number((await tGet(stoppedDelivery.id)).attempts),
+      },
     ]
     await writeFile(
       `${scratch}/state.json`,

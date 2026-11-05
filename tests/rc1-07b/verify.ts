@@ -182,7 +182,11 @@ try {
     check('restart: article 1 lifecycle remains published', art1.lifecycle === 'published')
     check(
       'restart: article 1 latestPublishedRevision matches pinned rev1',
-      String(typeof art1.latestPublishedRevision === 'object' && art1.latestPublishedRevision ? art1.latestPublishedRevision.id : art1.latestPublishedRevision) === state.art1Rev1Id,
+      String(
+        typeof art1.latestPublishedRevision === 'object' && art1.latestPublishedRevision
+          ? art1.latestPublishedRevision.id
+          : art1.latestPublishedRevision,
+      ) === state.art1Rev1Id,
     )
 
     const artCancelled = await payload.findByID({
@@ -204,7 +208,10 @@ try {
         `${cookie}; renegade-active-site=${state.siteId}`,
       )
     ).json()
-    check('restart: schedule-health API succeeds after restart', healthRes.counts.completedJobs >= 2)
+    check(
+      'restart: schedule-health API succeeds after restart',
+      healthRes.counts.completedJobs >= 2,
+    )
   } else {
     // FRESH RUN:
     // 1. Seed Site, Publication, and Users
@@ -268,12 +275,18 @@ try {
       ambiguousPreference: 'earlier',
     })
     check('DST engine: Fall Back earlier is ambiguous', fbEarlier.isAmbiguous === true)
-    check('DST engine: Fall Back earlier is CDT (06:30 UTC)', fbEarlier.utcInstant === '2026-11-01T06:30:00.000Z')
+    check(
+      'DST engine: Fall Back earlier is CDT (06:30 UTC)',
+      fbEarlier.utcInstant === '2026-11-01T06:30:00.000Z',
+    )
 
     const fbLater = convertLocalToUtc('2026-11-01T01:30:00', 'America/Chicago', {
       ambiguousPreference: 'later',
     })
-    check('DST engine: Fall Back later is CST (07:30 UTC)', fbLater.utcInstant === '2026-11-01T07:30:00.000Z')
+    check(
+      'DST engine: Fall Back later is CST (07:30 UTC)',
+      fbLater.utcInstant === '2026-11-01T07:30:00.000Z',
+    )
 
     // Test America/Chicago Spring Forward boundary: 2026-03-08 02:30 is nonexistent
     const sfAdv = convertLocalToUtc('2026-03-08T02:30:00', 'America/Chicago', {
@@ -315,7 +328,7 @@ try {
         where: { content: { equals: content1.id } },
       })
     ).docs[0]
-    const idOf = (val: any) => (typeof val === 'object' && val ? val.id ?? val.value : val)
+    const idOf = (val: any) => (typeof val === 'object' && val ? (val.id ?? val.value) : val)
     const art1Rev1Id = String(idOf(afc1.currentRevision))
 
     // Submit review & approve article 1
@@ -358,7 +371,10 @@ try {
     ).json()
 
     check('Article 1 scheduled via API successfully', schedRes1.ok === true)
-    check('Article 1 scheduledForUtc matches Fall Back earlier instant', schedRes1.scheduledForUtc === '2026-11-01T06:30:00.000Z')
+    check(
+      'Article 1 scheduledForUtc matches Fall Back earlier instant',
+      schedRes1.scheduledForUtc === '2026-11-01T06:30:00.000Z',
+    )
 
     const jobs1 = await payload.find({
       collection: 'scheduled-publish-jobs',
@@ -389,7 +405,10 @@ try {
       collection: 'scheduled-publish-jobs',
       id: job1.id,
     })
-    check('Job 1 pinned revision still strictly matches Rev 1 (NOT Rev 2)', String(idOf(job1PostDraft.revision)) === art1Rev1Id)
+    check(
+      'Job 1 pinned revision still strictly matches Rev 1 (NOT Rev 2)',
+      String(idOf(job1PostDraft.revision)) === art1Rev1Id,
+    )
 
     // 6. Test Worker Lease Locking & Concurrency Protection
     // Worker A acquires lease for 60 seconds
@@ -416,7 +435,10 @@ try {
       now: '2026-11-01T06:30:30.000Z', // 30s into lease
     })
     check('Worker B rejected while lease is held by Worker A', workerBAttempt.success === false)
-    check('Worker B error indicates leased by worker-node-alpha', workerBAttempt.error?.includes('worker-node-alpha'))
+    check(
+      'Worker B error indicates leased by worker-node-alpha',
+      workerBAttempt.error?.includes('worker-node-alpha'),
+    )
 
     // 7. Stale Lease Reclamation & Worker Crash Recovery
     // Advance simulated time past Worker A's lease expiration (2026-11-01T06:32:00.000Z)
@@ -451,7 +473,10 @@ try {
       workerId: 'worker-node-gamma',
       now: '2026-11-01T06:35:00.000Z',
     })
-    check('Idempotent retry on completed job returns success without duplicates', rerunCompleted.success === true)
+    check(
+      'Idempotent retry on completed job returns success without duplicates',
+      rerunCompleted.success === true,
+    )
 
     // 9. Create and Schedule Test Article 2 (Catch-Up Policy & Reconcile)
     const content2 = (
@@ -622,7 +647,10 @@ try {
       workerId: 'worker-worker-1',
       now: '2026-12-01T10:05:00.000Z',
     })
-    check('Executing cancelled job returns error and does not publish', runCancelledRes.published === false)
+    check(
+      'Executing cancelled job returns error and does not publish',
+      runCancelledRes.published === false,
+    )
 
     // 11. Effective Schedule Exposure & Error Log Sanitization Verification
     const effSchedule = await getEffectiveSchedule(payload, String(job1.id))
@@ -634,8 +662,15 @@ try {
     const rawErrorWithCreds =
       'DB connection failed on postgresql://postgres:super_secret_pw@127.0.0.1:5448/rc107b?token=super_secret_bearer_token'
     const sanitizedError = sanitizeErrorLog(rawErrorWithCreds)
-    check('Sanitized error redacts URI credentials', sanitizedError?.includes('scheme://***REDACTED***@') === true)
-    check('Sanitized error redacts passwords and tokens', !sanitizedError?.includes('super_secret_pw') && !sanitizedError?.includes('super_secret_bearer_token'))
+    check(
+      'Sanitized error redacts URI credentials',
+      sanitizedError?.includes('scheme://***REDACTED***@') === true,
+    )
+    check(
+      'Sanitized error redacts passwords and tokens',
+      !sanitizedError?.includes('super_secret_pw') &&
+        !sanitizedError?.includes('super_secret_bearer_token'),
+    )
 
     // 12. Negative Security / Access Controls
     // Unauthenticated request to /api/admin/calendar/schedule rejected (403)
@@ -660,16 +695,13 @@ try {
 
     // Schedule health API returns truthful operator view
     const healthJson = (
-      await api(
-        '/api/admin/schedule-health?limit=50',
-        'GET',
-        undefined,
-        publisherCookie,
-        200,
-      )
+      await api('/api/admin/schedule-health?limit=50', 'GET', undefined, publisherCookie, 200)
     ).json()
     check('Schedule health returns completed job count >= 2', healthJson.counts.completedJobs >= 2)
-    check('Schedule health returns worker health object', healthJson.workerHealth.status === 'healthy')
+    check(
+      'Schedule health returns worker health object',
+      healthJson.workerHealth.status === 'healthy',
+    )
 
     // Save state for restart verification
     await writeFile(

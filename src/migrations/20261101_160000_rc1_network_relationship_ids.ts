@@ -18,4 +18,3 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
     ALTER TABLE IF EXISTS network_audit_events ALTER COLUMN id DROP DEFAULT;
   `)
 }
-

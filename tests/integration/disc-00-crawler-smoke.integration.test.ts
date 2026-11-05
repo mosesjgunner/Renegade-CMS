@@ -1,6 +1,7 @@
+import { fixtureRichText } from '../helpers/fixture-rich-text'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -20,6 +21,17 @@ import { GET as getSitemapPage } from '../../src/app/(frontend)/sitemaps/[page]/
 import { GET as getJsonFeed } from '../../src/app/(frontend)/feed.json/route'
 import { GET as getScopedFeed } from '../../src/app/(frontend)/feeds/[scope]/[slug]/route'
 import { processIndexingExecutionEvent } from '../../src/modules/public/indexing'
+
+function hostRequest(url: string, init?: RequestInit) {
+  const headers = new Headers(init?.headers)
+  headers.set('host', new URL(url).host)
+  return new Request(url, { ...init, headers })
+}
+
+vi.mock('next/headers', async () => ({
+  ...(await vi.importActual<typeof import('next/headers')>('next/headers')),
+  headers: async () => new Headers({ host: 'localhost:3000' }),
+}))
 
 let payload: Payload
 let siteId: string
@@ -59,6 +71,7 @@ beforeAll(async () => {
       site: siteId,
       publication: publicationId,
       contentType: 'article',
+      body: fixtureRichText(),
       title: `Published Article ${suffix}`,
       slug: publishedArticleSlug,
       canonicalPath: `/articles/${publishedArticleSlug}`,
@@ -84,6 +97,7 @@ beforeAll(async () => {
       site: siteId,
       publication: publicationId,
       contentType: 'article',
+      body: fixtureRichText(),
       title: `Draft Article ${suffix}`,
       slug: draftArticleSlug,
       canonicalPath: `/articles/${draftArticleSlug}`,
@@ -176,7 +190,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     const layoutMeta = discoveryToMetadata(layoutDoc)
     expect(layoutDoc.contentType).toBe('page')
     expect(layoutDoc.indexability.indexable).toBe(true)
-    expect(layoutMeta.title).toContain('Layout Page')
+    expect(layoutMeta.title).toBe(`SEO Layout ${suffix}`)
     expect(layoutMeta.robots).toEqual({ index: true, follow: true })
 
     // E. Search page - noindex to protect crawl budget
@@ -258,7 +272,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
   })
 
   it('serves canonical RSS 2.0 feed with caching and conditional GET support', async () => {
-    const request1 = new Request('http://localhost:3000/feed.xml')
+    const request1 = hostRequest('http://localhost:3000/feed.xml')
     const response1 = await getFeed(request1)
     expect(response1.status).toBe(200)
     expect(response1.headers.get('content-type')).toContain('application/rss+xml')
@@ -273,7 +287,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(bodyText).not.toContain(draftArticleSlug)
 
     // Test conditional GET with matching ETag
-    const request2 = new Request('http://localhost:3000/feed.xml', {
+    const request2 = hostRequest('http://localhost:3000/feed.xml', {
       headers: { 'if-none-match': etag! },
     })
     const response2 = await getFeed(request2)
@@ -287,7 +301,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
 
     const searchResult = queryLocalSearch({
       documents: searchDocs,
-      query: suffix,
+      query: `SEO Title for ${suffix}`,
     })
     expect(searchResult.total).toBeGreaterThanOrEqual(1)
     expect(searchResult.hits[0].path).toContain(publishedArticleSlug)
@@ -306,7 +320,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
 
   it('serves valid sitemap index and child sitemaps with caching and conditional GET', async () => {
     // 1. Sitemap index
-    const indexReq = new Request('http://localhost:3000/sitemap.xml')
+    const indexReq = hostRequest('http://localhost:3000/sitemap.xml')
     const indexRes = await getSitemapIndex(indexReq)
     expect(indexRes.status).toBe(200)
     expect(indexRes.headers.get('content-type')).toContain('application/xml')
@@ -319,14 +333,14 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(indexXml).toContain('/sitemaps/1.xml')
 
     // Conditional GET on sitemap index
-    const indexReq304 = new Request('http://localhost:3000/sitemap.xml', {
+    const indexReq304 = hostRequest('http://localhost:3000/sitemap.xml', {
       headers: { 'if-none-match': indexEtag! },
     })
     const indexRes304 = await getSitemapIndex(indexReq304)
     expect(indexRes304.status).toBe(304)
 
     // 2. Child sitemap page 1
-    const pageReq = new Request('http://localhost:3000/sitemaps/1.xml')
+    const pageReq = hostRequest('http://localhost:3000/sitemaps/1.xml')
     const pageRes = await getSitemapPage(pageReq, {
       params: Promise.resolve({ page: '1.xml' }),
     })
@@ -346,7 +360,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(pageXml).not.toContain('non-existent')
 
     // Conditional GET on sitemap page
-    const pageReq304 = new Request('http://localhost:3000/sitemaps/1.xml', {
+    const pageReq304 = hostRequest('http://localhost:3000/sitemaps/1.xml', {
       headers: { 'if-none-match': pageEtag! },
     })
     const pageRes304 = await getSitemapPage(pageReq304, {
@@ -355,14 +369,14 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(pageRes304.status).toBe(304)
 
     // Non-existent partition returns 404
-    const page999Res = await getSitemapPage(new Request('http://localhost:3000/sitemaps/999.xml'), {
+    const page999Res = await getSitemapPage(hostRequest('http://localhost:3000/sitemaps/999.xml'), {
       params: Promise.resolve({ page: '999.xml' }),
     })
     expect(page999Res.status).toBe(404)
   })
 
   it('serves JSON Feed 1.1 with ETag caching and conditional GET', async () => {
-    const jsonReq = new Request('http://localhost:3000/feed.json')
+    const jsonReq = hostRequest('http://localhost:3000/feed.json')
     const jsonRes = await getJsonFeed(jsonReq)
     expect(jsonRes.status).toBe(200)
     expect(jsonRes.headers.get('content-type')).toContain('application/feed+json')
@@ -377,7 +391,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(jsonBody.items.some((item: any) => item.url.includes(draftArticleSlug))).toBe(false)
 
     // Test conditional GET
-    const jsonReq304 = new Request('http://localhost:3000/feed.json', {
+    const jsonReq304 = hostRequest('http://localhost:3000/feed.json', {
       headers: { 'if-none-match': jsonEtag! },
     })
     const jsonRes304 = await getJsonFeed(jsonReq304)
@@ -385,12 +399,12 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
   })
 
   it('serves content-scoped streams with stable entity IDs and conditional GET', async () => {
-    const scopedReq = new Request(`http://localhost:3000/feeds/content/${publishedArticleId}`)
+    const scopedReq = hostRequest(`http://localhost:3000/feeds/content/${publishedArticleId}`)
     const scopedRes = await getScopedFeed(scopedReq, {
       params: Promise.resolve({ scope: 'content', slug: publishedArticleId }),
     })
     expect(scopedRes.status).toBe(200)
-    expect(scopedRes.headers.get('content-type')).toContain('application/xml')
+    expect(scopedRes.headers.get('content-type')).toContain('application/rss+xml')
 
     const scopedXml = await scopedRes.text()
     expect(scopedXml).toContain('<rss version="2.0"')
@@ -398,7 +412,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(scopedXml).toContain(publishedArticleId)
 
     // JSON format via Accept header
-    const jsonScopedReq = new Request(`http://localhost:3000/feeds/content/${publishedArticleId}`, {
+    const jsonScopedReq = hostRequest(`http://localhost:3000/feeds/content/${publishedArticleId}`, {
       headers: { accept: 'application/feed+json' },
     })
     const jsonScopedRes = await getScopedFeed(jsonScopedReq, {

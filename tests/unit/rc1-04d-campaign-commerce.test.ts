@@ -231,7 +231,7 @@ describe('04D canonical widgets and safe unconfigured boundaries', () => {
     expect(markup).toContain('No unverified live charges accepted')
   })
 
-  it('renders interactive publisher.product-showcase widget with safe unconfigured notice', () => {
+  it('renders the live catalog loading boundary without fabricated products or provider claims', () => {
     const showcaseDef = componentRegistry['publisher.product-showcase']
     expect(showcaseDef).toBeDefined()
     const markup = renderToStaticMarkup(
@@ -241,11 +241,14 @@ describe('04D canonical widgets and safe unconfigured boundaries', () => {
       }),
     )
     expect(markup).toContain('Official Campaign Gear')
-    expect(markup).toContain('Solidarity Heavyweight Tee')
-    expect(markup).toContain('$32.00')
-    expect(markup).toContain('/store/solidarity-heavyweight-tee')
-    expect(markup).toContain('data-provider-state="safe-unconfigured"')
-    expect(markup).toContain('Unconfigured checkouts cannot charge live cards')
+    expect(markup).toContain('Loading products')
+    expect(markup).toContain('aria-live="polite"')
+    expect(markup).toContain('href="/store"')
+    expect(markup).toContain('100% union-printed merchandise.')
+    expect(markup).not.toContain('Solidarity Heavyweight Tee')
+    expect(markup).not.toContain('$32.00')
+    expect(markup).not.toContain('/store/solidarity-heavyweight-tee')
+    expect(markup).not.toContain('data-provider-state="safe-unconfigured"')
   })
 
   it('exports valid CheckoutPage component matching CartView entry', () => {

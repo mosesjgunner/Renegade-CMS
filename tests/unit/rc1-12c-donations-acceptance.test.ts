@@ -51,7 +51,9 @@ vi.mock('@/modules/commerce/payment-provider', () => ({
     retrieve: state.retrieve,
   }),
 }))
-vi.mock('@/modules/commerce/payment-operations', () => ({ signGuestOrderToken: () => 'mock-token' }))
+vi.mock('@/modules/commerce/payment-operations', () => ({
+  signGuestOrderToken: () => 'mock-token',
+}))
 vi.mock('payload', () => ({
   getPayload: async () => ({
     findGlobal: async () => ({
@@ -80,9 +82,7 @@ vi.mock('payload', () => ({
     find: async ({ collection, where }: { collection: string; where: any }) => {
       if (collection === 'merchant-connections')
         return {
-          docs: [
-            { id: 'merchant-alpha', providerKey: 'deterministic-test', site: 'site-alpha' },
-          ],
+          docs: [{ id: 'merchant-alpha', providerKey: 'deterministic-test', site: 'site-alpha' }],
         }
       if (collection === 'payment-method-capabilities')
         return {
@@ -219,12 +219,37 @@ describe('RC1 12C — One-Time and Recurring Donations Unit Acceptance', () => {
 
   it('6. calculateDonationProgress correctly separates currencies and subtracts partial refunds', () => {
     const rows = [
-      { lifecycle: 'succeeded', currency: 'USD', baseAmountMinor: '5000', reversedAmountMinor: '0' },
-      { lifecycle: 'succeeded', currency: 'USD', baseAmountMinor: '2500', reversedAmountMinor: '500' },
-      { lifecycle: 'partially-refunded', currency: 'USD', baseAmountMinor: '1000', reversedAmountMinor: '200' },
-      { lifecycle: 'refunded', currency: 'USD', baseAmountMinor: '3000', reversedAmountMinor: '3000' },
+      {
+        lifecycle: 'succeeded',
+        currency: 'USD',
+        baseAmountMinor: '5000',
+        reversedAmountMinor: '0',
+      },
+      {
+        lifecycle: 'succeeded',
+        currency: 'USD',
+        baseAmountMinor: '2500',
+        reversedAmountMinor: '500',
+      },
+      {
+        lifecycle: 'partially-refunded',
+        currency: 'USD',
+        baseAmountMinor: '1000',
+        reversedAmountMinor: '200',
+      },
+      {
+        lifecycle: 'refunded',
+        currency: 'USD',
+        baseAmountMinor: '3000',
+        reversedAmountMinor: '3000',
+      },
       { lifecycle: 'disputed', currency: 'USD', baseAmountMinor: '1500', reversedAmountMinor: '0' },
-      { lifecycle: 'succeeded', currency: 'EUR', baseAmountMinor: '4000', reversedAmountMinor: '0' },
+      {
+        lifecycle: 'succeeded',
+        currency: 'EUR',
+        baseAmountMinor: '4000',
+        reversedAmountMinor: '0',
+      },
     ]
     const usdProgress: DonationProgress = calculateDonationProgress(rows, 'USD', '10000')
     // Settled: 5000 + (2500 - 500) + (1000 - 200) = 5000 + 2000 + 800 = 7800
@@ -239,8 +264,12 @@ describe('RC1 12C — One-Time and Recurring Donations Unit Acceptance', () => {
 
   it('7. donationDisclosures requires verified flags before including tax deductibility', () => {
     const unverified = donationDisclosures({ verifiedTaxDeductibility: false })
-    expect(unverified).toContain('No representation is made that this contribution is tax deductible.')
-    expect(unverified.some((t) => t.includes('Your contribution may be tax deductible'))).toBe(false)
+    expect(unverified).toContain(
+      'No representation is made that this contribution is tax deductible.',
+    )
+    expect(unverified.some((t) => t.includes('Your contribution may be tax deductible'))).toBe(
+      false,
+    )
 
     const verified = donationDisclosures({
       verifiedTaxDeductibility: true,
@@ -327,4 +356,3 @@ describe('RC1 12C — One-Time and Recurring Donations Unit Acceptance', () => {
     expect(duplicateReversal.outcome).toBe('duplicate')
   })
 })
-

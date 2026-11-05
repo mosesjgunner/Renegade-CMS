@@ -125,6 +125,7 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
   let emulatorAdapter: PodEmulatorAdapter
   let samplePodJob: PODJob
   let createdJob: PODJob
+  let terminalFailureJob: PODJob
 
   beforeAll(async () => {
     sampleOffer = {
@@ -325,7 +326,8 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
       expect(result.botDetected).toBe(false)
       expect(result.click.trackingAllowed).toBe(true)
       expect(result.click.clickToken).toMatch(/^tok_[0-9a-f]{16}$/)
-      expect(result.destinationUrl).toContain('subId=clk_')
+      expect(result.click.id).toMatch(/^[0-9a-f-]{36}$/i)
+      expect(new URL(result.destinationUrl).searchParams.get('subId')).toBe(result.click.id)
       expect(result.destinationUrl).toContain('utm_campaign=spring_gear')
       expect(result.destinationUrl).toContain('utm_source=renegade-cms')
       capturedClick = result.click
@@ -954,20 +956,17 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
 
     it('17. Reconciliation: actively polls provider adapter and synchronizes state, fulfillments, and timestamp', async () => {
       // First submit fresh job to emulator
-      const jobToReconcile: PODJob = {
-        ...createdJob,
-        state: 'created',
-        idempotencyKey: `pod_job:recon_test:${testRunId}`,
-      }
+      const jobToReconcile = releasePodJobHold(samplePodJob, 'reconciliation_fixture')
+      const reconciliationAdapter = new PodEmulatorAdapter()
       const submitResult = await submitPodJobWithRetry({
         job: jobToReconcile,
-        adapter: emulatorAdapter,
+        adapter: reconciliationAdapter,
       })
       expect(submitResult.success).toBe(true)
       const submittedJob = (submitResult as any).job
 
       // Actively reconcile with provider
-      const reconciled = await reconcilePodJobWithProvider(submittedJob, emulatorAdapter)
+      const reconciled = await reconcilePodJobWithProvider(submittedJob, reconciliationAdapter)
       expect(reconciled.externalOrderId).toBeDefined()
       expect(reconciled.lastReconciledAt).toBeDefined()
       expect(new Date(reconciled.lastReconciledAt!).getTime()).toBeGreaterThan(0)
@@ -1023,12 +1022,7 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
 
     it('20. Provider failure: verifies retry backoff on transient errors and terminal failure on exhaustion', async () => {
       const failingAdapter = new PodEmulatorAdapter({ healthy: false })
-      const jobForFailure: PODJob = {
-        ...createdJob,
-        state: 'created',
-        attemptCount: 0,
-        idempotencyKey: `pod_job:fail_test:${testRunId}`,
-      }
+      const jobForFailure = releasePodJobHold(samplePodJob, 'failure_fixture')
 
       // Attempt 1: Transient 503 unavailable error
       const attempt1 = await submitPodJobWithRetry({
@@ -1056,15 +1050,11 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
           expect(currentJob.state).toBe('failed')
         }
       }
+      terminalFailureJob = currentJob
     })
 
     it('21. Manual recovery path: hands off failed POD job to manual package queue with disclaimer and dispatch', () => {
-      const failedJob: PODJob = {
-        ...createdJob,
-        state: 'failed',
-        attemptCount: 3,
-        lastError: 'Provider 503 unavailable: submission attempts exhausted.',
-      }
+      const failedJob = terminalFailureJob
 
       const manualPkg = handoffFailedPodJobToManual(
         failedJob,
@@ -1095,16 +1085,13 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
     })
 
     it('22. Restart while fulfillment work is in progress: resumes state safely using deterministic idempotency key', async () => {
-      const jobToSubmit: PODJob = {
-        ...createdJob,
-        state: 'created',
-        idempotencyKey: `pod_job:site-party:ord_crash_test:0:${testRunId}`,
-      }
+      const jobToSubmit = releasePodJobHold(samplePodJob, 'restart_fixture')
+      const restartAdapter = new PodEmulatorAdapter()
 
       // Initial execution creates provider order
       const initialRun = await submitPodJobWithRetry({
         job: jobToSubmit,
-        adapter: emulatorAdapter,
+        adapter: restartAdapter,
       })
       expect(initialRun.success).toBe(true)
       const externalId1 = (initialRun as any).job.externalOrderId
@@ -1112,28 +1099,28 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
       // Simulate worker crash & restart: identical idempotency key returns identical external order without duplicate creation
       const postRestartRun = await submitPodJobWithRetry({
         job: jobToSubmit,
-        adapter: emulatorAdapter,
+        adapter: restartAdapter,
       })
       expect(postRestartRun.success).toBe(true)
       expect((postRestartRun as any).job.externalOrderId).toBe(externalId1)
     })
 
     it('23. Concurrency invariant: proves zero duplicate orders, fulfillments, shipments, or provider submissions', async () => {
-      const concurrentJob: PODJob = {
-        ...createdJob,
-        idempotencyKey: `pod_job:concurrent_test:${testRunId}`,
-      }
+      const concurrentJob = releasePodJobHold(samplePodJob, 'concurrency_fixture')
+      const concurrentAdapter = new PodEmulatorAdapter()
 
       // 5 concurrent submissions of the exact same job
       const concurrentResults = await Promise.all([
-        submitPodJobWithRetry({ job: concurrentJob, adapter: emulatorAdapter }),
-        submitPodJobWithRetry({ job: concurrentJob, adapter: emulatorAdapter }),
-        submitPodJobWithRetry({ job: concurrentJob, adapter: emulatorAdapter }),
-        submitPodJobWithRetry({ job: concurrentJob, adapter: emulatorAdapter }),
-        submitPodJobWithRetry({ job: concurrentJob, adapter: emulatorAdapter }),
+        submitPodJobWithRetry({ job: concurrentJob, adapter: concurrentAdapter }),
+        submitPodJobWithRetry({ job: concurrentJob, adapter: concurrentAdapter }),
+        submitPodJobWithRetry({ job: concurrentJob, adapter: concurrentAdapter }),
+        submitPodJobWithRetry({ job: concurrentJob, adapter: concurrentAdapter }),
+        submitPodJobWithRetry({ job: concurrentJob, adapter: concurrentAdapter }),
       ])
 
-      const successfulOrders = concurrentResults.map((r: any) => r.job.externalOrderId)
+      expect(concurrentResults.every((result) => result.success)).toBe(true)
+      const successfulOrders = concurrentResults.map((r) => r.job.externalOrderId)
+      expect(successfulOrders.every(Boolean)).toBe(true)
       // All 5 must have resolved to the EXACT same external order ID
       const uniqueOrderIds = new Set(successfulOrders)
       expect(uniqueOrderIds.size).toBe(1)
@@ -1181,7 +1168,7 @@ describe('Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conf
         }),
       )
 
-      expect(html).toContain('FAILED WORKER / SUBMISSION')
+      expect(html).toContain('Provider rejected the request. Repair and retry')
       expect(html).toContain('Attempts: 3')
       expect(html).toContain('color space mismatch')
       expect(html).toContain('View in Manual Queue')

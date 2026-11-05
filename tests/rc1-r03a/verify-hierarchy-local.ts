@@ -248,8 +248,8 @@ async function run() {
       const ownerMemberRaw = (owner as any).member
       const ownerMemberId = String(
         ownerMemberRaw && typeof ownerMemberRaw === 'object'
-          ? (ownerMemberRaw as { id?: unknown }).id ?? ''
-          : ownerMemberRaw ?? '',
+          ? ((ownerMemberRaw as { id?: unknown }).id ?? '')
+          : (ownerMemberRaw ?? ''),
       )
       assert.ok(ownerMemberId, 'fixture owner must be linked to a canonical member')
       f.siteA = (

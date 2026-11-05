@@ -44,7 +44,15 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
   describe('Direct and group message exchange', () => {
     function createConversationHarness() {
       const convos = new Map<string, Record<string, unknown>>()
-      const memberships = new Map<string, Array<{ member_id: string; role: string; left_at: string | null; visible_from_sequence: number }>>()
+      const memberships = new Map<
+        string,
+        Array<{
+          member_id: string
+          role: string
+          left_at: string | null
+          visible_from_sequence: number
+        }>
+      >()
       const messages = new Map<string, Record<string, unknown>>()
       let sequence = 1
 
@@ -54,7 +62,10 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
         }
 
         // Check active membership
-        if (text.includes('SELECT c.request_state') || text.includes('FROM conversation_memberships cm JOIN conversations c')) {
+        if (
+          text.includes('SELECT c.request_state') ||
+          text.includes('FROM conversation_memberships cm JOIN conversations c')
+        ) {
           const convId = String(values[0])
           const memId = String(values[1])
           const sId = String(values[2])
@@ -63,19 +74,25 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
           const m = mems.find((item) => item.member_id === memId && !item.left_at)
           if (c && c.site_id === sId && m) {
             return {
-              rows: [{
-                request_state: c.request_state,
-                request_recipient_member_id: c.request_recipient_member_id,
-                status: c.status,
-                visible_from_sequence: m.visible_from_sequence,
-              }],
+              rows: [
+                {
+                  request_state: c.request_state,
+                  request_recipient_member_id: c.request_recipient_member_id,
+                  status: c.status,
+                  visible_from_sequence: m.visible_from_sequence,
+                },
+              ],
             }
           }
           return { rows: [] }
         }
 
         // Query conversation peers
-        if (text.includes('SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL')) {
+        if (
+          text.includes(
+            'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
+          )
+        ) {
           const convId = String(values[0])
           const senderId = String(values[1])
           const mems = memberships.get(convId) || []
@@ -87,7 +104,9 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
         }
 
         // Duplicate check by idempotency key
-        if (text.startsWith('SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2')) {
+        if (
+          text.startsWith('SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2')
+        ) {
           const key = `${values[0]}:${values[1]}`
           const existing = messages.get(key)
           return { rows: existing ? [existing] : [] }
@@ -260,7 +279,11 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
             rows: [{ request_state: 'active', status: 'active' }],
           }
         }
-        if (text.includes('SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2')) {
+        if (
+          text.includes(
+            'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2',
+          )
+        ) {
           return { rows: [{ member_id: bob }] }
         }
         return { rows: [] }

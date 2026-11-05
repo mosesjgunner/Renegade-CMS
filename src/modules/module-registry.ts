@@ -115,11 +115,10 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
     providerBoundary: {
       type: 'local-only',
       claim:
-        'Local event occurrences with local time zones. Interactive external calendar sync and feeds are deferred.',
+        'Local events, calendars, timelines, and iCalendar feeds. Bidirectional external calendar synchronization is excluded.',
     },
-    title: 'Events (calendar deferred)',
-    summary:
-      'Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.',
+    title: 'Events & calendars',
+    summary: 'Timezone-aware events, public calendars, ordered timelines, and iCalendar feeds.',
     collections: ['events', 'timelines', 'timeline-memberships', 'calendar-entries'],
   },
   {
@@ -239,6 +238,7 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'webhook-deliveries',
       'integration-audit-events',
     ],
+    tasks: ['webhook-delivery-dispatch'],
   },
   {
     id: 'releases',
@@ -261,7 +261,8 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       claim: 'Local form definitions, schemas, and submissions; no external form SaaS.',
     },
     title: 'Forms',
-    summary: 'Deferred public forms; schemas and records are retained without product access.',
+    summary:
+      'Public forms, schema snapshots, submissions, and supported contact/task intake actions.',
     collections: ['form-definitions', 'form-schemas', 'form-submissions', 'submission-attachments'],
   },
   {
@@ -327,10 +328,11 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
     providerBoundary: {
       type: 'local-only',
       claim:
-        'Local in-app notifications and activity events. Remote push delivery and external digests are deferred.',
+        'Local in-app notifications and reviewable email digests through configured transports. Remote push delivery is unconfigured.',
     },
     title: 'Notifications & digests',
-    summary: 'In-app notifications. External digests and automation execution are deferred.',
+    summary:
+      'In-app notifications, preferences, and reviewable digests. General automation execution remains unproved for RC1.',
     collections: [
       'activity-events',
       'notifications',

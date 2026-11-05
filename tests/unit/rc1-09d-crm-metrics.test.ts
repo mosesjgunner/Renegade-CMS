@@ -60,9 +60,19 @@ describe('RC1 Subpass 09D: CRM Views, Metrics and Audience Acceptance Unit Tests
 
     it('filters contacts matching search query across name, email, or phone', () => {
       const contacts = [
-        { id: 'c1', displayName: 'Alice Green', email: 'alice@example.com', phoneE164: '+15551112222' },
+        {
+          id: 'c1',
+          displayName: 'Alice Green',
+          email: 'alice@example.com',
+          phoneE164: '+15551112222',
+        },
         { id: 'c2', displayName: 'Bob Smith', email: 'bob@work.org', phoneE164: '+15553334444' },
-        { id: 'c3', displayName: 'Charlie Davis', email: 'cdavis@sample.net', phoneE164: '+15555556666' },
+        {
+          id: 'c3',
+          displayName: 'Charlie Davis',
+          email: 'cdavis@sample.net',
+          phoneE164: '+15555556666',
+        },
       ]
 
       const filterByQuery = (q: string) => {
@@ -104,7 +114,9 @@ describe('RC1 Subpass 09D: CRM Views, Metrics and Audience Acceptance Unit Tests
     it('labels observed opens with explicit proxy cache and bot prefetch caveats', () => {
       const openMetric = AUDIENCE_METRIC_DICTIONARY.find((m) => m.key === 'observed_opens')
       expect(openMetric).toBeDefined()
-      expect(openMetric?.caveats.some((c) => c.includes('Apple Mail Privacy Protection'))).toBe(true)
+      expect(openMetric?.caveats.some((c) => c.includes('Apple Mail Privacy Protection'))).toBe(
+        true,
+      )
       expect(openMetric?.uncertaintyLabel).toMatch(/proxy cache/i)
     })
 
@@ -112,7 +124,9 @@ describe('RC1 Subpass 09D: CRM Views, Metrics and Audience Acceptance Unit Tests
       const clickMetric = AUDIENCE_METRIC_DICTIONARY.find((m) => m.key === 'observed_clicks')
       expect(clickMetric).toBeDefined()
       expect(clickMetric?.formula).toContain('NOT is_bot')
-      expect(clickMetric?.caveats.some((c) => c.includes('Barracuda') || c.includes('scanners'))).toBe(true)
+      expect(
+        clickMetric?.caveats.some((c) => c.includes('Barracuda') || c.includes('scanners')),
+      ).toBe(true)
     })
 
     it('evaluates deliverability health thresholds with accurate severity alerts', () => {
@@ -231,7 +245,9 @@ describe('RC1 Subpass 09D: CRM Views, Metrics and Audience Acceptance Unit Tests
 
       expect(report.csv).toContain('# Site ID: test-site-09d')
       expect(report.csv).toContain(`# Role: administrator`)
-      expect(report.csv).toContain(`All cohorts with < ${PRIVACY_MIN_COHORT_SIZE} subjects are masked`)
+      expect(report.csv).toContain(
+        `All cohorts with < ${PRIVACY_MIN_COHORT_SIZE} subjects are masked`,
+      )
 
       // Active subscribers count was 3, should appear as < 5 in CSV
       expect(report.csv).toContain(`active_subscribers,"Active Subscribers",multi,< 5`)

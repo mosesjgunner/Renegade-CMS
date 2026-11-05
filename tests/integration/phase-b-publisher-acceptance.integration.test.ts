@@ -105,18 +105,21 @@ describe('Phase B Publisher Final Acceptance Integration', () => {
       overrideAccess: true,
     } as never)
 
-    const pub = await payload.create({
+    const publications = await payload.find({
       collection: 'publications',
-      data: {
-        site: site.id,
-        name: 'Outputs Pub',
-        slug: siteSlug,
-        canonicalBasePath: `/${siteSlug}`,
-        status: 'active',
-        visibility: 'public',
-      },
+      where: { and: [{ site: { equals: site.id } }, { slug: { equals: siteSlug } }] },
+      depth: 0,
       overrideAccess: true,
-    } as never)
+    })
+    expect(publications.docs).toHaveLength(1)
+    const pub = await payload.update({
+      collection: 'publications',
+      id: publications.docs[0]!.id,
+      data: { name: 'Outputs Pub', canonicalBasePath: `/${siteSlug}` },
+      overrideAccess: true,
+    })
+    expect(pub.status).toBe('active')
+    expect(pub.visibility).toBe('public')
 
     // 1. Events ICS generation
     const testEvent: EventOccurrence = {

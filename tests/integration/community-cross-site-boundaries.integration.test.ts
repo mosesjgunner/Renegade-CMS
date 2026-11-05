@@ -1,3 +1,4 @@
+import { fixtureRichText } from '../helpers/fixture-rich-text'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -507,6 +508,7 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       data: {
         site: siteAId,
         contentType: 'article',
+        body: fixtureRichText(),
         title: `Test Moderation Article ${suffix} ${randomUUID().slice(0, 6)}`,
         slug: `test-mod-${suffix}-${randomUUID().slice(0, 8)}`,
         status: 'published',

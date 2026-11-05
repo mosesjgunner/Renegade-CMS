@@ -44,7 +44,10 @@ if (!existsSync(secretFile)) {
   writeFileSync(secretFile, randomBytes(32).toString('hex'), { mode: 0o600 })
 }
 const payloadSecret = readFileSync(secretFile, 'utf8').trim()
-const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' }).stdout.trim()
+const buildSha = spawnSync('git', ['rev-parse', 'HEAD'], {
+  cwd: repo,
+  encoding: 'utf8',
+}).stdout.trim()
 
 function makeEnv({ dbName, mediaDir, appUrl, webPort, heartbeat }) {
   return {
@@ -109,7 +112,10 @@ function psql(dbUrl, statement) {
 
 // 1. Reset both explicitly disposable databases and migrate each through
 // the supported operator command.
-for (const [label, env] of [['A', envA], ['B', envB]]) {
+for (const [label, env] of [
+  ['A', envA],
+  ['B', envB],
+]) {
   psql(env.DATABASE_URL, 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;')
   console.log(`[r05c-local] disposable database reset (env ${label})`)
   const migrateLog = openSync(path.join(scratch, `migrate-${label}.log`), 'w')
@@ -120,7 +126,9 @@ for (const [label, env] of [['A', envA], ['B', envB]]) {
   })
   closeSync(migrateLog)
   if (migrate.status !== 0)
-    fail(`db:migrate (env ${label}) exited ${migrate.status}; see scratch/rc1r05c/migrate-${label}.log`)
+    fail(
+      `db:migrate (env ${label}) exited ${migrate.status}; see scratch/rc1r05c/migrate-${label}.log`,
+    )
   const count = psql(env.DATABASE_URL, 'SELECT count(*) FROM payload_migrations')
   console.log(`[r05c-local] env ${label} migrations applied (payload_migrations rows: ${count})`)
 }
@@ -241,7 +249,14 @@ async function phase(name, env, script, args = []) {
   const logPath = path.join(scratch, `${name}.log`)
   const fd = openSync(logPath, 'w')
   const childEnv = { ...env }
-  for (const k of ['http_proxy', 'https_proxy', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'all_proxy'])
+  for (const k of [
+    'http_proxy',
+    'https_proxy',
+    'HTTP_PROXY',
+    'HTTPS_PROXY',
+    'ALL_PROXY',
+    'all_proxy',
+  ])
     delete childEnv[k]
   const status = await new Promise((resolve) => {
     const child = spawn('npx', ['tsx', script, ...args], {
@@ -298,9 +313,12 @@ if (results.journey && results.refetch) {
   stackB.startWorker()
   await stackB.waitReady()
   results.restart = await phase('restart', envA, 'tests/rc1-r05c/verify-local.ts', ['--restart'])
-  results.refetchRestart = await phase('refetch-restart', envB, 'tests/rc1-r05c/verify-restore-local.ts', [
-    '--restart',
-  ])
+  results.refetchRestart = await phase(
+    'refetch-restart',
+    envB,
+    'tests/rc1-r05c/verify-restore-local.ts',
+    ['--restart'],
+  )
 } else {
   console.log('[r05c-local] restart phases unexecuted (earlier phase failed)')
 }

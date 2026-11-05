@@ -30,7 +30,9 @@ async function run() {
   const floorSlugs = floorCollectionSlugs(fullRegistrations)
 
   if (isLeanCheck) {
-    console.log('Running 02D Module Profiles: Lean / Default Verification & Safe Unavailable States...')
+    console.log(
+      'Running 02D Module Profiles: Lean / Default Verification & Safe Unavailable States...',
+    )
 
     // 1. Lean / Default Profile
     console.log('1. Testing Profile 1: Lean / Default (~66 collections)...')
@@ -57,14 +59,18 @@ async function run() {
     assert.equal(threadsBody.error, 'Community discussions service is unavailable.')
 
     // Community Posts route
-    const postsReq = new Request('http://localhost:38905/api/community/posts?discussionId=test-disc&siteId=test-site')
+    const postsReq = new Request(
+      'http://localhost:38905/api/community/posts?discussionId=test-disc&siteId=test-site',
+    )
     const postsRes = await postsGet(postsReq)
     assert.equal(postsRes.status, 503, 'Disabled community posts route must return HTTP 503')
     const postsBody = await postsRes.json()
     assert.equal(postsBody.error, 'Community discussions service is unavailable.')
 
     // Community Comments route
-    const commentsReq = new Request('http://localhost:38905/api/community/comments?discussionId=test-disc&siteId=test-site')
+    const commentsReq = new Request(
+      'http://localhost:38905/api/community/comments?discussionId=test-disc&siteId=test-site',
+    )
     const commentsRes = await commentsGet(commentsReq)
     assert.equal(commentsRes.status, 503, 'Disabled community comments route must return HTTP 503')
     const commentsBody = await commentsRes.json()
@@ -77,7 +83,9 @@ async function run() {
     })
     assert.equal(standardDefault.collections.length, floorSlugs.length)
 
-    console.log('PASS 02D Profiles (Lean/Default & Standard/Default): Safe unavailable degradation confirmed.')
+    console.log(
+      'PASS 02D Profiles (Lean/Default & Standard/Default): Safe unavailable degradation confirmed.',
+    )
     process.exit(0)
   }
 
@@ -101,9 +109,21 @@ async function run() {
 
     // Check Payload runtime collections under all modules
     const payload = await getPayload({ config })
-    assert.equal(isRegisteredCollection(payload, 'carts'), true, 'Carts must be registered in all-modules profile')
-    assert.equal(isRegisteredCollection(payload, 'forums'), true, 'Forums must be registered in all-modules profile')
-    assert.equal(isRegisteredCollection(payload, 'discussions'), true, 'Discussions must be registered in all-modules profile')
+    assert.equal(
+      isRegisteredCollection(payload, 'carts'),
+      true,
+      'Carts must be registered in all-modules profile',
+    )
+    assert.equal(
+      isRegisteredCollection(payload, 'forums'),
+      true,
+      'Forums must be registered in all-modules profile',
+    )
+    assert.equal(
+      isRegisteredCollection(payload, 'discussions'),
+      true,
+      'Discussions must be registered in all-modules profile',
+    )
 
     // 5. Lean / All Profile
     console.log('5. Testing Profile 4: Supported Lean / All...')
@@ -115,7 +135,9 @@ async function run() {
     const leanLockable = leanAll.collections.filter((c) => c.lockDocuments !== false).length
     assert(leanLockable < POSTGRES_FUNCTION_ARG_LIMIT)
 
-    console.log('PASS 02D Profiles (Standard/All & Lean/All): Full module suites and PostgreSQL lock safety confirmed.')
+    console.log(
+      'PASS 02D Profiles (Standard/All & Lean/All): Full module suites and PostgreSQL lock safety confirmed.',
+    )
     process.exit(0)
   }
 }

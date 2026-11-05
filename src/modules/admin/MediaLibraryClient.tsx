@@ -322,9 +322,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
           <dl data-testid="selected-media-summary" style={{ fontSize: '0.9rem' }}>
             <div>
               <dt style={{ display: 'inline', fontWeight: 600 }}>Filename: </dt>
-              <dd style={{ display: 'inline', margin: 0 }}>
-                {selected.originalFilename || '—'}
-              </dd>
+              <dd style={{ display: 'inline', margin: 0 }}>{selected.originalFilename || '—'}</dd>
             </div>
             <div>
               <dt style={{ display: 'inline', fontWeight: 600 }}>Kind / MIME: </dt>

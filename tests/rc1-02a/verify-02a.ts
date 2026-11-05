@@ -2,7 +2,10 @@ import configPromise from '@/payload.config'
 import { getPayload } from 'payload'
 import { publicSiteForHost } from '@/modules/public/site-scope'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
-import { GET as activeSiteGet, POST as activeSitePost } from '@/app/(frontend)/api/admin/active-site/route'
+import {
+  GET as activeSiteGet,
+  POST as activeSitePost,
+} from '@/app/(frontend)/api/admin/active-site/route'
 import { GET as navGet, POST as navPost } from '@/app/(frontend)/api/admin/navigation/route'
 import { createPasskeySession } from '@/modules/operations/passkey-auth'
 import { loadConfig } from '@/modules/core/config'
@@ -17,7 +20,7 @@ async function run() {
 
   const db = payload.db as any
   await db.pool.query(
-    `TRUNCATE admin_sessions, member_site_roles, publications, sites, users, members CASCADE`
+    `TRUNCATE admin_sessions, member_site_roles, publications, sites, users, members CASCADE`,
   )
   console.log('   Isolated database truncated for clean acceptance verification.')
 
@@ -118,7 +121,9 @@ async function run() {
     user: ownerUser,
     overrideAccess: false,
   } as never)
-  console.log(`   Site 1 created: id=${site1.id}, name="${(site1 as any).name}", slug="${(site1 as any).slug}"`)
+  console.log(
+    `   Site 1 created: id=${site1.id}, name="${(site1 as any).name}", slug="${(site1 as any).slug}"`,
+  )
 
   const site2 = await payload.create({
     collection: 'sites',
@@ -131,7 +136,9 @@ async function run() {
     user: ownerUser,
     overrideAccess: false,
   } as never)
-  console.log(`   Site 2 created: id=${site2.id}, name="${(site2 as any).name}", slug="${(site2 as any).slug}" (slug normalized)`)
+  console.log(
+    `   Site 2 created: id=${site2.id}, name="${(site2 as any).name}", slug="${(site2 as any).slug}" (slug normalized)`,
+  )
   const expectedSlug = `beta-community-live-${runId}`
   if ((site2 as any).slug !== expectedSlug) {
     throw new Error(`Expected normalized slug '${expectedSlug}', got '${(site2 as any).slug}'`)
@@ -224,7 +231,9 @@ async function run() {
     },
     overrideAccess: true,
   })
-  console.log(`   Site 1 Navigation updated: ${(nav1.navigation as any)?.primary?.map((n: any) => n.label).join(', ')}`)
+  console.log(
+    `   Site 1 Navigation updated: ${(nav1.navigation as any)?.primary?.map((n: any) => n.label).join(', ')}`,
+  )
 
   const nav2 = await payload.update({
     collection: 'publications',
@@ -239,21 +248,30 @@ async function run() {
     },
     overrideAccess: true,
   })
-  console.log(`   Site 2 Navigation updated: ${(nav2.navigation as any)?.primary?.map((n: any) => n.label).join(', ')}`)
+  console.log(
+    `   Site 2 Navigation updated: ${(nav2.navigation as any)?.primary?.map((n: any) => n.label).join(', ')}`,
+  )
 
   // Step 8: Verify Public Domain Isolation & Rendered Effect
   console.log('8. Verifying Public Consumption & Domain Resolution...')
   const resolvedSite1 = await publicSiteForHost(payload, 'alpha.localhost:3000')
-  console.log(`   Host 'alpha.localhost:3000' resolved site ID: ${resolvedSite1} (Expected: ${site1.id})`)
+  console.log(
+    `   Host 'alpha.localhost:3000' resolved site ID: ${resolvedSite1} (Expected: ${site1.id})`,
+  )
   if (resolvedSite1 !== String(site1.id)) throw new Error('Site 1 host resolution mismatch!')
 
   const resolvedSite2 = await publicSiteForHost(payload, 'beta.localhost:3000')
-  console.log(`   Host 'beta.localhost:3000' resolved site ID: ${resolvedSite2} (Expected: ${site2.id})`)
+  console.log(
+    `   Host 'beta.localhost:3000' resolved site ID: ${resolvedSite2} (Expected: ${site2.id})`,
+  )
   if (resolvedSite2 !== String(site2.id)) throw new Error('Site 2 host resolution mismatch!')
 
   const unknownHostResolution = await publicSiteForHost(payload, 'attacker-unrecognized.com')
-  console.log(`   Host 'attacker-unrecognized.com' resolved site ID: '${unknownHostResolution}' (Expected: '')`)
-  if (unknownHostResolution !== '') throw new Error('Unknown host returned tenant data on multi-site installation!')
+  console.log(
+    `   Host 'attacker-unrecognized.com' resolved site ID: '${unknownHostResolution}' (Expected: '')`,
+  )
+  if (unknownHostResolution !== '')
+    throw new Error('Unknown host returned tenant data on multi-site installation!')
 
   // Step 9: Active Site API & Role Enforcement
   console.log('9. Testing Active Site API, Session/Cookie Persistence, and Role Enforcement...')
@@ -289,7 +307,8 @@ async function run() {
   const unauthGetReq = new Request('http://localhost:3000/api/admin/active-site')
   const unauthGetRes = await activeSiteGet(unauthGetReq)
   console.log(`   Unauthenticated GET active-site status: ${unauthGetRes.status} (Expected: 401)`)
-  if (unauthGetRes.status !== 401) throw new Error('Unauthenticated request was not denied with 401!')
+  if (unauthGetRes.status !== 401)
+    throw new Error('Unauthenticated request was not denied with 401!')
 
   // Check 2: Restricted staff GET /api/admin/active-site -> returns ONLY Site 1
   const staffGetReq = new Request('http://localhost:3000/api/admin/active-site', {
@@ -297,7 +316,9 @@ async function run() {
   })
   const staffGetRes = await activeSiteGet(staffGetReq)
   const staffData = await staffGetRes.json()
-  console.log(`   Staff GET active-site: activeSiteId=${staffData.activeSiteId}, authorizedSites=${staffData.sites.map((s: any) => s.id).join(', ')}`)
+  console.log(
+    `   Staff GET active-site: activeSiteId=${staffData.activeSiteId}, authorizedSites=${staffData.sites.map((s: any) => s.id).join(', ')}`,
+  )
   if (staffData.sites.length !== 1 || staffData.sites[0].id !== String(site1.id)) {
     throw new Error('Staff saw unauthorized sites!')
   }
@@ -313,7 +334,8 @@ async function run() {
   })
   const staffSwitchRes = await activeSitePost(staffSwitchReq)
   console.log(`   Staff POST switch to Site 2 status: ${staffSwitchRes.status} (Expected: 403)`)
-  if (staffSwitchRes.status !== 403) throw new Error('Staff switch to unauthorized site was not rejected with 403!')
+  if (staffSwitchRes.status !== 403)
+    throw new Error('Staff switch to unauthorized site was not rejected with 403!')
 
   // Check 4: Owner switches to Site 2 -> 200 and receives Set-Cookie
   const ownerSwitchReq = new Request('http://localhost:3000/api/admin/active-site', {
@@ -340,7 +362,9 @@ async function run() {
   })
   const cookieGetRes = await activeSiteGet(cookieGetReq)
   const cookieData = await cookieGetRes.json()
-  console.log(`   Subsequent GET with Cookie returned activeSiteId: ${cookieData.activeSiteId} (Expected: ${site2.id})`)
+  console.log(
+    `   Subsequent GET with Cookie returned activeSiteId: ${cookieData.activeSiteId} (Expected: ${site2.id})`,
+  )
   if (cookieData.activeSiteId !== String(site2.id)) {
     throw new Error('Active site cookie was not honored on subsequent reload!')
   }
@@ -359,7 +383,9 @@ async function run() {
 
   const persistedSettings = await resolveSiteSettings(reloadedPayload)
   console.log(`   Persisted canonicalOrigin: ${persistedSettings.canonicalOrigin}`)
-  console.log(`   Persisted canonicalOriginsBySite: ${JSON.stringify(persistedSettings.canonicalOriginsBySite)}`)
+  console.log(
+    `   Persisted canonicalOriginsBySite: ${JSON.stringify(persistedSettings.canonicalOriginsBySite)}`,
+  )
   if (persistedSettings.canonicalOriginsBySite[String(site2.id)] !== 'http://beta.localhost:3000') {
     throw new Error('Site 2 canonical origin was not persisted!')
   }

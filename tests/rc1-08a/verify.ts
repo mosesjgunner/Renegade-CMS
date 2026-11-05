@@ -133,7 +133,12 @@ const harness = http.createServer(async (req, res) => {
     if (body.identifier === 'bad.credentials.handle' || body.password === 'wrong-password') {
       harnessBadAuthCalls++
       res.statusCode = 401
-      return res.end(JSON.stringify({ error: 'AuthenticationFailed', message: 'Invalid identifier or password' }))
+      return res.end(
+        JSON.stringify({
+          error: 'AuthenticationFailed',
+          message: 'Invalid identifier or password',
+        }),
+      )
     }
     harnessSessionCalls++
     return res.end(
@@ -168,15 +173,33 @@ try {
       overrideAccess: true,
     })
     check('restart: account doc persisted across container restart', Boolean(persistedAccount))
-    check('restart: credential health remains healthy', persistedAccount.credentialHealth === 'healthy')
-    check('restart: capabilities text limit 300 preserved', persistedAccount.capabilities?.textLimit === 300)
-    check('restart: mode preserved as local-harness', persistedAccount.diagnostics?.mode === 'local-harness')
+    check(
+      'restart: credential health remains healthy',
+      persistedAccount.credentialHealth === 'healthy',
+    )
+    check(
+      'restart: capabilities text limit 300 preserved',
+      persistedAccount.capabilities?.textLimit === 300,
+    )
+    check(
+      'restart: mode preserved as local-harness',
+      persistedAccount.diagnostics?.mode === 'local-harness',
+    )
 
     // 2. Query admin accounts API after restart
-    const res = await api(`/api/admin/social/accounts?siteId=${state.siteId}`, 'GET', undefined, ownCookie, 200)
+    const res = await api(
+      `/api/admin/social/accounts?siteId=${state.siteId}`,
+      'GET',
+      undefined,
+      ownCookie,
+      200,
+    )
     const json = res.json()
     const found = json.accounts.find((a: any) => String(a.id) === String(state.accountId))
-    check('restart: admin accounts GET returns account with healthy status', found && found.credentialHealth === 'healthy')
+    check(
+      'restart: admin accounts GET returns account with healthy status',
+      found && found.credentialHealth === 'healthy',
+    )
 
     // 3. Test disconnected state after restart
     const disconnected = await payload.findByID({
@@ -185,17 +208,27 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check('restart: disconnected account preserved with revoked status', disconnected.credentialHealth === 'revoked')
-    check('restart: connectionReference cleared on revoked account', disconnected.connectionReference === null)
+    check(
+      'restart: disconnected account preserved with revoked status',
+      disconnected.credentialHealth === 'revoked',
+    )
+    check(
+      'restart: connectionReference cleared on revoked account',
+      disconnected.connectionReference === null,
+    )
 
     // Save final persistence evidence
     await writeFile(
       `${out}/persistence-final.json`,
-      JSON.stringify({
-        accountId: state.accountId,
-        persistedAccount,
-        disconnectedAccount: disconnected,
-      }, null, 2),
+      JSON.stringify(
+        {
+          accountId: state.accountId,
+          persistedAccount,
+          disconnectedAccount: disconnected,
+        },
+        null,
+        2,
+      ),
     )
     succeeded = true
   } else {
@@ -203,7 +236,11 @@ try {
     // Create isolated Site & Users
     const site = await payload.create({
       collection: 'sites',
-      data: { name: '08A Provider Truth Site', slug: `provider-truth-${Date.now()}`, lifecycle: 'active' },
+      data: {
+        name: '08A Provider Truth Site',
+        slug: `provider-truth-${Date.now()}`,
+        lifecycle: 'active',
+      },
     })
     const foreignSite = await payload.create({
       collection: 'sites',
@@ -257,7 +294,10 @@ try {
       foreignCookie,
       403,
     )
-    check('foreign operator denied access to connect account on target site (403)', foreignAttempt.response.status === 403)
+    check(
+      'foreign operator denied access to connect account on target site (403)',
+      foreignAttempt.response.status === 403,
+    )
 
     // TEST 3: Connect local harness Bluesky account with valid credentials
     const validConnectRes = await api(
@@ -280,10 +320,19 @@ try {
       200,
     )
     const validConnectJson = validConnectRes.json()
-    check('connect local harness Bluesky returns 200 with success true', validConnectJson.success === true)
+    check(
+      'connect local harness Bluesky returns 200 with success true',
+      validConnectJson.success === true,
+    )
     check('credentialHealth is healthy', validConnectJson.account.credentialHealth === 'healthy')
-    check('mode is reported truthfully as local-harness', validConnectJson.capabilityTruth.mode === 'local-harness')
-    check('capabilities declare textLimit 300 and images', validConnectJson.capabilityTruth.capabilities.textLimit === 300)
+    check(
+      'mode is reported truthfully as local-harness',
+      validConnectJson.capabilityTruth.mode === 'local-harness',
+    )
+    check(
+      'capabilities declare textLimit 300 and images',
+      validConnectJson.capabilityTruth.capabilities.textLimit === 300,
+    )
     check('harness received createSession call', harnessSessionCalls >= 1)
 
     // TEST 4: Zero Credential Leaks in Database and API Output
@@ -293,11 +342,23 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check('plaintext password never stored in database', !JSON.stringify(dbAccount).includes('correct-app-password'))
-    check('connectionReference is encrypted envelope', dbAccount.connectionReference.startsWith('enc:'))
+    check(
+      'plaintext password never stored in database',
+      !JSON.stringify(dbAccount).includes('correct-app-password'),
+    )
+    check(
+      'connectionReference is encrypted envelope',
+      dbAccount.connectionReference.startsWith('enc:'),
+    )
     const decryptedCreds = JSON.parse(decryptSecret(dbAccount.connectionReference.slice(4)))
-    check('decrypted secret resolves correctly', decryptedCreds.appPassword === 'correct-app-password')
-    check('API output does not return credentials or secrets', !JSON.stringify(validConnectJson).includes('correct-app-password'))
+    check(
+      'decrypted secret resolves correctly',
+      decryptedCreds.appPassword === 'correct-app-password',
+    )
+    check(
+      'API output does not return credentials or secrets',
+      !JSON.stringify(validConnectJson).includes('correct-app-password'),
+    )
 
     // TEST 5: Connect with Bad Credentials → Returns Auth Error, No Fake Success
     const badConnectRes = await api(
@@ -320,9 +381,18 @@ try {
       200,
     )
     const badConnectJson = badConnectRes.json()
-    check('connect with invalid credentials fails truthfully without fake success', badConnectJson.success === false)
-    check('credentialHealth set to revoked or failed', badConnectJson.account.credentialHealth === 'revoked')
-    check('diagnostics record sanitized error', Boolean(badConnectJson.account.diagnostics?.lastError))
+    check(
+      'connect with invalid credentials fails truthfully without fake success',
+      badConnectJson.success === false,
+    )
+    check(
+      'credentialHealth set to revoked or failed',
+      badConnectJson.account.credentialHealth === 'revoked',
+    )
+    check(
+      'diagnostics record sanitized error',
+      Boolean(badConnectJson.account.diagnostics?.lastError),
+    )
     check('harness received bad auth call', harnessBadAuthCalls >= 1)
 
     // TEST 6: Connect with Absent Credentials → Not Configured
@@ -340,8 +410,15 @@ try {
       200,
     )
     const absentJson = absentConnectRes.json()
-    check('absent keys reports not-configured', absentJson.account.credentialHealth === 'not-configured')
-    check('capabilityState reports manual-handoff for manual provider', absentJson.account.capabilityState === 'manual-handoff' || absentJson.account.capabilityState === 'unavailable')
+    check(
+      'absent keys reports not-configured',
+      absentJson.account.credentialHealth === 'not-configured',
+    )
+    check(
+      'capabilityState reports manual-handoff for manual provider',
+      absentJson.account.capabilityState === 'manual-handoff' ||
+        absentJson.account.capabilityState === 'unavailable',
+    )
 
     // TEST 7: Test / Ping Account Health
     const testPingRes = await api(
@@ -371,8 +448,14 @@ try {
     )
     const disconnectJson = disconnectRes.json()
     check('disconnect action succeeds', disconnectJson.success === true)
-    check('credentialHealth updated to revoked', disconnectJson.account.credentialHealth === 'revoked')
-    check('connectionReference set to null on disconnect', disconnectJson.account.connectionReference === null)
+    check(
+      'credentialHealth updated to revoked',
+      disconnectJson.account.credentialHealth === 'revoked',
+    )
+    check(
+      'connectionReference set to null on disconnect',
+      disconnectJson.account.connectionReference === null,
+    )
 
     // TEST 9: Query through /api/admin/integrations route
     const integrationsRes = await api(
@@ -383,10 +466,18 @@ try {
       200,
     )
     const integrationsJson = integrationsRes.json()
-    const socialConnection = integrationsJson.connections.find((c: any) => c.collection === 'social-accounts' && c.id === validConnectJson.account.id)
+    const socialConnection = integrationsJson.connections.find(
+      (c: any) => c.collection === 'social-accounts' && c.id === validConnectJson.account.id,
+    )
     check('integrations dashboard includes social account', Boolean(socialConnection))
-    check('integrations reflects status active and healthState healthy', socialConnection.status === 'active' && socialConnection.healthState === 'healthy')
-    check('integrations reflects true scopes from capabilities', socialConnection.scopes.includes('social.publish.text'))
+    check(
+      'integrations reflects status active and healthState healthy',
+      socialConnection.status === 'active' && socialConnection.healthState === 'healthy',
+    )
+    check(
+      'integrations reflects true scopes from capabilities',
+      socialConnection.scopes.includes('social.publish.text'),
+    )
 
     // TEST 10: Browser / UI Inspection
     await page.context().addCookies([

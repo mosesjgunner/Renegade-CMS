@@ -19,7 +19,11 @@ export async function GET(request: Request) {
     const match = cookieHeader.match(/renegade-active-site=([^;]+)/)
     const effectiveSiteId = siteId || (match ? match[1].trim() : undefined)
 
-    if (effectiveSiteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(effectiveSiteId)) {
+    if (
+      effectiveSiteId &&
+      !grant.isGlobalOwner &&
+      !grant.authorizedSiteIds.includes(effectiveSiteId)
+    ) {
       return NextResponse.json(
         { error: 'Forbidden. You do not have operator access to this site.' },
         { status: 403 },
@@ -52,7 +56,11 @@ export async function GET(request: Request) {
 }
 
 import { encryptSecret, sanitizeSocialLog } from '@/modules/social/security'
-import { getProviderCapabilityTruth, socialProviderFor, credentialsForSocialAccount } from '@/modules/social/provider-runtime'
+import {
+  getProviderCapabilityTruth,
+  socialProviderFor,
+  credentialsForSocialAccount,
+} from '@/modules/social/provider-runtime'
 import { blueskyAdapter } from '@/modules/social/adapters/bluesky'
 
 export async function POST(request: Request) {
@@ -87,7 +95,10 @@ export async function POST(request: Request) {
 
     if (action === 'disconnect') {
       if (!body.accountId) {
-        return NextResponse.json({ error: 'accountId is required for disconnect.' }, { status: 400 })
+        return NextResponse.json(
+          { error: 'accountId is required for disconnect.' },
+          { status: 400 },
+        )
       }
       const existing = (await payload.findByID({
         collection: 'social-accounts' as never,
@@ -100,8 +111,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Social account not found.' }, { status: 404 })
       }
 
-      const accountSiteId = typeof existing.site === 'object' && existing.site ? existing.site.id : existing.site
-      if (accountSiteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(String(accountSiteId))) {
+      const accountSiteId =
+        typeof existing.site === 'object' && existing.site ? existing.site.id : existing.site
+      if (
+        accountSiteId &&
+        !grant.isGlobalOwner &&
+        !grant.authorizedSiteIds.includes(String(accountSiteId))
+      ) {
         return NextResponse.json(
           { error: 'Forbidden. You do not have operator access to this site.' },
           { status: 403 },
@@ -146,8 +162,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Social account not found.' }, { status: 404 })
       }
 
-      const accountSiteId = typeof existing.site === 'object' && existing.site ? existing.site.id : existing.site
-      if (accountSiteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(String(accountSiteId))) {
+      const accountSiteId =
+        typeof existing.site === 'object' && existing.site ? existing.site.id : existing.site
+      if (
+        accountSiteId &&
+        !grant.isGlobalOwner &&
+        !grant.authorizedSiteIds.includes(String(accountSiteId))
+      ) {
         return NextResponse.json(
           { error: 'Forbidden. You do not have operator access to this site.' },
           { status: 403 },
@@ -236,7 +257,8 @@ export async function POST(request: Request) {
     const externalAccountId = body.externalAccountId || body.displayName || `${network}-account`
     const displayName = body.displayName || externalAccountId
     const actorType = body.actorType || 'site'
-    const requestedMode = body.mode || (process.env.NODE_ENV !== 'production' ? 'local-harness' : 'live')
+    const requestedMode =
+      body.mode || (process.env.NODE_ENV !== 'production' ? 'local-harness' : 'live')
 
     const capabilityTruth = getProviderCapabilityTruth(network, requestedMode)
 
@@ -293,7 +315,9 @@ export async function POST(request: Request) {
 
     const capabilityState =
       credentialHealth === 'healthy'
-        ? (capabilityTruth.mode === 'manual-handoff' ? 'manual-handoff' : 'available')
+        ? capabilityTruth.mode === 'manual-handoff'
+          ? 'manual-handoff'
+          : 'available'
         : 'unavailable'
 
     // Check if doc exists

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -23,62 +19,28 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@payload-config": [
-        "./src/payload.config.ts"
-      ]
+      "@/*": ["./src/*"],
+      "@payload-config": ["./src/payload.config.ts"]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
-    ".next-rc110d-turbo/types/**/*.ts",
-    ".next-rc110d-turbo/dev/types/**/*.ts",
-    ".next-rc111a/types/**/*.ts",
-    ".next-rc111a/dev/types/**/*.ts",
-    ".next-rc111b/types/**/*.ts",
-    ".next-rc111b/dev/types/**/*.ts",
-    ".next-rc111c/types/**/*.ts",
-    ".next-rc111c/dev/types/**/*.ts",
-    ".next-rc111d/types/**/*.ts",
-    ".next-rc111d/dev/types/**/*.ts",
-    ".next-rc111e/types/**/*.ts",
-    ".next-rc111e/dev/types/**/*.ts",
-    ".next-rc112a/types/**/*.ts",
-    ".next-rc112a/dev/types/**/*.ts",
-    ".next-rc112b/types/**/*.ts",
-    ".next-rc112b/dev/types/**/*.ts",
-    ".next-rc112c/types/**/*.ts",
-    ".next-rc112c/dev/types/**/*.ts",
-    ".next-rc112d/types/**/*.ts",
-    ".next-rc112d/dev/types/**/*.ts",
-    ".next-rc113a/types/**/*.ts",
-    ".next-rc113a/dev/types/**/*.ts",
-    ".next-rc113b/types/**/*.ts",
-    ".next-rc113b/dev/types/**/*.ts",
-    ".next-rc113c/types/**/*.ts",
-    ".next-rc113c/dev/types/**/*.ts",
-    ".next-rc114a/types/**/*.ts",
-    ".next-rc114a/dev/types/**/*.ts",
-    ".next-rc115c/types/**/*.ts",
-    ".next-rc115c/dev/types/**/*.ts",
-    ".next-rc115e/types/**/*.ts",
-    ".next-rc115e/dev/types/**/*.ts",
-    ".next-rc115d/types/**/*.ts",
-    ".next-rc115d/dev/types/**/*.ts",
-    ".next-rc116a/types/**/*.ts",
-    ".next-rc116a/dev/types/**/*.ts"
+    "*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    ".next-typecheck/types/**/*.ts",
+    ".next-typecheck/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "scratch",
     ".payload-upstream",
     "docs",
-    ".next"
+    ".next",
+    ".worktrees",
+    ".phase-a"
   ]
 }

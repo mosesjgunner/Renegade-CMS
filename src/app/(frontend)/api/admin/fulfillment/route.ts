@@ -6,7 +6,11 @@ import {
   inspectPodArtwork,
   assertFulfillmentOrderEligible,
 } from '@/modules/commerce/fulfillment-mapping'
-import { reconcileFulfillmentPlan, checkAndCompleteOrderFulfillment, reconcileOutstandingFulfillmentOrders } from '@/modules/commerce/fulfillment-operator'
+import {
+  reconcileFulfillmentPlan,
+  checkAndCompleteOrderFulfillment,
+  reconcileOutstandingFulfillmentOrders,
+} from '@/modules/commerce/fulfillment-operator'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
@@ -393,7 +397,9 @@ export async function POST(request: Request) {
 
       const orderId = relationId(doc.order)
       if (orderId) {
-        await checkAndCompleteOrderFulfillment(payload, orderId, actorId, { shippedPackageId: packageId })
+        await checkAndCompleteOrderFulfillment(payload, orderId, actorId, {
+          shippedPackageId: packageId,
+        })
       }
       return NextResponse.json({ success: true, package: saved })
     }
@@ -475,7 +481,7 @@ export async function POST(request: Request) {
       })
     }
 
-        if (action === 'reconcile-outstanding') {
+    if (action === 'reconcile-outstanding') {
       if (!['owner', 'administrator'].includes(String((auth?.user as any)?.role)))
         return NextResponse.json(
           { error: 'Reconciling outstanding jobs requires owner or administrator.' },

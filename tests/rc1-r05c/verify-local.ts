@@ -81,9 +81,7 @@ const rawRequest = (
             if (Array.isArray(v)) v.forEach((x) => headers.append(k, x))
             else if (v) headers.set(k, v)
           }
-          resolve(
-            new Response(Buffer.concat(chunks), { status: res.statusCode ?? 0, headers }),
-          )
+          resolve(new Response(Buffer.concat(chunks), { status: res.statusCode ?? 0, headers }))
         })
         res.on('error', reject)
       },

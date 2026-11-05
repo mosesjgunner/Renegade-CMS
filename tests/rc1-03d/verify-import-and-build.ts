@@ -23,7 +23,9 @@ await mkdir(scratch, { recursive: true })
 const payload: any = await getPayload({ config })
 const browser = await chromium.launch({ headless: true })
 const context = await browser.newContext(
-  (process.argv.includes('--restart') || process.argv.includes('--continue')) ? { storageState: `${scratch}/session.json` } : {},
+  process.argv.includes('--restart') || process.argv.includes('--continue')
+    ? { storageState: `${scratch}/session.json` }
+    : {},
 )
 const page = await context.newPage()
 page.setDefaultTimeout(120000)
@@ -56,7 +58,9 @@ const api = async (route: string, method = 'GET', data?: any, expected = 200) =>
 }
 const native = async (collection: string, data: any) => {
   if (process.argv.includes('--continue') && collection === 'content') {
-    const found = (await api(`/api/content?where[site][equals]=${data.site}&where[slug][equals]=${data.slug}`)).json().docs
+    const found = (
+      await api(`/api/content?where[site][equals]=${data.site}&where[slug][equals]=${data.slug}`)
+    ).json().docs
     if (found[0]) return found[0]
   }
   return (await api(`/api/${collection}`, 'POST', data, 201)).json().doc
@@ -127,64 +131,77 @@ try {
     )
   } else {
     if (!process.argv.includes('--continue')) {
-    check(
-      'fresh database has no sites or content',
-      (await payload.count({ collection: 'sites' })).totalDocs === 0 &&
-        (await payload.count({ collection: 'content' })).totalDocs === 0,
-    )
-    const warnings: string[] = []
-    const originalWarn = console.warn
-    console.warn = (...args: unknown[]) => {
-      warnings.push(String(args[0] ?? ''))
-    }
-    let token = ''
-    try {
-      await ensureBootstrap(payload, loadConfig())
-      if (warnings.length === 0) await rotateBootstrapToken(payload, loadConfig())
-      token = warnings.map((line) => line.match(/: ([A-Za-z0-9_-]+)$/)?.[1]).find(Boolean) ?? ''
-    } finally {
-      console.warn = originalWarn
-    }
-    assert.equal(token.length, 43, 'one-time installer bootstrap token available')
-    const client = await context.newCDPSession(page)
-    await client.send('WebAuthn.enable')
-    await client.send('WebAuthn.addVirtualAuthenticator', {
-      options: {
-        protocol: 'ctap2',
-        transport: 'internal',
-        hasResidentKey: true,
-        hasUserVerification: true,
-        isUserVerified: true,
-        automaticPresenceSimulation: true,
-      },
-    })
-    await page.goto(`${base}/setup`, { timeout: 180000, waitUntil: 'domcontentloaded' })
-    await page.waitForFunction(() => Object.keys(document.querySelector('input[type="email"]') ?? {}).some((key) => key.startsWith('__reactProps')), { timeout: 60000 })
-    console.log('Installer client hydrated')
-    await page.getByLabel('Bootstrap token').click()
-    await page.getByLabel('Bootstrap token').fill(token)
-    await page.getByLabel('Owner email').click()
-    await page.getByLabel('Owner email').fill('owner@rc103d.test')
-    console.log('Installer inputs supplied')
+      check(
+        'fresh database has no sites or content',
+        (await payload.count({ collection: 'sites' })).totalDocs === 0 &&
+          (await payload.count({ collection: 'content' })).totalDocs === 0,
+      )
+      const warnings: string[] = []
+      const originalWarn = console.warn
+      console.warn = (...args: unknown[]) => {
+        warnings.push(String(args[0] ?? ''))
+      }
+      let token = ''
+      try {
+        await ensureBootstrap(payload, loadConfig())
+        if (warnings.length === 0) await rotateBootstrapToken(payload, loadConfig())
+        token = warnings.map((line) => line.match(/: ([A-Za-z0-9_-]+)$/)?.[1]).find(Boolean) ?? ''
+      } finally {
+        console.warn = originalWarn
+      }
+      assert.equal(token.length, 43, 'one-time installer bootstrap token available')
+      const client = await context.newCDPSession(page)
+      await client.send('WebAuthn.enable')
+      await client.send('WebAuthn.addVirtualAuthenticator', {
+        options: {
+          protocol: 'ctap2',
+          transport: 'internal',
+          hasResidentKey: true,
+          hasUserVerification: true,
+          isUserVerified: true,
+          automaticPresenceSimulation: true,
+        },
+      })
+      await page.goto(`${base}/setup`, { timeout: 180000, waitUntil: 'domcontentloaded' })
+      await page.waitForFunction(
+        () =>
+          Object.keys(document.querySelector('input[type="email"]') ?? {}).some((key) =>
+            key.startsWith('__reactProps'),
+          ),
+        { timeout: 60000 },
+      )
+      console.log('Installer client hydrated')
+      await page.getByLabel('Bootstrap token').click()
+      await page.getByLabel('Bootstrap token').fill(token)
+      await page.getByLabel('Owner email').click()
+      await page.getByLabel('Owner email').fill('owner@rc103d.test')
+      console.log('Installer inputs supplied')
 
-    await page.getByRole('button', { name: 'Continue', exact: true }).click()
-    await page.getByLabel('Site or publication name').fill('03D Operator Dispatch')
-    await page.getByLabel('Site slug').fill('operator-dispatch-03d')
-    await page.getByLabel('Primary URL').fill(base)
-    await page.getByRole('button', { name: 'Continue', exact: true }).click()
-    await page.getByLabel('Starter site type').selectOption('blank-minimal')
-    await page.getByText('Create starter pages and sample content', { exact: false }).click()
-    await page.getByRole('button', { name: 'Continue', exact: true }).click()
-    await page.getByRole('button', { name: 'Continue', exact: true }).click()
-    const completeResponse = page.waitForResponse((response) => response.url().includes('/api/setup/complete'), { timeout: 180000 })
-    await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
-    assert.equal((await completeResponse).status(), 201, 'supported installer completion HTTP 201')
-    check(
-      'ordinary installer completes real virtual WebAuthn ceremony',
-      (await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey'),
-    )
-    // Recovery codes and session cookies remain outside evidence.
-    await context.storageState({ path: `${scratch}/session.json` })
+      await page.getByRole('button', { name: 'Continue', exact: true }).click()
+      await page.getByLabel('Site or publication name').fill('03D Operator Dispatch')
+      await page.getByLabel('Site slug').fill('operator-dispatch-03d')
+      await page.getByLabel('Primary URL').fill(base)
+      await page.getByRole('button', { name: 'Continue', exact: true }).click()
+      await page.getByLabel('Starter site type').selectOption('blank-minimal')
+      await page.getByText('Create starter pages and sample content', { exact: false }).click()
+      await page.getByRole('button', { name: 'Continue', exact: true }).click()
+      await page.getByRole('button', { name: 'Continue', exact: true }).click()
+      const completeResponse = page.waitForResponse(
+        (response) => response.url().includes('/api/setup/complete'),
+        { timeout: 180000 },
+      )
+      await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
+      assert.equal(
+        (await completeResponse).status(),
+        201,
+        'supported installer completion HTTP 201',
+      )
+      check(
+        'ordinary installer completes real virtual WebAuthn ceremony',
+        (await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey'),
+      )
+      // Recovery codes and session cookies remain outside evidence.
+      await context.storageState({ path: `${scratch}/session.json` })
     }
     const site = (await api('/api/sites?limit=20'))
       .json()
@@ -200,7 +217,9 @@ try {
       body: body('03D operator authored homepage'),
       status: 'published',
     })
-    await api('/api/globals/site-settings', 'POST', { homepageSelection: { mode: 'page', page: home.id } })
+    await api('/api/globals/site-settings', 'POST', {
+      homepageSelection: { mode: 'page', page: home.id },
+    })
     const about = await native('content', {
       site: site.id,
       contentType: 'page',

@@ -264,10 +264,7 @@ try {
       overrideAccess: true,
     })
     check('restart: External post receipt persisted', extPost.docs.length === 1)
-    check(
-      'restart: External post remoteId persisted',
-      Boolean(extPost.docs[0].remoteId),
-    )
+    check('restart: External post remoteId persisted', Boolean(extPost.docs[0].remoteId))
 
     const restartAttempt = await payload.find({
       collection: 'social-publish-attempts',
@@ -301,10 +298,7 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check(
-      'restart: Draft 2 reconciled item remains published',
-      draft2Item.status === 'published',
-    )
+    check('restart: Draft 2 reconciled item remains published', draft2Item.status === 'published')
 
     // 5. Verify Draft 3 (safe disconnect) remains failed with reconnect-required
     const draft3Item = await payload.findByID({
@@ -313,10 +307,7 @@ try {
       depth: 0,
       overrideAccess: true,
     })
-    check(
-      'restart: Draft 3 safe disconnect item remains failed',
-      draft3Item.status === 'failed',
-    )
+    check('restart: Draft 3 safe disconnect item remains failed', draft3Item.status === 'failed')
     const restartReasonText =
       typeof draft3Item.deadLetterReason === 'object' && draft3Item.deadLetterReason !== null
         ? draft3Item.deadLetterReason.kind || draft3Item.deadLetterReason.message
@@ -347,11 +338,21 @@ try {
   const runId = Date.now()
   const siteAlpha = await payload.create({
     collection: 'sites',
-    data: { name: 'Renegade Alpha', slug: `alpha-${runId}`, domain: `alpha-${runId}.renegade.test`, lifecycle: 'active' },
+    data: {
+      name: 'Renegade Alpha',
+      slug: `alpha-${runId}`,
+      domain: `alpha-${runId}.renegade.test`,
+      lifecycle: 'active',
+    },
   })
   const siteBeta = await payload.create({
     collection: 'sites',
-    data: { name: 'Renegade Beta', slug: `beta-${runId}`, domain: `beta-${runId}.renegade.test`, lifecycle: 'active' },
+    data: {
+      name: 'Renegade Beta',
+      slug: `beta-${runId}`,
+      domain: `beta-${runId}.renegade.test`,
+      lifecycle: 'active',
+    },
   })
   check('site Alpha created', Boolean(siteAlpha.id))
   check('site Beta created', Boolean(siteBeta.id))
@@ -388,7 +389,10 @@ try {
     collection: 'member-site-roles',
     data: { member: foreignStaffUser.member, site: siteBeta.id, role: 'community-manager' },
   })
-  check('users and operator grants seeded', Boolean(ownerUser.id && staffUser.id && foreignStaffUser.id))
+  check(
+    'users and operator grants seeded',
+    Boolean(ownerUser.id && staffUser.id && foreignStaffUser.id),
+  )
 
   const ownCookie = `${await session(ownerUser)}; renegade-active-site=${siteAlpha.id}`
   const staffCookie = `${await session(staffUser)}; renegade-active-site=${siteAlpha.id}`
@@ -469,11 +473,17 @@ try {
       diagnostics: { mode: 'local-harness' },
     },
   })
-  check('connected accounts seeded', Boolean(bskyAccount.id && actPubAccount.id && revokedAccount.id))
+  check(
+    'connected accounts seeded',
+    Boolean(bskyAccount.id && actPubAccount.id && revokedAccount.id),
+  )
 
   // 4. NEGATIVE SECURITY & AUTHORIZATION TESTS
   const anonWorkerGet = await api('/api/admin/social/worker', 'GET', undefined, '', 403)
-  check('negative: unauthenticated worker GET denied with 403', anonWorkerGet.response.status === 403)
+  check(
+    'negative: unauthenticated worker GET denied with 403',
+    anonWorkerGet.response.status === 403,
+  )
 
   const anonWorkerPost = await api(
     '/api/admin/social/worker',
@@ -482,7 +492,10 @@ try {
     '',
     403,
   )
-  check('negative: unauthenticated worker POST denied with 403', anonWorkerPost.response.status === 403)
+  check(
+    'negative: unauthenticated worker POST denied with 403',
+    anonWorkerPost.response.status === 403,
+  )
 
   const invalidTokenPost = await api(
     '/api/admin/social/worker',
@@ -491,7 +504,10 @@ try {
     invalidSessionCookie,
     403,
   )
-  check('negative: invalid token worker POST denied with 403', invalidTokenPost.response.status === 403)
+  check(
+    'negative: invalid token worker POST denied with 403',
+    invalidTokenPost.response.status === 403,
+  )
 
   const foreignSiteDraftAccess = await api(
     `/api/admin/social/drafts?siteId=${siteAlpha.id}`,
@@ -500,7 +516,10 @@ try {
     foreignCookie,
     403,
   )
-  check('negative: foreign operator accessing site-alpha denied with 403', foreignSiteDraftAccess.response.status === 403)
+  check(
+    'negative: foreign operator accessing site-alpha denied with 403',
+    foreignSiteDraftAccess.response.status === 403,
+  )
 
   const statsRes = await api('/api/admin/social/worker', 'GET', undefined, ownCookie, 200)
   const stats = statsRes.json()
@@ -582,8 +601,12 @@ try {
     depth: 0,
     overrideAccess: true,
   })
-  const blueskyQueueItem = queueDocs.docs.find((q: any) => String(q.variant) === String(bskyVariant?.id))
-  const actPubQueueItem = queueDocs.docs.find((q: any) => String(q.variant) === String(actPubVariant?.id))
+  const blueskyQueueItem = queueDocs.docs.find(
+    (q: any) => String(q.variant) === String(bskyVariant?.id),
+  )
+  const actPubQueueItem = queueDocs.docs.find(
+    (q: any) => String(q.variant) === String(actPubVariant?.id),
+  )
   check('Bluesky queue item identified', Boolean(blueskyQueueItem?.id))
   check('ActivityPub queue item identified', Boolean(actPubQueueItem?.id))
 
@@ -616,12 +639,17 @@ try {
 
   // Select Draft 1 from dropdown
   await page.selectOption('[data-testid="draft-select"]', draft1Id)
-  await page.waitForSelector(`[data-testid="current-draft-id"]:has-text("${draft1Id}")`, { timeout: 30000 })
+  await page.waitForSelector(`[data-testid="current-draft-id"]:has-text("${draft1Id}")`, {
+    timeout: 30000,
+  })
   check('Browser selected Draft 1 and loaded queue items', true)
 
   // Verify scheduled status badge and 2 persisted queue items in table
   const statusBeforeDispatch = await page.textContent('[data-testid="draft-status-badge"]')
-  check('Initial draft status in UI is SCHEDULED', statusBeforeDispatch?.toLowerCase().includes('scheduled'))
+  check(
+    'Initial draft status in UI is SCHEDULED',
+    statusBeforeDispatch?.toLowerCase().includes('scheduled'),
+  )
 
   await page.screenshot({ path: `${out}/01-draft-scheduled.png`, fullPage: true })
 
@@ -640,15 +668,30 @@ try {
   check('UI dynamically updated draft status to PARTIALLY-PUBLISHED', true)
 
   // Verify Bluesky item shows PUBLISHED badge, external link, and local-harness pill
-  const bskyStatusText = await page.textContent(`[data-testid="item-status-${blueskyQueueItem.id}"]`)
-  check('UI displays PUBLISHED for Bluesky item', bskyStatusText?.toLowerCase().includes('published'))
+  const bskyStatusText = await page.textContent(
+    `[data-testid="item-status-${blueskyQueueItem.id}"]`,
+  )
+  check(
+    'UI displays PUBLISHED for Bluesky item',
+    bskyStatusText?.toLowerCase().includes('published'),
+  )
 
-  const bskyModePill = await page.textContent(`[data-testid="provider-mode-pill-${blueskyQueueItem.id}"]`)
-  check('UI displays local-harness pill for Bluesky receipt', bskyModePill?.toLowerCase().includes('local-harness'))
+  const bskyModePill = await page.textContent(
+    `[data-testid="provider-mode-pill-${blueskyQueueItem.id}"]`,
+  )
+  check(
+    'UI displays local-harness pill for Bluesky receipt',
+    bskyModePill?.toLowerCase().includes('local-harness'),
+  )
 
   // Verify ActivityPub item shows FAILED badge and error message
-  const actPubStatusText = await page.textContent(`[data-testid="item-status-${actPubQueueItem.id}"]`)
-  check('UI displays FAILED for ActivityPub item', actPubStatusText?.toLowerCase().includes('failed'))
+  const actPubStatusText = await page.textContent(
+    `[data-testid="item-status-${actPubQueueItem.id}"]`,
+  )
+  check(
+    'UI displays FAILED for ActivityPub item',
+    actPubStatusText?.toLowerCase().includes('failed'),
+  )
 
   const actPubErrorText = await page.textContent(`[data-testid="item-error-${actPubQueueItem.id}"]`)
   check(
@@ -665,7 +708,10 @@ try {
     depth: 0,
     overrideAccess: true,
   })
-  check('DB Draft 1 status updated to partially-published', dbDraft1.status === 'partially-published')
+  check(
+    'DB Draft 1 status updated to partially-published',
+    dbDraft1.status === 'partially-published',
+  )
 
   const dbBlueskyItem = await payload.findByID({
     collection: 'social-queue-items',
@@ -706,8 +752,12 @@ try {
     overrideAccess: true,
   })
   check('DB logged 2 publish attempts', attempts.docs.length === 2)
-  const bskyAttempt = attempts.docs.find((a: any) => String(a.queueItem) === String(blueskyQueueItem.id))
-  const actPubAttempt = attempts.docs.find((a: any) => String(a.queueItem) === String(actPubQueueItem.id))
+  const bskyAttempt = attempts.docs.find(
+    (a: any) => String(a.queueItem) === String(blueskyQueueItem.id),
+  )
+  const actPubAttempt = attempts.docs.find(
+    (a: any) => String(a.queueItem) === String(actPubQueueItem.id),
+  )
   check(
     'Bluesky attempt status is published',
     bskyAttempt?.status === 'published' || bskyAttempt?.status === 'succeeded',
@@ -802,8 +852,20 @@ try {
     201,
   )
   const draft2Id = createDraft2.json().draft.id
-  await api('/api/admin/social/drafts', 'POST', { action: 'submit-review', draftId: draft2Id }, staffCookie, 200)
-  await api('/api/admin/social/drafts', 'POST', { action: 'approve', draftId: draft2Id }, ownCookie, 200)
+  await api(
+    '/api/admin/social/drafts',
+    'POST',
+    { action: 'submit-review', draftId: draft2Id },
+    staffCookie,
+    200,
+  )
+  await api(
+    '/api/admin/social/drafts',
+    'POST',
+    { action: 'approve', draftId: draft2Id },
+    ownCookie,
+    200,
+  )
   const schedDraft2 = await api(
     '/api/admin/social/drafts',
     'POST',
@@ -903,8 +965,20 @@ try {
     201,
   )
   const draft3Id = createDraft3.json().draft.id
-  await api('/api/admin/social/drafts', 'POST', { action: 'submit-review', draftId: draft3Id }, staffCookie, 200)
-  await api('/api/admin/social/drafts', 'POST', { action: 'approve', draftId: draft3Id }, ownCookie, 200)
+  await api(
+    '/api/admin/social/drafts',
+    'POST',
+    { action: 'submit-review', draftId: draft3Id },
+    staffCookie,
+    200,
+  )
+  await api(
+    '/api/admin/social/drafts',
+    'POST',
+    { action: 'approve', draftId: draft3Id },
+    ownCookie,
+    200,
+  )
   const schedDraft3 = await api(
     '/api/admin/social/drafts',
     'POST',

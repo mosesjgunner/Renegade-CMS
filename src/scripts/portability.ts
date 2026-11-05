@@ -164,8 +164,7 @@ if (command === 'export') {
     for (const name of fields) {
       const value = out[name]
       if (typeof value === 'string') out[name] = null
-      else if (Array.isArray(value))
-        out[name] = value.filter((item) => typeof item !== 'string')
+      else if (Array.isArray(value)) out[name] = value.filter((item) => typeof item !== 'string')
     }
     return out
   }
