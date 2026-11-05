@@ -1,0 +1,22 @@
+[
+  {
+    "name": "production runner image built from clean candidate 7e8abe4368b3c26d25237bae9a0a2cfeb13d7974",
+    "passed": true
+  },
+  {
+    "name": "media-heavy target built from the same Dockerfile",
+    "passed": true
+  },
+  {
+    "name": "image default user is unprivileged nextjs (uid=1001(nextjs) gid=65533(nogroup) groups=65533(nogroup),65533(nogroup))",
+    "passed": true
+  },
+  {
+    "name": "required packaged files present (standalone server, static, public, src, docker, provenance)",
+    "passed": true
+  },
+  {
+    "name": "embedded root+standalone provenance agree and match the shipped lockfile hash",
+    "passed": true
+  }
+]

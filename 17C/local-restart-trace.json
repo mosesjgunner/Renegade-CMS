@@ -1,0 +1,22 @@
+[
+  {
+    "name": "web process reports ready again after restart",
+    "passed": true
+  },
+  {
+    "name": "pre-restart owner session still authenticates after restart",
+    "passed": true
+  },
+  {
+    "name": "persistent media bytes are unchanged after restart",
+    "passed": true
+  },
+  {
+    "name": "runtime configuration unchanged after restart (floor registration identical)",
+    "passed": true
+  },
+  {
+    "name": "job queued before the restart (delayed 75s) completes afterwards — queue state not lost",
+    "passed": true
+  }
+]

@@ -1,0 +1,79 @@
+{
+  "user": {
+    "uid": 1001,
+    "gid": 65533
+  },
+  "files": {
+    "standalone/server.js": true,
+    "build-provenance.json": true,
+    "standalone/build-provenance.json": true,
+    "package.json": true,
+    "package-lock.json": true,
+    "next.config.ts": true,
+    "tsconfig.json": true,
+    "src/payload.config.ts": true,
+    "docker/worker-healthcheck.mjs": true,
+    "docker/install-runtime-esbuild.mjs": true,
+    "esbuild-build.txt": true,
+    "node_modules/next/package.json": true,
+    "node_modules/payload/package.json": true,
+    "node_modules/tsx/package.json": true,
+    "standalone/.next/static": true,
+    "standalone/public": true,
+    "src": true,
+    "theme-packages": true
+  },
+  "provenance": {
+    "root": {
+      "sourceSha": "7e8abe4368b3c26d25237bae9a0a2cfeb13d7974",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "1b4181a54c92e751d29d4cc4547d488e847cab3db59d26b624ae810b57b521cd"
+    },
+    "standalone": {
+      "sourceSha": "7e8abe4368b3c26d25237bae9a0a2cfeb13d7974",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "1b4181a54c92e751d29d4cc4547d488e847cab3db59d26b624ae810b57b521cd"
+    },
+    "lockfileSha256": "1b4181a54c92e751d29d4cc4547d488e847cab3db59d26b624ae810b57b521cd",
+    "lockfileMatches": true
+  },
+  "sourceComparison": {
+    "compared": 968,
+    "mismatches": [
+      {
+        "path": "tsconfig.json",
+        "mismatch": true
+      }
+    ],
+    "mismatchCount": 1
+  },
+  "dependencies": {
+    "graphPackageCount": 609,
+    "topLevelCount": 355,
+    "forbiddenPresent": [],
+    "requiredProductionTooling": [
+      {
+        "name": "prettier",
+        "version": "3.6.2",
+        "requiredBy": "payload > json-schema-to-typescript"
+      }
+    ],
+    "hasNext": true,
+    "hasPayload": true,
+    "hasTsx": true
+  },
+  "secrets": {
+    "hitCount": 0,
+    "hitPaths": [],
+    "knownPublicFixtures": [
+      {
+        "path": "standalone/.next/server/chunks/ssr/[root-of-the-server]__0du9w207x5g2_._.js",
+        "package": "happy-dom@20.11.2",
+        "sha256": "7f7f8c83ded111336dca167452776b8b6c35e4223882103df5edeb55875a2d41"
+      }
+    ],
+    "envFiles": []
+  }
+}
