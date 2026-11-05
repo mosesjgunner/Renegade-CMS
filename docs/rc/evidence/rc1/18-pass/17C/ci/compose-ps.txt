@@ -1,0 +1,5 @@
+NAME                          IMAGE                         COMMAND                  SERVICE           CREATED          STATUS                    PORTS
+rc117c-ci-media-heavy-1       renegade-cms-media-heavy:ci   "docker-entrypoint.s…"   media-heavy       25 seconds ago   Up 10 seconds             3000/tcp
+rc117c-ci-postgres-1          postgres:17.6-alpine          "docker-entrypoint.s…"   postgres          32 seconds ago   Up 24 seconds (healthy)   5432/tcp
+rc117c-ci-renegade-web-1      renegade-cms:ci               "docker-entrypoint.s…"   renegade-web      25 seconds ago   Up 10 seconds (healthy)   127.0.0.1:3000->3000/tcp
+rc117c-ci-renegade-worker-1   renegade-cms:ci               "docker-entrypoint.s…"   renegade-worker   25 seconds ago   Up 10 seconds (healthy)   3000/tcp

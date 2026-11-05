@@ -1,3 +1,11 @@
+# RC1 17C — CLOSED (2026-11-04)
+
+17C is **PASS**; see the final determination at the top of RESULT.md (GitHub Actions run 41923067257 on main `3b6911e`: harness 30/30, Compose proof success). The historical handoff below is superseded and kept for the record only.
+
+Next in RC1: **Pass 18** (18A reconciliation first). Known 18A inputs: the duplicate 17A execution (Matthew's `a8c0f81` is canonical), the 15C proof gap, CI run #174's undiagnosed verify failure, the remaining stale NOT READY rows (09D, 14A), the R-05C derivative-variant regeneration gap, and the R-03D `originalDoc` editorial-derivation quirk. Pass 18's independence handling (Codex sign-off vs labeled builder-run) is Matthew's call, still open.
+
+---
+
 # RC1 17C → 17D handoff (cold pickup)
 
 ## Current continuation — 17C remains NOT READY

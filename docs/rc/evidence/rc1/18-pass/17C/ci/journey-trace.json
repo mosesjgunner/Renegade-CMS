@@ -1,0 +1,42 @@
+[
+  {
+    "name": "rc117ca: migration service (image CLI) exits 0 on the disposable database",
+    "passed": true
+  },
+  {
+    "name": "rc117ca: production web container reports ready over HTTP",
+    "passed": true
+  },
+  {
+    "name": "floor registration: sites/users/media-assets/payload-jobs present; commerce+newsletter collections absent",
+    "passed": true
+  },
+  {
+    "name": "anonymous media upload is refused (not 201)",
+    "passed": true
+  },
+  {
+    "name": "staff scoped to site Alpha cannot upload into site Beta (403)",
+    "passed": true
+  },
+  {
+    "name": "owner uploads media over HTTP into site Alpha (201)",
+    "passed": true
+  },
+  {
+    "name": "uploaded media serves back byte-identical (sha256 recorded)",
+    "passed": true
+  },
+  {
+    "name": "separate worker container drains a durable operations-heartbeat job to completion",
+    "passed": true
+  },
+  {
+    "name": "operational CLI inside the image reports migration status (exit 0)",
+    "passed": true
+  },
+  {
+    "name": "worker healthcheck passes against the live heartbeat file",
+    "passed": true
+  }
+]
