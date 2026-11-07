@@ -1,0 +1,41 @@
+[
+  {
+    "name": "J anonymous rendering metadata schema discovery search and original bytes",
+    "passed": true,
+    "detail": {
+      "outputs": [
+        {
+          "path": "/sitemap.xml",
+          "status": 200
+        },
+        {
+          "path": "/sitemaps/1.xml",
+          "status": 200
+        },
+        {
+          "path": "/robots.txt",
+          "status": 200
+        },
+        {
+          "path": "/feed.xml",
+          "status": 200
+        },
+        {
+          "path": "/search?q=Golden%20otter%20semaphore",
+          "status": 200
+        }
+      ],
+      "mediaSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "mediaBytes": 73970
+    }
+  },
+  {
+    "name": "K supported slug edit creates durable 308 redirect",
+    "passed": true,
+    "detail": {
+      "from": "/articles/independent-18c",
+      "to": "/articles/independent-18c-renamed",
+      "redirect": 308
+    }
+  }
+]

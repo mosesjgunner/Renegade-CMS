@@ -1,0 +1,92 @@
+[
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs setup",
+    "startedAt": "2026-11-06T02:04:32.571Z",
+    "finishedAt": "2026-11-06T02:05:25.714Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs core",
+    "startedAt": "2026-11-06T02:05:25.726Z",
+    "finishedAt": "2026-11-06T02:06:16.701Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs identity",
+    "startedAt": "2026-11-06T02:06:16.703Z",
+    "finishedAt": "2026-11-06T02:06:40.052Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs publish",
+    "startedAt": "2026-11-06T02:06:40.053Z",
+    "finishedAt": "2026-11-06T02:06:49.473Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs public",
+    "startedAt": "2026-11-06T02:06:49.474Z",
+    "finishedAt": "2026-11-06T02:06:53.469Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs schedule",
+    "startedAt": "2026-11-06T02:06:53.470Z",
+    "finishedAt": "2026-11-06T02:07:27.684Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs audience",
+    "startedAt": "2026-11-06T02:07:27.685Z",
+    "finishedAt": "2026-11-06T02:07:35.558Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs community",
+    "startedAt": "2026-11-06T02:07:35.559Z",
+    "finishedAt": "2026-11-06T02:07:38.957Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs commerce",
+    "startedAt": "2026-11-06T02:07:38.958Z",
+    "finishedAt": "2026-11-06T02:07:57.096Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-local",
+    "startedAt": "2026-11-06T02:07:57.098Z",
+    "finishedAt": "2026-11-06T02:09:42.876Z",
+    "exit": 1
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-editorial",
+    "startedAt": "2026-11-06T02:13:02.053Z",
+    "finishedAt": "2026-11-06T02:13:15.121Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs experiences",
+    "startedAt": "2026-11-06T02:13:15.125Z",
+    "finishedAt": "2026-11-06T02:13:38.632Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs release",
+    "startedAt": "2026-11-06T02:13:38.634Z",
+    "finishedAt": "2026-11-06T02:15:53.494Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs network-local",
+    "startedAt": "2026-11-06T02:15:53.497Z",
+    "finishedAt": "2026-11-06T02:17:12.127Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs social-local",
+    "startedAt": "2026-11-06T02:17:12.131Z",
+    "finishedAt": "2026-11-06T02:17:14.981Z",
+    "exit": 1
+  }
+]

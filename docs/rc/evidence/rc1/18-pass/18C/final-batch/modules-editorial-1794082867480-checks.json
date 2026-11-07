@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: /api/books: 400 {\"errors\":[{\"message\":\"The following field is invalid: Slug\"}]}",
+    "profile": "Lean-all"
+  }
+]

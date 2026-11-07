@@ -3,6 +3,7 @@ import { NetworkKeyManager } from './key-management'
 import { safeFetch } from '../core/external-boundary'
 import { digestForBody } from '../social/activitypub'
 import { withExecutionLock } from '../operations/execution-lock'
+import { isConfiguredLocalPeer } from './local-peer'
 
 const MAX_ATTEMPTS = 3
 const keyManager = () => {
@@ -89,7 +90,13 @@ export const networkDeliveryTask = {
               signature: `keyId="${signed.keyId}",algorithm="${signed.algorithm}",headers="(request-target) host date digest",signature="${signed.signature}"`,
             },
           },
-          { allowPrivate: process.env.NETWORK_ALLOW_PRIVATE_DEVELOPMENT === 'true', retries: 0 },
+          {
+            allowPrivate:
+              process.env.NETWORK_ALLOW_PRIVATE_DEVELOPMENT === 'true' ||
+              isConfiguredLocalPeer(delivery.target),
+            maxRedirects: 0,
+            retries: 0,
+          },
         )
         if (!response.ok) throw new Error(`Remote inbox returned ${response.status}.`)
         await req.payload.create({

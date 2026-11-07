@@ -1,0 +1,61 @@
+[
+  {
+    "name": "P operator inspects actual analytics health and bounded provider truth",
+    "passed": true,
+    "detail": {
+      "analyticsCount": 4,
+      "orderCount": 1,
+      "paymentProviders": [
+        {
+          "providerKey": "deterministic-test",
+          "ready": true,
+          "health": "healthy"
+        }
+      ],
+      "aiConnections": 0,
+      "ready": true
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Q actual web and worker restart retains workflows without duplicate side effects",
+    "passed": true,
+    "detail": {
+      "before": {
+        "externalPosts": "1",
+        "publishedSocialDrafts": "1",
+        "deliveredNetwork": "1",
+        "completedReleases": "1",
+        "triagedForms": "2",
+        "orders": "1",
+        "delivery": "accepted",
+        "schedule": "published",
+        "posts": "2"
+      },
+      "after": {
+        "externalPosts": "1",
+        "publishedSocialDrafts": "1",
+        "deliveredNetwork": "1",
+        "completedReleases": "1",
+        "triagedForms": "2",
+        "orders": "1",
+        "delivery": "accepted",
+        "schedule": "published",
+        "posts": "2"
+      },
+      "ready": true,
+      "localConfirmationCopies": 1
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "R logout then passkey login from an entirely new clean browser context",
+    "passed": true,
+    "detail": {
+      "initiallyNoOperatorCookie": true,
+      "realWebAuthn": true,
+      "authenticatedAdmin": true
+    },
+    "profile": "Standard/all"
+  }
+]

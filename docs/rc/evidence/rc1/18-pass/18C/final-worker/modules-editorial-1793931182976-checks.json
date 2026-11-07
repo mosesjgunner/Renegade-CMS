@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+    "passed": true,
+    "detail": {
+      "book": "caabb18d-bcc2-4d3e-8e28-2775c4945453",
+      "chapter": "36469754-2ffd-448f-b2f9-8d0b8c7e25da",
+      "canonicalPath": "/books/18c-handbook",
+      "publicStatus": 200
+    }
+  },
+  {
+    "name": "Enabled collaboration module canonical checkpoint emits durable event and rejects stale revision",
+    "passed": true,
+    "detail": {
+      "content": "b0f9ddc8-fe41-49c2-95f8-2e9508e5902b",
+      "companion": "be465891-aa93-47aa-b7f0-29a3b853c651",
+      "revision": "fc23d0d5-d2aa-4740-a276-f01bed58afcf",
+      "emittedEvents": 1,
+      "staleRevisionDenied": 409
+    }
+  }
+]

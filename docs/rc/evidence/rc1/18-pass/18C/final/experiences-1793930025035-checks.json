@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\nfalse !== true\n"
+  }
+]

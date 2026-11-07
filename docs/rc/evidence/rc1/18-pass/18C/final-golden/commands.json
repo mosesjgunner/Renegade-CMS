@@ -1,0 +1,116 @@
+[
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs setup",
+    "startedAt": "2026-11-07T20:26:41.108Z",
+    "finishedAt": "2026-11-07T20:26:55.375Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs core",
+    "startedAt": "2026-11-07T20:26:55.377Z",
+    "finishedAt": "2026-11-07T20:27:04.112Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs identity",
+    "startedAt": "2026-11-07T20:27:04.113Z",
+    "finishedAt": "2026-11-07T20:27:23.379Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs publish",
+    "startedAt": "2026-11-07T20:27:23.380Z",
+    "finishedAt": "2026-11-07T20:27:33.764Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs public",
+    "startedAt": "2026-11-07T20:27:33.765Z",
+    "finishedAt": "2026-11-07T20:27:37.738Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs schedule",
+    "startedAt": "2026-11-07T20:27:37.739Z",
+    "finishedAt": "2026-11-07T20:28:09.209Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs audience",
+    "startedAt": "2026-11-07T20:28:09.210Z",
+    "finishedAt": "2026-11-07T20:28:18.094Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs community",
+    "startedAt": "2026-11-07T20:28:18.095Z",
+    "finishedAt": "2026-11-07T20:28:21.847Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs commerce",
+    "startedAt": "2026-11-07T20:28:21.848Z",
+    "finishedAt": "2026-11-07T20:28:39.497Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-local",
+    "startedAt": "2026-11-07T20:28:39.498Z",
+    "finishedAt": "2026-11-07T20:29:12.979Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-editorial",
+    "startedAt": "2026-11-07T20:29:12.980Z",
+    "finishedAt": "2026-11-07T20:29:17.102Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs experiences",
+    "startedAt": "2026-11-07T20:29:17.103Z",
+    "finishedAt": "2026-11-07T20:29:22.957Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs release",
+    "startedAt": "2026-11-07T20:29:22.958Z",
+    "finishedAt": "2026-11-07T20:29:52.649Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs network-local",
+    "startedAt": "2026-11-07T20:29:52.650Z",
+    "finishedAt": "2026-11-07T20:30:00.829Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs social-local",
+    "startedAt": "2026-11-07T20:30:00.830Z",
+    "finishedAt": "2026-11-07T20:30:22.059Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs audit-negative",
+    "startedAt": "2026-11-07T20:30:22.060Z",
+    "finishedAt": "2026-11-07T20:30:24.918Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs audit-positive",
+    "startedAt": "2026-11-07T20:30:24.919Z",
+    "finishedAt": "2026-11-07T20:30:28.819Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs operations",
+    "startedAt": "2026-11-07T20:30:28.819Z",
+    "finishedAt": "2026-11-07T20:31:02.556Z",
+    "exit": 0
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true RC118C_FINAL=true node tests/rc1-18c/journey.mjs recovery",
+    "startedAt": "2026-11-07T20:31:02.557Z",
+    "finishedAt": "2026-11-07T20:31:14.957Z",
+    "exit": 0
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Owner creates a second isolated site through supported native REST",
+    "passed": true,
+    "detail": {
+      "site": "d19f7e20-f86f-4722-9347-1ba0eae18a69",
+      "persisted": "18C Foreign Site"
+    }
+  },
+  {
+    "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+    "passed": false,
+    "error": "TimeoutError: page.waitForResponse: Timeout 60000ms exceeded while waiting for event \"response\""
+  }
+]

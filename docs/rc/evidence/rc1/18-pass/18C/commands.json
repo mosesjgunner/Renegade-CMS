@@ -1,0 +1,82 @@
+[
+  {
+    "command": "docker build --target runner --build-arg BUILD_SHA=7e8abe4368b3c26d25237bae9a0a2cfeb13d7974 --iidfile scratch/rc118c/batch-shipping-image-id.txt -t renegade-cms:rc118c-batch-shipping-20261107 .",
+    "exit": 0,
+    "log": "final-golden/validation/image-build.log"
+  },
+  {
+    "command": "npx.cmd prettier --check compose.production.yaml src/app/(frontend)/api/admin/discovery/audit/route.ts src/modules/network/local-peer.ts src/modules/network/safe-fetch.ts src/modules/network/tasks.ts src/scripts/run-jobs-worker.ts tests/unit/discovery-audit-site-access.test.ts tests/unit/network-local-peer.test.ts tests/rc1-18c/*.mjs",
+    "exit": 0,
+    "log": "final-golden/validation/format.log"
+  },
+  {
+    "command": "npm.cmd run lint",
+    "exit": 0,
+    "log": "final-golden/validation/lint.log"
+  },
+  {
+    "command": "npm.cmd run typecheck",
+    "exit": 0,
+    "log": "final-golden/validation/types.log"
+  },
+  {
+    "command": "npm.cmd test",
+    "exit": 0,
+    "log": "final-golden/validation/units.log"
+  },
+  {
+    "command": "docker exec rc118cfinalb20261105-renegade-web-1 npm ls --all --omit=dev",
+    "exit": 0,
+    "log": "final-golden/validation/dependencies.log"
+  },
+  {
+    "command": "node tests/rc1-18c/queue-probe.mjs renegade-cms:rc118c-batch-shipping-20261107",
+    "exit": 0,
+    "log": "final-golden/validation/queue-regression.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/stack.mjs up",
+    "exit": 0,
+    "log": "final-golden/validation/boot.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/run.mjs",
+    "exit": 0,
+    "log": "final-golden/validation/journey.log"
+  },
+  {
+    "command": "RC118C_BATCH_REPAIRED=true node tests/rc1-18c/profiles.mjs Lean-all modules-editorial",
+    "exit": 0,
+    "log": "final-golden/validation/profiles-resume.log"
+  },
+  {
+    "command": "RC118C_BATCH_REPAIRED=true RC118C_PROFILE_CORE_ONLY=true node tests/rc1-18c/profiles.mjs",
+    "exit": 0,
+    "log": "final-golden/validation/profiles-core.log"
+  },
+  {
+    "command": "RC118C_BATCH_REPAIRED=true RC118C_PROFILE_EXTRA_ONLY=true node tests/rc1-18c/profiles.mjs Lean-all",
+    "exit": 0,
+    "log": "final-golden/validation/profiles-lean-business.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/recovery.mjs backup",
+    "exit": 0,
+    "log": "final-golden/validation/backup.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/recovery.mjs restore",
+    "exit": 0,
+    "log": "final-golden/validation/restore.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/journey.mjs restored",
+    "exit": 0,
+    "log": "final-golden/validation/restored-browser.log"
+  },
+  {
+    "command": "RC118C_GOLDEN_REPLAY=true node tests/rc1-18c/guards.mjs",
+    "exit": 0,
+    "log": "final-golden/validation/restore-guards.log"
+  }
+]

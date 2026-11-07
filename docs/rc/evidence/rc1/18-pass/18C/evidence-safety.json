@@ -1,0 +1,10 @@
+{
+  "passed": true,
+  "exportedEntriesChecked": 3245,
+  "credentialPatternsFound": 0,
+  "privateValuesChecked": 43,
+  "rawTracesRetainedPrivately": true,
+  "maskedScreenshotsManuallyInspected": [
+    "final-batch/setup-1794082413224-3.png"
+  ]
+}

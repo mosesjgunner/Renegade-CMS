@@ -1,0 +1,22 @@
+[
+  {
+    "name": "N ordinary member email sign-in and operator forum creation",
+    "passed": true,
+    "detail": {
+      "member": "49fc120a-7808-46ec-a088-bd32b070f5ee",
+      "forum": "8c13210f-bfc4-4597-be9e-e99dd0da6304",
+      "localEmailSignIn": true
+    }
+  },
+  {
+    "name": "N member thread reply moderation and notification path persist",
+    "passed": true,
+    "detail": {
+      "discussion": "50c1276d-9fbd-43db-aade-698bc4cac249",
+      "reply": "ad1d5209-f6a9-4283-8370-d48c2173afaf",
+      "moderationState": "removed",
+      "deniedMember": 403,
+      "notifications": 1
+    }
+  }
+]

@@ -1,0 +1,59 @@
+[
+  {
+    "name": "Enabled events module native action renders event and iCalendar output",
+    "passed": true,
+    "detail": {
+      "event": "a27954ff-02d8-4022-aa5a-ae95408b756f",
+      "canonicalPath": "/events/18c-reader-assembly",
+      "publicStatus": 200,
+      "icsStatus": 200
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+    "passed": true,
+    "detail": {
+      "source": "2db349af-eca4-4dcf-8c45-6f57ebd0bf78",
+      "article": "cc5b4b08-a941-4f5e-95c3-1e7cc75bbc47",
+      "persistedReference": true
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+    "passed": true,
+    "detail": {
+      "form": "7b66f516-d664-4645-a9c5-8d9d01518c84",
+      "submission": "55e19ea2-a6cb-4a22-8e2a-d61533ab6fbc",
+      "persistedStatus": "triaged",
+      "contacts": 1,
+      "actions": [
+        {
+          "type": "create-contact",
+          "status": "completed",
+          "resultId": "a8928179-3275-48e7-b820-f2ebd957236f"
+        },
+        {
+          "type": "create-task",
+          "status": "completed",
+          "resultId": "bc0e111f-f681-4919-93fe-a093146d9689"
+        }
+      ],
+      "invalidAnswersDenied": 422
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Enabled integrations module issues rotates and revokes a scoped machine credential",
+    "passed": true,
+    "detail": {
+      "client": "bfc56ac4-f84f-46ad-8d9e-adca527ac423",
+      "rotated": true,
+      "revoked": true,
+      "foreignSiteDenied": 403,
+      "tokenValues": "[withheld]"
+    },
+    "profile": "Standard/all"
+  }
+]

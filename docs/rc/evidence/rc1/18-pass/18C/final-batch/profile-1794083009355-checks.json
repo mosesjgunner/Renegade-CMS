@@ -1,0 +1,28 @@
+[
+  {
+    "name": "Profile federation boundary follows production resource policy",
+    "passed": true,
+    "detail": {
+      "profile": "Standard-all",
+      "actorStatus": 200,
+      "networkingEnabled": true,
+      "pendingOrCompletedNetworkRecordsPreserved": "1"
+    },
+    "profile": "Standard-all"
+  },
+  {
+    "name": "Profile core publishing persists through separate review and public rendering",
+    "passed": true,
+    "detail": {
+      "profile": "Standard-all",
+      "article": "056cb95f-0982-47df-8e42-42f9e365fa9b",
+      "canonicalPath": "/articles/18c-profile-standard-all",
+      "persisted": "published",
+      "publicStatus": 200,
+      "selfApproval": 403,
+      "foreignSite": 403,
+      "anonymousOperator": 403
+    },
+    "profile": "Standard-all"
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "J anonymous rendering metadata schema discovery search and original bytes",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: /sitemap.xml contains the published article"
+  }
+]

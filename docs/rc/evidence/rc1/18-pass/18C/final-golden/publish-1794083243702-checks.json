@@ -1,0 +1,28 @@
+[
+  {
+    "name": "I draft preview renders and anonymous publication is denied",
+    "passed": true,
+    "detail": {
+      "previewRendered": true,
+      "anonymousApprovalStatus": 403
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "I separate staff review approves owner drafts and owner publishes",
+    "passed": true,
+    "detail": [
+      {
+        "id": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+        "status": "published",
+        "selfApprovalDenied": 403
+      },
+      {
+        "id": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+        "status": "published",
+        "selfApprovalDenied": 403
+      }
+    ],
+    "profile": "Standard/all"
+  }
+]

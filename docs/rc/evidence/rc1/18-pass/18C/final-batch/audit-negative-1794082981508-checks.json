@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Foreign-site rendered quality audit is denied before findings can persist",
+    "passed": true,
+    "detail": {
+      "status": 403,
+      "before": "0",
+      "after": "0"
+    },
+    "profile": "Lean-all"
+  }
+]

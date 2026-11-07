@@ -1,0 +1,7 @@
+[
+  {
+    "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'accepted' !== 'sent'\n"
+  }
+]

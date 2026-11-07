@@ -1,0 +1,26 @@
+{
+  "inbox": [
+    {
+      "body": {
+        "id": "https://rc118c.example.test:3443/ap/actors/main#accept-https%3A%2F%2F127.0.0.1%3A3450%2Factor%23follow-18c",
+        "type": "Accept",
+        "actor": "https://rc118c.example.test:3443/ap/actors/main",
+        "object": {
+          "id": "https://127.0.0.1:3450/actor#follow-18c",
+          "type": "Follow",
+          "actor": "https://127.0.0.1:3450/actor",
+          "object": "https://rc118c.example.test:3443/ap/actors/main"
+        },
+        "@context": "https://www.w3.org/ns/activitystreams"
+      },
+      "verified": true
+    }
+  ],
+  "recordCount": 0,
+  "calls": {
+    "/send": 3,
+    "/actor": 3,
+    "/stats": 55,
+    "/inbox": 1
+  }
+}

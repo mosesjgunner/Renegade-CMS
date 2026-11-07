@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Enabled network module: independent local peer signed Follow and actual signed Accept",
+    "passed": true,
+    "detail": {
+      "localOnly": true,
+      "badSignature": 401,
+      "follow": 202,
+      "replay": 202,
+      "relationships": 1,
+      "signedAcceptCopies": 1,
+      "delivered": 1
+    }
+  }
+]

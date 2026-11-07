@@ -1,0 +1,88 @@
+[
+  {
+    "name": "S shipped backup restored complete critical records into independent project",
+    "passed": true,
+    "detail": {
+      "criticalTables": [
+        {
+          "table": "sites",
+          "countAndContentHash": "2:d4463a7cb92496a280a645b8afc468e6"
+        },
+        {
+          "table": "publications",
+          "countAndContentHash": "3:8eb74685a2a2cae88c3913addada15f0"
+        },
+        {
+          "table": "content",
+          "countAndContentHash": "3:92a68da80c99254212286ce874a9e4f9"
+        },
+        {
+          "table": "categories",
+          "countAndContentHash": "1:4e91cc21a4aceb39a31956fabe39d760"
+        },
+        {
+          "table": "authors",
+          "countAndContentHash": "1:7c7f881b60cf33ead851b003bdc7f832"
+        },
+        {
+          "table": "media_assets",
+          "countAndContentHash": "1:c5189483cdb3ecdeac5d78f4192e221f"
+        },
+        {
+          "table": "media_blobs",
+          "countAndContentHash": "21:dde3f9bca0dfbd24972e9d57fa20c107"
+        },
+        {
+          "table": "products",
+          "countAndContentHash": "1:5dffebd688c0c0379c1e9b2f09334496"
+        },
+        {
+          "table": "orders",
+          "countAndContentHash": "1:cfd2b46c434297dd43c8716577aee39f"
+        },
+        {
+          "table": "discussions",
+          "countAndContentHash": "1:55c538ed0793e13a43f700ce4b31de31"
+        },
+        {
+          "table": "discussion_posts",
+          "countAndContentHash": "2:cece11968331785eeff8417221f84d48"
+        },
+        {
+          "table": "subscribers",
+          "countAndContentHash": "2:e4744fef5b5ec5bd60e85b77b4666f97"
+        },
+        {
+          "table": "consent_events",
+          "countAndContentHash": "4:00fa958586dcbc37dc2659a800afefd7"
+        },
+        {
+          "table": "email_deliveries",
+          "countAndContentHash": "3:0e1c544664e76e2999f5f6f377179659"
+        }
+      ],
+      "independentProject": "rc118crestore20261105",
+      "freshSecrets": true,
+      "migrations": "131"
+    }
+  },
+  {
+    "name": "S fresh browser authenticates to restored environment with source-enrolled passkey",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "sourceEnrolledCredential": true,
+      "restoredOrderReadable": true
+    }
+  },
+  {
+    "name": "T restored public article community and original media byte equality",
+    "passed": true,
+    "detail": {
+      "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "restoredSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "bytes": 73970,
+      "publicPages": 3
+    }
+  }
+]

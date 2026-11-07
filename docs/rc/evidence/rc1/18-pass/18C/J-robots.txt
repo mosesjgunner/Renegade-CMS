@@ -1,0 +1,12 @@
+User-Agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /preview
+Disallow: /setup
+Disallow: /guided-setup
+Disallow: /builder
+Disallow: /internal
+Disallow: /private
+
+Sitemap: https://rc118c.example.test:3443/sitemap.xml

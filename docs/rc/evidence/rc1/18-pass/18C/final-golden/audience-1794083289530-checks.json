@@ -1,0 +1,15 @@
+[
+  {
+    "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+    "passed": true,
+    "detail": {
+      "requested": 202,
+      "subscriberStatus": "active",
+      "delivery": "fe8496d7-8bd2-461a-ad20-c0e827cb7b9e",
+      "deliveryStatus": "accepted",
+      "localSinkMessage": "4ay429VvMfYWK4xtRGzg2P",
+      "confirmationReplayDenied": 400
+    },
+    "profile": "Standard/all"
+  }
+]

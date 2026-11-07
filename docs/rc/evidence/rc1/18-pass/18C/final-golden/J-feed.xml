@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>18C Independent Journal</title>
+    <link>https://rc118c.example.test:3443</link>
+    <description>Independent browser acceptance of durable publishing.</description>
+    <language>en-US</language>
+    <atom:link href="https://rc118c.example.test:3443/feed.xml" rel="self" type="application/rss+xml"/>
+    <lastBuildDate>Sat, 07 Nov 2026 20:27:33 GMT</lastBuildDate>
+    <item>
+      <title>Independent Golden Journey 18C | Independent Journal</title>
+      <link>https://rc118c.example.test:3443/articles/independent-18c</link>
+      <guid isPermaLink="false">urn:renegade:content:cb19d858-a455-4eca-8590-c83a5ef1cb4b</guid>
+      <pubDate>Sat, 07 Nov 2026 20:27:33 GMT</pubDate>
+      <dc:creator>Independent Reporter</dc:creator>
+      <description><![CDATA[Golden otter semaphore 18C: every ordinary action must persist, render, and survive recovery.]]></description>
+    </item>
+  </channel>
+</rss>

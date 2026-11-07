@@ -1,0 +1,7 @@
+{
+  "image": "renegade-cms:rc118c-worker-repaired-20261105",
+  "before": "2",
+  "after": "2",
+  "container": "rc118c-disabled-queue-1793930473453",
+  "elapsedMs": 45000
+}

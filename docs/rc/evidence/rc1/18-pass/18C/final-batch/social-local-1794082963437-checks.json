@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+    "passed": true,
+    "detail": {
+      "localOnly": true,
+      "draft": "651f8c59-02f0-4257-98ae-acc79a4d2da4",
+      "status": "published",
+      "providerRecords": 2,
+      "externalPosts": 1
+    },
+    "profile": "Lean-all"
+  }
+]

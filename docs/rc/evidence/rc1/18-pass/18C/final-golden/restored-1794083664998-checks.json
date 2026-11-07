@@ -1,0 +1,159 @@
+[
+  {
+    "name": "S shipped backup restored complete critical records into independent project",
+    "passed": true,
+    "detail": {
+      "criticalTables": [
+        {
+          "table": "sites",
+          "countAndContentHash": "2:668ac360305fac9b64abbe9413fea443"
+        },
+        {
+          "table": "publications",
+          "countAndContentHash": "3:47cfc37e20b324d43cdc925ae9889717"
+        },
+        {
+          "table": "content",
+          "countAndContentHash": "4:ee7163d86744e2225eda02491ba4e234"
+        },
+        {
+          "table": "categories",
+          "countAndContentHash": "1:d9b29b314d36faf5944447d57781842e"
+        },
+        {
+          "table": "authors",
+          "countAndContentHash": "1:84ab7cdde11331bee1f69157af4d8805"
+        },
+        {
+          "table": "media_assets",
+          "countAndContentHash": "1:8728fbed5fdf032d5ff7348b9f760ef6"
+        },
+        {
+          "table": "media_blobs",
+          "countAndContentHash": "21:ee3794071f6fb6ca0974c87acc546de8"
+        },
+        {
+          "table": "products",
+          "countAndContentHash": "1:da6e7574933b8bb4f40a3627f2fa487e"
+        },
+        {
+          "table": "orders",
+          "countAndContentHash": "1:50382a4169270f5feb7e9ff00899b675"
+        },
+        {
+          "table": "discussions",
+          "countAndContentHash": "1:55052ad7e460edbd2ff7aab2cd0efa7d"
+        },
+        {
+          "table": "discussion_posts",
+          "countAndContentHash": "2:b6a83ab4d192c85c9dd5ac84d13d984c"
+        },
+        {
+          "table": "subscribers",
+          "countAndContentHash": "1:af3489bf3083ae9bbeb830048106f4d3"
+        },
+        {
+          "table": "consent_events",
+          "countAndContentHash": "2:bc3e8184eb04355485f4b62b44cdc9dd"
+        },
+        {
+          "table": "email_deliveries",
+          "countAndContentHash": "2:f41b5708fb2b84f0e26b4d88e6a265f1"
+        },
+        {
+          "table": "events",
+          "countAndContentHash": "1:64af70be18877d8604ca9670f4ba885e"
+        },
+        {
+          "table": "sources",
+          "countAndContentHash": "1:4fea4b9890176fcde2868c4ca226bef6"
+        },
+        {
+          "table": "books",
+          "countAndContentHash": "1:8a53a6e573f22f104aedf6dd4e60e7b2"
+        },
+        {
+          "table": "book_chapters",
+          "countAndContentHash": "1:a1115aee107f38ba462b9b632b9b7366"
+        },
+        {
+          "table": "form_definitions",
+          "countAndContentHash": "1:c601d7b38526f848bf3230a0e8e92cc8"
+        },
+        {
+          "table": "form_schemas",
+          "countAndContentHash": "1:b0a68655192e948d6e7086e87ee55145"
+        },
+        {
+          "table": "form_submissions",
+          "countAndContentHash": "2:c58a38b5a37e9510e4f3e430683b8c2e"
+        },
+        {
+          "table": "contacts",
+          "countAndContentHash": "2:8606132f6436cda6de04a31ceb6b1b44"
+        },
+        {
+          "table": "realtime_events",
+          "countAndContentHash": "5:1c17e9e798fa702a4a966c736ae38961"
+        },
+        {
+          "table": "experiments",
+          "countAndContentHash": "1:f0d865bde6cddd396bae73abf207156a"
+        },
+        {
+          "table": "experiment_variants",
+          "countAndContentHash": "2:912f0cd273fec3447d3be4846ff4d411"
+        },
+        {
+          "table": "content_releases",
+          "countAndContentHash": "1:09adb85f8686acb1fc9d91267b287ea9"
+        },
+        {
+          "table": "social_accounts",
+          "countAndContentHash": "2:7131107e7f73e827658f1d9312e8eeb6"
+        },
+        {
+          "table": "social_drafts",
+          "countAndContentHash": "1:10999582b465619ae505854daa0017d4"
+        },
+        {
+          "table": "external_posts",
+          "countAndContentHash": "1:8c1dad69c2573c1f5fa0dbf8d7b3804b"
+        },
+        {
+          "table": "network_relationships",
+          "countAndContentHash": "1:483fb5efb22ba17709c9b511e890d13e"
+        },
+        {
+          "table": "outbound_network_deliveries",
+          "countAndContentHash": "1:b40c12d69ff515f97d883fe0d19ffce9"
+        }
+      ],
+      "independentProject": "rc118cgoldenrestore20261107",
+      "freshSecrets": true,
+      "migrations": "131"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "S fresh browser authenticates to restored environment with source-enrolled passkey",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "sourceEnrolledCredential": true,
+      "restoredOrderReadable": true
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "T restored public article community and original media byte equality",
+    "passed": true,
+    "detail": {
+      "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "restoredSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "bytes": 73970,
+      "publicPages": 3
+    },
+    "profile": "Standard/all"
+  }
+]

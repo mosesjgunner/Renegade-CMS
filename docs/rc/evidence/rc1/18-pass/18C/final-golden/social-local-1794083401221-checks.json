@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Local social connection denies foreign and anonymous operators and persists failed credentials truthfully before retry",
+    "passed": true,
+    "detail": {
+      "foreignSite": 403,
+      "anonymous": 403,
+      "failedCredentialHealth": "revoked",
+      "capability": "unavailable",
+      "localPosts": 0,
+      "account": "f0c17e10-9b28-45fd-a275-ad93e8939d9d"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+    "passed": true,
+    "detail": {
+      "localOnly": true,
+      "draft": "11fa2eb9-26fe-479a-b50b-3b3076bfbe41",
+      "status": "published",
+      "providerRecords": 1,
+      "externalPosts": 1
+    },
+    "profile": "Standard/all"
+  }
+]

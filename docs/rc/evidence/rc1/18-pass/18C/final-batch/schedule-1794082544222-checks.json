@@ -1,0 +1,21 @@
+[
+  {
+    "name": "L supported scheduling executes through actual production worker",
+    "passed": true,
+    "detail": {
+      "article": "dcb92489-e3e9-4031-a131-795d721444ab",
+      "scheduled": {
+        "ok": true,
+        "scheduledForUtc": "2026-11-07T20:16:06.000Z",
+        "timeZone": "UTC",
+        "localFormatted": "2026-11-07 20:16:06 (UTC)",
+        "isDst": false,
+        "wasNonexistent": false,
+        "isAmbiguous": false
+      },
+      "staleSequenceDenied": 409,
+      "persistedStatus": "published"
+    },
+    "profile": "Standard/all"
+  }
+]

@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Missing isolation and authorization flags",
+    "passed": true,
+    "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0",
+    "expectedExit": "nonzero",
+    "exit": 1,
+    "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+    "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+  },
+  {
+    "name": "Non-isolated Compose target",
+    "passed": true,
+    "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file compose.production.yaml",
+    "expectedExit": "nonzero",
+    "exit": 1,
+    "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+    "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+  },
+  {
+    "name": "Running populated target",
+    "passed": true,
+    "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file scratch/rc118c-final-golden/isolated-restore-compose.yaml --env-file scratch/rc118c-final-golden/restore.env",
+    "expectedExit": "nonzero",
+    "exit": 1,
+    "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+    "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+  }
+]

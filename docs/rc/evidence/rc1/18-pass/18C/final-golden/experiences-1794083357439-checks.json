@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+    "passed": true,
+    "detail": {
+      "experiment": "7c1392d8-30d1-4093-8b8b-d6ff82378a82",
+      "selectedVariant": "acbc1e92-1b61-4e22-8bdc-3068d3f0c669",
+      "canonicalSubmission": "f619bf28-7872-47e7-812c-27e811d73f9f",
+      "exposure": 201,
+      "conversion": 201,
+      "winnerAndRollbackPersisted": true,
+      "eventCount": 4
+    },
+    "profile": "Standard/all"
+  }
+]

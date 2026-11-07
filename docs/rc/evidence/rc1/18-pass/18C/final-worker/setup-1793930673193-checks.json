@@ -1,0 +1,45 @@
+[
+  {
+    "name": "A production Standard/all boot with test authentication disabled",
+    "passed": true,
+    "detail": {
+      "image": "sha256:8ccd206d4de36d69cbafdfb74143f97d5879d97210491193ba1b3f05435342e0",
+      "migrations": "131",
+      "readiness": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    }
+  },
+  {
+    "name": "B supported local operator token handoff",
+    "passed": true,
+    "detail": {
+      "tokenObtained": true,
+      "value": "[withheld]"
+    }
+  },
+  {
+    "name": "C owner enrolls real Chromium CTAP2 through setup UI",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "users": 1,
+      "passkeys": 1,
+      "sites": 1,
+      "invalidToken": 400
+    }
+  },
+  {
+    "name": "D owner enters admin with ordinary enrolled session",
+    "passed": true,
+    "detail": {
+      "site": "3a69f91c-25b3-43c7-ae55-a5082f689429",
+      "publication": "f23aa3c6-bc03-41da-ba9c-13a164f68733",
+      "admin": "https://rc118c.example.test:3443/admin"
+    }
+  }
+]

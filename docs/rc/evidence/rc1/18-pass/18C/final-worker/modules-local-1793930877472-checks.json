@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Enabled events module native action renders event and iCalendar output",
+    "passed": true,
+    "detail": {
+      "event": "e38f677a-6d42-487a-9d8d-c7c8f5bcb543",
+      "canonicalPath": "/events/18c-reader-assembly",
+      "publicStatus": 200,
+      "icsStatus": 200
+    }
+  },
+  {
+    "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+    "passed": true,
+    "detail": {
+      "source": "ab0c9bc0-4c13-4308-82d5-87699229f79d",
+      "article": "6c2fcddb-59d7-4d08-9c0c-684165f64997",
+      "persistedReference": true
+    }
+  },
+  {
+    "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'received'\n- 'triaged'\n"
+  }
+]

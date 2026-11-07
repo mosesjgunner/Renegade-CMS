@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Foreign-site rendered quality audit is denied before findings can persist",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: {\"before\":\"0\",\"after\":\"1\",\"response\":{\"pages\":[{\"url\":\"https://rc118c.example.test:3443/\",\"status\":0,\"finalUrl\":\"https://rc118c.example.test:3443/\",\"title\":null,\"description\":null,\"canonical\":null,\"robots\":null,\"headings\":[],\"links\":[],\"text\":\"\",\"issues\":[{\"url\":\"https://rc118c.example.test:3443/\",\"ruleId\":\"DISC-05-FETCH-SAFETY\",\"ruleVersion\":\"1.0.0\",\"severity\":\"publication_blocking\",\"evidence\":\"getaddrinfo ENOTFOUND rc118c.example.test\",\"repairTarget\":\"site-settings\"}]},{\"url\":\"https://rc118c.example.test:3443/articles\",\"status\":0,\"finalUrl\":\"https://rc118c.example.test:3443/articles\",\"title\"\n\n200 !== 403\n"
+  }
+]

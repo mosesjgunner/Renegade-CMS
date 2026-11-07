@@ -1,0 +1,157 @@
+[
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/setup",
+    "status": 307
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/setup",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1570xzej4dsor.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/337gyu2ub9qyx.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/242x7dx0zu3hf.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1yg4x5e3obwvr.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3mb_v650fie_i.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0a-rekt06v0sv.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/10xjn4zbvtwck.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2t8p42eb6-ky_.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/26o5im11g530g.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3ti4tb70d0p12.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1qbtb6h34xmb6.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/analytics/consent",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/articles",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/login",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/search",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/login",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/articles",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/sites",
+    "status": 201
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/search",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/admin/staff/invite",
+    "status": 201
+  }
+]

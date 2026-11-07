@@ -1,0 +1,48 @@
+[
+  {
+    "name": "E owner saves site identity and theme through native settings API",
+    "passed": true,
+    "detail": {
+      "siteName": "18C Independent Journal",
+      "themeId": "neutral-starter",
+      "persistedName": "18C Independent Journal"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "F owner builds and publishes homepage and saves navigation",
+    "passed": true,
+    "detail": {
+      "layout": "d3ef3fa6-92b9-41ff-bb45-0d002eaafd35",
+      "resultKeys": [
+        "layout",
+        "warnings"
+      ],
+      "status": "published"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "G real image uploaded with original SHA-256 and persisted media record",
+    "passed": true,
+    "detail": {
+      "status": 201,
+      "media": "f8b2aa33-c303-4973-b2d9-f8cdf54bd166",
+      "bytes": 73970,
+      "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "H native REST creates taxonomy, page and article with real body media and SEO",
+    "passed": true,
+    "detail": {
+      "page": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+      "pagePath": "/about-18c",
+      "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+      "articlePath": "/articles/independent-18c",
+      "category": "e88b23e6-ce11-40cd-83ff-c4fefa110a6f"
+    },
+    "profile": "Standard/all"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "ID": "4ay429VvMfYWK4xtRGzg2P",
+  "From": {
+    "Name": "",
+    "Address": "journey@rc118c.test"
+  },
+  "To": [
+    {
+      "Name": "",
+      "Address": "reader-final@rc118c.test"
+    }
+  ],
+  "Subject": "Confirm your subscription",
+  "Text": "Confirm your subscription\r\nConfirm subscription: https://rc118c.example.test:3443/subscribe/confirm?token=[REDACTED_ONE_USE_TOKEN]\r\n",
+  "HTML": ""
+}

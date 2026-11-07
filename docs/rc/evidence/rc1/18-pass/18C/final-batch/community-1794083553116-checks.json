@@ -1,0 +1,24 @@
+[
+  {
+    "name": "N ordinary member email sign-in and operator forum creation",
+    "passed": true,
+    "detail": {
+      "member": "ee91fa3a-c603-494d-8f9b-9a1df62a7100",
+      "forum": "fbc95a98-b9d3-4bcc-88e8-4d44e1995f41",
+      "localEmailSignIn": true
+    },
+    "profile": "Lean-all"
+  },
+  {
+    "name": "N member thread reply moderation and notification path persist",
+    "passed": true,
+    "detail": {
+      "discussion": "3b09d5df-0e2c-45ce-9fa3-870a15902914",
+      "reply": "c65480ca-ebeb-425a-b736-e07a8e717dea",
+      "moderationState": "removed",
+      "deniedMember": 403,
+      "notifications": 2
+    },
+    "profile": "Lean-all"
+  }
+]

@@ -1,0 +1,64 @@
+[
+  {
+    "name": "Owner creates a second isolated site through supported native REST",
+    "passed": true,
+    "detail": {
+      "site": "9d1c49fa-bd7d-4647-b1cb-f79de33fd9d1",
+      "persisted": "18C Foreign Site"
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+    "passed": true,
+    "detail": {
+      "role": "staff",
+      "user": "abcf0672-8ec9-4588-921a-8f3c50bb0f1d",
+      "passkeys": 1
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Invited administrator enrolls CTAP2 passkey and logs in through UI",
+    "passed": true,
+    "detail": {
+      "role": "administrator",
+      "user": "17b4c50f-abbd-4b0e-b74c-9414075b7ca4",
+      "passkeys": 1
+    },
+    "profile": "Standard/all"
+  },
+  {
+    "name": "Staff and administrator foreign-site writes denied with unchanged persisted site",
+    "passed": true,
+    "detail": {
+      "results": [
+        {
+          "role": "staff",
+          "status": 403,
+          "response": {
+            "errors": [
+              {
+                "message": "You are not allowed to perform this action."
+              }
+            ]
+          }
+        },
+        {
+          "role": "administrator",
+          "status": 403,
+          "response": {
+            "errors": [
+              {
+                "message": "You are not allowed to perform this action."
+              }
+            ]
+          }
+        }
+      ],
+      "before": "e882afe8a3c569c8a87bec9e13b544e7",
+      "after": "e882afe8a3c569c8a87bec9e13b544e7"
+    },
+    "profile": "Standard/all"
+  }
+]

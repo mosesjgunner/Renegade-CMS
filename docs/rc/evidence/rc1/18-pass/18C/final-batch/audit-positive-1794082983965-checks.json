@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Enabled quality module fetches real HTTPS pages and persists rendered findings",
+    "passed": true,
+    "detail": {
+      "pages": 16,
+      "articleStatus": 200,
+      "actualHttpFetch": true,
+      "scanId": "6f0084e2-076b-4d1e-a39c-097837f010b9",
+      "findings": 18,
+      "lifecycle": {
+        "scanId": "6f0084e2-076b-4d1e-a39c-097837f010b9",
+        "created": 9,
+        "updated": 8,
+        "resolved": 0,
+        "active": 17,
+        "totalIssues": 18
+      }
+    },
+    "profile": "Lean-all"
+  }
+]

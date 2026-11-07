@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Enabled events module native action renders event and iCalendar output",
+    "passed": true,
+    "detail": {
+      "event": "af0cf3a0-bda0-46f4-8eb1-9b9ab67152b8",
+      "canonicalPath": "/events/18c-reader-assembly",
+      "publicStatus": 200,
+      "icsStatus": 200
+    }
+  },
+  {
+    "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+    "passed": false,
+    "error": "TypeError: Cannot read properties of undefined (reading '0')"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Authorized local operator recovery rotates codes and recovered owner returns through UI",
+    "passed": true,
+    "detail": {
+      "rotatedCodes": 10,
+      "recoveredOwner": true,
+      "usedCodeReplayDenied": 400
+    },
+    "profile": "Standard/all"
+  }
+]

@@ -1,0 +1,162 @@
+{
+  "status": 200,
+  "response": {
+    "pages": [
+      {
+        "url": "https://rc118c.example.test:3443/",
+        "status": 0,
+        "finalUrl": "https://rc118c.example.test:3443/",
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "robots": null,
+        "headings": [],
+        "links": [],
+        "text": "",
+        "issues": [
+          {
+            "url": "https://rc118c.example.test:3443/",
+            "ruleId": "DISC-05-FETCH-SAFETY",
+            "ruleVersion": "1.0.0",
+            "severity": "publication_blocking",
+            "evidence": "getaddrinfo ENOTFOUND rc118c.example.test",
+            "repairTarget": "site-settings"
+          }
+        ]
+      },
+      {
+        "url": "https://rc118c.example.test:3443/articles",
+        "status": 0,
+        "finalUrl": "https://rc118c.example.test:3443/articles",
+        "title": null,
+        "description": null,
+        "canonical": null,
+        "robots": null,
+        "headings": [],
+        "links": [],
+        "text": "",
+        "issues": [
+          {
+            "url": "https://rc118c.example.test:3443/articles",
+            "ruleId": "DISC-05-FETCH-SAFETY",
+            "ruleVersion": "1.0.0",
+            "severity": "publication_blocking",
+            "evidence": "getaddrinfo ENOTFOUND rc118c.example.test",
+            "repairTarget": "site-settings"
+          }
+        ]
+      }
+    ],
+    "issues": [
+      {
+        "url": "https://rc118c.example.test:3443/",
+        "ruleId": "DISC-05-FETCH-SAFETY",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "getaddrinfo ENOTFOUND rc118c.example.test",
+        "repairTarget": "site-settings"
+      },
+      {
+        "url": "https://rc118c.example.test:3443/articles",
+        "ruleId": "DISC-05-FETCH-SAFETY",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "getaddrinfo ENOTFOUND rc118c.example.test",
+        "repairTarget": "site-settings"
+      },
+      {
+        "url": "https://rc118c.example.test:3443/",
+        "ruleId": "DISC-05-SITEMAP-UNREACHABLE",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "Sitemap entry https://rc118c.example.test:3443/ returned HTTP status 0.",
+        "repairTarget": "sitemap.xml"
+      },
+      {
+        "url": "https://rc118c.example.test:3443/articles",
+        "ruleId": "DISC-05-SITEMAP-UNREACHABLE",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "Sitemap entry https://rc118c.example.test:3443/articles returned HTTP status 0.",
+        "repairTarget": "sitemap.xml"
+      },
+      {
+        "url": "https://rc118c.example.test:3443/",
+        "ruleId": "DISC-05-FEED-UNREACHABLE",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "RSS feed item URL https://rc118c.example.test:3443/ returned HTTP status 0.",
+        "repairTarget": "feed.xml"
+      },
+      {
+        "url": "https://rc118c.example.test:3443/articles",
+        "ruleId": "DISC-05-FEED-UNREACHABLE",
+        "ruleVersion": "1.0.0",
+        "severity": "publication_blocking",
+        "evidence": "RSS feed item URL https://rc118c.example.test:3443/articles returned HTTP status 0.",
+        "repairTarget": "feed.xml"
+      }
+    ],
+    "links": [],
+    "graph": [],
+    "crossChecks": {
+      "issues": [
+        {
+          "url": "https://rc118c.example.test:3443/",
+          "ruleId": "DISC-05-SITEMAP-UNREACHABLE",
+          "ruleVersion": "1.0.0",
+          "severity": "publication_blocking",
+          "evidence": "Sitemap entry https://rc118c.example.test:3443/ returned HTTP status 0.",
+          "repairTarget": "sitemap.xml"
+        },
+        {
+          "url": "https://rc118c.example.test:3443/articles",
+          "ruleId": "DISC-05-SITEMAP-UNREACHABLE",
+          "ruleVersion": "1.0.0",
+          "severity": "publication_blocking",
+          "evidence": "Sitemap entry https://rc118c.example.test:3443/articles returned HTTP status 0.",
+          "repairTarget": "sitemap.xml"
+        },
+        {
+          "url": "https://rc118c.example.test:3443/",
+          "ruleId": "DISC-05-FEED-UNREACHABLE",
+          "ruleVersion": "1.0.0",
+          "severity": "publication_blocking",
+          "evidence": "RSS feed item URL https://rc118c.example.test:3443/ returned HTTP status 0.",
+          "repairTarget": "feed.xml"
+        },
+        {
+          "url": "https://rc118c.example.test:3443/articles",
+          "ruleId": "DISC-05-FEED-UNREACHABLE",
+          "ruleVersion": "1.0.0",
+          "severity": "publication_blocking",
+          "evidence": "RSS feed item URL https://rc118c.example.test:3443/articles returned HTTP status 0.",
+          "repairTarget": "feed.xml"
+        }
+      ],
+      "checkedSitemapUrls": 2,
+      "checkedFeedUrls": 2,
+      "hasRobotsSitemapLink": true
+    },
+    "cannibalization": {
+      "reviews": [],
+      "issues": [],
+      "analyzedPageCount": 0
+    },
+    "aiSuggestions": {
+      "suggestions": [],
+      "provider": "renegade-ai-boundary",
+      "nonMutationGuaranteed": true
+    },
+    "lifecycle": {
+      "scanId": "26949c5e-b5f5-4449-a5af-42265cecfa54",
+      "created": 6,
+      "updated": 0,
+      "resolved": 0,
+      "active": 6,
+      "totalIssues": 6
+    }
+  },
+  "before": "0",
+  "after": "1"
+}

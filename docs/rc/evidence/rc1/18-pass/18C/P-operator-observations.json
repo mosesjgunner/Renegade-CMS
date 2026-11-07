@@ -1,0 +1,98 @@
+{
+  "analytics": {
+    "siteId": "fafda5af-6b07-40e8-bb66-bec2d22277fa",
+    "eventCount": 0,
+    "sampleTruncated": false,
+    "countBasis": "Retained events with current site-scoped consent; legacy or unlinked records excluded.",
+    "consentRecordCount": 0,
+    "recentEvents": [],
+    "recentConsent": []
+  },
+  "finance": {
+    "summary": {
+      "counts": {
+        "succeeded": 1
+      },
+      "totalsMinorByCurrency": {
+        "USD": {
+          "succeeded": "1200"
+        }
+      },
+      "oldestAgeMs": {
+        "succeeded": 69015
+      }
+    },
+    "summaryScope": {
+      "sampled": false,
+      "rows": 1,
+      "totalRows": 1
+    },
+    "health": [
+      {
+        "providerKey": "deterministic-test",
+        "ready": true,
+        "health": "healthy"
+      }
+    ],
+    "orders": [
+      {
+        "id": "e5912d10-67c0-4a9d-97c1-2807dcf47437",
+        "orderNumber": "order_5ce216dd-3005-4fdf-993c-92afbc7b5d11",
+        "state": "paid",
+        "amountMinor": "1200",
+        "currency": "USD",
+        "receiptNumber": "receipt_e5912d10-67c0-4a9d-97c1-2807dcf47437",
+        "createdAt": "2026-11-06T01:22:50.467Z",
+        "auditEntries": [
+          "inventory-applied",
+          "payment-confirmed"
+        ]
+      }
+    ],
+    "pendingActions": [],
+    "refunds": [],
+    "disputes": [],
+    "webhookFailures": [],
+    "reconciliationCases": [],
+    "disclaimer": "Operational ledger totals; not certified accounting or provider settlement balances."
+  },
+  "aiConnections": {
+    "connections": []
+  },
+  "schedule": {
+    "counts": {
+      "nextJobs": 0,
+      "lateJobs": 0,
+      "retryingJobs": 0,
+      "failedJobs": 0,
+      "completedJobs": 1
+    },
+    "workerHealth": {
+      "status": "unknown",
+      "activeWorkerId": null,
+      "lastHeartbeat": null,
+      "clockDriftBufferSeconds": 30,
+      "catchUpThresholdMinutes": 60
+    },
+    "jobs": [
+      {
+        "id": "e7445c59-eb0d-4924-ba1a-a97460970fc4",
+        "articleId": "100003ad-8b85-4c0f-83ab-859b003aadd2",
+        "articleTitle": "Article",
+        "revisionId": "d1bbe943-49d2-4201-95b2-29cc8bac5f6d",
+        "revisionSequence": 1,
+        "revisionHash": "",
+        "scheduledFor": "2026-11-06T01:19:44.000Z",
+        "timeZone": "UTC",
+        "idempotencyKey": "sched-cal-100003ad-8b85-4c0f-83ab-859b003aadd2-1793927965146",
+        "status": "completed",
+        "rawStatus": "completed",
+        "leaseOwner": null,
+        "leaseExpiresAt": null,
+        "retryCount": 0,
+        "maxRetries": 3,
+        "lastError": null
+      }
+    ]
+  }
+}

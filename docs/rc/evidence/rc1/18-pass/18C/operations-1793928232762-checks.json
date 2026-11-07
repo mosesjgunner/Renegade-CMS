@@ -1,0 +1,53 @@
+[
+  {
+    "name": "P operator inspects actual analytics health and bounded provider truth",
+    "passed": true,
+    "detail": {
+      "analyticsCount": 0,
+      "orderCount": 1,
+      "paymentProviders": [
+        {
+          "providerKey": "deterministic-test",
+          "ready": true,
+          "health": "healthy"
+        }
+      ],
+      "aiConnections": 0,
+      "ready": true
+    }
+  },
+  {
+    "name": "Q actual web and worker restart retains workflows without duplicate side effects",
+    "passed": true,
+    "detail": {
+      "before": {
+        "orders": "1",
+        "delivery": "accepted",
+        "schedule": "published",
+        "posts": "2"
+      },
+      "after": {
+        "orders": "1",
+        "delivery": "accepted",
+        "schedule": "published",
+        "posts": "2"
+      },
+      "ready": true,
+      "localConfirmationCopies": 1
+    }
+  },
+  {
+    "name": "R logout then passkey login from an entirely new clean browser context",
+    "passed": true,
+    "detail": {
+      "initiallyNoOperatorCookie": true,
+      "realWebAuthn": true,
+      "authenticatedAdmin": true
+    }
+  },
+  {
+    "name": "Authorized local operator recovery rotates codes and recovered owner returns through UI",
+    "passed": false,
+    "error": "TimeoutError: locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Emergency Recovery', exact: true })\u001b[22m\n"
+  }
+]

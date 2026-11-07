@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Profile federation boundary follows production resource policy",
+    "passed": true,
+    "detail": {
+      "profile": "Standard-default",
+      "actorStatus": 404,
+      "networkingEnabled": false,
+      "pendingOrCompletedNetworkRecordsPreserved": "1"
+    },
+    "profile": "Standard-default"
+  },
+  {
+    "name": "Profile core publishing persists through separate review and public rendering",
+    "passed": true,
+    "detail": {
+      "profile": "Standard-default",
+      "article": "f1461612-f0ec-4934-b4ea-9fc9fc1dfaa3",
+      "canonicalPath": "/articles/18c-profile-standard-default-1794083090495",
+      "persisted": "published",
+      "publicStatus": 200,
+      "selfApproval": 403,
+      "foreignSite": 403,
+      "anonymousOperator": 403
+    },
+    "profile": "Standard-default"
+  },
+  {
+    "name": "Default profile optional modules stay unavailable without losing stored data",
+    "passed": true,
+    "detail": {
+      "native": {
+        "events": 404,
+        "books": 404,
+        "social-drafts": 404,
+        "form-definitions": 404,
+        "products": 404,
+        "discussions": 404
+      },
+      "commerce": 503,
+      "community": 503,
+      "originalArticlePreserved": true
+    },
+    "profile": "Standard-default"
+  }
+]

@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Enabled network module: independent local peer signed Follow and actual signed Accept",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: {\"inbox\":[],\"recordCount\":0,\"calls\":{\"/send\":3,\"/actor\":3,\"/stats\":90}}\n\n0 !== 1\n"
+  }
+]

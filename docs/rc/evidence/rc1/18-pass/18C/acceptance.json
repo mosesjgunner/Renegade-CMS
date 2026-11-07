@@ -1,0 +1,1228 @@
+{
+  "status": "PASS",
+  "subpass": "18C",
+  "generatedAt": "2026-11-07T20:43:13.675Z",
+  "baseCommit": "7e8abe4368b3c26d25237bae9a0a2cfeb13d7974",
+  "executableTreeSha256": "0e78fc115db5167992eb467b168d7cb58fbaa14e2f3d786e583c8fa85df8094e",
+  "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+  "finalAcceptance": {
+    "passed": 71,
+    "failed": 0,
+    "skipped": 0,
+    "unexecuted": 0,
+    "items": [
+      {
+        "file": "audience-1794083289530-checks.json",
+        "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+        "passed": true,
+        "detail": {
+          "requested": 202,
+          "subscriberStatus": "active",
+          "delivery": "fe8496d7-8bd2-461a-ad20-c0e827cb7b9e",
+          "deliveryStatus": "accepted",
+          "localSinkMessage": "4ay429VvMfYWK4xtRGzg2P",
+          "confirmationReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-negative-1794083422584-checks.json",
+        "name": "Foreign-site rendered quality audit is denied before findings can persist",
+        "passed": true,
+        "detail": {
+          "status": 403,
+          "before": "0",
+          "after": "0"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-positive-1794083425257-checks.json",
+        "name": "Enabled quality module fetches real HTTPS pages and persists rendered findings",
+        "passed": true,
+        "detail": {
+          "pages": 11,
+          "articleStatus": 200,
+          "actualHttpFetch": true,
+          "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+          "findings": 9,
+          "lifecycle": {
+            "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+            "created": 8,
+            "updated": 0,
+            "resolved": 0,
+            "active": 8,
+            "totalIssues": 9
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O operator configures explicit local-test merchant and publishes reviewed product",
+        "passed": true,
+        "detail": {
+          "product": "0824598e-6e8a-4d3e-9671-04409d01aea5",
+          "merchant": "f618e9d4-c77b-4940-864c-396e8ab93863",
+          "provider": "deterministic-test",
+          "realMoney": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O guest UI cart authoritative quote local confirmation and worker-settled order",
+        "passed": true,
+        "detail": {
+          "order": "cdd2de9c-2dd2-4eb8-8ef3-ff52606573ab",
+          "orderState": "paid",
+          "checkout": "0c1caf30-8a5b-4d68-94e4-e33fcc19f2b3",
+          "unauthorizedStatus": 403,
+          "statusKeys": [
+            "downloads",
+            "checkout",
+            "payment",
+            "order"
+          ],
+          "provider": "deterministic-test",
+          "realCharge": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N ordinary member email sign-in and operator forum creation",
+        "passed": true,
+        "detail": {
+          "member": "65853547-6de6-43fb-80fb-785e62c06e63",
+          "forum": "e7f85b76-1fce-4d8e-9cb0-4805544f9994",
+          "localEmailSignIn": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N member thread reply moderation and notification path persist",
+        "passed": true,
+        "detail": {
+          "discussion": "b681de4d-81dd-443f-ae06-d9033b7ad094",
+          "reply": "6f0549df-8de1-48f3-93f8-638abbd79a85",
+          "moderationState": "removed",
+          "deniedMember": 403,
+          "notifications": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "E owner saves site identity and theme through native settings API",
+        "passed": true,
+        "detail": {
+          "siteName": "18C Independent Journal",
+          "themeId": "neutral-starter",
+          "persistedName": "18C Independent Journal"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "F owner builds and publishes homepage and saves navigation",
+        "passed": true,
+        "detail": {
+          "layout": "d3ef3fa6-92b9-41ff-bb45-0d002eaafd35",
+          "resultKeys": [
+            "layout",
+            "warnings"
+          ],
+          "status": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "G real image uploaded with original SHA-256 and persisted media record",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "media": "f8b2aa33-c303-4973-b2d9-f8cdf54bd166",
+          "bytes": 73970,
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "H native REST creates taxonomy, page and article with real body media and SEO",
+        "passed": true,
+        "detail": {
+          "page": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+          "pagePath": "/about-18c",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "articlePath": "/articles/independent-18c",
+          "category": "e88b23e6-ce11-40cd-83ff-c4fefa110a6f"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "experiences-1794083357439-checks.json",
+        "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+        "passed": true,
+        "detail": {
+          "experiment": "7c1392d8-30d1-4093-8b8b-d6ff82378a82",
+          "selectedVariant": "acbc1e92-1b61-4e22-8bdc-3068d3f0c669",
+          "canonicalSubmission": "f619bf28-7872-47e7-812c-27e811d73f9f",
+          "exposure": 201,
+          "conversion": 201,
+          "winnerAndRollbackPersisted": true,
+          "eventCount": 4
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Owner creates a second isolated site through supported native REST",
+        "passed": true,
+        "detail": {
+          "site": "9d1c49fa-bd7d-4647-b1cb-f79de33fd9d1",
+          "persisted": "18C Foreign Site"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "staff",
+          "user": "abcf0672-8ec9-4588-921a-8f3c50bb0f1d",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited administrator enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "administrator",
+          "user": "17b4c50f-abbd-4b0e-b74c-9414075b7ca4",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Staff and administrator foreign-site writes denied with unchanged persisted site",
+        "passed": true,
+        "detail": {
+          "results": [
+            {
+              "role": "staff",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            },
+            {
+              "role": "administrator",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            }
+          ],
+          "before": "e882afe8a3c569c8a87bec9e13b544e7",
+          "after": "e882afe8a3c569c8a87bec9e13b544e7"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+        "passed": true,
+        "detail": {
+          "book": "efbaf651-e587-402d-94ce-546b5a6de615",
+          "chapter": "cbc2710e-9f67-41a4-b573-17c499cfc33e",
+          "canonicalPath": "/books/18c-handbook",
+          "publicStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled collaboration module canonical checkpoint emits durable event and rejects stale revision",
+        "passed": true,
+        "detail": {
+          "content": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "companion": "05706f0b-dba8-4305-9d0c-540ba6c90712",
+          "revision": "851229ae-d920-4b0e-9438-390758d0f540",
+          "emittedEvents": 1,
+          "staleRevisionDenied": 409
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled events module native action renders event and iCalendar output",
+        "passed": true,
+        "detail": {
+          "event": "5b40d6be-8e8b-4825-8a4e-7ed15043ae1d",
+          "canonicalPath": "/events/18c-reader-assembly",
+          "publicStatus": 200,
+          "icsStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+        "passed": true,
+        "detail": {
+          "source": "00173189-de56-4fcf-97b5-cedb7725ab25",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "persistedReference": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+        "passed": true,
+        "detail": {
+          "form": "ff2c47c5-a79a-4f0d-b08a-3e31b7e8d4e8",
+          "submission": "d05e80c6-b56a-4082-a1d3-5c2a36a07a90",
+          "persistedStatus": "triaged",
+          "contacts": 1,
+          "actions": [
+            {
+              "type": "create-contact",
+              "status": "completed",
+              "resultId": "c7e165a2-839c-49d9-960b-7da92daed527"
+            },
+            {
+              "type": "create-task",
+              "status": "completed",
+              "resultId": "4a6a5b09-2c4f-426f-8aee-775820a93d69"
+            }
+          ],
+          "invalidAnswersDenied": 422
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled integrations module issues rotates and revokes a scoped machine credential",
+        "passed": true,
+        "detail": {
+          "client": "f8f4cb10-bc68-40df-b64d-8b26b5f6c9fe",
+          "rotated": true,
+          "revoked": true,
+          "foreignSiteDenied": 403,
+          "tokenValues": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "network-local-1794083393022-checks.json",
+        "name": "Enabled network module: independent local peer signed Follow and actual signed Accept",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "badSignature": 401,
+          "follow": 202,
+          "replay": 202,
+          "relationships": 1,
+          "signedAcceptCopies": 1,
+          "delivered": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "P operator inspects actual analytics health and bounded provider truth",
+        "passed": true,
+        "detail": {
+          "analyticsCount": 4,
+          "orderCount": 1,
+          "paymentProviders": [
+            {
+              "providerKey": "deterministic-test",
+              "ready": true,
+              "health": "healthy"
+            }
+          ],
+          "aiConnections": 0,
+          "ready": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "Q actual web and worker restart retains workflows without duplicate side effects",
+        "passed": true,
+        "detail": {
+          "before": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "after": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "ready": true,
+          "localConfirmationCopies": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "R logout then passkey login from an entirely new clean browser context",
+        "passed": true,
+        "detail": {
+          "initiallyNoOperatorCookie": true,
+          "realWebAuthn": true,
+          "authenticatedAdmin": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "J anonymous rendering metadata schema discovery search and original bytes",
+        "passed": true,
+        "detail": {
+          "outputs": [
+            {
+              "path": "/sitemap.xml",
+              "status": 200
+            },
+            {
+              "path": "/sitemaps/1.xml",
+              "status": 200
+            },
+            {
+              "path": "/robots.txt",
+              "status": 200
+            },
+            {
+              "path": "/feed.xml",
+              "status": 200
+            },
+            {
+              "path": "/search?q=Golden%20otter%20semaphore",
+              "status": 200
+            }
+          ],
+          "mediaSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "mediaBytes": 73970
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "K supported slug edit creates durable 308 redirect",
+        "passed": true,
+        "detail": {
+          "from": "/articles/independent-18c",
+          "to": "/articles/independent-18c-renamed",
+          "redirect": 308
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I draft preview renders and anonymous publication is denied",
+        "passed": true,
+        "detail": {
+          "previewRendered": true,
+          "anonymousApprovalStatus": 403
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I separate staff review approves owner drafts and owner publishes",
+        "passed": true,
+        "detail": [
+          {
+            "id": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+            "status": "published",
+            "selfApprovalDenied": 403
+          },
+          {
+            "id": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+            "status": "published",
+            "selfApprovalDenied": 403
+          }
+        ],
+        "profile": "Standard/all"
+      },
+      {
+        "file": "recovery-1794083463035-checks.json",
+        "name": "Authorized local operator recovery rotates codes and recovered owner returns through UI",
+        "passed": true,
+        "detail": {
+          "rotatedCodes": 10,
+          "recoveredOwner": true,
+          "usedCodeReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "release-1794083363278-checks.json",
+        "name": "Enabled releases module pins reviewed canonical revision and worker executes it once",
+        "passed": true,
+        "detail": {
+          "release": "3a6eed76-0b88-4733-aca8-93fad894d201",
+          "status": "completed",
+          "publishedArticle": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "executionItems": [
+            {
+              "id": "article:05706f0b-dba8-4305-9d0c-540ba6c90712",
+              "status": "succeeded",
+              "attempts": 1
+            }
+          ]
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Missing isolation and authorization flags",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Non-isolated Compose target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file compose.production.yaml",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Running populated target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file scratch/rc118c-final-golden/isolated-restore-compose.yaml --env-file scratch/rc118c-final-golden/restore.env",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S shipped backup restored complete critical records into independent project",
+        "passed": true,
+        "detail": {
+          "criticalTables": [
+            {
+              "table": "sites",
+              "countAndContentHash": "2:668ac360305fac9b64abbe9413fea443"
+            },
+            {
+              "table": "publications",
+              "countAndContentHash": "3:47cfc37e20b324d43cdc925ae9889717"
+            },
+            {
+              "table": "content",
+              "countAndContentHash": "4:ee7163d86744e2225eda02491ba4e234"
+            },
+            {
+              "table": "categories",
+              "countAndContentHash": "1:d9b29b314d36faf5944447d57781842e"
+            },
+            {
+              "table": "authors",
+              "countAndContentHash": "1:84ab7cdde11331bee1f69157af4d8805"
+            },
+            {
+              "table": "media_assets",
+              "countAndContentHash": "1:8728fbed5fdf032d5ff7348b9f760ef6"
+            },
+            {
+              "table": "media_blobs",
+              "countAndContentHash": "21:ee3794071f6fb6ca0974c87acc546de8"
+            },
+            {
+              "table": "products",
+              "countAndContentHash": "1:da6e7574933b8bb4f40a3627f2fa487e"
+            },
+            {
+              "table": "orders",
+              "countAndContentHash": "1:50382a4169270f5feb7e9ff00899b675"
+            },
+            {
+              "table": "discussions",
+              "countAndContentHash": "1:55052ad7e460edbd2ff7aab2cd0efa7d"
+            },
+            {
+              "table": "discussion_posts",
+              "countAndContentHash": "2:b6a83ab4d192c85c9dd5ac84d13d984c"
+            },
+            {
+              "table": "subscribers",
+              "countAndContentHash": "1:af3489bf3083ae9bbeb830048106f4d3"
+            },
+            {
+              "table": "consent_events",
+              "countAndContentHash": "2:bc3e8184eb04355485f4b62b44cdc9dd"
+            },
+            {
+              "table": "email_deliveries",
+              "countAndContentHash": "2:f41b5708fb2b84f0e26b4d88e6a265f1"
+            },
+            {
+              "table": "events",
+              "countAndContentHash": "1:64af70be18877d8604ca9670f4ba885e"
+            },
+            {
+              "table": "sources",
+              "countAndContentHash": "1:4fea4b9890176fcde2868c4ca226bef6"
+            },
+            {
+              "table": "books",
+              "countAndContentHash": "1:8a53a6e573f22f104aedf6dd4e60e7b2"
+            },
+            {
+              "table": "book_chapters",
+              "countAndContentHash": "1:a1115aee107f38ba462b9b632b9b7366"
+            },
+            {
+              "table": "form_definitions",
+              "countAndContentHash": "1:c601d7b38526f848bf3230a0e8e92cc8"
+            },
+            {
+              "table": "form_schemas",
+              "countAndContentHash": "1:b0a68655192e948d6e7086e87ee55145"
+            },
+            {
+              "table": "form_submissions",
+              "countAndContentHash": "2:c58a38b5a37e9510e4f3e430683b8c2e"
+            },
+            {
+              "table": "contacts",
+              "countAndContentHash": "2:8606132f6436cda6de04a31ceb6b1b44"
+            },
+            {
+              "table": "realtime_events",
+              "countAndContentHash": "5:1c17e9e798fa702a4a966c736ae38961"
+            },
+            {
+              "table": "experiments",
+              "countAndContentHash": "1:f0d865bde6cddd396bae73abf207156a"
+            },
+            {
+              "table": "experiment_variants",
+              "countAndContentHash": "2:912f0cd273fec3447d3be4846ff4d411"
+            },
+            {
+              "table": "content_releases",
+              "countAndContentHash": "1:09adb85f8686acb1fc9d91267b287ea9"
+            },
+            {
+              "table": "social_accounts",
+              "countAndContentHash": "2:7131107e7f73e827658f1d9312e8eeb6"
+            },
+            {
+              "table": "social_drafts",
+              "countAndContentHash": "1:10999582b465619ae505854daa0017d4"
+            },
+            {
+              "table": "external_posts",
+              "countAndContentHash": "1:8c1dad69c2573c1f5fa0dbf8d7b3804b"
+            },
+            {
+              "table": "network_relationships",
+              "countAndContentHash": "1:483fb5efb22ba17709c9b511e890d13e"
+            },
+            {
+              "table": "outbound_network_deliveries",
+              "countAndContentHash": "1:b40c12d69ff515f97d883fe0d19ffce9"
+            }
+          ],
+          "independentProject": "rc118cgoldenrestore20261107",
+          "freshSecrets": true,
+          "migrations": "131"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S fresh browser authenticates to restored environment with source-enrolled passkey",
+        "passed": true,
+        "detail": {
+          "status": 200,
+          "sourceEnrolledCredential": true,
+          "restoredOrderReadable": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "T restored public article community and original media byte equality",
+        "passed": true,
+        "detail": {
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "restoredSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "bytes": 73970,
+          "publicPages": 3
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "schedule-1794083258070-checks.json",
+        "name": "L supported scheduling executes through actual production worker",
+        "passed": true,
+        "detail": {
+          "article": "29df64ed-f467-42e6-9427-b1dc3b5a82ca",
+          "scheduled": {
+            "ok": true,
+            "scheduledForUtc": "2026-11-07T20:28:01.000Z",
+            "timeZone": "UTC",
+            "localFormatted": "2026-11-07 20:28:01 (UTC)",
+            "isDst": false,
+            "wasNonexistent": false,
+            "isAmbiguous": false
+          },
+          "staleSequenceDenied": 409,
+          "persistedStatus": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "A production Standard/all boot with test authentication disabled",
+        "passed": true,
+        "detail": {
+          "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+          "migrations": "131",
+          "readiness": {
+            "status": "ready",
+            "checks": {
+              "database": "ok",
+              "migrations": "applied"
+            }
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "B supported local operator token handoff",
+        "passed": true,
+        "detail": {
+          "tokenObtained": true,
+          "value": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "C owner enrolls real Chromium CTAP2 through setup UI",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "users": 1,
+          "passkeys": 1,
+          "sites": 1,
+          "invalidToken": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "D owner enters admin with ordinary enrolled session",
+        "passed": true,
+        "detail": {
+          "site": "32a7bc11-74be-47da-ac18-dd46da63f41e",
+          "publication": "27dc4a02-0e8f-4c97-8326-8a015d918925",
+          "admin": "https://rc118c.example.test:3443/admin"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Local social connection denies foreign and anonymous operators and persists failed credentials truthfully before retry",
+        "passed": true,
+        "detail": {
+          "foreignSite": 403,
+          "anonymous": 403,
+          "failedCredentialHealth": "revoked",
+          "capability": "unavailable",
+          "localPosts": 0,
+          "account": "f0c17e10-9b28-45fd-a275-ad93e8939d9d"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "draft": "11fa2eb9-26fe-479a-b50b-3b3076bfbe41",
+          "status": "published",
+          "providerRecords": 1,
+          "externalPosts": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audience-1794083540461-checks.json",
+        "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+        "passed": true,
+        "detail": {
+          "requested": 202,
+          "subscriberStatus": "active",
+          "delivery": "d113b6bc-4d8b-4e34-815f-8a21a8bd2924",
+          "deliveryStatus": "accepted",
+          "localSinkMessage": "3MvP6sB7xt2TblZq0ScBpJ",
+          "confirmationReplayDenied": 400
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "audit-negative-1794082981508-checks.json",
+        "name": "Foreign-site rendered quality audit is denied before findings can persist",
+        "passed": true,
+        "detail": {
+          "status": 403,
+          "before": "0",
+          "after": "0"
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "audit-positive-1794082983965-checks.json",
+        "name": "Enabled quality module fetches real HTTPS pages and persists rendered findings",
+        "passed": true,
+        "detail": {
+          "pages": 16,
+          "articleStatus": 200,
+          "actualHttpFetch": true,
+          "scanId": "6f0084e2-076b-4d1e-a39c-097837f010b9",
+          "findings": 18,
+          "lifecycle": {
+            "scanId": "6f0084e2-076b-4d1e-a39c-097837f010b9",
+            "created": 9,
+            "updated": 8,
+            "resolved": 0,
+            "active": 17,
+            "totalIssues": 18
+          }
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "commerce-1794083556985-checks.json",
+        "name": "O operator configures explicit local-test merchant and publishes reviewed product",
+        "passed": true,
+        "detail": {
+          "product": "51174723-fe57-40ad-9afa-969b8808288e",
+          "merchant": "e497ec85-29b1-459b-8b73-a97e5f8a1aae",
+          "provider": "deterministic-test",
+          "realMoney": false
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "commerce-1794083556985-checks.json",
+        "name": "O guest UI cart authoritative quote local confirmation and worker-settled order",
+        "passed": true,
+        "detail": {
+          "order": "4b0ae00c-a60e-4cb5-a9bd-84ebd4d30d80",
+          "orderState": "paid",
+          "checkout": "e7933566-d595-45bb-adf1-cabff696c686",
+          "unauthorizedStatus": 403,
+          "statusKeys": [
+            "downloads",
+            "checkout",
+            "payment",
+            "order"
+          ],
+          "provider": "deterministic-test",
+          "realCharge": false
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "community-1794083553116-checks.json",
+        "name": "N ordinary member email sign-in and operator forum creation",
+        "passed": true,
+        "detail": {
+          "member": "ee91fa3a-c603-494d-8f9b-9a1df62a7100",
+          "forum": "fbc95a98-b9d3-4bcc-88e8-4d44e1995f41",
+          "localEmailSignIn": true
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "community-1794083553116-checks.json",
+        "name": "N member thread reply moderation and notification path persist",
+        "passed": true,
+        "detail": {
+          "discussion": "3b09d5df-0e2c-45ce-9fa3-870a15902914",
+          "reply": "c65480ca-ebeb-425a-b736-e07a8e717dea",
+          "moderationState": "removed",
+          "deniedMember": 403,
+          "notifications": 2
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "experiences-1794082920831-checks.json",
+        "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+        "passed": true,
+        "detail": {
+          "experiment": "cc365949-d0e5-446e-83e0-2d320031a6a6",
+          "selectedVariant": "c247d6d4-81cb-433f-a836-2cad1afc3fef",
+          "canonicalSubmission": "80bcd6d4-d794-4152-9d10-08a39c66506a",
+          "exposure": 201,
+          "conversion": 201,
+          "winnerAndRollbackPersisted": true,
+          "eventCount": 8
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-editorial-1794082915469-checks.json",
+        "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+        "passed": true,
+        "detail": {
+          "book": "43498cdf-2e52-4119-affd-ed669a6c7fb2",
+          "chapter": "64627869-5e95-49f2-b282-d8b072ccbe5d",
+          "canonicalPath": "/books/18c-handbook-lean-all",
+          "publicStatus": 200
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-editorial-1794082915469-checks.json",
+        "name": "Enabled collaboration module canonical checkpoint emits durable event and rejects stale revision",
+        "passed": true,
+        "detail": {
+          "content": "d0027209-b130-4fd4-95a1-5d59c2e5956c",
+          "companion": "9fb5cefa-ef10-4d0e-9d4a-0aebd8fe9156",
+          "revision": "b5d3c293-1525-42d3-a21d-c15011a46dc9",
+          "emittedEvents": 1,
+          "staleRevisionDenied": 409
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-local-1794082834106-checks.json",
+        "name": "Enabled events module native action renders event and iCalendar output",
+        "passed": true,
+        "detail": {
+          "event": "a27954ff-02d8-4022-aa5a-ae95408b756f",
+          "canonicalPath": "/events/18c-reader-assembly",
+          "publicStatus": 200,
+          "icsStatus": 200
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-local-1794082834106-checks.json",
+        "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+        "passed": true,
+        "detail": {
+          "source": "2db349af-eca4-4dcf-8c45-6f57ebd0bf78",
+          "article": "cc5b4b08-a941-4f5e-95c3-1e7cc75bbc47",
+          "persistedReference": true
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-local-1794082834106-checks.json",
+        "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+        "passed": true,
+        "detail": {
+          "form": "7b66f516-d664-4645-a9c5-8d9d01518c84",
+          "submission": "08aa9fc3-7bb2-4267-a981-7777ecbacd34",
+          "persistedStatus": "triaged",
+          "contacts": 1,
+          "actions": [
+            {
+              "type": "create-contact",
+              "status": "completed",
+              "resultId": "a8928179-3275-48e7-b820-f2ebd957236f"
+            },
+            {
+              "type": "create-task",
+              "status": "completed",
+              "resultId": "fb709257-eba8-496e-9a8e-9ce1173ef7f0"
+            }
+          ],
+          "invalidAnswersDenied": 422
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "modules-local-1794082834106-checks.json",
+        "name": "Enabled integrations module issues rotates and revokes a scoped machine credential",
+        "passed": true,
+        "detail": {
+          "client": "542a3f9b-94e0-4067-9294-3854411a92b8",
+          "rotated": true,
+          "revoked": true,
+          "foreignSiteDenied": 403,
+          "tokenValues": "[withheld]"
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "profile-1794083061576-checks.json",
+        "name": "Profile federation boundary follows production resource policy",
+        "passed": true,
+        "detail": {
+          "profile": "Lean-default",
+          "actorStatus": 404,
+          "networkingEnabled": false,
+          "pendingOrCompletedNetworkRecordsPreserved": "1"
+        },
+        "profile": "Lean-default"
+      },
+      {
+        "file": "profile-1794083061576-checks.json",
+        "name": "Profile core publishing persists through separate review and public rendering",
+        "passed": true,
+        "detail": {
+          "profile": "Lean-default",
+          "article": "c1db3bbe-2d93-4e41-8918-ebd432695423",
+          "canonicalPath": "/articles/18c-profile-lean-default-1794083063885",
+          "persisted": "published",
+          "publicStatus": 200,
+          "selfApproval": 403,
+          "foreignSite": 403,
+          "anonymousOperator": 403
+        },
+        "profile": "Lean-default"
+      },
+      {
+        "file": "profile-1794083061576-checks.json",
+        "name": "Default profile optional modules stay unavailable without losing stored data",
+        "passed": true,
+        "detail": {
+          "native": {
+            "events": 404,
+            "books": 404,
+            "social-drafts": 404,
+            "form-definitions": 404,
+            "products": 404,
+            "discussions": 404
+          },
+          "commerce": 503,
+          "community": 503,
+          "originalArticlePreserved": true
+        },
+        "profile": "Lean-default"
+      },
+      {
+        "file": "profile-1794083088302-checks.json",
+        "name": "Profile federation boundary follows production resource policy",
+        "passed": true,
+        "detail": {
+          "profile": "Standard-default",
+          "actorStatus": 404,
+          "networkingEnabled": false,
+          "pendingOrCompletedNetworkRecordsPreserved": "1"
+        },
+        "profile": "Standard-default"
+      },
+      {
+        "file": "profile-1794083088302-checks.json",
+        "name": "Profile core publishing persists through separate review and public rendering",
+        "passed": true,
+        "detail": {
+          "profile": "Standard-default",
+          "article": "f1461612-f0ec-4934-b4ea-9fc9fc1dfaa3",
+          "canonicalPath": "/articles/18c-profile-standard-default-1794083090495",
+          "persisted": "published",
+          "publicStatus": 200,
+          "selfApproval": 403,
+          "foreignSite": 403,
+          "anonymousOperator": 403
+        },
+        "profile": "Standard-default"
+      },
+      {
+        "file": "profile-1794083088302-checks.json",
+        "name": "Default profile optional modules stay unavailable without losing stored data",
+        "passed": true,
+        "detail": {
+          "native": {
+            "events": 404,
+            "books": 404,
+            "social-drafts": 404,
+            "form-definitions": 404,
+            "products": 404,
+            "discussions": 404
+          },
+          "commerce": 503,
+          "community": 503,
+          "originalArticlePreserved": true
+        },
+        "profile": "Standard-default"
+      },
+      {
+        "file": "profile-1794083115693-checks.json",
+        "name": "Profile federation boundary follows production resource policy",
+        "passed": true,
+        "detail": {
+          "profile": "Lean-all",
+          "actorStatus": 404,
+          "networkingEnabled": false,
+          "pendingOrCompletedNetworkRecordsPreserved": "1"
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "profile-1794083115693-checks.json",
+        "name": "Profile core publishing persists through separate review and public rendering",
+        "passed": true,
+        "detail": {
+          "profile": "Lean-all",
+          "article": "3b8d217d-0df7-4756-afae-4a67fe927d0c",
+          "canonicalPath": "/articles/18c-profile-lean-all-1794083117932",
+          "persisted": "published",
+          "publicStatus": 200,
+          "selfApproval": 403,
+          "foreignSite": 403,
+          "anonymousOperator": 403
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "profile-1794083144087-checks.json",
+        "name": "Profile federation boundary follows production resource policy",
+        "passed": true,
+        "detail": {
+          "profile": "Standard-all",
+          "actorStatus": 200,
+          "networkingEnabled": true,
+          "pendingOrCompletedNetworkRecordsPreserved": "1"
+        },
+        "profile": "Standard-all"
+      },
+      {
+        "file": "profile-1794083144087-checks.json",
+        "name": "Profile core publishing persists through separate review and public rendering",
+        "passed": true,
+        "detail": {
+          "profile": "Standard-all",
+          "article": "77356298-c642-4fa2-903e-b5d63427f300",
+          "canonicalPath": "/articles/18c-profile-standard-all-1794083146458",
+          "persisted": "published",
+          "publicStatus": 200,
+          "selfApproval": 403,
+          "foreignSite": 403,
+          "anonymousOperator": 403
+        },
+        "profile": "Standard-all"
+      },
+      {
+        "file": "release-1794082926325-checks.json",
+        "name": "Enabled releases module pins reviewed canonical revision and worker executes it once",
+        "passed": true,
+        "detail": {
+          "release": "c3c1e20a-807c-4366-8058-39e05f4a08d9",
+          "status": "completed",
+          "publishedArticle": "d0027209-b130-4fd4-95a1-5d59c2e5956c",
+          "executionItems": [
+            {
+              "id": "article:9fb5cefa-ef10-4d0e-9d4a-0aebd8fe9156",
+              "status": "succeeded",
+              "attempts": 1
+            }
+          ]
+        },
+        "profile": "Lean-all"
+      },
+      {
+        "file": "social-local-1794082963437-checks.json",
+        "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "draft": "651f8c59-02f0-4257-98ae-acc79a4d2da4",
+          "status": "published",
+          "providerRecords": 2,
+          "externalPosts": 1
+        },
+        "profile": "Lean-all"
+      }
+    ]
+  },
+  "automated": {
+    "unitFiles": 284,
+    "unitPassed": 2103,
+    "unitFailed": 0,
+    "unitSkipped": 0,
+    "focusedNewCases": 21,
+    "queueRegressionPassed": 1
+  },
+  "state": [
+    {
+      "project": "rc118cgolden20261107",
+      "migrations": "131",
+      "orders": "1",
+      "unknownTaskFailures": "0",
+      "socialPublished": "1",
+      "networkDelivered": "1",
+      "triagedForms": "2"
+    },
+    {
+      "project": "rc118cgoldenrestore20261107",
+      "migrations": "131",
+      "orders": "1",
+      "unknownTaskFailures": "0",
+      "socialPublished": "1",
+      "networkDelivered": "1",
+      "triagedForms": "2"
+    }
+  ],
+  "historical": [
+    {
+      "path": "scratch/rc118c/initial-RESULT.md",
+      "sha256": "e4d97f0a395d91030aefef02e4a51c31e84b23d6b9a4963350dc6d75cd4e8bb4"
+    },
+    {
+      "path": "scratch/rc118c/initial-NEXT.md",
+      "sha256": "11fa0154c8ea7411095b063748c0132805cfdd1d86722ee37b022694bea3af69"
+    }
+  ],
+  "diagnosticAttempts": {
+    "batchPassed": 74,
+    "batchFailed": 1,
+    "reason": "Uppercase profile slug correctly rejected; corrected lowercase input rerun retained. Earlier candidate attempts retain their own source/image boundaries."
+  },
+  "scopeBoundary": "Independent canonical A-T and module/profile journey only. No aggregate RC1, remote provider, physical authenticator, load capacity or release-gate PASS."
+}

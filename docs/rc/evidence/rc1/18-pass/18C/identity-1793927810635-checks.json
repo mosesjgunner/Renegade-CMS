@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Owner creates a second isolated site through supported native REST",
+    "passed": true,
+    "detail": {
+      "site": "a1549c8f-51e6-49ad-8d43-911bc30cef9d",
+      "persisted": "18C Foreign Site"
+    }
+  },
+  {
+    "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+    "passed": false,
+    "error": "Error: response.text: Protocol error (Network.getResponseBody): No resource with given identifier found\nResponse body is not available for a response that was navigated away from. Read response.body() before triggering any navigation."
+  }
+]

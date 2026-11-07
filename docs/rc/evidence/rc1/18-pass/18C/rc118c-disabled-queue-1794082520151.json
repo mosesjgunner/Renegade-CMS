@@ -1,0 +1,9 @@
+{
+  "image": "renegade-cms:rc118c-batch-shipping-20261107",
+  "before": "2",
+  "after": "2",
+  "preservedOptionalJob": "4f11f8e0-5450-4e56-b7ae-1bcc85bfaca9",
+  "container": "rc118c-disabled-queue-1794082520151",
+  "elapsedMs": 45000,
+  "reenabledSameJobCompleted": true
+}

@@ -1,0 +1,192 @@
+{
+  "analytics": {
+    "siteId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e",
+    "eventCount": 4,
+    "sampleTruncated": false,
+    "countBasis": "Retained events with current site-scoped consent; legacy or unlinked records excluded.",
+    "consentRecordCount": 1,
+    "recentEvents": [
+      {
+        "eventType": "experiment_conversion",
+        "occurredAt": "2026-11-07T20:17:12.419Z",
+        "consentBasis": "analytics-consent",
+        "eventId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e:source:exp-conversion:cc365949-d0e5-446e-83e0-2d320031a6a6:c247d6d4-81cb-433f-a836-2cad1afc3fef:lead-contact-volunteer:150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf",
+        "receivedAt": "2026-11-07T20:17:12.419Z",
+        "context": {
+          "goal": "lead-contact-volunteer",
+          "path": "/",
+          "siteId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e",
+          "channel": "web-experiment",
+          "sourceEventId": "exp-conversion:cc365949-d0e5-446e-83e0-2d320031a6a6:c247d6d4-81cb-433f-a836-2cad1afc3fef:lead-contact-volunteer:150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf"
+        },
+        "provenance": {
+          "source": "form-submissions",
+          "goalKey": "lead-contact-volunteer",
+          "variantId": "c247d6d4-81cb-433f-a836-2cad1afc3fef",
+          "experimentId": "cc365949-d0e5-446e-83e0-2d320031a6a6",
+          "assignmentKey": "150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf",
+          "canonicalOutcomeId": "ccfe1c77-7d0d-49cf-b9ba-aa22bea386ff"
+        },
+        "trusted": false,
+        "expiresAt": "2027-02-05T20:17:12.419Z",
+        "identityLinkage": "consent-subject"
+      },
+      {
+        "eventType": "form_submit",
+        "occurredAt": "2026-11-07T20:17:12.253Z",
+        "consentBasis": "analytics-consent",
+        "eventId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e:source:form-submissions:ccfe1c77-7d0d-49cf-b9ba-aa22bea386ff",
+        "receivedAt": "2026-11-07T20:17:12.253Z",
+        "context": {
+          "siteId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e",
+          "sourceEventId": "form-submissions:ccfe1c77-7d0d-49cf-b9ba-aa22bea386ff"
+        },
+        "provenance": {
+          "grain": "canonical-outcome",
+          "source": "form-submissions",
+          "reconciliation": "persisted",
+          "canonicalOutcomeId": "ccfe1c77-7d0d-49cf-b9ba-aa22bea386ff"
+        },
+        "trusted": true,
+        "expiresAt": "2027-02-05T20:17:12.253Z",
+        "identityLinkage": "consent-subject"
+      },
+      {
+        "eventType": "page_view",
+        "occurredAt": "2026-11-07T20:17:11.412Z",
+        "consentBasis": "analytics-consent",
+        "eventId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e:source:425bdc15-e7a0-4b4d-8480-e022e9e0cc47",
+        "receivedAt": "2026-11-07T20:17:11.489Z",
+        "context": {
+          "utm": {},
+          "path": "/forms/18c-reader-intake",
+          "siteId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e",
+          "sourceEventId": "425bdc15-e7a0-4b4d-8480-e022e9e0cc47"
+        },
+        "provenance": {
+          "grain": "client-observation",
+          "source": "browser",
+          "reconciliation": "unverified"
+        },
+        "trusted": false,
+        "expiresAt": "2027-02-05T20:17:11.489Z",
+        "identityLinkage": "consent-subject"
+      },
+      {
+        "eventType": "experiment_exposure",
+        "occurredAt": "2026-11-07T20:17:11.006Z",
+        "consentBasis": "analytics-consent",
+        "eventId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e:source:exp-exposure:cc365949-d0e5-446e-83e0-2d320031a6a6:c247d6d4-81cb-433f-a836-2cad1afc3fef:150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf",
+        "receivedAt": "2026-11-07T20:17:11.006Z",
+        "context": {
+          "path": "/",
+          "siteId": "c5765f40-fc61-45c9-a8da-cdbcc0c2c64e",
+          "channel": "web-experiment",
+          "sourceEventId": "exp-exposure:cc365949-d0e5-446e-83e0-2d320031a6a6:c247d6d4-81cb-433f-a836-2cad1afc3fef:150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf"
+        },
+        "provenance": {
+          "variantId": "c247d6d4-81cb-433f-a836-2cad1afc3fef",
+          "experimentId": "cc365949-d0e5-446e-83e0-2d320031a6a6",
+          "assignmentKey": "150ffba3cb47c26181e0b44e490066dd9ceba42a6daa42601ca60b7f7a68b4cf"
+        },
+        "trusted": false,
+        "expiresAt": "2027-02-05T20:17:11.006Z",
+        "identityLinkage": "consent-subject"
+      }
+    ],
+    "recentConsent": [
+      {
+        "action": "grant",
+        "consentVersion": "2026-08-31",
+        "occurredAt": "2026-11-07T20:17:10.821Z"
+      }
+    ]
+  },
+  "finance": {
+    "summary": {
+      "counts": {
+        "succeeded": 1
+      },
+      "totalsMinorByCurrency": {
+        "USD": {
+          "succeeded": "1200"
+        }
+      },
+      "oldestAgeMs": {
+        "succeeded": 103259
+      }
+    },
+    "summaryScope": {
+      "sampled": false,
+      "rows": 1,
+      "totalRows": 1
+    },
+    "health": [
+      {
+        "providerKey": "deterministic-test",
+        "ready": true,
+        "health": "healthy"
+      }
+    ],
+    "orders": [
+      {
+        "id": "f37db320-18c7-41b4-9df6-4bdc52c36c1f",
+        "orderNumber": "order_72b28227-b410-4b2f-a645-b4a13ade69aa",
+        "state": "paid",
+        "amountMinor": "1200",
+        "currency": "USD",
+        "receiptNumber": "receipt_f37db320-18c7-41b4-9df6-4bdc52c36c1f",
+        "createdAt": "2026-11-07T20:16:39.973Z",
+        "auditEntries": [
+          "inventory-applied",
+          "payment-confirmed"
+        ]
+      }
+    ],
+    "pendingActions": [],
+    "refunds": [],
+    "disputes": [],
+    "webhookFailures": [],
+    "reconciliationCases": [],
+    "disclaimer": "Operational ledger totals; not certified accounting or provider settlement balances."
+  },
+  "aiConnections": {
+    "connections": []
+  },
+  "schedule": {
+    "counts": {
+      "nextJobs": 0,
+      "lateJobs": 0,
+      "retryingJobs": 0,
+      "failedJobs": 0,
+      "completedJobs": 1
+    },
+    "workerHealth": {
+      "status": "unknown",
+      "activeWorkerId": null,
+      "lastHeartbeat": null,
+      "clockDriftBufferSeconds": 30,
+      "catchUpThresholdMinutes": 60
+    },
+    "jobs": [
+      {
+        "id": "1492c953-3e0d-4707-bf30-85112723c53a",
+        "articleId": "eb20e0f1-1d41-437e-87c5-e5689cb86599",
+        "articleTitle": "Article",
+        "revisionId": "d43b51fd-a433-4348-9b61-6d0318337127",
+        "revisionSequence": 1,
+        "revisionHash": "",
+        "scheduledFor": "2026-11-07T20:16:06.000Z",
+        "timeZone": "UTC",
+        "idempotencyKey": "sched-cal-eb20e0f1-1d41-437e-87c5-e5689cb86599-1794082548223",
+        "status": "completed",
+        "rawStatus": "completed",
+        "leaseOwner": null,
+        "leaseExpiresAt": null,
+        "retryCount": 0,
+        "maxRetries": 3,
+        "lastError": null
+      }
+    ]
+  }
+}

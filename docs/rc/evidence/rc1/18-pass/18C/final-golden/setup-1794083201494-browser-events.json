@@ -1,0 +1,527 @@
+[
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/setup",
+    "status": 307
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/setup",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1570xzej4dsor.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/337gyu2ub9qyx.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1yg4x5e3obwvr.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/242x7dx0zu3hf.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0a-rekt06v0sv.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/10xjn4zbvtwck.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3mb_v650fie_i.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2t8p42eb6-ky_.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3ti4tb70d0p12.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/26o5im11g530g.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1qbtb6h34xmb6.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/analytics/consent",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/health/ready",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/setup/options",
+    "status": 400
+  },
+  {
+    "type": "console",
+    "level": "error",
+    "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)"
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/articles",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/search",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/search",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/articles",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/setup/options",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/setup/complete",
+    "status": 201
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0spubi71fm-_c.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0-lnnvu6k6jdk.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2h0ajyj_brp--.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3c_6gydv624zb.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0ueubt9d4sqxe.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0ztv6qsq15py-.css",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/242x7dx0zu3hf.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1yg4x5e3obwvr.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/turbopack-2c3mg3r-05n1w.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3mb_v650fie_i.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3ti4tb70d0p12.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0a-rekt06v0sv.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3x2hehirp3t1e.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0yvb-r5mxklr_.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2vyfs7wuze50j.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2t8p42eb6-ky_.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/37k46el74pvje.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2poph9z65ck4l.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3hphuyoqjzgtt.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3jbgl0_84fm_b.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2c-2jl18qtp7z.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/3e2lut7zgyl_d.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/440pmpl5ze7k9.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/2novuotcjoiyo.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/0htikthjhfiqq.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://www.gravatar.com/avatar/0ea50a1e34668373319db2995f687563",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/_next/static/chunks/1m3b4uuohz-t6.js",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/sites",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/media-assets/create",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/content/create",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/navigation",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/content/create",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/releases",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/ai",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/workflow",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/social",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/email-composer",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/audience",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/telemetry",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/commerce",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/catalog",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/posts",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/fulfillment",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/pages",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/sections",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/categories",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/albums",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/page-layouts",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/media-library",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/collections/podcast-shows",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/indexing",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/redirects",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/rendered-quality",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/workflow",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/releases",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/ai",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/social",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/email-composer",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/audience",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/moderation",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/telemetry",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/catalog",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/commerce",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/users/me",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/fulfillment",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/publications",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/api/admin/active-site",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/capabilities",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/globals/site-settings",
+    "status": 200
+  },
+  {
+    "type": "response",
+    "url": "https://rc118c.example.test:3443/admin/security",
+    "status": 200
+  }
+]

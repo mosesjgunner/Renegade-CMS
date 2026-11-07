@@ -1,0 +1,16 @@
+[
+  {
+    "name": "E owner saves site identity and theme through native settings API",
+    "passed": true,
+    "detail": {
+      "siteName": "18C Independent Journal",
+      "themeId": "neutral-starter",
+      "persistedName": "18C Independent Journal"
+    }
+  },
+  {
+    "name": "F owner builds and publishes homepage and saves navigation",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: /api/layouts/44f2e4fe-e35d-40d6-9552-2c190ae2cac3: 422 {\"error\":\"Layout validation failed.\",\"details\":[\"writer-blogger-1: unknown property headline\"]}"
+  }
+]

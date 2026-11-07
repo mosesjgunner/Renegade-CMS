@@ -1,0 +1,154 @@
+[
+  {
+    "profile": "Lean-default",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:19:21.194Z",
+    "finishedAt": "2026-11-07T20:19:27.674Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Standard-default",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:19:50.231Z",
+    "finishedAt": "2026-11-07T20:19:56.654Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:20:20.180Z",
+    "finishedAt": "2026-11-07T20:20:33.641Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "modules-local",
+    "startedAt": "2026-11-07T20:20:33.642Z",
+    "finishedAt": "2026-11-07T20:21:07.132Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "modules-editorial",
+    "startedAt": "2026-11-07T20:21:07.132Z",
+    "finishedAt": "2026-11-07T20:21:08.298Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 1
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "modules-editorial",
+    "startedAt": "2026-11-07T20:21:55.116Z",
+    "finishedAt": "2026-11-07T20:22:00.517Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "experiences",
+    "startedAt": "2026-11-07T20:22:00.517Z",
+    "finishedAt": "2026-11-07T20:22:05.980Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "release",
+    "startedAt": "2026-11-07T20:22:05.981Z",
+    "finishedAt": "2026-11-07T20:22:43.043Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "social-local",
+    "startedAt": "2026-11-07T20:22:43.044Z",
+    "finishedAt": "2026-11-07T20:23:01.158Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "audit-negative",
+    "startedAt": "2026-11-07T20:23:01.159Z",
+    "finishedAt": "2026-11-07T20:23:03.647Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "audit-positive",
+    "startedAt": "2026-11-07T20:23:03.647Z",
+    "finishedAt": "2026-11-07T20:23:07.959Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Standard-all",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:23:29.016Z",
+    "finishedAt": "2026-11-07T20:23:36.155Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-default",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:24:21.260Z",
+    "finishedAt": "2026-11-07T20:24:27.420Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Standard-default",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:24:47.939Z",
+    "finishedAt": "2026-11-07T20:24:54.128Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:25:15.321Z",
+    "finishedAt": "2026-11-07T20:25:22.691Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Standard-all",
+    "phase": "profile",
+    "startedAt": "2026-11-07T20:25:43.735Z",
+    "finishedAt": "2026-11-07T20:25:50.903Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "audience",
+    "startedAt": "2026-11-07T20:32:20.097Z",
+    "finishedAt": "2026-11-07T20:32:32.639Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "community",
+    "startedAt": "2026-11-07T20:32:32.748Z",
+    "finishedAt": "2026-11-07T20:32:36.545Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  },
+  {
+    "profile": "Lean-all",
+    "phase": "commerce",
+    "startedAt": "2026-11-07T20:32:36.654Z",
+    "finishedAt": "2026-11-07T20:32:44.021Z",
+    "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+    "exit": 0
+  }
+]

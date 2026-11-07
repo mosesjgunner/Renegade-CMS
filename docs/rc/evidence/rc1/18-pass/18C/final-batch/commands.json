@@ -1,0 +1,192 @@
+[
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs setup",
+    "startedAt": "2026-11-07T20:13:32.611Z",
+    "finishedAt": "2026-11-07T20:13:58.505Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs core",
+    "startedAt": "2026-11-07T20:13:58.508Z",
+    "finishedAt": "2026-11-07T20:14:11.483Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs identity",
+    "startedAt": "2026-11-07T20:14:11.484Z",
+    "finishedAt": "2026-11-07T20:15:27.187Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs publish",
+    "startedAt": "2026-11-07T20:15:27.188Z",
+    "finishedAt": "2026-11-07T20:15:40.040Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs public",
+    "startedAt": "2026-11-07T20:15:40.041Z",
+    "finishedAt": "2026-11-07T20:15:43.879Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs schedule",
+    "startedAt": "2026-11-07T20:15:43.880Z",
+    "finishedAt": "2026-11-07T20:16:11.286Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs audience",
+    "startedAt": "2026-11-07T20:16:11.287Z",
+    "finishedAt": "2026-11-07T20:16:19.973Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs community",
+    "startedAt": "2026-11-07T20:16:19.974Z",
+    "finishedAt": "2026-11-07T20:16:23.734Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs commerce",
+    "startedAt": "2026-11-07T20:16:23.735Z",
+    "finishedAt": "2026-11-07T20:16:41.225Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-local",
+    "startedAt": "2026-11-07T20:16:41.226Z",
+    "finishedAt": "2026-11-07T20:17:04.749Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs modules-editorial",
+    "startedAt": "2026-11-07T20:17:04.750Z",
+    "finishedAt": "2026-11-07T20:17:08.594Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs experiences",
+    "startedAt": "2026-11-07T20:17:08.596Z",
+    "finishedAt": "2026-11-07T20:17:14.664Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs release",
+    "startedAt": "2026-11-07T20:17:14.665Z",
+    "finishedAt": "2026-11-07T20:17:44.798Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs network-local",
+    "startedAt": "2026-11-07T20:17:44.799Z",
+    "finishedAt": "2026-11-07T20:17:52.996Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs social-local",
+    "startedAt": "2026-11-07T20:17:52.997Z",
+    "finishedAt": "2026-11-07T20:18:04.344Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs audit-negative",
+    "startedAt": "2026-11-07T20:18:04.345Z",
+    "finishedAt": "2026-11-07T20:18:07.015Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs audit-positive",
+    "startedAt": "2026-11-07T20:18:07.016Z",
+    "finishedAt": "2026-11-07T20:18:10.350Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs operations",
+    "startedAt": "2026-11-07T20:18:10.351Z",
+    "finishedAt": "2026-11-07T20:18:41.889Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  },
+  {
+    "command": "RC118C_FINAL=true node tests/rc1-18c/journey.mjs recovery",
+    "startedAt": "2026-11-07T20:18:41.891Z",
+    "finishedAt": "2026-11-07T20:18:52.775Z",
+    "exit": 0,
+    "environment": {
+      "RC118C_BATCH_REPAIRED": "true",
+      "RC118C_FINAL": "true"
+    }
+  }
+]

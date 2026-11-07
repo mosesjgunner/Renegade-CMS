@@ -1,0 +1,22 @@
+{
+  "sourceStopExit": 0,
+  "restoreStopExit": 0,
+  "projects": [
+    {
+      "project": "rc118cgolden20261107",
+      "runningContainers": 0,
+      "volumesRetained": [
+        "rc118cgolden20261107_renegade_media",
+        "rc118cgolden20261107_renegade_postgres_data"
+      ]
+    },
+    {
+      "project": "rc118cgoldenrestore20261107",
+      "runningContainers": 0,
+      "volumesRetained": [
+        "rc118cgoldenrestore20261107_renegade_restore_media",
+        "rc118cgoldenrestore20261107_renegade_restore_postgres_data"
+      ]
+    }
+  ]
+}

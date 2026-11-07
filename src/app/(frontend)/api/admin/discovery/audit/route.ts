@@ -9,6 +9,7 @@ import { crossCheckDiscoveryOutputs } from '@/modules/public/discovery-cross-che
 import { analyzeCannibalization } from '@/modules/public/cannibalization'
 import { generateSeoAiSuggestions } from '@/modules/public/ai-boundary-suggestions'
 import { persistRenderedAuditLifecycle } from '@/modules/public/discovery-lifecycle'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -30,11 +31,15 @@ export async function POST(request: Request) {
     collection: 'sites',
     limit: 1,
     depth: 0,
-    overrideAccess: true,
+    overrideAccess: false,
+    user,
   })
-  const defaultSiteId = sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site'
+  const defaultSiteId = sites.docs[0]?.id ? String(sites.docs[0].id) : null
 
   const siteId = typeof body.siteId === 'string' ? body.siteId : defaultSiteId
+  if (!siteId || !(await checkOperatorSiteAccess(payload, user, siteId)))
+    return Response.json({ error: 'Staff site access required.' }, { status: 403 })
+
   const settings = await resolveSiteSettings(payload)
   let origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
   if (process.env.LOCAL_E2E_TEST_MODE === 'true' && process.env.APP_URL) {

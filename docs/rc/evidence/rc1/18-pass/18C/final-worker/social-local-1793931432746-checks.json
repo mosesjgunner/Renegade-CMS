@@ -1,0 +1,7 @@
+[
+  {
+    "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: /api/admin/social/accounts: 500 {\"error\":\"Production encryption key is required: set RENEGADE_ENCRYPTION_KEY\"}"
+  }
+]

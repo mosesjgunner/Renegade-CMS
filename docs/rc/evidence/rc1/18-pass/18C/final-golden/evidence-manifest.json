@@ -1,0 +1,2120 @@
+{
+  "rawTraces": [
+    {
+      "path": "scratch/rc118c-final-golden/audience-1794083289530-raw-trace.zip",
+      "sha256": "8c185ce009e65d5f3eccdea574bcf53ab77877ea57f90d14ebda5cdea75d2ec6",
+      "bytes": 355960,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/audience-1794083289530-review-trace.zip",
+      "reviewSha256": "3d63c36652fbb964b4a9351bbb82d9e03abb442c9538472d62ae4709c0319b46",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/audience-1794083289530-subscriber-0-raw-trace.zip",
+      "sha256": "6a903531c356ab357ad59c67b0ca52b97fec72e63660484e52bacd38ac500420",
+      "bytes": 327218,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/audience-1794083289530-subscriber-0-review-trace.zip",
+      "reviewSha256": "644e8d022c57a9fbb561d7a201c93963d146d6006f85ba02140782b7da30c367",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/audit-negative-1794083422584-raw-trace.zip",
+      "sha256": "58c921bd0046d2d097337b751498a1a0ce5bcfb573ced18e2700f179bf027dad",
+      "bytes": 329799,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/audit-negative-1794083422584-review-trace.zip",
+      "reviewSha256": "80ba98fd7a772c9bdd0412526d1cce25a742537b4b9a30619f358a6294a87555",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/audit-negative-1794083422584-staff-0-raw-trace.zip",
+      "sha256": "44694ef916009e17715d65209ba8654e5213d8bbf72619be3ddecfbf125db5f3",
+      "bytes": 306024,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/audit-negative-1794083422584-staff-0-review-trace.zip",
+      "reviewSha256": "2aefacab73a3ea7846bd78c44f545de91ee6057b8af605f5fce48687054515e4",
+      "omittedRasterFrames": 3
+    },
+    {
+      "path": "scratch/rc118c-final-golden/audit-positive-1794083425257-raw-trace.zip",
+      "sha256": "95eeac517ec98296cb419238dea98f8b24d08a571634d100447d29f819a96f15",
+      "bytes": 392958,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/audit-positive-1794083425257-review-trace.zip",
+      "reviewSha256": "478ca9ebd77bd362a886a1a7dd5898ac5fe8193b42877a2771e2fcb0a3f5d2a4",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/commerce-1794083302170-buyer-0-raw-trace.zip",
+      "sha256": "c57205d2df7601c9298cba9ba51f60dce1584b2dab94a75e632de9e5a253384a",
+      "bytes": 1158057,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/commerce-1794083302170-buyer-0-review-trace.zip",
+      "reviewSha256": "472b6f36d4823c5e818fd051aa8ec3e8ff63a398306884c9005843e231654d97",
+      "omittedRasterFrames": 35
+    },
+    {
+      "path": "scratch/rc118c-final-golden/commerce-1794083302170-checkout-stranger-1-raw-trace.zip",
+      "sha256": "502ab56315038c6b80d601fcd2bbf49f9478f08655440fc19908098df55c5f50",
+      "bytes": 325547,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/commerce-1794083302170-checkout-stranger-1-review-trace.zip",
+      "reviewSha256": "06d20343d5052a0113b283b992910e57300c8b83c50e54982877b027c063ec20",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/commerce-1794083302170-raw-trace.zip",
+      "sha256": "6eac019d5ee5a6ce14dbdc2e5a3acd4f20c951ce48bb06c07084a4863facb680",
+      "bytes": 396078,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/commerce-1794083302170-review-trace.zip",
+      "reviewSha256": "66138a394df33e1bc0a0ff9cc12fd0821c53cf381a1e51d2cace3a3fc0229b97",
+      "omittedRasterFrames": 6
+    },
+    {
+      "path": "scratch/rc118c-final-golden/community-1794083298449-member-0-raw-trace.zip",
+      "sha256": "78e2064ab5ef8d8bc2d5a8e5ab677ab66cfaa0568df99f82c1a9d1b9322e0255",
+      "bytes": 419257,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/community-1794083298449-member-0-review-trace.zip",
+      "reviewSha256": "8bc5db4f433aae09919b1e8d831ff23407678d8cdc9ab733bd77d22678a4586e",
+      "omittedRasterFrames": 7
+    },
+    {
+      "path": "scratch/rc118c-final-golden/community-1794083298449-raw-trace.zip",
+      "sha256": "7c9d2a74eb789b9aad55509eca96c8cec3727bf295e11c092d209e24fdc228ca",
+      "bytes": 365154,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/community-1794083298449-review-trace.zip",
+      "reviewSha256": "9564806a006aac97d6fda6be40e007d80fe484e95a15a33bc1127323a8909114",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/core-1794083215743-raw-trace.zip",
+      "sha256": "74d3e12b59d823f91e2f0ea17f2a4de7d20f4928fea278a50d318f5a60455b72",
+      "bytes": 3224721,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/core-1794083215743-review-trace.zip",
+      "reviewSha256": "5b14e369e1207165d56e6aff3c9ae68a90bfb2f09031a63ece7ddc23d1b1ab78",
+      "omittedRasterFrames": 134
+    },
+    {
+      "path": "scratch/rc118c-final-golden/experiences-1794083357439-experiment-visitor-0-raw-trace.zip",
+      "sha256": "2378f60af9ddb666d91e5b814fb236590452a2f3a5d2500583c1efa62b18114d",
+      "bytes": 438119,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/experiences-1794083357439-experiment-visitor-0-review-trace.zip",
+      "reviewSha256": "e9f0eaa77d06b95147b29473e5fefbc623afd2b6322bcb10058e5c13a0357918",
+      "omittedRasterFrames": 12
+    },
+    {
+      "path": "scratch/rc118c-final-golden/experiences-1794083357439-raw-trace.zip",
+      "sha256": "914e46da9ad4beb135d463c1f2900cf716a755fb44bb1abf7ad0a3f8543801f5",
+      "bytes": 375024,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/experiences-1794083357439-review-trace.zip",
+      "reviewSha256": "ed0291ca6e3aace340a9b1bd05404358353b5ddff4b68c7aadf42efc48b866c9",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/identity-1794083224522-administrator-1-raw-trace.zip",
+      "sha256": "7ed96cdc828bc14f63ba23346f9e58d11601f4edcf467e1a149c577680ae3bf3",
+      "bytes": 1591687,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/identity-1794083224522-administrator-1-review-trace.zip",
+      "reviewSha256": "a5d1695147b068b2e25730e9894fe7dca6ee512eb094e683a4c91884d942b98b",
+      "omittedRasterFrames": 49
+    },
+    {
+      "path": "scratch/rc118c-final-golden/identity-1794083224522-administrator-3-raw-trace.zip",
+      "sha256": "6d72758bd9ccfe5d0139905aad4a63c10f0fa470eec68db74f5ac06c06deaa27",
+      "bytes": 306627,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/identity-1794083224522-administrator-3-review-trace.zip",
+      "reviewSha256": "fee7e99616a55839c744464320128cc5633c4057b1621c1a319959ced4d74338",
+      "omittedRasterFrames": 3
+    },
+    {
+      "path": "scratch/rc118c-final-golden/identity-1794083224522-raw-trace.zip",
+      "sha256": "3f95d5bb1a4e066f66898b3d4ec34e377eee4ba1e55c7a7d6bcf9b6083e0231e",
+      "bytes": 429612,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/identity-1794083224522-review-trace.zip",
+      "reviewSha256": "d3981a1ea177f98523224fa645f677921ec0b0d0925182ded0dc8ec4720dcd63",
+      "omittedRasterFrames": 8
+    },
+    {
+      "path": "scratch/rc118c-final-golden/identity-1794083224522-staff-0-raw-trace.zip",
+      "sha256": "31e03625eac335660be8c1a55ad4acc1dddbfaebde46d2d9b6367d9cd4093ff1",
+      "bytes": 1611692,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/identity-1794083224522-staff-0-review-trace.zip",
+      "reviewSha256": "9cab651028ba9969a035950462c7553d5ba666f55386e8c3d0ec6421a05c0786",
+      "omittedRasterFrames": 50
+    },
+    {
+      "path": "scratch/rc118c-final-golden/identity-1794083224522-staff-2-raw-trace.zip",
+      "sha256": "977240a3b33a126ac59169a3a2854932198f6ebab50fdf87a26c0803de8b19ef",
+      "bytes": 307500,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/identity-1794083224522-staff-2-review-trace.zip",
+      "reviewSha256": "027cdf8e2ccdc7a72f5041f2c7276b2e02545e278e1759d66fba58d8441e5ef1",
+      "omittedRasterFrames": 3
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-editorial-1794083353297-book-visitor-0-raw-trace.zip",
+      "sha256": "2537c6fd676198fb2809af98c836794937dcb923b82b6d531392cf72d0e377a8",
+      "bytes": 367587,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-editorial-1794083353297-book-visitor-0-review-trace.zip",
+      "reviewSha256": "3dbb4d869cadf109bd58c4018170010f9aa8085ac499d5f81cfd46487bb88240",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-editorial-1794083353297-raw-trace.zip",
+      "sha256": "ae3d27a22185d870cbeaa235c01fae0339e7fc56834d4500f961c0d8dfbd5e9c",
+      "bytes": 385315,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-editorial-1794083353297-review-trace.zip",
+      "reviewSha256": "ba4d2265fb70424d660aa18fa1ffd9e6c98c45db228cec7d90d32fcb09c8dbfc",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-local-1794083319909-event-visitor-0-raw-trace.zip",
+      "sha256": "13cdcb90f0a08030e4f07091060f256506d59e38cb06d41262a8a4d1a95cf489",
+      "bytes": 407371,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-local-1794083319909-event-visitor-0-review-trace.zip",
+      "reviewSha256": "82cc17a32e1acfbf7feabb3719f7b9bb6ca4354c02f5e6ab6fb80048b9fc0143",
+      "omittedRasterFrames": 6
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-local-1794083319909-form-visitor-1-raw-trace.zip",
+      "sha256": "8fdff2bf3f3b0bc967a6160a7f72c13d42d3aaa524222fef9ec45c0b18887358",
+      "bytes": 456581,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-local-1794083319909-form-visitor-1-review-trace.zip",
+      "reviewSha256": "436bac33d91f2e8d32b2cc3e4b064845b6aac49901331805885cfc621e90ebe3",
+      "omittedRasterFrames": 10
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-local-1794083319909-raw-trace.zip",
+      "sha256": "fe8729349ecee77c837e4e7198ef56b27f3368db5e6321f1d8c468410bccdedd",
+      "bytes": 478129,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-local-1794083319909-review-trace.zip",
+      "reviewSha256": "b0356454fd2cb932b3a77b7f7490e1e845a40669646c08b1f1a7bbf6c3254e7f",
+      "omittedRasterFrames": 9
+    },
+    {
+      "path": "scratch/rc118c-final-golden/modules-local-1794083319909-staff-2-raw-trace.zip",
+      "sha256": "263be287361cb0d90bd3822dc2b12b13bb8e36e4701dc323ca877808dfcbb3ad",
+      "bytes": 307018,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/modules-local-1794083319909-staff-2-review-trace.zip",
+      "reviewSha256": "79b2c16c6dff210eb403ac954c4384de2987e6e9e364aa35200b14d4b2bddfb2",
+      "omittedRasterFrames": 3
+    },
+    {
+      "path": "scratch/rc118c-final-golden/network-local-1794083393022-network-visitor-0-raw-trace.zip",
+      "sha256": "c74ff5bc4756b2e6bdc140c12c1f7257f47230ea7a6fe90333f998f193ef7679",
+      "bytes": 327506,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/network-local-1794083393022-network-visitor-0-review-trace.zip",
+      "reviewSha256": "33879fb8c4c45f50b54e73dac43390f7c35cd1a92c04934c3c80e70dac3e8758",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/network-local-1794083393022-raw-trace.zip",
+      "sha256": "39c53f1f0d9a469cd33958b45c2301c9885e70f438aa756fe366013db14e6e8c",
+      "bytes": 358673,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/network-local-1794083393022-review-trace.zip",
+      "reviewSha256": "4531c3d21a6907855fc3bb2209276d2a9808c780efe1a3ad7c27f58976850cc4",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/operations-1794083429164-owner-0-raw-trace.zip",
+      "sha256": "abb20a2577a8dc52909b08c82ce89b5cf4ad84d7c527918aacd2f18966e524c2",
+      "bytes": 1086928,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/operations-1794083429164-owner-0-review-trace.zip",
+      "reviewSha256": "fc814e5d431298702a337c8646d053e7f71978f8443496c28b97977fc97aad26",
+      "omittedRasterFrames": 27
+    },
+    {
+      "path": "scratch/rc118c-final-golden/operations-1794083429164-raw-trace.zip",
+      "sha256": "022105de7c092840987666856d19f367bb099d61f44221881e4792d682b1b254",
+      "bytes": 758889,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/operations-1794083429164-review-trace.zip",
+      "reviewSha256": "3d11c4433e4fb9754182412a948007fc058f7d2d40336565d98e8c2e4756be82",
+      "omittedRasterFrames": 12
+    },
+    {
+      "path": "scratch/rc118c-final-golden/public-1794083254119-raw-trace.zip",
+      "sha256": "b3f2a258bd428eef9f910ba5de4c423bdae5984e0295b81ede7cc149ceef8a6d",
+      "bytes": 362606,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/public-1794083254119-review-trace.zip",
+      "reviewSha256": "88b0f72710bf6c5b7240a9fef4db376bc194d2a9b3bce0c8a7f4d67f77e49797",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/public-1794083254119-visitor-0-raw-trace.zip",
+      "sha256": "e5fe51ad0e0252f8a042686838734d75da8b9e1f6e9b062dcd898c874320d534",
+      "bytes": 804269,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/public-1794083254119-visitor-0-review-trace.zip",
+      "reviewSha256": "6c70f14b66ee474a3bd51ab1748069a8cec04031f6defbd0c58cc5a72b56e0ea",
+      "omittedRasterFrames": 13
+    },
+    {
+      "path": "scratch/rc118c-final-golden/publish-1794083243702-anonymous-1-raw-trace.zip",
+      "sha256": "f377eb79d8e44e754b81af7a1990e8ba402def78c31816eaeca4d2888371eeef",
+      "bytes": 327832,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/publish-1794083243702-anonymous-1-review-trace.zip",
+      "reviewSha256": "065bf0e95b6c90f03cea961f476919bce3779ec3c71e9ffb86ddc94eec6f8891",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/publish-1794083243702-raw-trace.zip",
+      "sha256": "97e6b86da0d1b8bf713a3e42d12233c4f261dc8c560f3f08bb9b2d689879d612",
+      "bytes": 680468,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/publish-1794083243702-review-trace.zip",
+      "reviewSha256": "68fb15443ece3476d76c91cac48ddc2c152410dd1758dd2f36f514ded120f5b9",
+      "omittedRasterFrames": 14
+    },
+    {
+      "path": "scratch/rc118c-final-golden/publish-1794083243702-staff-0-raw-trace.zip",
+      "sha256": "d8195f28666429d506a059c3518a3e537d86fd8bec4dea475c1886a7cb8fdcff",
+      "bytes": 330182,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/publish-1794083243702-staff-0-review-trace.zip",
+      "reviewSha256": "ce944e55dfcab7d1dcdccd05f76eb6a01f824ca06f0db7662aab2fe0e09442a2",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/recovery-1794083463035-raw-trace.zip",
+      "sha256": "ab09b4a086f02c1119c69443f8594fc04fe5b80f47edb9eec948a89707871d28",
+      "bytes": 306785,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/recovery-1794083463035-review-trace.zip",
+      "reviewSha256": "1ce08e4760736506cba0ccea49b622cc8d3d3d5a351222770d11af3b0240e07c",
+      "omittedRasterFrames": 3
+    },
+    {
+      "path": "scratch/rc118c-final-golden/recovery-1794083463035-recovery-0-raw-trace.zip",
+      "sha256": "1a873172b01f4586b849e6dcddd213634c49473491f2b3cdf92c9fe5db8d4df5",
+      "bytes": 1227130,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/recovery-1794083463035-recovery-0-review-trace.zip",
+      "reviewSha256": "c71c17733af549d15da1a3414fe7e847339a099fe992c251eecaf88ba6cd0c44",
+      "omittedRasterFrames": 33
+    },
+    {
+      "path": "scratch/rc118c-final-golden/release-1794083363278-raw-trace.zip",
+      "sha256": "74fc395642dcf1a632798bf7bde8e91b41d0a3c89ca4143f1b7e17730109c88f",
+      "bytes": 382970,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/release-1794083363278-review-trace.zip",
+      "reviewSha256": "3de9795e8fec27542ccceef34c6f842048b769e7ec43d19dda366951e65d5228",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/release-1794083363278-released-story-visitor-1-raw-trace.zip",
+      "sha256": "54776d6e1b97e2b3ec48a377dd45301f22875fde6599bbc6b5b939979eacc9aa",
+      "bytes": 415043,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/release-1794083363278-released-story-visitor-1-review-trace.zip",
+      "reviewSha256": "12232f96f799b3d47164baa886b86e8210920f34b2507704666996cc5459631b",
+      "omittedRasterFrames": 7
+    },
+    {
+      "path": "scratch/rc118c-final-golden/release-1794083363278-staff-0-raw-trace.zip",
+      "sha256": "ed85785646b2cabb4956b55076821e6c15ba86db36354e22eac703f80f4d6ba4",
+      "bytes": 329508,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/release-1794083363278-staff-0-review-trace.zip",
+      "reviewSha256": "48f1fd64bcde3196a24e63030462df3b8adad49aee3cac9a6142d60e705679e2",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/restored-1794083664998-owner-0-raw-trace.zip",
+      "sha256": "6aa0a910574b3ff50018e7c618c1776ab631937721fe28b9353b734d40928e1e",
+      "bytes": 1108710,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/restored-1794083664998-owner-0-review-trace.zip",
+      "reviewSha256": "7262313ee4478a1c3d3d92cf3a502ef8db14e3b62ef12f46091cbe808818ba7a",
+      "omittedRasterFrames": 27
+    },
+    {
+      "path": "scratch/rc118c-final-golden/restored-1794083664998-raw-trace.zip",
+      "sha256": "b284fbc7dbac00d9f7ee481105bd52495c8b1ecac5a7cc45724106b3706ad0ae",
+      "bytes": 378108,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/restored-1794083664998-review-trace.zip",
+      "reviewSha256": "6aecb644f479e8d4e213430cf528a8066cad9e85627d9066111422e2ceef455c",
+      "omittedRasterFrames": 6
+    },
+    {
+      "path": "scratch/rc118c-final-golden/restored-1794083664998-restored-visitor-1-raw-trace.zip",
+      "sha256": "57bb4f068ef00cdcff6186f086a0a6424cb6308165714d9eb34ff2acdc3d853f",
+      "bytes": 910389,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/restored-1794083664998-restored-visitor-1-review-trace.zip",
+      "reviewSha256": "15cc0cf4acecb476df4e62ea34e120353ec338ed2d2f9c9ff0b1875670c694ff",
+      "omittedRasterFrames": 19
+    },
+    {
+      "path": "scratch/rc118c-final-golden/schedule-1794083258070-raw-trace.zip",
+      "sha256": "2f91b5e092a9552ed166e2d8c65b15897893d08cfb15c8b08ce83a4bd8a064aa",
+      "bytes": 369186,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/schedule-1794083258070-review-trace.zip",
+      "reviewSha256": "54407aaca813a7d2af47859422cb29b8425fc66413acb3b7f6a3322b89c18402",
+      "omittedRasterFrames": 5
+    },
+    {
+      "path": "scratch/rc118c-final-golden/schedule-1794083258070-staff-0-raw-trace.zip",
+      "sha256": "331234bb9c34322a482f3266a8f5a6913017020c7c29f2bd100c526bf56440a3",
+      "bytes": 329499,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/schedule-1794083258070-staff-0-review-trace.zip",
+      "reviewSha256": "66d8592fb101d140631db7c1be3491a02cd8bd2e9f71cadf3a3d3d0b9c3696d1",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/schedule-1794083258070-visitor-1-raw-trace.zip",
+      "sha256": "4760c8c50d2c96d636a1d6f7f45db825ba061df50673586797d2e2be7c5e09cf",
+      "bytes": 415507,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/schedule-1794083258070-visitor-1-review-trace.zip",
+      "reviewSha256": "1d3054d66d5da4f1723bc022e29faa882af816d560be0215acbebc556c3dc467",
+      "omittedRasterFrames": 6
+    },
+    {
+      "path": "scratch/rc118c-final-golden/setup-1794083201494-raw-trace.zip",
+      "sha256": "9d36661b6100fb9f3d67f8305e31b86c078fd0a434b08341967965d7f8fe5a98",
+      "bytes": 2088045,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/setup-1794083201494-review-trace.zip",
+      "reviewSha256": "af2b265fddc989b43ba5e444d97ee326e2ae6d2d003ae0f32b05265956bf5a73",
+      "omittedRasterFrames": 58
+    },
+    {
+      "path": "scratch/rc118c-final-golden/social-local-1794083401221-raw-trace.zip",
+      "sha256": "77ef0d51c5365684d711b75770c8438f83ed361cab6f3b4999f98a7e60e1bf08",
+      "bytes": 433842,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/social-local-1794083401221-review-trace.zip",
+      "reviewSha256": "22d141fdc1bded1dae36d1ed567d52a19ace5d5967dd0d1fa883183519748ba2",
+      "omittedRasterFrames": 7
+    },
+    {
+      "path": "scratch/rc118c-final-golden/social-local-1794083401221-social-anonymous-1-raw-trace.zip",
+      "sha256": "d4a3904da8c7f8639bb8e9bc5e2917eafed33bbf99731fedc6952bdd98d3d0db",
+      "bytes": 326776,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/social-local-1794083401221-social-anonymous-1-review-trace.zip",
+      "reviewSha256": "a0fba07b8c61cabc3b551ec91bedd2149a6f549bc5e0e32429775435f3f14637",
+      "omittedRasterFrames": 4
+    },
+    {
+      "path": "scratch/rc118c-final-golden/social-local-1794083401221-staff-0-raw-trace.zip",
+      "sha256": "122c84c284ce3ad9f811d753b8b3e0dc74039f3d075c32b628543b9d5b699f51",
+      "bytes": 327373,
+      "review": "docs/rc/evidence/rc1/18-pass/18C/final-golden/traces/social-local-1794083401221-staff-0-review-trace.zip",
+      "reviewSha256": "f995b1bcda6d903ebd1d0a37aa635bd1d453432b11f4890f6edb5f8d4312b40e",
+      "omittedRasterFrames": 4
+    }
+  ],
+  "logs": [
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-renegade-web-1-server.log",
+      "sha256": "8c5fa2aebbf1b9441e770224eb8cc1e5281334b7981bd2a57246adf3fbe5dc93",
+      "rawSha256": "722412a2dd22d692cd7aed4dab0be83686854184e873c5e4d10edc61c1d3492c",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgoldenrestore20261107-renegade-web-1-server.log",
+      "sha256": "2f11558623afb3487acbdc65b5d932dd1ab49b87323707d3197035c43a509428",
+      "rawSha256": "80a230af770e7bcfb39c409b558e7aa27680424ecf9751a4f955e8eddeb56e44",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-renegade-worker-1-server.log",
+      "sha256": "a4c37982314e86707a723f4ff94114c4703855b6111155d1add825deb3b2fe4c",
+      "rawSha256": "5b8792b4d73761ee65e35004b4bb3d551d2ba49de5f836baa560541d90e9740d",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgoldenrestore20261107-renegade-worker-1-server.log",
+      "sha256": "c60049f2e2eaac5b3c5a82618e7ee1043f069c117b30c68399924959198a2ce4",
+      "rawSha256": "486d453b058a2a8cff15b49f2c8883d147bd07eebcd969c6c49d08c3ff3ba971",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-postgres-1-server.log",
+      "sha256": "4dae8ccd2e404d7b36cab64b5a0634bd31393307ba79a91e6d7d3c5448b0c02d",
+      "rawSha256": "a190aff1ec6c3e04caca7c5f18549069ec7b1b06c84d18866bb26500111f1c07",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgoldenrestore20261107-postgres-1-server.log",
+      "sha256": "7d4e2c0c0d5e6ec16e9f3ec6b3211f271bc58500ec93cd1e75f07a18e7cf4daa",
+      "rawSha256": "8c223a58489b98d9c7fe4dc886089752935edce3154f423fcb2040a8b58f2e19",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-migrate-1-server.log",
+      "sha256": "cfe2c8db6c20bb26e0caabcbe8a58fc50cf0695e3ef59c4d8c03f32f67d75899",
+      "rawSha256": "3a85b593ae0c17d3962af3758476a7d1c59e19f6eccb59a969de0310ee428719",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgoldenrestore20261107-migrate-1-server.log",
+      "sha256": "cf5286fc841623f11b83b8fd9188e0457662bd3b7c127d2a082d1e79d289f9c9",
+      "rawSha256": "df611edd4bc2127edf7bce4f496fc5bf29918a5c468c926a3834561956abfde4",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-mailpit-1-server.log",
+      "sha256": "284f7a5c6f7ffae0feac2b9f2530eb3e55be04802ae9bc7e168e45a3e62a486a",
+      "rawSha256": "23853f7138ebc2a555af631266693fd8c16490b14826e5cf7bb00106c313c026",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-local-peer-1-server.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgolden20261107-tls-proxy-1-server.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0
+    },
+    {
+      "path": "docs/rc/evidence/rc1/18-pass/18C/final-golden/rc118cgoldenrestore20261107-tls-proxy-1-server.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rawSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit": 0
+    }
+  ],
+  "policy": "Complete raw traces remain private in scratch. Review copies redact credentials and omit raster trace frames; separately captured masked screenshots remain in evidence.",
+  "checks": {
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "items": [
+      {
+        "file": "audience-1794083289530-checks.json",
+        "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+        "passed": true,
+        "detail": {
+          "requested": 202,
+          "subscriberStatus": "active",
+          "delivery": "fe8496d7-8bd2-461a-ad20-c0e827cb7b9e",
+          "deliveryStatus": "accepted",
+          "localSinkMessage": "4ay429VvMfYWK4xtRGzg2P",
+          "confirmationReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-negative-1794083422584-checks.json",
+        "name": "Foreign-site rendered quality audit is denied before findings can persist",
+        "passed": true,
+        "detail": {
+          "status": 403,
+          "before": "0",
+          "after": "0"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-positive-1794083425257-checks.json",
+        "name": "Enabled quality module fetches real HTTPS pages and persists rendered findings",
+        "passed": true,
+        "detail": {
+          "pages": 11,
+          "articleStatus": 200,
+          "actualHttpFetch": true,
+          "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+          "findings": 9,
+          "lifecycle": {
+            "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+            "created": 8,
+            "updated": 0,
+            "resolved": 0,
+            "active": 8,
+            "totalIssues": 9
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O operator configures explicit local-test merchant and publishes reviewed product",
+        "passed": true,
+        "detail": {
+          "product": "0824598e-6e8a-4d3e-9671-04409d01aea5",
+          "merchant": "f618e9d4-c77b-4940-864c-396e8ab93863",
+          "provider": "deterministic-test",
+          "realMoney": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O guest UI cart authoritative quote local confirmation and worker-settled order",
+        "passed": true,
+        "detail": {
+          "order": "cdd2de9c-2dd2-4eb8-8ef3-ff52606573ab",
+          "orderState": "paid",
+          "checkout": "0c1caf30-8a5b-4d68-94e4-e33fcc19f2b3",
+          "unauthorizedStatus": 403,
+          "statusKeys": [
+            "downloads",
+            "checkout",
+            "payment",
+            "order"
+          ],
+          "provider": "deterministic-test",
+          "realCharge": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N ordinary member email sign-in and operator forum creation",
+        "passed": true,
+        "detail": {
+          "member": "65853547-6de6-43fb-80fb-785e62c06e63",
+          "forum": "e7f85b76-1fce-4d8e-9cb0-4805544f9994",
+          "localEmailSignIn": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N member thread reply moderation and notification path persist",
+        "passed": true,
+        "detail": {
+          "discussion": "b681de4d-81dd-443f-ae06-d9033b7ad094",
+          "reply": "6f0549df-8de1-48f3-93f8-638abbd79a85",
+          "moderationState": "removed",
+          "deniedMember": 403,
+          "notifications": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "E owner saves site identity and theme through native settings API",
+        "passed": true,
+        "detail": {
+          "siteName": "18C Independent Journal",
+          "themeId": "neutral-starter",
+          "persistedName": "18C Independent Journal"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "F owner builds and publishes homepage and saves navigation",
+        "passed": true,
+        "detail": {
+          "layout": "d3ef3fa6-92b9-41ff-bb45-0d002eaafd35",
+          "resultKeys": [
+            "layout",
+            "warnings"
+          ],
+          "status": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "G real image uploaded with original SHA-256 and persisted media record",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "media": "f8b2aa33-c303-4973-b2d9-f8cdf54bd166",
+          "bytes": 73970,
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "H native REST creates taxonomy, page and article with real body media and SEO",
+        "passed": true,
+        "detail": {
+          "page": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+          "pagePath": "/about-18c",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "articlePath": "/articles/independent-18c",
+          "category": "e88b23e6-ce11-40cd-83ff-c4fefa110a6f"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "experiences-1794083357439-checks.json",
+        "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+        "passed": true,
+        "detail": {
+          "experiment": "7c1392d8-30d1-4093-8b8b-d6ff82378a82",
+          "selectedVariant": "acbc1e92-1b61-4e22-8bdc-3068d3f0c669",
+          "canonicalSubmission": "f619bf28-7872-47e7-812c-27e811d73f9f",
+          "exposure": 201,
+          "conversion": 201,
+          "winnerAndRollbackPersisted": true,
+          "eventCount": 4
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Owner creates a second isolated site through supported native REST",
+        "passed": true,
+        "detail": {
+          "site": "9d1c49fa-bd7d-4647-b1cb-f79de33fd9d1",
+          "persisted": "18C Foreign Site"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "staff",
+          "user": "abcf0672-8ec9-4588-921a-8f3c50bb0f1d",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited administrator enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "administrator",
+          "user": "17b4c50f-abbd-4b0e-b74c-9414075b7ca4",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Staff and administrator foreign-site writes denied with unchanged persisted site",
+        "passed": true,
+        "detail": {
+          "results": [
+            {
+              "role": "staff",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            },
+            {
+              "role": "administrator",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            }
+          ],
+          "before": "e882afe8a3c569c8a87bec9e13b544e7",
+          "after": "e882afe8a3c569c8a87bec9e13b544e7"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+        "passed": true,
+        "detail": {
+          "book": "efbaf651-e587-402d-94ce-546b5a6de615",
+          "chapter": "cbc2710e-9f67-41a4-b573-17c499cfc33e",
+          "canonicalPath": "/books/18c-handbook",
+          "publicStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled collaboration module canonical checkpoint emits durable event and rejects stale revision",
+        "passed": true,
+        "detail": {
+          "content": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "companion": "05706f0b-dba8-4305-9d0c-540ba6c90712",
+          "revision": "851229ae-d920-4b0e-9438-390758d0f540",
+          "emittedEvents": 1,
+          "staleRevisionDenied": 409
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled events module native action renders event and iCalendar output",
+        "passed": true,
+        "detail": {
+          "event": "5b40d6be-8e8b-4825-8a4e-7ed15043ae1d",
+          "canonicalPath": "/events/18c-reader-assembly",
+          "publicStatus": 200,
+          "icsStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+        "passed": true,
+        "detail": {
+          "source": "00173189-de56-4fcf-97b5-cedb7725ab25",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "persistedReference": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+        "passed": true,
+        "detail": {
+          "form": "ff2c47c5-a79a-4f0d-b08a-3e31b7e8d4e8",
+          "submission": "d05e80c6-b56a-4082-a1d3-5c2a36a07a90",
+          "persistedStatus": "triaged",
+          "contacts": 1,
+          "actions": [
+            {
+              "type": "create-contact",
+              "status": "completed",
+              "resultId": "c7e165a2-839c-49d9-960b-7da92daed527"
+            },
+            {
+              "type": "create-task",
+              "status": "completed",
+              "resultId": "4a6a5b09-2c4f-426f-8aee-775820a93d69"
+            }
+          ],
+          "invalidAnswersDenied": 422
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled integrations module issues rotates and revokes a scoped machine credential",
+        "passed": true,
+        "detail": {
+          "client": "f8f4cb10-bc68-40df-b64d-8b26b5f6c9fe",
+          "rotated": true,
+          "revoked": true,
+          "foreignSiteDenied": 403,
+          "tokenValues": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "network-local-1794083393022-checks.json",
+        "name": "Enabled network module: independent local peer signed Follow and actual signed Accept",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "badSignature": 401,
+          "follow": 202,
+          "replay": 202,
+          "relationships": 1,
+          "signedAcceptCopies": 1,
+          "delivered": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "P operator inspects actual analytics health and bounded provider truth",
+        "passed": true,
+        "detail": {
+          "analyticsCount": 4,
+          "orderCount": 1,
+          "paymentProviders": [
+            {
+              "providerKey": "deterministic-test",
+              "ready": true,
+              "health": "healthy"
+            }
+          ],
+          "aiConnections": 0,
+          "ready": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "Q actual web and worker restart retains workflows without duplicate side effects",
+        "passed": true,
+        "detail": {
+          "before": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "after": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "ready": true,
+          "localConfirmationCopies": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "R logout then passkey login from an entirely new clean browser context",
+        "passed": true,
+        "detail": {
+          "initiallyNoOperatorCookie": true,
+          "realWebAuthn": true,
+          "authenticatedAdmin": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "J anonymous rendering metadata schema discovery search and original bytes",
+        "passed": true,
+        "detail": {
+          "outputs": [
+            {
+              "path": "/sitemap.xml",
+              "status": 200
+            },
+            {
+              "path": "/sitemaps/1.xml",
+              "status": 200
+            },
+            {
+              "path": "/robots.txt",
+              "status": 200
+            },
+            {
+              "path": "/feed.xml",
+              "status": 200
+            },
+            {
+              "path": "/search?q=Golden%20otter%20semaphore",
+              "status": 200
+            }
+          ],
+          "mediaSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "mediaBytes": 73970
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "K supported slug edit creates durable 308 redirect",
+        "passed": true,
+        "detail": {
+          "from": "/articles/independent-18c",
+          "to": "/articles/independent-18c-renamed",
+          "redirect": 308
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I draft preview renders and anonymous publication is denied",
+        "passed": true,
+        "detail": {
+          "previewRendered": true,
+          "anonymousApprovalStatus": 403
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I separate staff review approves owner drafts and owner publishes",
+        "passed": true,
+        "detail": [
+          {
+            "id": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+            "status": "published",
+            "selfApprovalDenied": 403
+          },
+          {
+            "id": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+            "status": "published",
+            "selfApprovalDenied": 403
+          }
+        ],
+        "profile": "Standard/all"
+      },
+      {
+        "file": "recovery-1794083463035-checks.json",
+        "name": "Authorized local operator recovery rotates codes and recovered owner returns through UI",
+        "passed": true,
+        "detail": {
+          "rotatedCodes": 10,
+          "recoveredOwner": true,
+          "usedCodeReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "release-1794083363278-checks.json",
+        "name": "Enabled releases module pins reviewed canonical revision and worker executes it once",
+        "passed": true,
+        "detail": {
+          "release": "3a6eed76-0b88-4733-aca8-93fad894d201",
+          "status": "completed",
+          "publishedArticle": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "executionItems": [
+            {
+              "id": "article:05706f0b-dba8-4305-9d0c-540ba6c90712",
+              "status": "succeeded",
+              "attempts": 1
+            }
+          ]
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Missing isolation and authorization flags",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Non-isolated Compose target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file compose.production.yaml",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Running populated target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file scratch/rc118c-final-golden/isolated-restore-compose.yaml --env-file scratch/rc118c-final-golden/restore.env",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S shipped backup restored complete critical records into independent project",
+        "passed": true,
+        "detail": {
+          "criticalTables": [
+            {
+              "table": "sites",
+              "countAndContentHash": "2:668ac360305fac9b64abbe9413fea443"
+            },
+            {
+              "table": "publications",
+              "countAndContentHash": "3:47cfc37e20b324d43cdc925ae9889717"
+            },
+            {
+              "table": "content",
+              "countAndContentHash": "4:ee7163d86744e2225eda02491ba4e234"
+            },
+            {
+              "table": "categories",
+              "countAndContentHash": "1:d9b29b314d36faf5944447d57781842e"
+            },
+            {
+              "table": "authors",
+              "countAndContentHash": "1:84ab7cdde11331bee1f69157af4d8805"
+            },
+            {
+              "table": "media_assets",
+              "countAndContentHash": "1:8728fbed5fdf032d5ff7348b9f760ef6"
+            },
+            {
+              "table": "media_blobs",
+              "countAndContentHash": "21:ee3794071f6fb6ca0974c87acc546de8"
+            },
+            {
+              "table": "products",
+              "countAndContentHash": "1:da6e7574933b8bb4f40a3627f2fa487e"
+            },
+            {
+              "table": "orders",
+              "countAndContentHash": "1:50382a4169270f5feb7e9ff00899b675"
+            },
+            {
+              "table": "discussions",
+              "countAndContentHash": "1:55052ad7e460edbd2ff7aab2cd0efa7d"
+            },
+            {
+              "table": "discussion_posts",
+              "countAndContentHash": "2:b6a83ab4d192c85c9dd5ac84d13d984c"
+            },
+            {
+              "table": "subscribers",
+              "countAndContentHash": "1:af3489bf3083ae9bbeb830048106f4d3"
+            },
+            {
+              "table": "consent_events",
+              "countAndContentHash": "2:bc3e8184eb04355485f4b62b44cdc9dd"
+            },
+            {
+              "table": "email_deliveries",
+              "countAndContentHash": "2:f41b5708fb2b84f0e26b4d88e6a265f1"
+            },
+            {
+              "table": "events",
+              "countAndContentHash": "1:64af70be18877d8604ca9670f4ba885e"
+            },
+            {
+              "table": "sources",
+              "countAndContentHash": "1:4fea4b9890176fcde2868c4ca226bef6"
+            },
+            {
+              "table": "books",
+              "countAndContentHash": "1:8a53a6e573f22f104aedf6dd4e60e7b2"
+            },
+            {
+              "table": "book_chapters",
+              "countAndContentHash": "1:a1115aee107f38ba462b9b632b9b7366"
+            },
+            {
+              "table": "form_definitions",
+              "countAndContentHash": "1:c601d7b38526f848bf3230a0e8e92cc8"
+            },
+            {
+              "table": "form_schemas",
+              "countAndContentHash": "1:b0a68655192e948d6e7086e87ee55145"
+            },
+            {
+              "table": "form_submissions",
+              "countAndContentHash": "2:c58a38b5a37e9510e4f3e430683b8c2e"
+            },
+            {
+              "table": "contacts",
+              "countAndContentHash": "2:8606132f6436cda6de04a31ceb6b1b44"
+            },
+            {
+              "table": "realtime_events",
+              "countAndContentHash": "5:1c17e9e798fa702a4a966c736ae38961"
+            },
+            {
+              "table": "experiments",
+              "countAndContentHash": "1:f0d865bde6cddd396bae73abf207156a"
+            },
+            {
+              "table": "experiment_variants",
+              "countAndContentHash": "2:912f0cd273fec3447d3be4846ff4d411"
+            },
+            {
+              "table": "content_releases",
+              "countAndContentHash": "1:09adb85f8686acb1fc9d91267b287ea9"
+            },
+            {
+              "table": "social_accounts",
+              "countAndContentHash": "2:7131107e7f73e827658f1d9312e8eeb6"
+            },
+            {
+              "table": "social_drafts",
+              "countAndContentHash": "1:10999582b465619ae505854daa0017d4"
+            },
+            {
+              "table": "external_posts",
+              "countAndContentHash": "1:8c1dad69c2573c1f5fa0dbf8d7b3804b"
+            },
+            {
+              "table": "network_relationships",
+              "countAndContentHash": "1:483fb5efb22ba17709c9b511e890d13e"
+            },
+            {
+              "table": "outbound_network_deliveries",
+              "countAndContentHash": "1:b40c12d69ff515f97d883fe0d19ffce9"
+            }
+          ],
+          "independentProject": "rc118cgoldenrestore20261107",
+          "freshSecrets": true,
+          "migrations": "131"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S fresh browser authenticates to restored environment with source-enrolled passkey",
+        "passed": true,
+        "detail": {
+          "status": 200,
+          "sourceEnrolledCredential": true,
+          "restoredOrderReadable": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "T restored public article community and original media byte equality",
+        "passed": true,
+        "detail": {
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "restoredSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "bytes": 73970,
+          "publicPages": 3
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "schedule-1794083258070-checks.json",
+        "name": "L supported scheduling executes through actual production worker",
+        "passed": true,
+        "detail": {
+          "article": "29df64ed-f467-42e6-9427-b1dc3b5a82ca",
+          "scheduled": {
+            "ok": true,
+            "scheduledForUtc": "2026-11-07T20:28:01.000Z",
+            "timeZone": "UTC",
+            "localFormatted": "2026-11-07 20:28:01 (UTC)",
+            "isDst": false,
+            "wasNonexistent": false,
+            "isAmbiguous": false
+          },
+          "staleSequenceDenied": 409,
+          "persistedStatus": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "A production Standard/all boot with test authentication disabled",
+        "passed": true,
+        "detail": {
+          "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+          "migrations": "131",
+          "readiness": {
+            "status": "ready",
+            "checks": {
+              "database": "ok",
+              "migrations": "applied"
+            }
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "B supported local operator token handoff",
+        "passed": true,
+        "detail": {
+          "tokenObtained": true,
+          "value": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "C owner enrolls real Chromium CTAP2 through setup UI",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "users": 1,
+          "passkeys": 1,
+          "sites": 1,
+          "invalidToken": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "D owner enters admin with ordinary enrolled session",
+        "passed": true,
+        "detail": {
+          "site": "32a7bc11-74be-47da-ac18-dd46da63f41e",
+          "publication": "27dc4a02-0e8f-4c97-8326-8a015d918925",
+          "admin": "https://rc118c.example.test:3443/admin"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Local social connection denies foreign and anonymous operators and persists failed credentials truthfully before retry",
+        "passed": true,
+        "detail": {
+          "foreignSite": 403,
+          "anonymous": 403,
+          "failedCredentialHealth": "revoked",
+          "capability": "unavailable",
+          "localPosts": 0,
+          "account": "f0c17e10-9b28-45fd-a275-ad93e8939d9d"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "draft": "11fa2eb9-26fe-479a-b50b-3b3076bfbe41",
+          "status": "published",
+          "providerRecords": 1,
+          "externalPosts": 1
+        },
+        "profile": "Standard/all"
+      }
+    ]
+  },
+  "finalAcceptance": {
+    "passed": 45,
+    "failed": 0,
+    "skipped": 0,
+    "items": [
+      {
+        "file": "audience-1794083289530-checks.json",
+        "name": "M visitor subscribes receives local SMTP mail and confirms consent",
+        "passed": true,
+        "detail": {
+          "requested": 202,
+          "subscriberStatus": "active",
+          "delivery": "fe8496d7-8bd2-461a-ad20-c0e827cb7b9e",
+          "deliveryStatus": "accepted",
+          "localSinkMessage": "4ay429VvMfYWK4xtRGzg2P",
+          "confirmationReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-negative-1794083422584-checks.json",
+        "name": "Foreign-site rendered quality audit is denied before findings can persist",
+        "passed": true,
+        "detail": {
+          "status": 403,
+          "before": "0",
+          "after": "0"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "audit-positive-1794083425257-checks.json",
+        "name": "Enabled quality module fetches real HTTPS pages and persists rendered findings",
+        "passed": true,
+        "detail": {
+          "pages": 11,
+          "articleStatus": 200,
+          "actualHttpFetch": true,
+          "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+          "findings": 9,
+          "lifecycle": {
+            "scanId": "3c71ab02-8ac1-4f79-b3d7-8be662a49523",
+            "created": 8,
+            "updated": 0,
+            "resolved": 0,
+            "active": 8,
+            "totalIssues": 9
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O operator configures explicit local-test merchant and publishes reviewed product",
+        "passed": true,
+        "detail": {
+          "product": "0824598e-6e8a-4d3e-9671-04409d01aea5",
+          "merchant": "f618e9d4-c77b-4940-864c-396e8ab93863",
+          "provider": "deterministic-test",
+          "realMoney": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "commerce-1794083302170-checks.json",
+        "name": "O guest UI cart authoritative quote local confirmation and worker-settled order",
+        "passed": true,
+        "detail": {
+          "order": "cdd2de9c-2dd2-4eb8-8ef3-ff52606573ab",
+          "orderState": "paid",
+          "checkout": "0c1caf30-8a5b-4d68-94e4-e33fcc19f2b3",
+          "unauthorizedStatus": 403,
+          "statusKeys": [
+            "downloads",
+            "checkout",
+            "payment",
+            "order"
+          ],
+          "provider": "deterministic-test",
+          "realCharge": false
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N ordinary member email sign-in and operator forum creation",
+        "passed": true,
+        "detail": {
+          "member": "65853547-6de6-43fb-80fb-785e62c06e63",
+          "forum": "e7f85b76-1fce-4d8e-9cb0-4805544f9994",
+          "localEmailSignIn": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "community-1794083298449-checks.json",
+        "name": "N member thread reply moderation and notification path persist",
+        "passed": true,
+        "detail": {
+          "discussion": "b681de4d-81dd-443f-ae06-d9033b7ad094",
+          "reply": "6f0549df-8de1-48f3-93f8-638abbd79a85",
+          "moderationState": "removed",
+          "deniedMember": 403,
+          "notifications": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "E owner saves site identity and theme through native settings API",
+        "passed": true,
+        "detail": {
+          "siteName": "18C Independent Journal",
+          "themeId": "neutral-starter",
+          "persistedName": "18C Independent Journal"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "F owner builds and publishes homepage and saves navigation",
+        "passed": true,
+        "detail": {
+          "layout": "d3ef3fa6-92b9-41ff-bb45-0d002eaafd35",
+          "resultKeys": [
+            "layout",
+            "warnings"
+          ],
+          "status": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "G real image uploaded with original SHA-256 and persisted media record",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "media": "f8b2aa33-c303-4973-b2d9-f8cdf54bd166",
+          "bytes": 73970,
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "core-1794083215743-checks.json",
+        "name": "H native REST creates taxonomy, page and article with real body media and SEO",
+        "passed": true,
+        "detail": {
+          "page": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+          "pagePath": "/about-18c",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "articlePath": "/articles/independent-18c",
+          "category": "e88b23e6-ce11-40cd-83ff-c4fefa110a6f"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "experiences-1794083357439-checks.json",
+        "name": "Enabled experiences and analytics modules measure a real consented form outcome and human winner decision",
+        "passed": true,
+        "detail": {
+          "experiment": "7c1392d8-30d1-4093-8b8b-d6ff82378a82",
+          "selectedVariant": "acbc1e92-1b61-4e22-8bdc-3068d3f0c669",
+          "canonicalSubmission": "f619bf28-7872-47e7-812c-27e811d73f9f",
+          "exposure": 201,
+          "conversion": 201,
+          "winnerAndRollbackPersisted": true,
+          "eventCount": 4
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Owner creates a second isolated site through supported native REST",
+        "passed": true,
+        "detail": {
+          "site": "9d1c49fa-bd7d-4647-b1cb-f79de33fd9d1",
+          "persisted": "18C Foreign Site"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited staff enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "staff",
+          "user": "abcf0672-8ec9-4588-921a-8f3c50bb0f1d",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Invited administrator enrolls CTAP2 passkey and logs in through UI",
+        "passed": true,
+        "detail": {
+          "role": "administrator",
+          "user": "17b4c50f-abbd-4b0e-b74c-9414075b7ca4",
+          "passkeys": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "identity-1794083224522-checks.json",
+        "name": "Staff and administrator foreign-site writes denied with unchanged persisted site",
+        "passed": true,
+        "detail": {
+          "results": [
+            {
+              "role": "staff",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            },
+            {
+              "role": "administrator",
+              "status": 403,
+              "response": {
+                "errors": [
+                  {
+                    "message": "You are not allowed to perform this action."
+                  }
+                ]
+              }
+            }
+          ],
+          "before": "e882afe8a3c569c8a87bec9e13b544e7",
+          "after": "e882afe8a3c569c8a87bec9e13b544e7"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled media-studio module publishes a book and chapter backed by approved real content",
+        "passed": true,
+        "detail": {
+          "book": "efbaf651-e587-402d-94ce-546b5a6de615",
+          "chapter": "cbc2710e-9f67-41a4-b573-17c499cfc33e",
+          "canonicalPath": "/books/18c-handbook",
+          "publicStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-editorial-1794083353297-checks.json",
+        "name": "Enabled collaboration module canonical checkpoint emits durable event and rejects stale revision",
+        "passed": true,
+        "detail": {
+          "content": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "companion": "05706f0b-dba8-4305-9d0c-540ba6c90712",
+          "revision": "851229ae-d920-4b0e-9438-390758d0f540",
+          "emittedEvents": 1,
+          "staleRevisionDenied": 409
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled events module native action renders event and iCalendar output",
+        "passed": true,
+        "detail": {
+          "event": "5b40d6be-8e8b-4825-8a4e-7ed15043ae1d",
+          "canonicalPath": "/events/18c-reader-assembly",
+          "publicStatus": 200,
+          "icsStatus": 200
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled sources module saves source and attaches canonical article bibliography reference",
+        "passed": true,
+        "detail": {
+          "source": "00173189-de56-4fcf-97b5-cedb7725ab25",
+          "article": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+          "persistedReference": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled forms and CRM modules: saved schema UI submission executes contact/task intake",
+        "passed": true,
+        "detail": {
+          "form": "ff2c47c5-a79a-4f0d-b08a-3e31b7e8d4e8",
+          "submission": "d05e80c6-b56a-4082-a1d3-5c2a36a07a90",
+          "persistedStatus": "triaged",
+          "contacts": 1,
+          "actions": [
+            {
+              "type": "create-contact",
+              "status": "completed",
+              "resultId": "c7e165a2-839c-49d9-960b-7da92daed527"
+            },
+            {
+              "type": "create-task",
+              "status": "completed",
+              "resultId": "4a6a5b09-2c4f-426f-8aee-775820a93d69"
+            }
+          ],
+          "invalidAnswersDenied": 422
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "modules-local-1794083319909-checks.json",
+        "name": "Enabled integrations module issues rotates and revokes a scoped machine credential",
+        "passed": true,
+        "detail": {
+          "client": "f8f4cb10-bc68-40df-b64d-8b26b5f6c9fe",
+          "rotated": true,
+          "revoked": true,
+          "foreignSiteDenied": 403,
+          "tokenValues": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "network-local-1794083393022-checks.json",
+        "name": "Enabled network module: independent local peer signed Follow and actual signed Accept",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "badSignature": 401,
+          "follow": 202,
+          "replay": 202,
+          "relationships": 1,
+          "signedAcceptCopies": 1,
+          "delivered": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "P operator inspects actual analytics health and bounded provider truth",
+        "passed": true,
+        "detail": {
+          "analyticsCount": 4,
+          "orderCount": 1,
+          "paymentProviders": [
+            {
+              "providerKey": "deterministic-test",
+              "ready": true,
+              "health": "healthy"
+            }
+          ],
+          "aiConnections": 0,
+          "ready": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "Q actual web and worker restart retains workflows without duplicate side effects",
+        "passed": true,
+        "detail": {
+          "before": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "after": {
+            "externalPosts": "1",
+            "publishedSocialDrafts": "1",
+            "deliveredNetwork": "1",
+            "completedReleases": "1",
+            "triagedForms": "2",
+            "orders": "1",
+            "delivery": "accepted",
+            "schedule": "published",
+            "posts": "2"
+          },
+          "ready": true,
+          "localConfirmationCopies": 1
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "operations-1794083429164-checks.json",
+        "name": "R logout then passkey login from an entirely new clean browser context",
+        "passed": true,
+        "detail": {
+          "initiallyNoOperatorCookie": true,
+          "realWebAuthn": true,
+          "authenticatedAdmin": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "J anonymous rendering metadata schema discovery search and original bytes",
+        "passed": true,
+        "detail": {
+          "outputs": [
+            {
+              "path": "/sitemap.xml",
+              "status": 200
+            },
+            {
+              "path": "/sitemaps/1.xml",
+              "status": 200
+            },
+            {
+              "path": "/robots.txt",
+              "status": 200
+            },
+            {
+              "path": "/feed.xml",
+              "status": 200
+            },
+            {
+              "path": "/search?q=Golden%20otter%20semaphore",
+              "status": 200
+            }
+          ],
+          "mediaSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "mediaBytes": 73970
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "public-1794083254119-checks.json",
+        "name": "K supported slug edit creates durable 308 redirect",
+        "passed": true,
+        "detail": {
+          "from": "/articles/independent-18c",
+          "to": "/articles/independent-18c-renamed",
+          "redirect": 308
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I draft preview renders and anonymous publication is denied",
+        "passed": true,
+        "detail": {
+          "previewRendered": true,
+          "anonymousApprovalStatus": 403
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "publish-1794083243702-checks.json",
+        "name": "I separate staff review approves owner drafts and owner publishes",
+        "passed": true,
+        "detail": [
+          {
+            "id": "589aecb3-cf04-4148-b5a0-8b673e9a05b8",
+            "status": "published",
+            "selfApprovalDenied": 403
+          },
+          {
+            "id": "cb19d858-a455-4eca-8590-c83a5ef1cb4b",
+            "status": "published",
+            "selfApprovalDenied": 403
+          }
+        ],
+        "profile": "Standard/all"
+      },
+      {
+        "file": "recovery-1794083463035-checks.json",
+        "name": "Authorized local operator recovery rotates codes and recovered owner returns through UI",
+        "passed": true,
+        "detail": {
+          "rotatedCodes": 10,
+          "recoveredOwner": true,
+          "usedCodeReplayDenied": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "release-1794083363278-checks.json",
+        "name": "Enabled releases module pins reviewed canonical revision and worker executes it once",
+        "passed": true,
+        "detail": {
+          "release": "3a6eed76-0b88-4733-aca8-93fad894d201",
+          "status": "completed",
+          "publishedArticle": "1e912d12-ef5e-4c08-bae8-e2fa1591df7c",
+          "executionItems": [
+            {
+              "id": "article:05706f0b-dba8-4305-9d0c-540ba6c90712",
+              "status": "succeeded",
+              "attempts": 1
+            }
+          ]
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Missing isolation and authorization flags",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Non-isolated Compose target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file compose.production.yaml",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restore-guard-checks.json",
+        "name": "Running populated target",
+        "passed": true,
+        "command": "node --import tsx -- src/scripts/operational-restore.ts --archive C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc118c-final-golden\\backups\\renegade-backup-2026-11-07T20-33-21-582Z --target-version 0.1.0 --isolated --authorize-restore --compose-file scratch/rc118c-final-golden/isolated-restore-compose.yaml --env-file scratch/rc118c-final-golden/restore.env",
+        "expectedExit": "nonzero",
+        "exit": 1,
+        "protectedBefore": "a5127ef2ff156f0130ea2f178aa24875",
+        "protectedAfter": "a5127ef2ff156f0130ea2f178aa24875"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S shipped backup restored complete critical records into independent project",
+        "passed": true,
+        "detail": {
+          "criticalTables": [
+            {
+              "table": "sites",
+              "countAndContentHash": "2:668ac360305fac9b64abbe9413fea443"
+            },
+            {
+              "table": "publications",
+              "countAndContentHash": "3:47cfc37e20b324d43cdc925ae9889717"
+            },
+            {
+              "table": "content",
+              "countAndContentHash": "4:ee7163d86744e2225eda02491ba4e234"
+            },
+            {
+              "table": "categories",
+              "countAndContentHash": "1:d9b29b314d36faf5944447d57781842e"
+            },
+            {
+              "table": "authors",
+              "countAndContentHash": "1:84ab7cdde11331bee1f69157af4d8805"
+            },
+            {
+              "table": "media_assets",
+              "countAndContentHash": "1:8728fbed5fdf032d5ff7348b9f760ef6"
+            },
+            {
+              "table": "media_blobs",
+              "countAndContentHash": "21:ee3794071f6fb6ca0974c87acc546de8"
+            },
+            {
+              "table": "products",
+              "countAndContentHash": "1:da6e7574933b8bb4f40a3627f2fa487e"
+            },
+            {
+              "table": "orders",
+              "countAndContentHash": "1:50382a4169270f5feb7e9ff00899b675"
+            },
+            {
+              "table": "discussions",
+              "countAndContentHash": "1:55052ad7e460edbd2ff7aab2cd0efa7d"
+            },
+            {
+              "table": "discussion_posts",
+              "countAndContentHash": "2:b6a83ab4d192c85c9dd5ac84d13d984c"
+            },
+            {
+              "table": "subscribers",
+              "countAndContentHash": "1:af3489bf3083ae9bbeb830048106f4d3"
+            },
+            {
+              "table": "consent_events",
+              "countAndContentHash": "2:bc3e8184eb04355485f4b62b44cdc9dd"
+            },
+            {
+              "table": "email_deliveries",
+              "countAndContentHash": "2:f41b5708fb2b84f0e26b4d88e6a265f1"
+            },
+            {
+              "table": "events",
+              "countAndContentHash": "1:64af70be18877d8604ca9670f4ba885e"
+            },
+            {
+              "table": "sources",
+              "countAndContentHash": "1:4fea4b9890176fcde2868c4ca226bef6"
+            },
+            {
+              "table": "books",
+              "countAndContentHash": "1:8a53a6e573f22f104aedf6dd4e60e7b2"
+            },
+            {
+              "table": "book_chapters",
+              "countAndContentHash": "1:a1115aee107f38ba462b9b632b9b7366"
+            },
+            {
+              "table": "form_definitions",
+              "countAndContentHash": "1:c601d7b38526f848bf3230a0e8e92cc8"
+            },
+            {
+              "table": "form_schemas",
+              "countAndContentHash": "1:b0a68655192e948d6e7086e87ee55145"
+            },
+            {
+              "table": "form_submissions",
+              "countAndContentHash": "2:c58a38b5a37e9510e4f3e430683b8c2e"
+            },
+            {
+              "table": "contacts",
+              "countAndContentHash": "2:8606132f6436cda6de04a31ceb6b1b44"
+            },
+            {
+              "table": "realtime_events",
+              "countAndContentHash": "5:1c17e9e798fa702a4a966c736ae38961"
+            },
+            {
+              "table": "experiments",
+              "countAndContentHash": "1:f0d865bde6cddd396bae73abf207156a"
+            },
+            {
+              "table": "experiment_variants",
+              "countAndContentHash": "2:912f0cd273fec3447d3be4846ff4d411"
+            },
+            {
+              "table": "content_releases",
+              "countAndContentHash": "1:09adb85f8686acb1fc9d91267b287ea9"
+            },
+            {
+              "table": "social_accounts",
+              "countAndContentHash": "2:7131107e7f73e827658f1d9312e8eeb6"
+            },
+            {
+              "table": "social_drafts",
+              "countAndContentHash": "1:10999582b465619ae505854daa0017d4"
+            },
+            {
+              "table": "external_posts",
+              "countAndContentHash": "1:8c1dad69c2573c1f5fa0dbf8d7b3804b"
+            },
+            {
+              "table": "network_relationships",
+              "countAndContentHash": "1:483fb5efb22ba17709c9b511e890d13e"
+            },
+            {
+              "table": "outbound_network_deliveries",
+              "countAndContentHash": "1:b40c12d69ff515f97d883fe0d19ffce9"
+            }
+          ],
+          "independentProject": "rc118cgoldenrestore20261107",
+          "freshSecrets": true,
+          "migrations": "131"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "S fresh browser authenticates to restored environment with source-enrolled passkey",
+        "passed": true,
+        "detail": {
+          "status": 200,
+          "sourceEnrolledCredential": true,
+          "restoredOrderReadable": true
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "restored-1794083664998-checks.json",
+        "name": "T restored public article community and original media byte equality",
+        "passed": true,
+        "detail": {
+          "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "restoredSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+          "bytes": 73970,
+          "publicPages": 3
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "schedule-1794083258070-checks.json",
+        "name": "L supported scheduling executes through actual production worker",
+        "passed": true,
+        "detail": {
+          "article": "29df64ed-f467-42e6-9427-b1dc3b5a82ca",
+          "scheduled": {
+            "ok": true,
+            "scheduledForUtc": "2026-11-07T20:28:01.000Z",
+            "timeZone": "UTC",
+            "localFormatted": "2026-11-07 20:28:01 (UTC)",
+            "isDst": false,
+            "wasNonexistent": false,
+            "isAmbiguous": false
+          },
+          "staleSequenceDenied": 409,
+          "persistedStatus": "published"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "A production Standard/all boot with test authentication disabled",
+        "passed": true,
+        "detail": {
+          "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+          "migrations": "131",
+          "readiness": {
+            "status": "ready",
+            "checks": {
+              "database": "ok",
+              "migrations": "applied"
+            }
+          }
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "B supported local operator token handoff",
+        "passed": true,
+        "detail": {
+          "tokenObtained": true,
+          "value": "[withheld]"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "C owner enrolls real Chromium CTAP2 through setup UI",
+        "passed": true,
+        "detail": {
+          "status": 201,
+          "users": 1,
+          "passkeys": 1,
+          "sites": 1,
+          "invalidToken": 400
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "setup-1794083201494-checks.json",
+        "name": "D owner enters admin with ordinary enrolled session",
+        "passed": true,
+        "detail": {
+          "site": "32a7bc11-74be-47da-ac18-dd46da63f41e",
+          "publication": "27dc4a02-0e8f-4c97-8326-8a015d918925",
+          "admin": "https://rc118c.example.test:3443/admin"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Local social connection denies foreign and anonymous operators and persists failed credentials truthfully before retry",
+        "passed": true,
+        "detail": {
+          "foreignSite": 403,
+          "anonymous": 403,
+          "failedCredentialHealth": "revoked",
+          "capability": "unavailable",
+          "localPosts": 0,
+          "account": "f0c17e10-9b28-45fd-a275-ad93e8939d9d"
+        },
+        "profile": "Standard/all"
+      },
+      {
+        "file": "social-local-1794083401221-checks.json",
+        "name": "Enabled social module approved draft is actually published once to isolated Bluesky adapter",
+        "passed": true,
+        "detail": {
+          "localOnly": true,
+          "draft": "11fa2eb9-26fe-479a-b50b-3b3076bfbe41",
+          "status": "published",
+          "providerRecords": 1,
+          "externalPosts": 1
+        },
+        "profile": "Standard/all"
+      }
+    ]
+  },
+  "harness": [
+    {
+      "path": "tests/rc1-18c/collect.py",
+      "sha256": "4f2f4a1e3b2ba2276cd22336d5144b04b086b45030c3228faca1fbc02e302318"
+    },
+    {
+      "path": "tests/rc1-18c/container-proxy.mjs",
+      "sha256": "c2202ce3b9791799ad9035d2c644cebe4627138d8bb035f01f9b2c98eafc9860"
+    },
+    {
+      "path": "tests/rc1-18c/finalize.mjs",
+      "sha256": "cbe76c5d4ad33165eda51c1b8463233c40491a847f39cdff5b50d4995d55db46"
+    },
+    {
+      "path": "tests/rc1-18c/freeze-dirty.mjs",
+      "sha256": "71ca59c624a46534d05f5fe686c4d93e374bceae8b917d3d34a48780e0419e92"
+    },
+    {
+      "path": "tests/rc1-18c/guards.mjs",
+      "sha256": "b67bc0902669f6cbff2260eae90ab0593429438b61d6200edc0f8b53c3639826"
+    },
+    {
+      "path": "tests/rc1-18c/image-proof.mjs",
+      "sha256": "025844239cec1504ffa7a33c2d652cc1b4d2cd09969463706400537a8d1faf12"
+    },
+    {
+      "path": "tests/rc1-18c/journey.mjs",
+      "sha256": "425ecf2e48f7a7799b54291b116ff9fdc08b47ff55fccf376535344d52830286"
+    },
+    {
+      "path": "tests/rc1-18c/paths.mjs",
+      "sha256": "e6cb2e64dec06f3bede766b7c118b4b8336fc364c9db0eb3e20da4a67438a0de"
+    },
+    {
+      "path": "tests/rc1-18c/peer.mjs",
+      "sha256": "08fe941a55ec7ebf7b82508b72c1af41c3f16aac574fd6f075336bc2eeeeab7d"
+    },
+    {
+      "path": "tests/rc1-18c/profiles.mjs",
+      "sha256": "aa7b791be41b52815aca1511dd125d4a5ceebed6cbbb9ae4c8c93d9993a61250"
+    },
+    {
+      "path": "tests/rc1-18c/proxy.mjs",
+      "sha256": "69282b7118cd36b513989d8498029c111b2df396f0b53df04b90001911147461"
+    },
+    {
+      "path": "tests/rc1-18c/queue-probe.mjs",
+      "sha256": "39580f8e93ec5d16fcc27b7008d4cc61369ba21a7d2bd88b9ca1b3d3a6f097a0"
+    },
+    {
+      "path": "tests/rc1-18c/recovery.mjs",
+      "sha256": "ecccf3ff91af34b3b50b5ecff8251bf470d416c96f734628f9e76282e2e50160"
+    },
+    {
+      "path": "tests/rc1-18c/run.mjs",
+      "sha256": "e86713b3a60e7995551bc7d0ea3c30c23af2d2c1dd5567b0a7b89c7a61a81f19"
+    },
+    {
+      "path": "tests/rc1-18c/scan-evidence.py",
+      "sha256": "baf811151b71f9cae88d960bba066be4189d64ac86b0485ac4f1c3e2de87253a"
+    },
+    {
+      "path": "tests/rc1-18c/source.mjs",
+      "sha256": "8355c61572f818e593b8462a6613438aeccd281d37ed786b310c559e7d15e65c"
+    },
+    {
+      "path": "tests/rc1-18c/stack.mjs",
+      "sha256": "46a4622be3a07fd4eef3a17f4c97aee0081df8599acd04bf088a66372ee4a4a9"
+    },
+    {
+      "path": "tests/rc1-18c/tls.mjs",
+      "sha256": "c470f1234a018b566199aee3d7a7f173a4cc49e73cc0db5ffc0445edb4818f64"
+    }
+  ],
+  "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89"
+}

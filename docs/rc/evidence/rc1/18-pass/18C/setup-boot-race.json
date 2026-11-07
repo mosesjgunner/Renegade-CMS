@@ -1,0 +1,7 @@
+[
+  {
+    "name": "A production Standard/all boot with test authentication disabled",
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: /health/ready: 503 \"Disposable upstream unavailable\""
+  }
+]

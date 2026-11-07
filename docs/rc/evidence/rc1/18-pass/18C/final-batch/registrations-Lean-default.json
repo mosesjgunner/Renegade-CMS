@@ -1,0 +1,294 @@
+{
+  "profile": "Lean-default",
+  "image": "sha256:68152a598fd0d46e6ce641292e5bd2da3b9695b2eb4e020e44f75d7b8ecb9f89",
+  "collections": [
+    {
+      "slug": "users",
+      "lockable": true
+    },
+    {
+      "slug": "sites",
+      "lockable": true
+    },
+    {
+      "slug": "page-layouts",
+      "lockable": true
+    },
+    {
+      "slug": "execution-events",
+      "lockable": true
+    },
+    {
+      "slug": "ai-connections",
+      "lockable": true
+    },
+    {
+      "slug": "ai-credentials",
+      "lockable": true
+    },
+    {
+      "slug": "ai-proposals",
+      "lockable": true
+    },
+    {
+      "slug": "brands",
+      "lockable": true
+    },
+    {
+      "slug": "members",
+      "lockable": true
+    },
+    {
+      "slug": "linked-identities",
+      "lockable": true
+    },
+    {
+      "slug": "member-sessions",
+      "lockable": true
+    },
+    {
+      "slug": "identity-tokens",
+      "lockable": true
+    },
+    {
+      "slug": "member-recovery-codes",
+      "lockable": true
+    },
+    {
+      "slug": "identity-audit-events",
+      "lockable": true
+    },
+    {
+      "slug": "member-site-roles",
+      "lockable": true
+    },
+    {
+      "slug": "profiles",
+      "lockable": true
+    },
+    {
+      "slug": "spaces",
+      "lockable": true
+    },
+    {
+      "slug": "authors",
+      "lockable": true
+    },
+    {
+      "slug": "publications",
+      "lockable": true
+    },
+    {
+      "slug": "media-assets",
+      "lockable": true
+    },
+    {
+      "slug": "media-asset-versions",
+      "lockable": true
+    },
+    {
+      "slug": "media-governance-incidents",
+      "lockable": true
+    },
+    {
+      "slug": "media-blobs",
+      "lockable": true
+    },
+    {
+      "slug": "media-variants",
+      "lockable": true
+    },
+    {
+      "slug": "media-upload-sessions",
+      "lockable": true
+    },
+    {
+      "slug": "sections",
+      "lockable": true
+    },
+    {
+      "slug": "categories",
+      "lockable": true
+    },
+    {
+      "slug": "topics",
+      "lockable": true
+    },
+    {
+      "slug": "tags",
+      "lockable": true
+    },
+    {
+      "slug": "series",
+      "lockable": true
+    },
+    {
+      "slug": "taxonomy-redirects",
+      "lockable": true
+    },
+    {
+      "slug": "public-redirects",
+      "lockable": true
+    },
+    {
+      "slug": "content",
+      "lockable": true
+    },
+    {
+      "slug": "article-family-content",
+      "lockable": true
+    },
+    {
+      "slug": "markdown-conversion-reports",
+      "lockable": true
+    },
+    {
+      "slug": "revision-records",
+      "lockable": true
+    },
+    {
+      "slug": "preview-tokens",
+      "lockable": true
+    },
+    {
+      "slug": "scheduled-publish-jobs",
+      "lockable": true
+    },
+    {
+      "slug": "calendar-entry-audits",
+      "lockable": true
+    },
+    {
+      "slug": "albums",
+      "lockable": true
+    },
+    {
+      "slug": "media-usages",
+      "lockable": true
+    },
+    {
+      "slug": "email-templates",
+      "lockable": true
+    },
+    {
+      "slug": "email-delivery-events",
+      "lockable": true
+    },
+    {
+      "slug": "recipient-snapshots",
+      "lockable": true
+    },
+    {
+      "slug": "audience-frequency-policies",
+      "lockable": true
+    },
+    {
+      "slug": "audience-experiments",
+      "lockable": true
+    },
+    {
+      "slug": "digital-delivery-grants",
+      "lockable": false
+    },
+    {
+      "slug": "digital-download-events",
+      "lockable": false
+    },
+    {
+      "slug": "catalog-import-runs",
+      "lockable": false
+    },
+    {
+      "slug": "promotions",
+      "lockable": false
+    },
+    {
+      "slug": "checkout-proposals",
+      "lockable": false
+    },
+    {
+      "slug": "inventory-reservations",
+      "lockable": false
+    },
+    {
+      "slug": "plan-revisions",
+      "lockable": false
+    },
+    {
+      "slug": "subscriptions",
+      "lockable": false
+    },
+    {
+      "slug": "subscription-events",
+      "lockable": false
+    },
+    {
+      "slug": "donation-campaigns",
+      "lockable": false
+    },
+    {
+      "slug": "donation-intents",
+      "lockable": false
+    },
+    {
+      "slug": "donations",
+      "lockable": false
+    },
+    {
+      "slug": "donation-events",
+      "lockable": false
+    },
+    {
+      "slug": "pod-connections",
+      "lockable": false
+    },
+    {
+      "slug": "pod-jobs",
+      "lockable": false
+    },
+    {
+      "slug": "manual-fulfillment-packages",
+      "lockable": false
+    },
+    {
+      "slug": "payload-kv",
+      "lockable": false
+    },
+    {
+      "slug": "payload-jobs",
+      "lockable": false
+    },
+    {
+      "slug": "payload-locked-documents",
+      "lockable": false
+    },
+    {
+      "slug": "payload-preferences",
+      "lockable": false
+    },
+    {
+      "slug": "payload-migrations",
+      "lockable": false
+    }
+  ],
+  "globals": [
+    "site-settings",
+    "payload-jobs-stats"
+  ],
+  "tasks": [
+    "operations-heartbeat",
+    "operations-forced-failure",
+    "execution-outbox-dispatch",
+    "execution-outbox-handle",
+    "editorial-publish",
+    "media-upload-cleanup",
+    "community-message-attachment-cleanup",
+    "community-message-attachment-scan",
+    "media-variant-generate",
+    "audio-recipe-task",
+    "audience-form-intake",
+    "community-email-dispatch",
+    "commerce-reconcile-subscriptions",
+    "commerce-reconcile-referrals"
+  ]
+}

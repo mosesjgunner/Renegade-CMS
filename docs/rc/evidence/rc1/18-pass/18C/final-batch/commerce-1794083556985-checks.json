@@ -1,0 +1,32 @@
+[
+  {
+    "name": "O operator configures explicit local-test merchant and publishes reviewed product",
+    "passed": true,
+    "detail": {
+      "product": "51174723-fe57-40ad-9afa-969b8808288e",
+      "merchant": "e497ec85-29b1-459b-8b73-a97e5f8a1aae",
+      "provider": "deterministic-test",
+      "realMoney": false
+    },
+    "profile": "Lean-all"
+  },
+  {
+    "name": "O guest UI cart authoritative quote local confirmation and worker-settled order",
+    "passed": true,
+    "detail": {
+      "order": "4b0ae00c-a60e-4cb5-a9bd-84ebd4d30d80",
+      "orderState": "paid",
+      "checkout": "e7933566-d595-45bb-adf1-cabff696c686",
+      "unauthorizedStatus": 403,
+      "statusKeys": [
+        "downloads",
+        "checkout",
+        "payment",
+        "order"
+      ],
+      "provider": "deterministic-test",
+      "realCharge": false
+    },
+    "profile": "Lean-all"
+  }
+]

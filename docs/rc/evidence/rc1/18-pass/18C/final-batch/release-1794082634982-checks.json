@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Enabled releases module pins reviewed canonical revision and worker executes it once",
+    "passed": true,
+    "detail": {
+      "release": "0b47d453-d565-4e8f-9db8-7a31696f882c",
+      "status": "completed",
+      "publishedArticle": "e1dac922-0d76-43c0-b5b7-fb68a45bf8e6",
+      "executionItems": [
+        {
+          "id": "article:170089a4-d94b-4318-9aa5-7170de42a96c",
+          "status": "succeeded",
+          "attempts": 1
+        }
+      ]
+    },
+    "profile": "Standard/all"
+  }
+]

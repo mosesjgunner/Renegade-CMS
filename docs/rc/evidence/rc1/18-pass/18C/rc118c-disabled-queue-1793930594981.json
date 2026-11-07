@@ -1,0 +1,9 @@
+{
+  "image": "renegade-cms:rc118c-worker-repaired-20261105",
+  "before": "2",
+  "after": "2",
+  "preservedOptionalJob": "e82f1f48-4983-4eaf-86a8-930048f07a1b",
+  "container": "rc118c-disabled-queue-1793930594981",
+  "elapsedMs": 45000,
+  "reenabledSameJobCompleted": true
+}
