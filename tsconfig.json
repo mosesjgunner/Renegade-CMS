@@ -32,7 +32,9 @@
     "tests/**/*.ts",
     "tests/**/*.tsx",
     ".next-typecheck/types/**/*.ts",
-    ".next-typecheck/dev/types/**/*.ts"
+    ".next-typecheck/dev/types/**/*.ts",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

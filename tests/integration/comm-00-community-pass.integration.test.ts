@@ -58,10 +58,26 @@ describe('COMM-00: Canonical Community Domain Full Member Journey', () => {
     demo = await ensureRenegadePartyDemo(payload)
     siteId = demo.siteId
 
-    // Find or create a test article for comments
+    // Find or create a test article for comments. The target must be a
+    // publicly renderable article: the demo seed deliberately includes
+    // draft, scheduled and archived content, and discussionTarget rejects
+    // anything canRenderPublic refuses — an unordered limit:1 here
+    // nondeterministically landed on the archived doc (18B F3).
     const contentRes = await payload.find({
       collection: 'content',
-      where: { site: { equals: siteId } },
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { status: { in: ['published', 'updated'] } },
+          {
+            or: [
+              { publishedAt: { exists: false } },
+              { publishedAt: { less_than_equal: new Date().toISOString() } },
+            ],
+          },
+        ],
+      },
+      sort: 'createdAt',
       limit: 1,
       overrideAccess: true,
     } as never)

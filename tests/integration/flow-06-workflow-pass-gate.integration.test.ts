@@ -101,6 +101,7 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
     // =========================================================================
     const postData = {
       id: 'post-autumn-resilience',
+      site: 'site-alpha',
       title: 'Autumn Community Resilience',
       slug: 'autumn-resilience',
       canonicalPath: '/posts/autumn-resilience',
@@ -114,6 +115,19 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
       currentRevisionHash: 'sha256-post-rev1',
     }
     await payload.create({ collection: 'content', data: postData })
+
+    // Release article artifacts address the article-family record, whose
+    // parent content carries the owning site (artifact-scope resolution).
+    // Model that production shape in the mock universe (18B F4).
+    const postFamilyData = {
+      id: 'article-autumn-resilience',
+      content: postData.id,
+      articleKey: `content:${postData.id}`,
+      lifecycle: 'draft',
+      currentRevision: 'rev-post-1',
+      currentRevisionSequence: 1,
+    }
+    await payload.create({ collection: 'article-family-content', data: postFamilyData })
 
     const pageData = {
       id: 'page-campaign-resilience',
@@ -130,6 +144,31 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
       currentRevisionHash: 'sha256-page-rev1',
     }
     await payload.create({ collection: 'content', data: pageData })
+
+    // Release page artifacts are page-layout records owned by the site,
+    // and media artifacts are media-assets records owned by the site.
+    const pageLayoutData = {
+      id: 'layout-campaign-resilience',
+      site: 'site-alpha',
+      path: pageData.canonicalPath,
+      name: pageData.title,
+      status: 'draft',
+      themeId: 'neutral-starter',
+      revision: 1,
+      blocks: [],
+    }
+    await payload.create({ collection: 'page-layouts', data: pageLayoutData })
+
+    await payload.create({
+      collection: 'media-assets',
+      data: {
+        id: 'media-autumn-hero',
+        site: 'site-alpha',
+        storageLocation: 'media/autumn-hero.png',
+        checksum: 'sha256-media-v1',
+        versionCount: 1,
+      },
+    })
 
     // Initialize workflow engine for Post
     const postWorkflowItem: WorkflowItem = {
@@ -476,13 +515,13 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
       timeZone: 'America/Chicago',
     })
 
-    // Pin Post exact revision 3
+    // Pin Post exact revision 3 (article artifacts pin the family record)
     await pinArtifact(
       payload,
       release.id,
       {
         targetType: 'article',
-        targetId: postData.id,
+        targetId: postFamilyData.id,
         title: 'Autumn Community Resilience Post',
         pinnedRevisionSequence: 3,
         pinnedHash: 'sha256-post-rev3',
@@ -490,13 +529,13 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
       publisherJordan.id,
     )
 
-    // Pin Campaign Page exact revision 1
+    // Pin Campaign Page exact revision 1 (page artifacts pin the layout)
     await pinArtifact(
       payload,
       release.id,
       {
         targetType: 'page',
-        targetId: pageData.id,
+        targetId: pageLayoutData.id,
         title: 'Autumn Community Resilience Campaign Page',
         pinnedRevisionSequence: 1,
         pinnedHash: 'sha256-page-rev1',

@@ -36,6 +36,11 @@ vi.mock('next/headers', async () => ({
 let payload: Payload
 let siteId: string
 let publicationId: string
+let settingsSnapshot: {
+  canonicalOrigin: unknown
+  canonicalOriginsBySite: unknown
+} | null = null
+let scopePublicationId = ''
 let publishedArticleId: string
 let publishedArticleSlug: string
 let draftArticleSlug: string
@@ -46,10 +51,22 @@ beforeAll(async () => {
   payload = await getPayload({ config })
   await seed(payload)
 
+  // Pick the seeded 'main' publication deterministically: in a shared
+  // full-suite database an unordered first-active-public find can land
+  // on the Renegade Party demo publication (created earlier by other
+  // suites), whose site the feed/sitemap routes do not serve — the
+  // article then lands on the wrong site and every crawler output
+  // misses it (same unordered-selection hazard as comm-00's F3).
   const pub = (
     await payload.find({
       collection: 'publications',
-      where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+      where: {
+        and: [
+          { slug: { equals: 'main' } },
+          { status: { equals: 'active' } },
+          { visibility: { equals: 'public' } },
+        ],
+      },
       limit: 1,
       depth: 0,
       overrideAccess: true,
@@ -58,6 +75,79 @@ beforeAll(async () => {
   expect(pub).toBeTruthy()
   publicationId = String(pub.id)
   siteId = typeof pub.site === 'string' ? pub.site : String(pub.site?.id ?? '')
+
+  // Pin this site's canonical origin for the test host. The site-settings
+  // global is shared by the whole suite database: other suites
+  // legitimately reconfigure it for their own scenarios (commerce-runtime
+  // maps its site to 'http://localhost', which the host matcher also
+  // matches for 'localhost:3000'), and seed() does not restore it. Without
+  // this pin, host-scoped outputs (feeds, sitemaps, scoped streams)
+  // resolve to whichever site a previous suite configured instead of the
+  // seeded site this suite created its article on. Foreign localhost
+  // entries are dropped for the same reason: two matching origins make
+  // the resolver refuse to choose at all.
+  const currentSettings = (await payload.findGlobal({
+    slug: 'site-settings',
+    overrideAccess: true,
+  } as never)) as any
+  // Snapshot the shared settings this suite is about to pin, so afterAll
+  // can restore them exactly (see the cleanup note there).
+  settingsSnapshot = {
+    canonicalOrigin: currentSettings?.canonicalOrigin ?? null,
+    canonicalOriginsBySite: currentSettings?.canonicalOriginsBySite ?? null,
+  }
+  const foreignOrigins = Object.fromEntries(
+    Object.entries(
+      (currentSettings?.canonicalOriginsBySite as Record<string, unknown> | null) ?? {},
+    ).filter(([key, value]) => {
+      if (key === siteId) return false
+      try {
+        const hostname = new URL(String(value)).hostname.toLowerCase()
+        return hostname !== 'localhost' && hostname !== '127.0.0.1'
+      } catch {
+        return false
+      }
+    }),
+  )
+  await payload.updateGlobal({
+    slug: 'site-settings',
+    data: {
+      canonicalOrigin: 'http://localhost:3000',
+      canonicalOriginsBySite: {
+        ...foreignOrigins,
+        [siteId]: 'http://localhost:3000',
+      },
+    },
+    overrideAccess: true,
+  } as never)
+
+  // Pin this suite's site as the discovery default scope. When
+  // resolveDiscoveryDocument / getAllIndexableDiscoveryDocuments are
+  // called without an explicit site (as this suite calls them, modelling
+  // a crawler), the product resolves the default site from the NEWEST
+  // active public publication. In a shared full-suite database another
+  // suite's publication can be newer than the seeded 'main' publication
+  // (e.g. a legacy-migration suite's auto-created site publication), and
+  // every site-scoped discovery lookup then misses this suite's records.
+  // Creating a fresh active public publication on the seeded site in
+  // beforeAll makes the default scope land on this site deterministically,
+  // regardless of which suites ran before. The publication is additive
+  // only: the test article keeps the seeded 'main' publication.
+  scopePublicationId = String(
+    (
+      (await payload.create({
+        collection: 'publications',
+        data: {
+          name: `DISC-00 Scope ${randomUUID().slice(0, 8)}`,
+          slug: `disc-00-scope-${randomUUID().slice(0, 8)}`,
+          site: siteId,
+          status: 'active',
+          visibility: 'public',
+        },
+        overrideAccess: true,
+      } as never)) as any
+    ).id,
+  )
 
   suffix = randomUUID().slice(0, 8)
   publishedArticleSlug = `test-article-${suffix}`
@@ -145,6 +235,34 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  // Leave the shared suite database exactly as this suite found it:
+  // restore the site-settings canonical fields pinned in beforeAll and
+  // remove the scope publication created there. Without this, the pin's
+  // localhost origin for the seeded site makes later suites' demo-setup
+  // settings writes fail the global's host-uniqueness validation (two
+  // sites claiming host "localhost"), and the leftover publication would
+  // keep hijacking the discovery default scope for later suites.
+  try {
+    if (settingsSnapshot) {
+      await payload.updateGlobal({
+        slug: 'site-settings',
+        data: {
+          canonicalOrigin: settingsSnapshot.canonicalOrigin,
+          canonicalOriginsBySite: settingsSnapshot.canonicalOriginsBySite,
+        },
+        overrideAccess: true,
+      } as never)
+    }
+    if (scopePublicationId) {
+      await payload.delete({
+        collection: 'publications',
+        id: scopePublicationId,
+        overrideAccess: true,
+      } as never)
+    }
+  } catch {
+    // Cleanup is best-effort; never fail the suite over shared-state restore.
+  }
   await payload?.db?.destroy?.()
 })
 

@@ -100,6 +100,37 @@ export interface LegacyMigrationStore {
 
   publishLayout(id: string): Promise<void>
   deleteEntity(collection: string, id: string): Promise<void>
+  /**
+   * Rollback preparation: clear the references a migration's own lifecycle
+   * created between its content records — the article-family rows keyed to
+   * the content and child-page parentPage links inside the created set —
+   * so the native hierarchy guards can judge the rollback deletions on
+   * their merits. References from anything outside the created set are
+   * not touched.
+   */
+  clearContentRollbackReferences(contentIds: string[]): Promise<void>
+
+  /**
+   * Rollback preparation: remove the publication record(s) the site
+   * lifecycle auto-created for the migration site (the Sites afterChange
+   * hook creates one default publication for every new site). The
+   * migration module never creates publications and imports no state
+   * into them; they are rollback's own lifecycle artifacts, and the
+   * site hierarchy guard rightly counts them as site records until
+   * they are removed.
+   */
+  deleteSitePublications(siteId: string): Promise<void>
+
+  /**
+   * Rollback preparation: remove the physical blob records the media
+   * lifecycle created for the migration's imported media (uploadMedia
+   * creates one deduplicated blob per site + checksum for every imported
+   * asset), once the created assets are deleted and no remaining asset
+   * or variant references them. Blobs are system records (API create /
+   * delete are denied); the product itself deletes them with access
+   * override in its own lifecycle cleanup paths.
+   */
+  deleteSiteMediaBlobs(siteId: string): Promise<void>
 
   saveMigrationRun(report: MigrationReport): Promise<void>
   getMigrationRun(runId: string): Promise<MigrationReport | null>
@@ -124,6 +155,8 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
   content = new Map<string, Record<string, unknown>>()
   redirects = new Map<string, Record<string, unknown>>()
   layouts = new Map<string, Record<string, unknown>>()
+  publications = new Map<string, { id: string; siteId: string; slug: string }>()
+  blobs = new Map<string, { id: string; siteId: string; sha256: string }>()
   runs = new Map<string, MigrationReport>()
   quarantine = new Map<string, QuarantineRecord[]>()
 
@@ -136,6 +169,10 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     const site = { id, slug: data.slug, name: data.name }
     this.sites.set(id, site)
     this.sites.set(data.slug, site)
+    // Mirror the real site lifecycle: the Sites afterChange hook creates
+    // one default publication for every new site.
+    const publicationId = `pub-${randomUUID().slice(0, 8)}`
+    this.publications.set(publicationId, { id: publicationId, siteId: id, slug: data.slug })
     return { id, slug: data.slug }
   }
 
@@ -209,6 +246,14 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
       sha256: data.sha256,
       fileName: data.fileName,
     })
+    // Mirror uploadMedia: one deduplicated blob per site + checksum.
+    const blobKey = `${data.siteId}:${data.sha256}`
+    if (!this.blobs.has(blobKey))
+      this.blobs.set(blobKey, {
+        id: `blob-${randomUUID().slice(0, 8)}`,
+        siteId: data.siteId,
+        sha256: data.sha256,
+      })
     return { id, url }
   }
 
@@ -282,6 +327,37 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     else if (collection === 'media-assets') this.media.delete(id)
     else if (collection === 'public-redirects') this.redirects.delete(id)
     else if (collection === 'page-layouts') this.layouts.delete(id)
+  }
+
+  async clearContentRollbackReferences(contentIds: string[]): Promise<void> {
+    // The memory store does not model article-family rows; only the
+    // child-page links inside the created set need detaching.
+    const ids = new Set(contentIds)
+    for (const doc of this.content.values()) {
+      if (
+        ids.has(String(doc.id)) &&
+        typeof doc.parentPageId === 'string' &&
+        ids.has(doc.parentPageId)
+      )
+        doc.parentPageId = undefined
+    }
+  }
+
+  async deleteSitePublications(siteId: string): Promise<void> {
+    for (const [id, publication] of this.publications) {
+      if (publication.siteId === siteId) this.publications.delete(id)
+    }
+  }
+
+  async deleteSiteMediaBlobs(siteId: string): Promise<void> {
+    const liveKeys = new Set(
+      [...this.media.values()]
+        .filter((m) => m.siteId === siteId)
+        .map((m) => `${m.siteId}:${m.sha256}`),
+    )
+    for (const [key, blob] of this.blobs) {
+      if (blob.siteId === siteId && !liveKeys.has(key)) this.blobs.delete(key)
+    }
   }
 
   async saveMigrationRun(report: MigrationReport): Promise<void> {
@@ -684,12 +760,146 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   }
 
   async deleteEntity(collection: string, id: string): Promise<void> {
+    // Teardown authority: every caller of this method removes records the
+    // migration itself created (the rollback entity loop, article-family
+    // cleanup, and the site-publication teardown), addressed by IDs recorded
+    // in the run's own manifest. Authorization for the rollback operation
+    // itself is enforced at the operator surface (staff role plus
+    // canMigrateLegacySite for the run's site). Running these deletes under
+    // the actor's personal access made rollback impossible for a scoped
+    // importing operator: global collections such as authors require
+    // all-sites authority (operatorAllSitesAccess), which a site-scoped
+    // operator can never hold in a multi-site install — so a migration that
+    // created author records could never be rolled back. The store's other
+    // teardown paths (migration runs, quarantine, verification artifacts,
+    // rollback reference clearing, site deletion) already use overrideAccess
+    // for the same reason. Collection hooks (e.g. the authors beforeDelete
+    // reference guard) still run and still block deleting records in use.
     await this.payload.delete({
       collection: collection as never,
       id,
-      overrideAccess: false,
+      overrideAccess: true,
       user: this.actor,
     })
+  }
+
+  async clearContentRollbackReferences(contentIds: string[]): Promise<void> {
+    if (!contentIds.length) return
+    // Article-family rows are created by the editorial lifecycle for every
+    // imported article (the content afterChange companion sync) and
+    // reference the content 1:1; they are rollback's own artifacts.
+    const families = await this.payload.find({
+      collection: 'article-family-content',
+      where: { content: { in: contentIds } },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    if (families.docs.length) {
+      // Each family owns append-only revision records whose article link
+      // is non-nullable, so a family row cannot be deleted while its
+      // revisions exist. Those revisions were created by the same
+      // lifecycle sync (with access override, as internal system records);
+      // rollback removes exactly the revisions of its own families the
+      // same way. The append-only API access rules are unchanged for
+      // every other caller.
+      const familyIds = families.docs.map((doc) => String(doc.id))
+      const revisions = await this.payload.find({
+        collection: 'revision-records',
+        where: { article: { in: familyIds } },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      for (const doc of revisions.docs) {
+        await this.payload.delete({
+          collection: 'revision-records',
+          id: String(doc.id),
+          overrideAccess: true,
+        } as never)
+      }
+    }
+    for (const doc of families.docs)
+      await this.deleteEntity('article-family-content', String(doc.id))
+    // Child pages inside the created set link to their created parents;
+    // detach those links so no created parent is deleted before its
+    // created children let go of it.
+    const children = await this.payload.find({
+      collection: 'content',
+      where: {
+        and: [{ id: { in: contentIds } }, { parentPage: { in: contentIds } }],
+      },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    for (const doc of children.docs) {
+      await this.payload.update({
+        collection: 'content',
+        id: String(doc.id),
+        data: { parentPage: null },
+        overrideAccess: true,
+      } as never)
+    }
+  }
+
+  async deleteSitePublications(siteId: string): Promise<void> {
+    // The Sites afterChange hook auto-created a default publication when
+    // the migration created the site; the migration imported no state
+    // into it. It is rollback's own lifecycle artifact, removed here
+    // through the same native delete path as every other created entity
+    // (the site hierarchy guard still judges the site delete itself).
+    const publications = await this.payload.find({
+      collection: 'publications',
+      where: { site: { equals: siteId } },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    for (const doc of publications.docs) await this.deleteEntity('publications', String(doc.id))
+  }
+
+  async deleteSiteMediaBlobs(siteId: string): Promise<void> {
+    // Blobs are the physical bytes uploadMedia stored for the migration's
+    // imported assets, deduplicated per site + checksum. A blob is
+    // rollback's own artifact only once nothing references it: assets
+    // resolve their bytes through originalBlob and variants through blob,
+    // so both are checked before a blob is removed. Referenced blobs are
+    // left exactly as they are. The collection denies API deletes; the
+    // product's own lifecycle cleanup deletes blobs with access override
+    // (e.g. uploadMedia's failed-create path), and rollback does the same.
+    const blobs = await this.payload.find({
+      collection: 'media-blobs',
+      where: { site: { equals: siteId } },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    for (const doc of blobs.docs) {
+      const blobId = String(doc.id)
+      const referencingAssets = await this.payload.count({
+        collection: 'media-assets',
+        where: { originalBlob: { equals: blobId } },
+        overrideAccess: true,
+      } as never)
+      if (referencingAssets.totalDocs) continue
+      const referencingVariants = await this.payload.count({
+        collection: 'media-variants',
+        where: { blob: { equals: blobId } },
+        overrideAccess: true,
+      } as never)
+      if (referencingVariants.totalDocs) continue
+      await this.payload.delete({
+        collection: 'media-blobs',
+        id: blobId,
+        overrideAccess: true,
+      } as never)
+    }
   }
 
   async saveMigrationRun(report: MigrationReport): Promise<void> {

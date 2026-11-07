@@ -201,14 +201,20 @@ export const socialProviderAdapters: readonly SocialProviderAdapter[] = [
 ]
 
 export const socialProviderFor = (network: SocialProviderAdapter['network']) => {
+  // The declared roster above is the single source of truth for provider
+  // mode: Bluesky is the sole live adapter, the commercial networks are
+  // manual-handoff, and ActivityPub is unavailable. The worker registry's
+  // adapter classes hardcode their own modes (e.g. XAdapter mode 'live')
+  // and must not override the roster for any network the roster declares;
+  // they remain the fallback only for networks the roster does not declare
+  // (mastodon, discord, telegram, pinterest).
+  const declared = socialProviderAdapters.find((adapter) => adapter.network === network)
+  if (declared) return declared
   const registered = ADAPTER_REGISTRY[network]
   if (registered && (registered as any).publish) {
     return registered
   }
-  return (
-    socialProviderAdapters.find((adapter) => adapter.network === network) ??
-    manual(network, 'unavailable')
-  )
+  return manual(network, 'unavailable')
 }
 
 export function getProviderCapabilityTruth(

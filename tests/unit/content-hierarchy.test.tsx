@@ -190,6 +190,28 @@ describe('canonical hierarchy integrity', () => {
     payload.count.mockResolvedValue({ totalDocs: 1 })
     await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).rejects.toThrow(/content/)
   })
+  it('does not treat system execution events as a protected site reference', async () => {
+    const siteField = [{ name: 'site', type: 'relationship', relationTo: 'sites' }]
+    const payload = {
+      collections: {},
+      config: {
+        collections: [
+          { slug: 'execution-events', fields: siteField },
+          { slug: 'content', fields: siteField },
+        ],
+      },
+      count: vi.fn(async ({ collection }: any) => ({
+        totalDocs: collection === 'execution-events' ? 5 : 0,
+      })),
+    }
+    const req = { payload } as any
+    // System outbox/audit events alone must not block: they are system
+    // exhaust, never deleted, and persist as the operator audit trail.
+    await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).resolves.toBeUndefined()
+    // Real content references still block the delete.
+    payload.count.mockResolvedValue({ totalDocs: 1 })
+    await expect(protectSiteHierarchyDelete({ id: 'a', req } as any)).rejects.toThrow(/content/)
+  })
   it('requires real transaction and locks parent rows before reference inspection', async () => {
     const { req, payload } = fixture()
     ;(payload as any).db = { sessions: {} }

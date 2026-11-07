@@ -54,13 +54,25 @@ describe('social distribution contracts', () => {
       ),
     ).toContain('This provider does not support video attachments.')
     expect(socialProviderFor('manual').mode).toBe('manual-handoff')
-    expect(socialProviderFor('activitypub').mode).toBe('live')
-    expect(
-      await socialProviderFor('activitypub').publish?.(
-        { ...variant, network: 'activitypub' },
-        { accountId: 'a1', credentials: null },
-      ),
-    ).toMatchObject({ status: 'failed', error: { kind: 'authentication' } })
+    // Regression (18B P1): the declared roster in provider-runtime is the
+    // single provider truth. The worker registry maps ActivityPub to a
+    // live-mode adapter class and X to a live-mode adapter class; neither
+    // may leak through socialProviderFor. ActivityPub is unavailable (no
+    // publish path) and every commercial network is manual-handoff.
+    expect(socialProviderFor('activitypub').mode).toBe('unavailable')
+    expect(socialProviderFor('activitypub').publish).toBeUndefined()
+    for (const network of [
+      'x',
+      'threads',
+      'facebook',
+      'instagram',
+      'linkedin',
+      'youtube',
+      'tiktok',
+    ] as const) {
+      expect(socialProviderFor(network).mode).toBe('manual-handoff')
+      expect(socialProviderFor(network).publish).toBeUndefined()
+    }
   })
   it('reports expired credentials and provider outages deterministically', async () => {
     const adapter = socialProviderFor('bluesky')
