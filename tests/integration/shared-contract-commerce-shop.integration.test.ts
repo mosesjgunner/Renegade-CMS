@@ -69,6 +69,7 @@ import {
   deriveDownloadGrantKey,
   type CartLine,
 } from '../../src/modules/commerce/service'
+import { freezeFulfillmentLines } from '../../src/modules/commerce/fulfillment-mapping'
 import {
   publishPlan,
   grantsFromSubscription,
@@ -216,6 +217,9 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
       collection: 'products',
       data: {
         site: siteId,
+        // The catalog sells under the test merchant connection; checkout's
+        // fulfillment freeze requires the product to carry that binding.
+        merchantConnection: merchantConnectionId,
         name: `Renegade Field Jacket ${testRunId}`,
         slug: `field-jacket-${testRunId}`,
         canonicalPath: `/store/field-jacket-${testRunId}`,
@@ -712,6 +716,38 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
         overrideAccess: true,
       } as never)) as any
 
+      // Freeze fulfillment instructions through the checkout path's own
+      // freeze step (the initiate route runs it before payment is
+      // initiated): a physical order whose lines carry no frozen
+      // snapshot is correctly blocked from fulfillment (18B F1).
+      const frozenOrderLines: any[] = [
+        {
+          productId: sampleProduct.id,
+          variantSku: `JKT-${testRunId}-L`,
+          title: 'Field Jacket Large',
+          quantity: 2,
+          unitAmountMinor: '4500',
+          lineAmountMinor: '9000',
+          currency: 'USD',
+          kind: 'physical',
+        },
+      ]
+      const normalizedAddress = checkoutProposal.shippingAddress?.normalized as any
+      await freezeFulfillmentLines(payload, frozenOrderLines, [samplePayloadProduct], {
+        siteId,
+        merchantId: merchantConnectionId,
+        currency: 'USD',
+        // Same line1/line2 -> address1/address2 mapping the initiate route
+        // applies before freezing.
+        shipping: normalizedAddress
+          ? {
+              ...normalizedAddress,
+              address1: normalizedAddress.address1 ?? normalizedAddress.line1,
+              address2: normalizedAddress.address2 ?? normalizedAddress.line2,
+            }
+          : undefined,
+      })
+
       paymentIntentDoc = (await payload.create({
         collection: 'payment-intents',
         data: {
@@ -723,18 +759,24 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
           amountMinor: '10412',
           currency: 'USD',
           state: 'paid',
-          orderLines: [
+          // Settlement evidence exactly as the verified webhook path
+          // (commerce tasks) appends it to the intent: the signed
+          // 'succeeded' event from case 6, reduced into financialEvents.
+          // Without it the fulfillment guard correctly refuses to treat
+          // a bare state:'paid' fixture as settled (18B F1).
+          financialEvents: [
             {
-              productId: sampleProduct.id,
-              variantSku: `JKT-${testRunId}-L`,
-              title: 'Field Jacket Large',
-              quantity: 2,
-              unitAmountMinor: '4500',
-              lineAmountMinor: '9000',
+              id: `provider:deterministic-test:evt_${testRunId}_paid`,
+              kind: 'succeeded',
+              resultingState: 'succeeded',
+              amountMinor: '10412',
               currency: 'USD',
-              kind: 'physical',
+              occurredAt: new Date().toISOString(),
+              verifiedAt: new Date().toISOString(),
+              providerReference: `det_pi_${testRunId}`,
             },
           ],
+          orderLines: frozenOrderLines,
           expiresAt: new Date(Date.now() + 3600000).toISOString(),
         },
         overrideAccess: true,

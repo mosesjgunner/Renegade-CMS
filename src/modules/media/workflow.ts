@@ -1714,6 +1714,29 @@ async function publicMediaWithAncestors(
       liveUsages.push(usage)
       continue
     }
+    if (String(relation.relationTo) === 'profiles') {
+      // Governed profile images are a product-supported usage shape
+      // (targetType 'profile', purpose 'avatar'/'cover'). Profiles carry
+      // no site field — tenancy is the usage row's own site, already
+      // matched to the media above — and their media-bearing fields are
+      // avatar/cover rather than the content reference keys
+      // referencedMedia scans for. The live recheck therefore mirrors the
+      // content branch with profile semantics: the profile must still
+      // exist, still be publicly renderable (visibility), and still
+      // reference this media as its avatar or cover.
+      const profile = (await payload
+        .findByID({
+          collection: 'profiles',
+          id: id(relation.value),
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        .catch(() => null)) as Doc | null
+      if (!profile || !canRenderPublic(profile as PublicState)) continue
+      if ([profile.avatar, profile.cover].some((value) => id(value) === mediaId))
+        liveUsages.push(usage)
+      continue
+    }
     if (!['content', 'social-network-variants'].includes(String(relation.relationTo))) continue
     const target = (await payload
       .findByID({

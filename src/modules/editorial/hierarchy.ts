@@ -250,6 +250,16 @@ export const protectSiteHierarchyDelete: CollectionBeforeDeleteHook = async ({ i
     // the grant must be removed before the delete, but removing it also
     // removes the grant scope that authorizes the delete.
     if (collection.slug === 'member-site-roles') continue
+    // Execution events (execution-events) are system exhaust: the outbox /
+    // audit records the product itself emits for a site's activity (e.g.
+    // discovery.indexing.changed afterChange events), not site content.
+    // They are append-only by design (the collection denies deletes and no
+    // product code ever removes them), so counting them as a protected
+    // reference makes site deletion impossible for any site that has ever
+    // been active. The events themselves are not deleted — they remain the
+    // operator audit trail; the guard simply does not treat them as
+    // content. (Product-owner decision, Matthew, 2026-11-07.)
+    if (collection.slug === 'execution-events') continue
     if (!hasSite(collection.fields)) continue
     const result = await req.payload.count({
       collection: collection.slug as never,

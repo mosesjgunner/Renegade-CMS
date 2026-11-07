@@ -314,7 +314,10 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
         slug: `product-${suffix}`,
         canonicalPath: `/store/product-${suffix}`,
         kind: 'physical',
-        state: 'approved',
+        // Created as a draft and approved below through the catalog
+        // workflow context: the Commerce beforeValidate hook forbids
+        // entering review/approved/published states any other way (18B F2).
+        state: 'draft',
         releaseRevision: `rev-prod-${suffix}`,
         productCapabilities: ['shippable'],
         variants: [
@@ -343,6 +346,57 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       overrideAccess: true,
     } as never)) as any
 
+    // Approve through the catalog workflow (the same context the admin
+    // catalog route sets when it performs the approve transition).
+    await payload.update({
+      collection: 'products' as never,
+      id: product.id,
+      data: { state: 'approved' },
+      context: { catalogWorkflow: true },
+      overrideAccess: true,
+    } as never)
+
+    // Media, distribution and newsletter artifacts must be real site-owned
+    // records to pin at all (artifact-scope resolves and fingerprints the
+    // live target). Each is deliberately NOT release-ready — unapproved
+    // media rights, an unapproved distribution draft, an unreviewed
+    // newsletter — so execution rejects them without false success, which
+    // is the subject of this case.
+    const heroMedia = (await payload.create({
+      collection: 'media-assets' as never,
+      data: {
+        site: site.id,
+        title: `Hero Key Visual ${suffix}`,
+        kind: 'image',
+        storageProvider: 'local',
+        storageLocation: `private/hero-${suffix}.png`,
+        processingState: 'processing',
+        publicPolicy: 'private',
+        rightsStatus: 'pending',
+      },
+      overrideAccess: true,
+    } as never)) as any
+
+    const socialDraft = (await payload.create({
+      collection: 'social-drafts' as never,
+      data: {
+        site: site.id,
+        title: `Announcement Social Dispatch ${suffix}`,
+      },
+      overrideAccess: true,
+    } as never)) as any
+
+    const newsletterMessage = (await payload.create({
+      collection: 'email-messages' as never,
+      data: {
+        site: site.id,
+        subject: `Subscriber Announcement ${suffix}`,
+        blocks: [],
+        kind: 'bulk',
+      },
+      overrideAccess: true,
+    } as never)) as any
+
     // 3. Create Coordinated Release
     const plannedInstant = new Date().toISOString()
     const release = await createRelease(payload, {
@@ -366,7 +420,9 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       release.id,
       {
         targetType: 'article',
-        targetId: String(articleBundle.content.id),
+        // Article artifacts pin the article-family record, not the parent
+        // content (artifact-scope resolves family -> content -> site).
+        targetId: String(articleBundle.article.id),
         title: `Coordinated Story ${suffix}`,
         canonicalUrl: `https://renegadeparty.org/articles/coord-story-${suffix}`,
         pinnedRevisionId: String(articleBundle.revisions[0]?.id || 'rev-1'),
@@ -395,7 +451,7 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       release.id,
       {
         targetType: 'media',
-        targetId: `media-hero-${suffix}`,
+        targetId: String(heroMedia.id),
         title: 'Hero Key Visual Artwork',
         pinnedHash: 'sha256:media-hash-1',
       },
@@ -407,8 +463,8 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       release.id,
       {
         targetType: 'distribution',
-        targetId: `dist-social-${suffix}`,
-        distributionDraftId: `draft-social-${suffix}`,
+        targetId: String(socialDraft.id),
+        distributionDraftId: String(socialDraft.id),
         title: 'Announcement Social Dispatch',
         pinnedHash: 'sha256:dist-hash-1',
       },
@@ -420,7 +476,7 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       release.id,
       {
         targetType: 'newsletter',
-        targetId: `newsletter-msg-${suffix}`,
+        targetId: String(newsletterMessage.id),
         title: 'Subscriber Announcement Dispatch',
         pinnedHash: 'sha256:news-hash-1',
       },

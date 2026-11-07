@@ -1030,6 +1030,11 @@ export async function rollbackLegacyMigration(
 
   // Native deletion may refuse retained/referenced content. Do not disable
   // database constraints or report rollback success after a failed operation.
+  // Rollback first clears the references its own lifecycle created between
+  // its content records (article-family rows, child-page links inside the
+  // created set); the hierarchy guard still judges every delete below and
+  // still refuses content referenced by anything else.
+  await store.clearContentRollbackReferences(report.createdEntityIds.contentIds)
   for (const [collection, ids] of [
     ['page-layouts', report.createdEntityIds.layoutIds],
     ['public-redirects', report.createdEntityIds.redirectIds],
@@ -1041,7 +1046,17 @@ export async function rollbackLegacyMigration(
   ] as const) {
     for (const id of ids) await store.deleteEntity(collection, id)
   }
-  if (report.createdEntityIds.siteId) await store.deleteSite(report.createdEntityIds.siteId)
+  if (report.createdEntityIds.siteId) {
+    // The site/media lifecycles auto-created records for the migration's
+    // own work — a default publication for the new site (Sites
+    // afterChange) and deduplicated physical blobs for the imported
+    // media (uploadMedia). Remove those artifacts too, so the hierarchy
+    // guard can judge the site delete on the records that are not
+    // rollback's own.
+    await store.deleteSiteMediaBlobs(report.createdEntityIds.siteId)
+    await store.deleteSitePublications(report.createdEntityIds.siteId)
+    await store.deleteSite(report.createdEntityIds.siteId)
+  }
 
   report.stage = 'rolled-back'
   report.rolledBackAt = new Date().toISOString()
