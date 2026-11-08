@@ -41,13 +41,11 @@ describe('content publication references', () => {
     )
     expect(menus.footer).toEqual([{ label: 'Kept', href: '/kept', children: [] }])
   })
-  it('persists content visibility in the native Publish tab with an additive migration', () => {
-    const tabs = Content.fields.find((field) => field.type === 'tabs')
-    expect(tabs?.type).toBe('tabs')
-    if (tabs?.type !== 'tabs') throw new Error('Missing native publishing tabs')
-    const field = tabs.tabs
-      .find((tab) => tab.label === 'Publish')
-      ?.fields.find((field) => 'name' in field && field.name === 'visibility')
+  it('persists content visibility as a native sidebar field with an additive migration', () => {
+    // GUI-01B: visibility is an always-visible sidebar publishing essential;
+    // its persisted field contract is unchanged from the tab-era layout.
+    const field = Content.fields.find((field) => 'name' in field && field.name === 'visibility')
+    expect(field).toMatchObject({ admin: { position: 'sidebar' } })
     expect(field).toMatchObject({
       type: 'select',
       required: true,

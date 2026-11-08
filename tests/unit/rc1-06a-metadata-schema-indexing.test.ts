@@ -220,6 +220,11 @@ describe('RC1 06A — Metadata, Schema and Indexing Controls', () => {
         if (f.type === 'tabs' && Array.isArray(f.tabs)) {
           return f.tabs.flatMap((t: any) => extractFieldNames(t.fields ?? []))
         }
+        // GUI-01B: presentation-only collapsible/row wrappers nest fields
+        // without changing their persisted names.
+        if ((f.type === 'collapsible' || f.type === 'row') && Array.isArray(f.fields)) {
+          return extractFieldNames(f.fields)
+        }
         return f.name ? [f.name] : []
       })
 

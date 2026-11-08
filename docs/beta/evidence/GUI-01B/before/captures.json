@@ -1,0 +1,25 @@
+{
+  "harness": "tests/beta-gui01b/editor-journey.ts (mode=before, run by the GUI-01B worker, Nov 8 2026)",
+  "capturedAt": "2026-11-08 (worker run; exact time not recorded at capture)",
+  "indexCompletedAt": "2026-11-08T07:56:50-06:00",
+  "note": "Screenshot index written during PR closeout from the files actually present. The worker's before-run trace.json was not preserved; only the captures below exist. No other before-state captures are claimed.",
+  "captures": [
+    {
+      "file": "create-article-desktop.png",
+      "route": "/admin/collections/content/create?contentType=article",
+      "viewport": "1440 desktop",
+      "shows": "Old tabbed layout: Content/Presentation/Media & Distribution/Publish/SEO & Discovery/Advanced tabs, admin fields before the headline"
+    },
+    {
+      "file": "edit-article-desktop.png",
+      "route": "/admin/collections/content/<seeded article>",
+      "viewport": "1440 desktop"
+    },
+    {
+      "file": "create-article-mobile-375.png",
+      "route": "/admin/collections/content/create?contentType=article",
+      "viewport": "375 mobile"
+    }
+  ],
+  "notCaptured": ["before tablet 768 (run interrupted)", "before dark appearance (run interrupted)"]
+}

@@ -1,0 +1,40 @@
+/* BETA GUI-01B — writing-first editor presentation.
+   Uses Payload theme tokens so light and dark admin appearances both hold. */
+
+.headline input {
+  font-size: 1.625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  color: var(--theme-text);
+}
+
+.headline label {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.canvas [contenteditable] {
+  min-height: 24rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--theme-text);
+}
+
+.canvas [contenteditable] p {
+  margin-bottom: 1em;
+}
+
+@media (max-width: 768px) {
+  .headline input {
+    font-size: 1.375rem;
+  }
+
+  .canvas [contenteditable] {
+    min-height: 16rem;
+  }
+}
