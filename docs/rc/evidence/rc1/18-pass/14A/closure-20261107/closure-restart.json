@@ -1,0 +1,17 @@
+{
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "provider": "loopback Ollama HTTP protocol harness; optional bearer auth; no real model inference",
+  "checks": [
+    "PostgreSQL postmaster start time changed across the phase boundary (real database restart)",
+    "fresh browser after PostgreSQL/web restart shows persisted active model and capabilities",
+    "encrypted secret remains usable after process/database restart",
+    "rejected credential error survives restart",
+    "ordinary UI test connection succeeds after restart using saved encrypted key",
+    "ordinary disable persists unavailable state retaining encrypted reconnect key",
+    "ordinary UI disconnect removes saved credential and capabilities transactionally",
+    "disconnected connection cannot be retested or silently reenabled",
+    "UI reload observes durable disconnect"
+  ]
+}

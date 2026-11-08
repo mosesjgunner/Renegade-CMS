@@ -1,0 +1,23 @@
+{
+  "passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "provider": "loopback Ollama HTTP protocol harness; optional bearer auth; no real model inference",
+  "checks": [
+    "owner UI shows safe no-provider state",
+    "ordinary discovery advertises model without persisting or inventing capabilities",
+    "ordinary owner UI saved model discovery and text/JSON capability probes",
+    "actual database connection matches UI",
+    "credential encrypted at rest and decryptable only by server",
+    "UI clears API key after saving",
+    "upstream rejected credentials persist degraded state without capability claims",
+    "wrong-site owner/admin, staff mutation and anonymous denied before provider I/O",
+    "foreign object substitution denied without deleting its credential",
+    "cross-origin mutation denied and saved state unchanged",
+    "native ai-credentials cannot expose saved records",
+    "native ai-connections cannot expose saved records",
+    "successful text does not invent structured compatibility",
+    "provider failure clears capabilities and persists redacted error",
+    "retry after real provider recovery restores probed capabilities"
+  ]
+}

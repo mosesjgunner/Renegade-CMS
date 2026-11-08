@@ -1,0 +1,43 @@
+{
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "PostgreSQL/web restart preserves human winner and public output",
+      "passed": true
+    },
+    {
+      "name": "restart preserves exact measured events",
+      "passed": true
+    },
+    {
+      "name": "fresh anonymous browser renders persisted approved winner after restart",
+      "passed": true
+    },
+    {
+      "name": "winner state stops experiment event collection",
+      "passed": true
+    },
+    {
+      "name": "supported rollback works after restart",
+      "passed": true
+    },
+    {
+      "name": "wrong-site decision remains denied after restart",
+      "passed": true
+    },
+    {
+      "name": "resumed experiment retains original visitor assignment after restart",
+      "passed": true
+    },
+    {
+      "name": "post-restart exposure retry preserves exact event count",
+      "passed": true
+    }
+  ]
+}
