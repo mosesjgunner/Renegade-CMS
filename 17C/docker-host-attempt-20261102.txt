@@ -1,0 +1,17 @@
+﻿RC1 17C Docker-host attempt — 2026-11-02
+Branch: rc1-17c
+HEAD: 92954d7b3fad85b50528b0eb596e6c4ef7152d5d
+Initial working tree: clean
+
+Preflight command: docker info --format '{{json .ServerVersion}}'
+Exit: 0
+Output: "29.8.0"
+
+First required command: bash tests/rc1-17c/run.sh build
+Resolved bash: C:\WINDOWS\system32\bash.exe
+Exit: 1
+Output (UTF-16 NUL padding removed for readability):
+A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.
+Error code: Bash/Service/CreateInstance/0x8007274c
+
+Stopped at first failure as requested. Harness did not launch; no Docker build was executed by this attempt. inspect, stack-a, restart-a, stack-b, down, and Compose proof were not executed. No new image digest. No product code or .dockerignore changes. Existing RESULT and ledger unchanged; 17C remains NOT READY. Existing evidence in this folder predates this attempt unless identified by this record.

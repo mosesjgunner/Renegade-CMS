@@ -1,0 +1,985 @@
+Client: Docker Engine - Community
+ Version:           29.4.2
+ API version:       1.54
+ Go version:        go1.26.2
+ Git commit:        055a478
+ Built:             Fri May  1 10:24:04 2026
+ OS/Arch:           linux/amd64
+ Context:           default
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          29.4.2
+  API version:      1.54 (minimum version 1.40)
+  Go version:       go1.26.2
+  Git commit:       d329809
+  Built:            Fri May  1 10:24:04 2026
+  OS/Arch:          linux/amd64
+  Experimental:     false
+ containerd:
+  Version:          v2.4.2
+  GitCommit:        b7a25261e029d68978bbf290df0a62fc819b3c51
+ runc:
+  Version:          1.5.2
+  GitCommit:        v1.5.2-0-g29dd3dc2
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.51kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 ...
+
+#3 [auth] library/golang:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/node:24-alpine
+#5 DONE 0.8s
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 DONE 0.8s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 274B done
+#6 DONE 0.0s
+
+#7 [production-dependencies 1/6] FROM docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
+#7 resolve docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8 0.0s done
+#7 DONE 0.1s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 resolve docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d 0.0s done
+#8 sha256:6ff05f868da7888e9c1d6b4967ff0892cf86b51d23c81149794e72c001604803 126B / 126B 0.1s done
+#8 sha256:e2443a591f6296d5e94b53e785f358049a0c73d97e9e0941fcf48cf482f385b8 247.53kB / 247.53kB 0.2s done
+#8 sha256:b2b6413ae8f393d11d32262c8dc6bd053dbaea3d074f95edd5605d3eb116e3c2 8.39MB / 71.15MB 0.2s
+#8 extracting sha256:e2443a591f6296d5e94b53e785f358049a0c73d97e9e0941fcf48cf482f385b8
+#8 ...
+
+#9 [internal] load build context
+#9 transferring context: 23.60MB 0.4s done
+#9 DONE 0.5s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 sha256:b2b6413ae8f393d11d32262c8dc6bd053dbaea3d074f95edd5605d3eb116e3c2 24.12MB / 71.15MB 0.3s
+#8 extracting sha256:e2443a591f6296d5e94b53e785f358049a0c73d97e9e0941fcf48cf482f385b8 0.1s done
+#8 ...
+
+#10 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#10 DONE 0.6s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 sha256:b2b6413ae8f393d11d32262c8dc6bd053dbaea3d074f95edd5605d3eb116e3c2 71.15MB / 71.15MB 0.5s done
+#8 extracting sha256:b2b6413ae8f393d11d32262c8dc6bd053dbaea3d074f95edd5605d3eb116e3c2
+#8 ...
+
+#7 [production-dependencies 1/6] FROM docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
+#7 sha256:60ef5f57e09d3f24d91cfd5547a102a028a7bd629f03e79409f53a202cf9df54 441B / 441B 0.1s done
+#7 sha256:89a151fddb377af33d0dda6a24f40061bbde4b159f82c349fe01208baba8a84f 1.26MB / 1.26MB 0.1s done
+#7 sha256:b72829bc75b7701104d057fde78fe0aef6dc0c3eaf2423e7249e8a14c37ead57 57.38MB / 57.38MB 0.5s done
+#7 extracting sha256:b72829bc75b7701104d057fde78fe0aef6dc0c3eaf2423e7249e8a14c37ead57 1.2s done
+#7 DONE 1.8s
+
+#7 [production-dependencies 1/6] FROM docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
+#7 extracting sha256:89a151fddb377af33d0dda6a24f40061bbde4b159f82c349fe01208baba8a84f 0.0s done
+#7 extracting sha256:60ef5f57e09d3f24d91cfd5547a102a028a7bd629f03e79409f53a202cf9df54 done
+#7 DONE 1.9s
+
+#11 [production-dependencies 2/6] WORKDIR /app
+#11 DONE 0.7s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 ...
+
+#12 [production-dependencies 3/6] COPY package.json package-lock.json ./
+#12 DONE 0.2s
+
+#13 [production-dependencies 4/6] COPY scripts ./scripts
+#13 DONE 0.0s
+
+#14 [dependencies 5/5] RUN npm ci
+#14 ...
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 extracting sha256:b2b6413ae8f393d11d32262c8dc6bd053dbaea3d074f95edd5605d3eb116e3c2 4.6s done
+#8 extracting sha256:6ff05f868da7888e9c1d6b4967ff0892cf86b51d23c81149794e72c001604803 0.0s done
+#8 extracting sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1 0.0s done
+#8 DONE 5.3s
+
+#15 [esbuild-runtime 2/4] WORKDIR /src
+#15 DONE 0.3s
+
+#16 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#16 ...
+
+#17 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#17 DONE 0.0s
+
+#18 [esbuild-runtime 4/4] RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src &&     CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild &&     go version -m /out/esbuild > /out/esbuild-build.txt
+#18 0.496 go: downloading golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8
+#18 ...
+
+#19 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#19 10.91 
+#19 10.91 removed 8 packages, and changed 72 packages in 11s
+#19 10.91 
+#19 10.91 15 packages are looking for funding
+#19 10.91   run `npm fund` for details
+#19 13.00 
+#19 13.00 added 3 packages in 2s
+#19 13.00 npm notice
+#19 13.00 npm notice New patch version of npm available! 12.2.0 -> 12.2.2
+#19 13.00 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#19 13.00 npm notice To update run: npm install -g npm@12.2.2
+#19 13.00 npm notice
+#19 DONE 13.9s
+
+#16 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#16 ...
+
+#20 [runner  4/18] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+#20 DONE 0.3s
+
+#16 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#16 ...
+
+#21 [runner  5/18] RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
+#21 DONE 0.2s
+
+#16 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#16 14.33 npm warn deprecated deep-diff@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+#16 ...
+
+#14 [dependencies 5/5] RUN npm ci
+#14 20.80 npm warn deprecated deep-diff@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+#14 ...
+
+#18 [esbuild-runtime 4/4] RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src &&     CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild &&     go version -m /out/esbuild > /out/esbuild-build.txt
+#18 DONE 40.5s
+
+#16 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#16 48.17 
+#16 48.17 > renegade-cms@0.1.0 postinstall
+#16 48.17 > node scripts/apply-patches.mjs
+#16 48.17 
+#16 48.21 Applied ordinary global REST document-lock enforcement patch.
+#16 48.21 Applied RC08D-01 patch to getIsLocked.js
+#16 48.27 
+#16 48.27 added 539 packages, and audited 540 packages in 48s
+#16 48.27 
+#16 48.27 134 packages are looking for funding
+#16 48.27   run `npm fund` for details
+#16 48.36 
+#16 48.36 12 vulnerabilities (8 low, 1 moderate, 1 high, 2 critical)
+#16 48.36 
+#16 48.36 To address issues that do not require attention, run:
+#16 48.36   npm audit fix
+#16 48.36 
+#16 48.36 To address all issues (including breaking changes), run:
+#16 48.36   npm audit fix --force
+#16 48.36 
+#16 48.36 Run `npm audit` for details.
+#16 48.36 npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+#16 48.36 npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+#16 48.36 npm warn install-scripts
+#16 48.36 npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+#16 48.36 npm notice
+#16 48.36 npm notice New major version of npm available! 11.19.1 -> 12.2.2
+#16 48.36 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#16 48.36 npm notice To update run: npm install -g npm@12.2.2
+#16 48.36 npm notice
+#16 DONE 49.2s
+
+#14 [dependencies 5/5] RUN npm ci
+#14 ...
+
+#22 [production-dependencies 6/6] RUN rm -rf node_modules/typescript node_modules/@playwright     node_modules/playwright node_modules/playwright-core
+#22 DONE 0.5s
+
+#14 [dependencies 5/5] RUN npm ci
+#14 98.25 
+#14 98.25 > renegade-cms@0.1.0 postinstall
+#14 98.25 > node scripts/apply-patches.mjs
+#14 98.25 
+#14 98.29 Applied ordinary global REST document-lock enforcement patch.
+#14 98.29 Applied RC08D-01 patch to getIsLocked.js
+#14 98.37 
+#14 98.37 added 878 packages, and audited 879 packages in 2m
+#14 98.37 
+#14 98.37 276 packages are looking for funding
+#14 98.37   run `npm fund` for details
+#14 98.65 
+#14 98.65 24 vulnerabilities (8 low, 11 moderate, 3 high, 2 critical)
+#14 98.65 
+#14 98.65 To address issues that do not require attention, run:
+#14 98.65   npm audit fix
+#14 98.65 
+#14 98.65 To address all issues (including breaking changes), run:
+#14 98.65   npm audit fix --force
+#14 98.65 
+#14 98.65 Run `npm audit` for details.
+#14 98.65 npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+#14 98.65 npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+#14 98.65 npm warn install-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+#14 98.65 npm warn install-scripts
+#14 98.65 npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+#14 98.65 npm notice
+#14 98.65 npm notice New major version of npm available! 11.19.1 -> 12.2.2
+#14 98.65 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#14 98.65 npm notice To update run: npm install -g npm@12.2.2
+#14 98.65 npm notice
+#14 DONE 100.1s
+
+#23 [builder 3/5] COPY --from=dependencies /app/node_modules ./node_modules
+#23 DONE 10.6s
+
+#24 [builder 4/5] COPY . .
+#24 DONE 0.7s
+
+#25 [builder 5/5] RUN npm run build
+#25 0.467 
+#25 0.467 > renegade-cms@0.1.0 build
+#25 0.467 > node scripts/build.mjs
+#25 0.467 
+#25 1.019 ▲ Next.js 16.4.1 (Turbopack)
+#25 1.074 ✓ Running next.config.ts took 54ms
+#25 1.081 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#25 1.081 This information is used to shape Next.js' roadmap and prioritize features.
+#25 1.081 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#25 1.081 https://nextjs.org/telemetry
+#25 1.081 
+#25 1.114 - Experiments (use with caution):
+#25 1.114   ⨯ turbopackServerFastRefresh
+#25 1.114   ✓ webpackMemoryOptimizations
+#25 1.115 
+#25 1.206   Creating an optimized production build ...
+#25 54.99 ✓ Compiled successfully in 54s
+#25 55.00   Running TypeScript ...
+#25 66.53 ✓ Finished writing to filesystem cache in 11.5s
+#25 94.82   Finished TypeScript in 39.8s ...
+#25 94.82   Collecting page data using 3 workers ...
+#25 98.49   Generating static pages using 3 workers (0/149) ...
+#25 98.63   Generating static pages using 3 workers (37/149) 
+#25 98.76   Generating static pages using 3 workers (74/149) 
+#25 98.86   Generating static pages using 3 workers (111/149) 
+#25 98.97 ✓ Generating static pages using 3 workers (149/149) in 473ms
+#25 98.97 Turbopack build encountered 1 warning:
+#25 98.97 ./src/modules/presentation/packages.ts:91:22
+#25 98.97 Warning: Dynamic filesystem access causes tracing of the whole project
+#25 98.97   [90m89 |[0m [32m  let boundary: string[0m
+#25 98.97   [90m90 |[0m [32m  try {[0m
+#25 98.97 [33m[1m>[0m [90m91 |[0m [32m    boundary = await realpath(root)[0m
+#25 98.97   [90m   |[0m                      [33m[1m^^^^^^^^^^^^^^[0m
+#25 98.97   [90m92 |[0m [32m  } catch {[0m
+#25 98.97   [90m93 |[0m [32m    return [[0m
+#25 98.97   [90m94 |[0m [32m      {[0m
+#25 98.97 
+#25 98.97 Static analysis determined that this filesystem access causes the whole project to be traced and included in the output.
+#25 98.97 This is usually unintentional and leads to all source files (including the public folder) to be deployed as part of the server code.
+#25 98.97 This can slow down deployments or lead to failures when size limits are exceeded.
+#25 98.97 To resolve this, you can
+#25 98.97 - make sure the path is statically scoped to some subfolder, for example path.join(process.cwd(), 'data', bar), or
+#25 98.97 - only use them in development, or
+#25 98.97 - opt out by adding an ignore comment to the highlighted call: fs.realpath(/*turbopackIgnore: true*/ ...), or
+#25 98.97 - remove them.
+#25 98.97 
+#25 98.97 Import traces:
+#25 98.97   App Route:
+#25 98.97     ./src/modules/presentation/packages.ts
+#25 98.97     ./src/app/(frontend)/api/admin/themes/route.ts
+#25 98.97 
+#25 98.97   Server Component:
+#25 98.97     ./src/modules/presentation/packages.ts
+#25 98.97     ./src/modules/presentation/lifecycle.ts
+#25 98.97     ./src/modules/presentation/request-theme.ts
+#25 98.97     ./src/app/(frontend)/layout.tsx
+#25 98.97 
+#25 98.97   Middleware:
+#25 98.97     ./src/modules/presentation/packages.ts
+#25 98.97     ./src/modules/presentation/lifecycle.ts
+#25 98.97     ./src/modules/presentation/request-theme.ts
+#25 98.97     ./src/modules/core/site-settings.ts
+#25 98.97     ./src/modules/public/site-scope.ts
+#25 98.97     ./src/proxy.ts
+#25 98.97 
+#25 98.97 
+#25 98.97   Finalizing page optimization ...
+#25 103.9 
+#25 103.9 Route (app)
+#25 103.9 ┌ ƒ /
+#25 103.9 ├ ○ /_not-found
+#25 103.9 ├ ƒ /.well-known/nodeinfo
+#25 103.9 ├ ƒ /.well-known/webfinger
+#25 103.9 ├ ƒ /[...path]
+#25 103.9 ├ ƒ /admin/[[...segments]]
+#25 103.9 ├ ƒ /admin/ai
+#25 103.9 ├ ƒ /admin/audience
+#25 103.9 ├ ƒ /admin/catalog
+#25 103.9 ├ ƒ /admin/catalog/preview/[id]
+#25 103.9 ├ ƒ /admin/commerce
+#25 103.9 ├ ƒ /admin/email-composer
+#25 103.9 ├ ƒ /admin/fulfillment
+#25 103.9 ├ ƒ /admin/migration
+#25 103.9 ├ ƒ /admin/releases
+#25 103.9 ├ ƒ /admin/social
+#25 103.9 ├ ƒ /admin/telemetry
+#25 103.9 ├ ƒ /admin/workflow
+#25 103.9 ├ ƒ /affiliate/[offerId]
+#25 103.9 ├ ƒ /ap/actors/[handle]
+#25 103.9 ├ ƒ /ap/actors/[handle]/followers
+#25 103.9 ├ ƒ /ap/actors/[handle]/following
+#25 103.9 ├ ƒ /ap/actors/[handle]/inbox
+#25 103.9 ├ ƒ /ap/actors/[handle]/outbox
+#25 103.9 ├ ƒ /api/[...slug]
+#25 103.9 ├ ƒ /api/admin/active-site
+#25 103.9 ├ ƒ /api/admin/ai/connections
+#25 103.9 ├ ƒ /api/admin/ai/preview
+#25 103.9 ├ ƒ /api/admin/ai/proposals
+#25 103.9 ├ ƒ /api/admin/ai/proposals/[id]
+#25 103.9 ├ ƒ /api/admin/ai/sites
+#25 103.9 ├ ƒ /api/admin/audience/campaign
+#25 103.9 ├ ƒ /api/admin/audience/command-center
+#25 103.9 ├ ƒ /api/admin/audience/crm
+#25 103.9 ├ ƒ /api/admin/audience/intake
+#25 103.9 ├ ƒ /api/admin/audience/retry
+#25 103.9 ├ ƒ /api/admin/calendar/schedule
+#25 103.9 ├ ƒ /api/admin/catalog
+#25 103.9 ├ ƒ /api/admin/catalog/import
+#25 103.9 ├ ƒ /api/admin/commerce/affiliate
+#25 103.9 ├ ƒ /api/admin/commerce/dashboard
+#25 103.9 ├ ƒ /api/admin/commerce/donations
+#25 103.9 ├ ƒ /api/admin/commerce/receipts/[orderId]/resend
+#25 103.9 ├ ƒ /api/admin/commerce/reconcile
+#25 103.9 ├ ƒ /api/admin/commerce/refunds
+#25 103.9 ├ ƒ /api/admin/commerce/subscriptions
+#25 103.9 ├ ƒ /api/admin/commerce/subscriptions/grant
+#25 103.9 ├ ƒ /api/admin/commerce/webhooks/[eventId]/retry
+#25 103.9 ├ ƒ /api/admin/content/preview
+#25 103.9 ├ ƒ /api/admin/discovery
+#25 103.9 ├ ƒ /api/admin/discovery/ai-suggestion/accept
+#25 103.9 ├ ƒ /api/admin/discovery/audit
+#25 103.9 ├ ƒ /api/admin/fulfillment
+#25 103.9 ├ ƒ /api/admin/indexing/export
+#25 103.9 ├ ƒ /api/admin/indexing/search/reconcile
+#25 103.9 ├ ƒ /api/admin/integrations
+#25 103.9 ├ ƒ /api/admin/navigation
+#25 103.9 ├ ƒ /api/admin/notifications
+#25 103.9 ├ ƒ /api/admin/redirects
+#25 103.9 ├ ƒ /api/admin/redirects/export
+#25 103.9 ├ ƒ /api/admin/redirects/import
+#25 103.9 ├ ƒ /api/admin/releases
+#25 103.9 ├ ƒ /api/admin/releases/[id]
+#25 103.9 ├ ƒ /api/admin/schedule-health
+#25 103.9 ├ ƒ /api/admin/semantic-url/preview
+#25 103.9 ├ ƒ /api/admin/social/accounts
+#25 103.9 ├ ƒ /api/admin/social/analytics
+#25 103.9 ├ ƒ /api/admin/social/dispatch
+#25 103.9 ├ ƒ /api/admin/social/drafts
+#25 103.9 ├ ƒ /api/admin/social/worker
+#25 103.9 ├ ƒ /api/admin/staff/invite
+#25 103.9 ├ ƒ /api/admin/starters
+#25 103.9 ├ ƒ /api/admin/telecom/simulate
+#25 103.9 ├ ƒ /api/admin/telemetry/dashboard
+#25 103.9 ├ ƒ /api/admin/telemetry/experiment/winner
+#25 103.9 ├ ƒ /api/admin/telemetry/funnel
+#25 103.9 ├ ƒ /api/admin/themes
+#25 103.9 ├ ƒ /api/admin/translations
+#25 103.9 ├ ƒ /api/admin/webhooks
+#25 103.9 ├ ƒ /api/admin/workflow/actions
+#25 103.9 ├ ƒ /api/admin/workflow/audit
+#25 103.9 ├ ƒ /api/admin/workflow/bulk
+#25 103.9 ├ ƒ /api/admin/workflow/command-center
+#25 103.9 ├ ƒ /api/admin/workflow/comments
+#25 103.9 ├ ƒ /api/admin/workflow/queues
+#25 103.9 ├ ƒ /api/admin/workflow/revisions
+#25 103.9 ├ ƒ /api/admin/workflow/templates
+#25 103.9 ├ ƒ /api/analytics/collect
+#25 103.9 ├ ƒ /api/analytics/consent
+#25 103.9 ├ ƒ /api/analytics/report
+#25 103.9 ├ ƒ /api/auth/enrollment
+#25 103.9 ├ ƒ /api/auth/logout
+#25 103.9 ├ ƒ /api/auth/passkey/complete
+#25 103.9 ├ ƒ /api/auth/passkey/enroll
+#25 103.9 ├ ƒ /api/auth/passkey/options
+#25 103.9 ├ ƒ /api/auth/passkeys
+#25 103.9 ├ ƒ /api/auth/recovery
+#25 103.9 ├ ƒ /api/calendar/export
+#25 103.9 ├ ƒ /api/catalog
+#25 103.9 ├ ƒ /api/commerce/affiliate/conversions
+#25 103.9 ├ ƒ /api/commerce/affiliate/redirect
+#25 103.9 ├ ƒ /api/commerce/cart
+#25 103.9 ├ ƒ /api/commerce/cart/merge
+#25 103.9 ├ ƒ /api/commerce/checkout/initiate
+#25 103.9 ├ ƒ /api/commerce/checkout/methods
+#25 103.9 ├ ƒ /api/commerce/checkout/status
+#25 103.9 ├ ƒ /api/commerce/checkout/test/confirm
+#25 103.9 ├ ƒ /api/commerce/crypto/verify
+#25 103.9 ├ ƒ /api/commerce/donations/campaign/[campaignId]
+#25 103.9 ├ ƒ /api/commerce/donations/intent
+#25 103.9 ├ ƒ /api/commerce/donations/privacy
+#25 103.9 ├ ƒ /api/commerce/download/[grantKey]
+#25 103.9 ├ ƒ /api/commerce/pod/assets/[id]
+#25 103.9 ├ ƒ /api/commerce/pod/webhook
+#25 103.9 ├ ƒ /api/commerce/proposal
+#25 103.9 ├ ƒ /api/commerce/referrals/claim
+#25 103.9 ├ ƒ /api/commerce/subscriptions
+#25 103.9 ├ ƒ /api/commerce/subscriptions/checkout
+#25 103.9 ├ ƒ /api/commerce/subscriptions/download/[mediaId]
+#25 103.9 ├ ƒ /api/commerce/subscriptions/plans
+#25 103.9 ├ ƒ /api/commerce/webhooks/[provider]
+#25 103.9 ├ ƒ /api/community/blocks
+#25 103.9 ├ ƒ /api/community/comments
+#25 103.9 ├ ƒ /api/community/conversations
+#25 103.9 ├ ƒ /api/community/conversations/[conversationId]
+#25 103.9 ├ ƒ /api/community/directory
+#25 103.9 ├ ƒ /api/community/history
+#25 103.9 ├ ƒ /api/community/message-requests
+#25 103.9 ├ ƒ /api/community/messages
+#25 103.9 ├ ƒ /api/community/messages/report
+#25 103.9 ├ ƒ /api/community/moderation
+#25 103.9 ├ ƒ /api/community/moderation-sites
+#25 103.9 ├ ƒ /api/community/moderation/appeals
+#25 103.9 ├ ƒ /api/community/notification-preferences
+#25 103.9 ├ ƒ /api/community/notification-unsubscribe
+#25 103.9 ├ ƒ /api/community/notifications
+#25 103.9 ├ ƒ /api/community/posts
+#25 103.9 ├ ƒ /api/community/profiles/[handle]
+#25 103.9 ├ ƒ /api/community/reactions
+#25 103.9 ├ ƒ /api/community/relationships
+#25 103.9 ├ ƒ /api/community/reports
+#25 103.9 ├ ƒ /api/community/threads
+#25 103.9 ├ ƒ /api/email/webhook
+#25 103.9 ├ ƒ /api/experiences/active
+#25 103.9 ├ ƒ /api/experiences/conversion
+#25 103.9 ├ ƒ /api/experiences/exposure
+#25 103.9 ├ ƒ /api/forms/[formId]
+#25 103.9 ├ ƒ /api/foundation-smoke
+#25 103.9 ├ ƒ /api/graphql
+#25 103.9 ├ ƒ /api/graphql-playground
+#25 103.9 ├ ƒ /api/layouts
+#25 103.9 ├ ƒ /api/layouts/[id]
+#25 103.9 ├ ƒ /api/layouts/[id]/choices
+#25 103.9 ├ ƒ /api/layouts/[id]/rollback
+#25 103.9 ├ ƒ /api/layouts/overview
+#25 103.9 ├ ƒ /api/layouts/patterns
+#25 103.9 ├ ƒ /api/layouts/templates
+#25 103.9 ├ ƒ /api/media
+#25 103.9 ├ ƒ /api/media/[id]
+#25 103.9 ├ ƒ /api/media/[id]/variants
+#25 103.9 ├ ƒ /api/media/attach
+#25 103.9 ├ ƒ /api/media/command-center
+#25 103.9 ├ ƒ /api/media/governance
+#25 103.9 ├ ƒ /api/media/sessions
+#25 103.9 ├ ƒ /api/media/sessions/[id]
+#25 103.9 ├ ƒ /api/media/upload
+#25 103.9 ├ ƒ /api/member-auth/deactivate
+#25 103.9 ├ ƒ /api/member-auth/delete
+#25 103.9 ├ ƒ /api/member-auth/export
+#25 103.9 ├ ƒ /api/member-auth/link
+#25 103.9 ├ ƒ /api/member-auth/link/email
+#25 103.9 ├ ƒ /api/member-auth/link/email/confirm
+#25 103.9 ├ ƒ /api/member-auth/logout
+#25 103.9 ├ ƒ /api/member-auth/magic-link/complete
+#25 103.9 ├ ƒ /api/member-auth/magic-link/request
+#25 103.9 ├ ƒ /api/member-auth/me
+#25 103.9 ├ ƒ /api/member-auth/passkey/login/complete
+#25 103.9 ├ ƒ /api/member-auth/passkey/login/options
+#25 103.9 ├ ƒ /api/member-auth/passkey/register/complete
+#25 103.9 ├ ƒ /api/member-auth/passkey/register/options
+#25 103.9 ├ ƒ /api/member-auth/profile
+#25 103.9 ├ ƒ /api/member-auth/profile-media
+#25 103.9 ├ ƒ /api/member-auth/reactivate
+#25 103.9 ├ ƒ /api/member-auth/sessions
+#25 103.9 ├ ƒ /api/member-auth/sessions/[id]/revoke
+#25 103.9 ├ ƒ /api/member-auth/sessions/revoke-all
+#25 103.9 ├ ƒ /api/member-auth/unlink
+#25 103.9 ├ ƒ /api/migration/export
+#25 103.9 ├ ƒ /api/migration/legacy/activate/[runId]
+#25 103.9 ├ ƒ /api/migration/legacy/execute
+#25 103.9 ├ ƒ /api/migration/legacy/inspect
+#25 103.9 ├ ƒ /api/migration/legacy/preflight
+#25 103.9 ├ ƒ /api/migration/legacy/report/[runId]
+#25 103.9 ├ ƒ /api/migration/legacy/rollback/[runId]
+#25 103.9 ├ ƒ /api/migration/legacy/verify/[runId]
+#25 103.9 ├ ƒ /api/operations/diagnostics
+#25 103.9 ├ ƒ /api/operations/support-bundle
+#25 103.9 ├ ƒ /api/presentation/export
+#25 103.9 ├ ƒ /api/presentation/import
+#25 103.9 ├ ƒ /api/realtime/drafts/[articleId]/checkpoint
+#25 103.9 ├ ƒ /api/realtime/presence
+#25 103.9 ├ ƒ /api/realtime/stream
+#25 103.9 ├ ƒ /api/setup/complete
+#25 103.9 ├ ƒ /api/setup/options
+#25 103.9 ├ ƒ /api/setup/readiness
+#25 103.9 ├ ƒ /api/subscribers/confirm
+#25 103.9 ├ ƒ /api/subscribers/preferences
+#25 103.9 ├ ƒ /api/subscribers/subscribe
+#25 103.9 ├ ƒ /api/subscribers/unsubscribe
+#25 103.9 ├ ƒ /api/v1/[...segments]
+#25 103.9 ├ ƒ /api/v1/attachments/presign
+#25 103.9 ├ ƒ /api/v1/moderation/cases
+#25 103.9 ├ ƒ /api/v1/moderation/cases/batch
+#25 103.9 ├ ƒ /api/v1/moderation/cases/export
+#25 103.9 ├ ƒ /api/v1/notifications
+#25 103.9 ├ ƒ /api/v1/notifications/[id]/read
+#25 103.9 ├ ƒ /api/v1/notifications/mark-all-read
+#25 103.9 ├ ƒ /api/v1/notifications/stream
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/comments/[comment_id]/reactions
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/spaces/[space_id]
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/subscriptions
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/topics
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]
+#25 103.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]/read
+#25 103.9 ├ ƒ /articles
+#25 103.9 ├ ƒ /articles/[slug]
+#25 103.9 ├ ƒ /browse
+#25 103.9 ├ ƒ /builder/[id]
+#25 103.9 ├ ƒ /builder/[id]/preview
+#25 103.9 ├ ƒ /calendar
+#25 103.9 ├ ƒ /cart
+#25 103.9 ├ ƒ /checkout
+#25 103.9 ├ ƒ /checkout/cancel
+#25 103.9 ├ ƒ /checkout/return
+#25 103.9 ├ ƒ /checkout/test/[reference]
+#25 103.9 ├ ƒ /commerce/referrals
+#25 103.9 ├ ƒ /connections
+#25 103.9 ├ ƒ /donate
+#25 103.9 ├ ƒ /donate/[campaignId]
+#25 103.9 ├ ƒ /enroll
+#25 103.9 ├ ƒ /events
+#25 103.9 ├ ƒ /events/[slug]/ics
+#25 103.9 ├ ƒ /events/feed.ics
+#25 103.9 ├ ƒ /feed.json
+#25 103.9 ├ ƒ /feed.xml
+#25 103.9 ├ ƒ /feeds/[scope]/[slug]
+#25 103.9 ├ ƒ /forms/[formId]
+#25 103.9 ├ ƒ /forums
+#25 103.9 ├ ƒ /forums/[forumSlug]
+#25 103.9 ├ ƒ /forums/[forumSlug]/[topicSlug]
+#25 103.9 ├ ƒ /graphics-studio
+#25 103.9 ├ ƒ /guided-setup
+#25 103.9 ├ ƒ /health/live
+#25 103.9 ├ ƒ /health/ready
+#25 103.9 ├ ƒ /login
+#25 103.9 ├ ƒ /media/[id]
+#25 103.9 ├ ƒ /member-auth
+#25 103.9 ├ ƒ /member-auth/verify
+#25 103.9 ├ ƒ /members
+#25 103.9 ├ ƒ /members/[handle]
+#25 103.9 ├ ƒ /members/settings
+#25 103.9 ├ ƒ /messages
+#25 103.9 ├ ƒ /moderation
+#25 103.9 ├ ƒ /network
+#25 103.9 ├ ƒ /nodeinfo/2.1
+#25 103.9 ├ ƒ /notifications
+#25 103.9 ├ ƒ /ops/rebuild-notification-counters
+#25 103.9 ├ ƒ /podcasts/[slug]
+#25 103.9 ├ ƒ /podcasts/[slug]/feed.xml
+#25 103.9 ├ ƒ /podcasts/episodes/[slug]
+#25 103.9 ├ ƒ /podcasts/episodes/[slug]/chapters.json
+#25 103.9 ├ ƒ /podcasts/episodes/[slug]/transcript
+#25 103.9 ├ ƒ /pos
+#25 103.9 ├ ƒ /preferences
+#25 103.9 ├ ƒ /preview/article/[token]
+#25 103.9 ├ ƒ /referrals/[code]
+#25 103.9 ├ ƒ /robots.txt
+#25 103.9 ├ ƒ /search
+#25 103.9 ├ ƒ /setup
+#25 103.9 ├ ƒ /sitemap.xml
+#25 103.9 ├ ƒ /sitemaps/[page]
+#25 103.9 ├ ƒ /social-studio
+#25 103.9 ├ ƒ /store
+#25 103.9 ├ ƒ /store/[slug]
+#25 103.9 ├ ƒ /subscribe
+#25 103.9 ├ ƒ /subscribe/confirm
+#25 103.9 ├ ƒ /subscribe/preferences
+#25 103.9 ├ ƒ /unsubscribe
+#25 103.9 ├ ƒ /video-captions/[id]
+#25 103.9 ├ ƒ /video-media/[id]/[filename]
+#25 103.9 ├ ƒ /videos
+#25 103.9 └ ƒ /videos/[slug]
+#25 103.9 
+#25 103.9 
+#25 103.9 ƒ Proxy (Middleware)
+#25 103.9 
+#25 103.9 ○  (Static)   prerendered as static content
+#25 103.9 ƒ  (Dynamic)  server-rendered on demand
+#25 103.9 
+#25 104.0 Built source fcf046a7e3798854443151e13d7823c8ba3e668a; clean source: null.
+#25 104.0 npm notice
+#25 104.0 npm notice New major version of npm available! 11.19.1 -> 12.2.2
+#25 104.0 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+#25 104.0 npm notice To update run: npm install -g npm@12.2.2
+#25 104.0 npm notice
+#25 DONE 104.2s
+
+#26 [runner  6/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
+#26 DONE 1.6s
+
+#27 [runner  7/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/static
+#27 DONE 0.1s
+
+#28 [runner  8/18] COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
+#28 DONE 0.0s
+
+#29 [runner  9/18] COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
+#29 DONE 9.0s
+
+#30 [runner 10/18] COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
+#30 DONE 0.4s
+
+#31 [runner 11/18] COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
+#31 DONE 0.0s
+
+#32 [runner 12/18] COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
+#32 DONE 0.0s
+
+#33 [runner 13/18] COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+#33 DONE 0.2s
+
+#34 [runner 14/18] COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
+#34 DONE 0.0s
+
+#35 [runner 15/18] COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
+#35 DONE 0.0s
+
+#36 [runner 16/18] COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild
+#36 DONE 0.0s
+
+#37 [runner 17/18] COPY --from=esbuild-runtime /out/esbuild-build.txt ./esbuild-build.txt
+#37 DONE 0.0s
+
+#38 [runner 18/18] RUN node docker/install-runtime-esbuild.mjs && rm /tmp/runtime-esbuild
+#38 0.439 Installed patched Go esbuild executable at 4 runtime package paths.
+#38 DONE 0.5s
+
+#39 exporting to image
+#39 exporting layers
+#39 exporting layers 29.1s done
+#39 exporting manifest sha256:020c1c7dc82038035dcb528214f0c36763c6cc47a171af7bfff5044d877702d5 done
+#39 exporting config sha256:26ce883afb84412ace1707b2c3549ca0784e2f0f98c38fc19a3475e24e416479 done
+#39 exporting attestation manifest sha256:c687384b011208940f557bc34fc684caec305c271ee305b7cd7b121dbd615f45 done
+#39 exporting manifest list sha256:9f6b6320bedc5bc89f456b56f0839aa51bbcc5f639625e7f1bd05a8aa7b442ca done
+#39 naming to docker.io/library/renegade-cms:rc117c-fcf046a7 done
+#39 unpacking to docker.io/library/renegade-cms:rc117c-fcf046a7
+#39 unpacking to docker.io/library/renegade-cms:rc117c-fcf046a7 12.9s done
+#39 DONE 42.1s
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.51kB done
+#1 DONE 0.0s
+
+#2 [auth] library/golang:pull token for registry-1.docker.io
+#2 DONE 0.0s
+
+#3 [auth] library/node:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#4 DONE 0.4s
+
+#5 [internal] load metadata for docker.io/library/node:24-alpine
+#5 DONE 0.4s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 274B done
+#6 DONE 0.0s
+
+#7 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#7 DONE 0.0s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 resolve docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d 0.0s done
+#8 DONE 0.0s
+
+#9 [production-dependencies 1/6] FROM docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8
+#9 resolve docker.io/library/node:24-alpine@sha256:a34ab6d7f6f4813f4d0c5469d74685604b962fbdbf5793a7bc7b4998ecb867c8 0.0s done
+#9 DONE 0.0s
+
+#10 [internal] load build context
+#10 transferring context: 139.06kB 0.1s done
+#10 DONE 0.1s
+
+#11 [runner  9/18] COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
+#11 CACHED
+
+#12 [builder 5/5] RUN npm run build
+#12 CACHED
+
+#13 [runner 13/18] COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+#13 CACHED
+
+#14 [builder 3/5] COPY --from=dependencies /app/node_modules ./node_modules
+#14 CACHED
+
+#15 [runner  8/18] COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
+#15 CACHED
+
+#16 [production-dependencies 6/6] RUN rm -rf node_modules/typescript node_modules/@playwright     node_modules/playwright node_modules/playwright-core
+#16 CACHED
+
+#17 [runner  6/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
+#17 CACHED
+
+#18 [production-dependencies 3/6] COPY package.json package-lock.json ./
+#18 CACHED
+
+#19 [production-dependencies 4/6] COPY scripts ./scripts
+#19 CACHED
+
+#20 [runner 17/18] COPY --from=esbuild-runtime /out/esbuild-build.txt ./esbuild-build.txt
+#20 CACHED
+
+#21 [runner 15/18] COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
+#21 CACHED
+
+#22 [production-dependencies 5/6] RUN npm ci --omit=dev --omit=peer
+#22 CACHED
+
+#23 [runner 12/18] COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
+#23 CACHED
+
+#24 [runner  5/18] RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
+#24 CACHED
+
+#25 [builder 4/5] COPY . .
+#25 CACHED
+
+#26 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#26 CACHED
+
+#27 [runner 10/18] COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
+#27 CACHED
+
+#28 [runner  4/18] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+#28 CACHED
+
+#29 [runner 11/18] COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
+#29 CACHED
+
+#30 [esbuild-runtime 2/4] WORKDIR /src
+#30 CACHED
+
+#31 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#31 CACHED
+
+#32 [runner  7/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/static
+#32 CACHED
+
+#33 [runner 16/18] COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild
+#33 CACHED
+
+#34 [dependencies 5/5] RUN npm ci
+#34 CACHED
+
+#35 [runner 14/18] COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
+#35 CACHED
+
+#36 [production-dependencies 2/6] WORKDIR /app
+#36 CACHED
+
+#37 [esbuild-runtime 4/4] RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src &&     CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild &&     go version -m /out/esbuild > /out/esbuild-build.txt
+#37 CACHED
+
+#38 [runner 18/18] RUN node docker/install-runtime-esbuild.mjs && rm /tmp/runtime-esbuild
+#38 CACHED
+
+#39 [media-heavy 1/1] RUN apk add --no-cache ffmpeg
+#39 0.458 (  1/105) Installing libSvtAv1Enc (4.1.0-r0)
+#39 0.519 (  2/105) Installing aom-libs (3.14.1-r0)
+#39 0.584 (  3/105) Installing libxau (1.0.12-r0)
+#39 0.595 (  4/105) Installing libmd (1.2.0-r0)
+#39 0.605 (  5/105) Installing libbsd (0.12.2-r0)
+#39 0.616 (  6/105) Installing libxdmcp (1.1.5-r1)
+#39 0.626 (  7/105) Installing libxcb (1.17.0-r2)
+#39 0.647 (  8/105) Installing libx11 (1.8.14-r0)
+#39 0.699 (  9/105) Installing hwdata-pci (0.408-r0)
+#39 0.716 ( 10/105) Installing libpciaccess (0.19-r0)
+#39 0.727 ( 11/105) Installing libdrm (2.4.134-r0)
+#39 0.742 ( 12/105) Installing libxext (1.3.7-r0)
+#39 0.753 ( 13/105) Installing libxfixes (6.0.2-r0)
+#39 0.767 ( 14/105) Installing libffi (3.5.2-r1)
+#39 0.776 ( 15/105) Installing wayland-libs-client (1.25.0-r0)
+#39 0.786 ( 16/105) Installing libva (2.23.0-r0)
+#39 0.799 ( 17/105) Installing libvdpau (1.5-r4)
+#39 0.810 ( 18/105) Installing libvpl (2.15.0-r1)
+#39 0.823 ( 19/105) Installing ffmpeg-libavutil (8.1.3-r0)
+#39 0.841 ( 20/105) Installing libdav1d (1.5.3-r0)
+#39 0.861 ( 21/105) Installing brotli-libs (1.2.1-r0)
+#39 0.879 ( 22/105) Installing libhwy (1.3.0-r0)
+#39 0.889 ( 23/105) Installing lcms2 (2.19-r0)
+#39 0.902 ( 24/105) Installing libjxl (0.11.2-r1)
+#39 0.941 ( 25/105) Installing lame-libs (3.100-r5)
+#39 0.956 ( 26/105) Installing opus (1.6.1-r0)
+#39 0.971 ( 27/105) Installing rav1e-libs (0.8.1-r0)
+#39 1.002 ( 28/105) Installing libgomp (15.2.0-r5)
+#39 1.014 ( 29/105) Installing soxr (0.1.3-r7)
+#39 1.026 ( 30/105) Installing ffmpeg-libswresample (8.1.3-r0)
+#39 1.039 ( 31/105) Installing libogg (1.3.6-r0)
+#39 1.051 ( 32/105) Installing libtheora (1.2.0-r1)
+#39 1.068 ( 33/105) Installing libvorbis (1.3.7-r2)
+#39 1.082 ( 34/105) Installing libvpx (1.15.2-r1)
+#39 1.114 ( 35/105) Installing libsharpyuv (1.6.0-r0)
+#39 1.124 ( 36/105) Installing libwebp (1.6.0-r0)
+#39 1.145 ( 37/105) Installing libwebpmux (1.6.0-r0)
+#39 1.156 ( 38/105) Installing x264-libs (0.164.3108-r1)
+#39 1.182 ( 39/105) Installing numactl (2.0.19-r0)
+#39 1.193 ( 40/105) Installing x265-libs (4.1-r0)
+#39 1.273 ( 41/105) Installing xvidcore (1.3.7-r2)
+#39 1.286 ( 42/105) Installing ffmpeg-libavcodec (8.1.3-r0)
+#39 1.415 ( 43/105) Installing alsa-lib (1.2.15.3-r0)
+#39 1.440 ( 44/105) Installing libexpat (2.10.0-r0)
+#39 1.450 ( 45/105) Installing libbz2 (1.0.8-r6)
+#39 1.460 ( 46/105) Installing libpng (1.6.59-r0)
+#39 1.472 ( 47/105) Installing freetype (2.14.3-r0)
+#39 1.487 ( 48/105) Installing fontconfig (2.17.1-r1)
+#39 1.508 ( 49/105) Installing fribidi (1.0.16-r3)
+#39 1.519 ( 50/105) Installing libintl (1.0-r0)
+#39 1.530 ( 51/105) Installing libeconf (0.8.3-r0)
+#39 1.542 ( 52/105) Installing libblkid (2.42.3-r1)
+#39 1.555 ( 53/105) Installing libmount (2.42.3-r1)
+#39 1.570 ( 54/105) Installing pcre2 (10.49-r0)
+#39 1.588 ( 55/105) Installing glib (2.88.1-r1)
+#39 1.630 ( 56/105) Installing graphite2 (1.3.14-r6)
+#39 1.657 ( 57/105) Installing harfbuzz (13.2.1-r0)
+#39 1.683 ( 58/105) Installing libunibreak (6.1-r0)
+#39 1.695 ( 59/105) Installing libass (0.17.4-r1)
+#39 1.706 ( 60/105) Installing libudfread (1.2.0-r1)
+#39 1.718 ( 61/105) Installing libbluray (1.4.0-r0)
+#39 1.730 ( 62/105) Installing libdvdcss (1.4.3-r0)
+#39 1.741 ( 63/105) Installing libdvdread (6.1.3-r2)
+#39 1.753 ( 64/105) Installing libdvdnav (6.1.1-r1)
+#39 1.767 ( 65/105) Installing mpg123-libs (1.33.5-r0)
+#39 1.780 ( 66/105) Installing libopenmpt (0.8.9-r0)
+#39 1.799 ( 67/105) Installing cjson (1.7.19-r1)
+#39 1.809 ( 68/105) Installing mbedtls3 (3.6.7-r0)
+#39 1.829 ( 69/105) Installing librist (0.2.15-r0)
+#39 1.841 ( 70/105) Installing libsrt (1.5.3-r1)
+#39 1.858 ( 71/105) Installing libssh (0.12.2-r0)
+#39 1.871 ( 72/105) Installing xz-libs (5.8.4-r0)
+#39 1.882 ( 73/105) Installing libxml2 (2.13.9-r2)
+#39 1.899 ( 74/105) Installing libsodium (1.0.22-r0)
+#39 1.912 ( 75/105) Installing libzmq (4.3.5-r2)
+#39 1.926 ( 76/105) Installing ffmpeg-libavformat (8.1.3-r0)
+#39 1.963 ( 77/105) Installing serd-libs (0.32.8-r0)
+#39 1.974 ( 78/105) Installing zix-libs (0.8.0-r0)
+#39 1.983 ( 79/105) Installing sord-libs (0.16.22-r0)
+#39 1.993 ( 80/105) Installing sratom (0.6.20-r0)
+#39 2.005 ( 81/105) Installing lilv-libs (0.24.26-r1)
+#39 2.015 ( 82/105) Installing libdovi (3.3.2-r0)
+#39 2.027 ( 83/105) Installing spirv-tools (1.4.341.0-r0)
+#39 2.069 ( 84/105) Installing glslang-libs (1.4.341.0-r0)
+#39 2.093 ( 85/105) Installing shaderc (2026.1-r0)
+#39 2.105 ( 86/105) Installing vulkan-loader (1.4.347-r0)
+#39 2.120 ( 87/105) Installing libplacebo (7.360.1-r0)
+#39 2.138 ( 88/105) Installing ffmpeg-libswscale (8.1.3-r0)
+#39 2.160 ( 89/105) Installing vidstab (1.1.1-r0)
+#39 2.170 ( 90/105) Installing zimg (3.0.6-r0)
+#39 2.183 ( 91/105) Installing ffmpeg-libavfilter (8.1.3-r0)
+#39 2.231 ( 92/105) Installing libasyncns (0.8-r5)
+#39 2.250 ( 93/105) Installing dbus-libs (1.16.2-r2)
+#39 2.264 ( 94/105) Installing libltdl (2.6.0-r1)
+#39 2.278 ( 95/105) Installing orc (0.4.41-r0)
+#39 2.293 ( 96/105) Installing libflac (1.4.3-r2)
+#39 2.307 ( 97/105) Installing libsndfile (1.2.2-r2)
+#39 2.324 ( 98/105) Installing speexdsp (1.2.1-r2)
+#39 2.339 ( 99/105) Installing tdb-libs (1.4.15-r1)
+#39 2.350 (100/105) Installing libpulse (17.0-r7)
+#39 2.371 (101/105) Installing libjpeg-turbo (3.1.3-r0)
+#39 2.387 (102/105) Installing json-c (0.18-r1)
+#39 2.398 (103/105) Installing v4l-utils-libs (1.32.0-r1)
+#39 2.413 (104/105) Installing ffmpeg-libavdevice (8.1.3-r0)
+#39 2.424 (105/105) Installing ffmpeg (8.1.3-r0)
+#39 2.440 Executing busybox-1.37.0-r31.trigger
+#39 2.447 Executing glib-2.88.1-r1.trigger
+#39 2.453 OK: 135.6 MiB in 124 packages
+#39 DONE 5.8s
+
+#40 exporting to image
+#40 exporting layers
+#40 exporting layers 4.4s done
+#40 exporting manifest sha256:af549c853bb62084d358e33ea325fd958fdf656a3228814c114e810af83bbd40 done
+#40 exporting config sha256:292f4a51c3af48bcd4d7f066d273c67c594ea6eb3ef9b70b7d6f9e6dcc28c485 done
+#40 exporting attestation manifest sha256:f37f30348917e41596e67614e0453f277c80a8b654fc4dadc6a8e8956fbc6279 done
+#40 exporting manifest list sha256:b6b75781403a75b7f18c35f084c1bd1aff6d6a9a883dd482c2a600c113afabbd done
+#40 naming to docker.io/library/renegade-cms-media-heavy:rc117c-fcf046a7 done
+#40 unpacking to docker.io/library/renegade-cms-media-heavy:rc117c-fcf046a7
+#40 unpacking to docker.io/library/renegade-cms-media-heavy:rc117c-fcf046a7 0.6s done
+#40 DONE 5.1s
+PASS image 1: production runner image built from clean candidate fcf046a7e3798854443151e13d7823c8ba3e668a
+PASS image 2: media-heavy target built from the same Dockerfile
+PASS image 3: image default user is unprivileged nextjs (uid=1001(nextjs) gid=65533(nogroup) groups=65533(nogroup),65533(nogroup))
+PASS image 4: required packaged files present (standalone server, static, public, src, docker, provenance)
+PASS image 5: embedded root+standalone provenance agree and match the shipped lockfile hash
+PASS image 6: shipped source byte-identical to candidate (970 files compared)
+PASS image 7: runtime dependency graph resolves with next/payload/tsx and no dev toolchain at top level
+PASS image 8: secret-pattern sweep of shipped app files is clean and no .env file is packaged
+PASS image 9: media-heavy image runs unprivileged and carries ffmpeg
+DROP DATABASE
+CREATE DATABASE
+NOTICE:  database "rc117c_release_acceptance" does not exist, skipping
+npm notice run renegade-cms@0.1.0 db:migrate
+npm notice run npm run payload -- migrate
+npm notice run renegade-cms@0.1.0 payload
+npm notice run cross-env NODE_OPTIONS=--no-deprecation payload migrate
+npm notice
+npm notice New patch version of npm available! 12.2.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+PASS a 1: rc117ca: migration service (image CLI) exits 0 on the disposable database
+Error response from daemon: No such container: rc117ca-web
+PASS a 2: rc117ca: production web container reports ready over HTTP
+Error response from daemon: No such container: rc117ca-worker
+PASS a 3: floor registration: sites/users/media-assets/payload-jobs present; commerce+newsletter collections absent
+PASS a 4: anonymous media upload is refused (not 201)
+PASS a 5: staff scoped to site Alpha cannot upload into site Beta (403)
+PASS a 6: owner uploads media over HTTP into site Alpha (201)
+PASS a 7: uploaded media serves back byte-identical (sha256 recorded)
+PASS a 8: separate worker container drains a durable operations-heartbeat job to completion
+npm notice run renegade-cms@0.1.0 db:status
+npm notice run npm run payload -- migrate:status
+npm notice run renegade-cms@0.1.0 payload
+npm notice run cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+npm notice
+npm notice New patch version of npm available! 12.2.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+PASS a 9: operational CLI inside the image reports migration status (exit 0)
+PASS a 10: worker healthcheck passes against the live heartbeat file
+rc117ca-web
+rc117ca-worker
+PASS restart 1: web container reports ready again after restart
+PASS restart 2: pre-restart owner session still authenticates after restart (session state persisted)
+PASS restart 3: persistent media bytes are unchanged after restart (volume state survived)
+PASS restart 4: job queued before the restart (delayed 75s) completes afterwards — queue state not lost
+PASS restart 5: runtime configuration (BUILD_SHA) still applied after restart
+npm notice run renegade-cms@0.1.0 db:migrate
+npm notice run npm run payload -- migrate
+npm notice run renegade-cms@0.1.0 payload
+npm notice run cross-env NODE_OPTIONS=--no-deprecation payload migrate
+npm notice
+npm notice New patch version of npm available! 12.2.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+PASS b 1: rc117cb: migration service (image CLI) exits 0 on the disposable database
+Error response from daemon: No such container: rc117cb-web
+PASS b 2: rc117cb: production web container reports ready over HTTP
+Error response from daemon: No such container: rc117cb-worker
+PASS b 3: configured modules register: commerce (products) and newsletter (subscribers) collections present
+PASS b 4: unconfigured modules stay off in the same image (no forum-sections from community)
+Error response from daemon: No such container: rc117cb-media
+PASS b 5: adding a media-heavy worker container does not change web feature registration
+PASS b 6: media-heavy worker container is up with ffmpeg available

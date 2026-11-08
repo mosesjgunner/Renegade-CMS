@@ -1,0 +1,23 @@
+{
+  "id": "sha256:9f6b6320bedc5bc89f456b56f0839aa51bbcc5f639625e7f1bd05a8aa7b442ca",
+  "repoTags": [
+    "renegade-cms:rc117c-fcf046a7"
+  ],
+  "user": "nextjs",
+  "labels": {
+    "org.opencontainers.image.revision": "fcf046a7e3798854443151e13d7823c8ba3e668a",
+    "org.opencontainers.image.version": "0.1.0"
+  },
+  "env": [
+    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "NODE_VERSION=24.22.2",
+    "YARN_VERSION=1.22.22",
+    "NODE_ENV=production",
+    "PORT=3000",
+    "HOSTNAME=0.0.0.0",
+    "APP_VERSION=0.1.0",
+    "BUILD_SHA=fcf046a7e3798854443151e13d7823c8ba3e668a"
+  ],
+  "created": "2026-11-08T01:26:46.10137371Z",
+  "size": 398360938
+}

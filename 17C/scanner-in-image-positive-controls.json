@@ -1,0 +1,21 @@
+{
+  "image": "renegade-cms:rc117c-5a6f85df",
+  "realMountedKeyDetected": true,
+  "mountedEnvDetected": true,
+  "secrets": {
+    "hitCount": 1,
+    "hitPaths": [
+      "rc117c-positive-control.pem"
+    ],
+    "knownPublicFixtures": [
+      {
+        "path": "standalone/.next/server/chunks/ssr/[root-of-the-server]__0du9w207x5g2_._.js",
+        "package": "happy-dom@20.11.2",
+        "sha256": "7f7f8c83ded111336dca167452776b8b6c35e4223882103df5edeb55875a2d41"
+      }
+    ],
+    "envFiles": [
+      ".env.rc117c-positive-control"
+    ]
+  }
+}

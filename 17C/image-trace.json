@@ -1,0 +1,38 @@
+[
+  {
+    "name": "production runner image built from clean candidate fcf046a7e3798854443151e13d7823c8ba3e668a",
+    "passed": true
+  },
+  {
+    "name": "media-heavy target built from the same Dockerfile",
+    "passed": true
+  },
+  {
+    "name": "image default user is unprivileged nextjs (uid=1001(nextjs) gid=65533(nogroup) groups=65533(nogroup),65533(nogroup))",
+    "passed": true
+  },
+  {
+    "name": "required packaged files present (standalone server, static, public, src, docker, provenance)",
+    "passed": true
+  },
+  {
+    "name": "embedded root+standalone provenance agree and match the shipped lockfile hash",
+    "passed": true
+  },
+  {
+    "name": "shipped source byte-identical to candidate (970 files compared)",
+    "passed": true
+  },
+  {
+    "name": "runtime dependency graph resolves with next/payload/tsx and no dev toolchain at top level",
+    "passed": true
+  },
+  {
+    "name": "secret-pattern sweep of shipped app files is clean and no .env file is packaged",
+    "passed": true
+  },
+  {
+    "name": "media-heavy image runs unprivileged and carries ffmpeg",
+    "passed": true
+  }
+]
