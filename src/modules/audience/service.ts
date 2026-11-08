@@ -656,6 +656,284 @@ export async function evaluateSegmentRecipients(
     }
   }
 
+  // Reconcile the remaining selector projections from canonical persisted
+  // facts (09D closure). Until now these dimensions were hardcoded empty, so
+  // a segment using them could never match anyone; missing wiring must not
+  // masquerade as zero facts. Each loader bulk-loads with the same tenant
+  // discipline as tags: a fact recorded against another site never
+  // contributes to this site's audience. Cross-module loaders are skipped
+  // when the owning module is not installed on this profile.
+  const subscriberIds = (subscribersRes.docs as Doc[]).map((sub) => String(sub.id))
+  const memberIds = [
+    ...new Set(
+      (subscribersRes.docs as Doc[])
+        .map((sub) => relationId(sub.member))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ]
+  const addFact = (map: Map<string, Set<string>>, key: string, fact: string) => {
+    const facts = map.get(key) ?? new Set<string>()
+    facts.add(fact)
+    map.set(key, facts)
+  }
+
+  // form + locale: the subscriber's own site-scoped consent ledger. A form
+  // fact comes from the consent event's linked form submission, and only
+  // when that submission itself belongs to this site. Locale is the most
+  // recent consent-event locale recorded for the subscriber.
+  const formIdsBySubscriber = new Map<string, Set<string>>()
+  const localeBySubscriber = new Map<string, string>()
+  if (subscriberIds.length) {
+    const consentEvents = await payload.find({
+      collection: 'consent-events',
+      where: {
+        and: [{ subscriber: { in: subscriberIds } }, { site: { equals: input.siteId } }],
+      },
+      sort: '-occurredAt',
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const submissionIds = new Set<string>()
+    const formLinks: Array<{ subscriberId: string; submissionId: string }> = []
+    for (const event of consentEvents.docs as Doc[]) {
+      const subId = relationId(event.subscriber)
+      if (!subId) continue
+      if (event.locale && !localeBySubscriber.has(subId))
+        localeBySubscriber.set(subId, String(event.locale))
+      const submissionId = relationId(event.formSubmission)
+      if (submissionId) {
+        submissionIds.add(submissionId)
+        formLinks.push({ subscriberId: subId, submissionId })
+      }
+    }
+    if (submissionIds.size) {
+      const submissions = await payload.find({
+        collection: 'form-submissions',
+        where: {
+          and: [{ id: { in: [...submissionIds] } }, { site: { equals: input.siteId } }],
+        },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const formBySubmission = new Map<string, string>()
+      for (const submission of submissions.docs as Doc[]) {
+        const formId = relationId(submission.form)
+        if (formId) formBySubmission.set(String(submission.id), formId)
+      }
+      for (const link of formLinks) {
+        const formId = formBySubmission.get(link.submissionId)
+        if (formId) addFact(formIdsBySubscriber, link.subscriberId, formId)
+      }
+    }
+  }
+
+  // sourceCampaign: the acquisition source recorded on the subscriber's
+  // memberships (public subscribe, form intake, CSV import campaign, ...).
+  // Memberships belong to the subscriber, who belongs to exactly one site,
+  // so the subscriber set itself is the tenant boundary.
+  const sourcesBySubscriber = new Map<string, Set<string>>()
+  if (subscriberIds.length) {
+    const sourceRows = await payload.find({
+      collection: 'audience-memberships',
+      where: { subscriber: { in: subscriberIds } },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const m of sourceRows.docs as Doc[]) {
+      const subId = relationId(m.subscriber)
+      if (subId && m.source) addFact(sourcesBySubscriber, subId, String(m.source))
+    }
+  }
+
+  // engagement: the latest observed CRM interaction for the subscriber's
+  // contact on this site. Observed events only — opens/clicks are never
+  // inferred (RC1 scope: source-linked engagement from observed events).
+  const engagementByContact = new Map<string, string>()
+  if (contactIds.length && payload.collections?.['interaction-records']) {
+    const interactions = await payload.find({
+      collection: 'interaction-records',
+      where: {
+        and: [{ contact: { in: contactIds } }, { site: { equals: input.siteId } }],
+      },
+      sort: '-occurredAt',
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const record of interactions.docs as Doc[]) {
+      const contactId = relationId(record.contact)
+      if (contactId && record.occurredAt && !engagementByContact.has(contactId))
+        engagementByContact.set(contactId, String(record.occurredAt))
+    }
+  }
+
+  // role: the member's site-scoped community roles on this site only; a
+  // role granted on another site is not a fact about this audience.
+  const rolesByMember = new Map<string, Set<string>>()
+  if (memberIds.length && payload.collections?.['member-site-roles']) {
+    const roleRows = await payload.find({
+      collection: 'member-site-roles',
+      where: {
+        and: [{ member: { in: memberIds } }, { site: { equals: input.siteId } }],
+      },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const row of roleRows.docs as Doc[]) {
+      const memberId = relationId(row.member)
+      if (memberId && row.role) addFact(rolesByMember, memberId, String(row.role))
+    }
+  }
+
+  // commerceFact: supporters are the site's commerce identity hub, linked
+  // to an audience member or matched by email hash. Facts: 'supporter'
+  // (a supporter record on this site), 'donor' (a succeeded donation),
+  // 'paid-subscription' (a subscription in an active-like state).
+  const commerceBySubscriber = new Map<string, Set<string>>()
+  if (payload.collections?.['supporters']) {
+    const subscriberByMember = new Map<string, string[]>()
+    const subscriberByEmailHash = new Map<string, string[]>()
+    for (const sub of subscribersRes.docs as Doc[]) {
+      const memberId = relationId(sub.member)
+      if (memberId) {
+        const list = subscriberByMember.get(memberId) ?? []
+        list.push(String(sub.id))
+        subscriberByMember.set(memberId, list)
+      }
+      if (sub.emailHash) {
+        const list = subscriberByEmailHash.get(String(sub.emailHash)) ?? []
+        list.push(String(sub.id))
+        subscriberByEmailHash.set(String(sub.emailHash), list)
+      }
+    }
+    const supporterClauses: Doc[] = []
+    if (memberIds.length) supporterClauses.push({ member: { in: memberIds } })
+    const emailHashes = [...subscriberByEmailHash.keys()]
+    if (emailHashes.length) supporterClauses.push({ emailHash: { in: emailHashes } })
+    if (supporterClauses.length) {
+      const supporters = await payload.find({
+        collection: 'supporters',
+        where: { and: [{ site: { equals: input.siteId } }, { or: supporterClauses }] },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const subscribersBySupporter = new Map<string, string[]>()
+      for (const supporter of supporters.docs as Doc[]) {
+        const matched = new Set<string>()
+        const memberId = relationId(supporter.member)
+        if (memberId) for (const subId of subscriberByMember.get(memberId) ?? []) matched.add(subId)
+        if (supporter.emailHash)
+          for (const subId of subscriberByEmailHash.get(String(supporter.emailHash)) ?? [])
+            matched.add(subId)
+        if (!matched.size) continue
+        subscribersBySupporter.set(String(supporter.id), [...matched])
+        for (const subId of matched) addFact(commerceBySubscriber, subId, 'supporter')
+      }
+      const supporterIds = [...subscribersBySupporter.keys()]
+      if (supporterIds.length && payload.collections?.['donations']) {
+        const donations = await payload.find({
+          collection: 'donations',
+          where: {
+            and: [
+              { supporter: { in: supporterIds } },
+              { site: { equals: input.siteId } },
+              { lifecycle: { equals: 'succeeded' } },
+            ],
+          },
+          limit: 0,
+          pagination: false,
+          depth: 0,
+          overrideAccess: true,
+        })
+        for (const donation of donations.docs as Doc[]) {
+          const supporterId = relationId(donation.supporter)
+          if (!supporterId) continue
+          for (const subId of subscribersBySupporter.get(supporterId) ?? [])
+            addFact(commerceBySubscriber, subId, 'donor')
+        }
+      }
+      if (supporterIds.length && payload.collections?.['subscriptions']) {
+        const subscriptions = await payload.find({
+          collection: 'subscriptions',
+          where: {
+            and: [
+              { supporter: { in: supporterIds } },
+              { site: { equals: input.siteId } },
+              { state: { in: ['active', 'trialing', 'grace'] } },
+            ],
+          },
+          limit: 0,
+          pagination: false,
+          depth: 0,
+          overrideAccess: true,
+        })
+        for (const subscription of subscriptions.docs as Doc[]) {
+          const supporterId = relationId(subscription.supporter)
+          if (!supporterId) continue
+          for (const subId of subscribersBySupporter.get(supporterId) ?? [])
+            addFact(commerceBySubscriber, subId, 'paid-subscription')
+        }
+      }
+    }
+  }
+
+  // communityFact: 'profile' (the member has a community profile) and
+  // 'space' (the member holds a space on this site).
+  const communityBySubscriber = new Map<string, Set<string>>()
+  if (memberIds.length && payload.collections?.['profiles']) {
+    const profiles = await payload.find({
+      collection: 'profiles',
+      where: { member: { in: memberIds } },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const subscriberByMember = new Map<string, string[]>()
+    for (const sub of subscribersRes.docs as Doc[]) {
+      const memberId = relationId(sub.member)
+      if (!memberId) continue
+      const list = subscriberByMember.get(memberId) ?? []
+      list.push(String(sub.id))
+      subscriberByMember.set(memberId, list)
+    }
+    for (const profile of profiles.docs as Doc[]) {
+      const memberId = relationId(profile.member)
+      if (!memberId) continue
+      for (const subId of subscriberByMember.get(memberId) ?? [])
+        addFact(communityBySubscriber, subId, 'profile')
+    }
+    if (payload.collections?.['spaces']) {
+      const spaces = await payload.find({
+        collection: 'spaces',
+        where: {
+          and: [{ member: { in: memberIds } }, { site: { equals: input.siteId } }],
+        },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      })
+      for (const space of spaces.docs as Doc[]) {
+        const memberId = relationId(space.member)
+        if (!memberId) continue
+        for (const subId of subscriberByMember.get(memberId) ?? [])
+          addFact(communityBySubscriber, subId, 'space')
+      }
+    }
+  }
+
   for (const sub of subscribersRes.docs as Doc[]) {
     let email = ''
     try {
@@ -669,6 +947,8 @@ export async function evaluateSegmentRecipients(
     const isActive = sub.status === 'active' && !sub.globalUnsubscribedAt && !sub.erasedAt
     const lists = membershipsBySubscriber.get(subId) ?? []
 
+    const contactId = relationId(sub.contact) ?? ''
+    const memberId = relationId(sub.member) ?? ''
     const projection: AudienceProjection = {
       subscriberId: subId,
       siteId: input.siteId,
@@ -676,12 +956,14 @@ export async function evaluateSegmentRecipients(
       channelEligible: isActive && !isSuppressed,
       consentPurposes: isActive ? ['newsletter'] : [],
       lists,
-      tags: [...(tagsByContact.get(relationId(sub.contact) ?? '') ?? [])],
-      formIds: [],
-      sourceCampaigns: [],
-      roles: [],
-      commerceFacts: [],
-      communityFacts: [],
+      tags: [...(tagsByContact.get(contactId) ?? [])],
+      formIds: [...(formIdsBySubscriber.get(subId) ?? [])],
+      sourceCampaigns: [...(sourcesBySubscriber.get(subId) ?? [])],
+      locale: localeBySubscriber.get(subId),
+      roles: [...(rolesByMember.get(memberId) ?? [])],
+      commerceFacts: [...(commerceBySubscriber.get(subId) ?? [])],
+      communityFacts: [...(communityBySubscriber.get(subId) ?? [])],
+      engagementAt: engagementByContact.get(contactId),
     }
 
     const explanation = explainSegment(segment.definition, projection)

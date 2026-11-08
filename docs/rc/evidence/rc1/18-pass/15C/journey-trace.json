@@ -1,0 +1,95 @@
+{
+  "passed": 22,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    {
+      "name": "Next product API booted with test routes and test auth disabled",
+      "passed": true
+    },
+    {
+      "name": "operator admin collection API creates persisted experiment, variants and configured form",
+      "passed": true
+    },
+    {
+      "name": "configuration without measured outcome cannot approve winner",
+      "passed": true
+    },
+    {
+      "name": "anonymous, wrong-site, foreign-origin and native decision forgery denied",
+      "passed": true
+    },
+    {
+      "name": "consent-off public renderer shows persisted control",
+      "passed": true
+    },
+    {
+      "name": "consent-off actual form persists without experiment events",
+      "passed": true
+    },
+    {
+      "name": "visitor sees server assigned public variant with persisted exposure e0a0acc6-9b36-4c86-ae53-c47850fabdc8",
+      "passed": true
+    },
+    {
+      "name": "stable reload, duplicate exposure and forged variant/site claims preserve one exposure",
+      "passed": true
+    },
+    {
+      "name": "actual UI form outcome produces one attributed conversion; retry adds none",
+      "passed": true
+    },
+    {
+      "name": "visitor sees server assigned public variant with persisted exposure 3277b190-6461-4b2e-bbf7-932ec1dddeb4",
+      "passed": true
+    },
+    {
+      "name": "stable reload, duplicate exposure and forged variant/site claims preserve one exposure",
+      "passed": true
+    },
+    {
+      "name": "actual UI form outcome produces one attributed conversion; retry adds none",
+      "passed": true
+    },
+    {
+      "name": "both public variants observed and measured",
+      "passed": true
+    },
+    {
+      "name": "measured variant allocation and assignment salt cannot change",
+      "passed": true
+    },
+    {
+      "name": "conversion without prior exposure is rejected",
+      "passed": true
+    },
+    {
+      "name": "native experiment evidence forgery denied",
+      "passed": true
+    },
+    {
+      "name": "foreign-subject outcome and native winner state forgery denied",
+      "passed": true
+    },
+    {
+      "name": "operator results reconcile actual two exposures and two outcomes",
+      "passed": true
+    },
+    {
+      "name": "human reviews results and approves via actual admin UI",
+      "passed": true
+    },
+    {
+      "name": "human rollback restores persisted paused state",
+      "passed": true
+    },
+    {
+      "name": "rollback removes enforced winner from public output",
+      "passed": true
+    },
+    {
+      "name": "approval and rollback audit retains human actor and reasons",
+      "passed": true
+    }
+  ]
+}
