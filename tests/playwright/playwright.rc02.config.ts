@@ -1,9 +1,13 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import { pathToFileURL } from 'node:url'
+import { resolve } from 'node:path'
 import { createHash, X509Certificate } from 'node:crypto'
-import './src/scripts/rc02-network.mjs'
+import '../../src/scripts/rc02-network.mjs'
+
 const env = Object.fromEntries(
-  readFileSync('.env.rc04', 'utf8')
+  readFileSync('.env.rc02', 'utf8')
     .trim()
     .split(/\r?\n/)
     .map((line) => {
@@ -12,39 +16,43 @@ const env = Object.fromEntries(
     }),
 )
 if (!new URL(env.DATABASE_URL).pathname.endsWith('_release_acceptance'))
-  throw Error('Disposable DB required')
+  throw new Error('Disposable database required')
+Object.assign(process.env, env)
+env.NODE_ENV = 'production'
+env.NODE_OPTIONS = `--max-old-space-size=768 --import=${pathToFileURL(resolve('src/scripts/rc02-network.mjs')).href}`
 Object.assign(process.env, env)
 const certificate = new X509Certificate(readFileSync('scratch/rc02-tls/cert.pem'))
-const pin = createHash('sha256')
+const certificatePin = createHash('sha256')
   .update(certificate.publicKey.export({ type: 'spki', format: 'der' }))
   .digest('base64')
 export default defineConfig({
-  testDir: './tests/rc04',
+  testDir: resolveFromRoot('./tests/rc02'),
   workers: 1,
   timeout: 600_000,
-  outputDir: 'test-results/rc04',
-  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-04/browser-results.json' }]],
+  outputDir: resolveFromRoot('test-results/rc02'),
+  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-02/browser-results.json' }]],
   use: {
     baseURL: env.APP_URL,
-    ignoreHTTPSErrors: true,
     browserName: 'chromium',
-    trace: 'off',
-    screenshot: 'only-on-failure',
-    actionTimeout: 20_000,
-    navigationTimeout: 60_000,
+    ignoreHTTPSErrors: true,
     launchOptions: {
       args: [
         '--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1',
-        `--ignore-certificate-errors-spki-list=${pin}`,
+        `--ignore-certificate-errors-spki-list=${certificatePin}`,
       ],
     },
+    trace: 'on',
+    screenshot: 'only-on-failure',
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
   },
   webServer: {
-    command: 'node src/scripts/rc04-runtime.mjs',
+    cwd: process.cwd(),
+    command: 'node src/scripts/rc02-runtime.mjs',
     url: `${env.APP_URL}/api/setup/readiness`,
-    timeout: 120_000,
     reuseExistingServer: false,
     ignoreHTTPSErrors: true,
+    timeout: 120_000,
     env,
   },
 })

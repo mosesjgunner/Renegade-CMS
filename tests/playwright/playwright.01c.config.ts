@@ -1,7 +1,9 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests/rc1-01c',
+  outputDir: resolveFromRoot('test-results'),
+  testDir: resolveFromRoot('./tests/rc1-01c'),
   timeout: 180_000,
   workers: 1,
   reporter: [['list']],

@@ -12,7 +12,6 @@ import { DEFAULT_SITE_NAME } from '@/modules/presentation/themes/identity'
 import { normalizeNavigation } from '@/modules/public/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { ConsentManager } from '@/modules/analytics/ConsentManager'
 
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { canRenderPublic } from '@/modules/public/contracts'
@@ -190,7 +189,6 @@ export default async function FrontendLayout({ children }: { children: ReactNode
           globalAnnouncement={globalRegions.announcement}
           globalCta={globalRegions.cta}
           globalFooter={globalRegions.footer}
-          consent={<ConsentManager siteId={siteId} />}
           siteName={siteName}
           siteDescription={siteDescription}
           logoUrl={logoUrl}

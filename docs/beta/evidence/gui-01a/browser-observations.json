@@ -1,0 +1,28 @@
+[
+  {
+    "route": "/login",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "url": "http://localhost:3219/login",
+    "horizontalOverflow": false,
+    "text": "Skip to content\nFirst test\nHome\n🔐\nPasskey Sign-in\n\nSign in securely using Touch ID, Face ID, Windows Hello, or a security key.\n\nPasskey\nEmergency Recovery Code\nOWNER / STAFF EMAIL\n🔑 Authenticate with Passkey\nFirst time setting up this instance? Complete Setup →\n\nFirst test\n\nTesting this program\n\nHome\nArticles\nSearch\nHome"
+  },
+  {
+    "route": "/login",
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "url": "http://localhost:3219/login",
+    "horizontalOverflow": false,
+    "text": "Skip to content\nFirst test\nMenu\n🔐\nPasskey Sign-in\n\nSign in securely using Touch ID, Face ID, Windows Hello, or a security key.\n\nPasskey\nEmergency Recovery Code\nOWNER / STAFF EMAIL\n🔑 Authenticate with Passkey\nFirst time setting up this instance? Complete Setup →\n\nFirst test\n\nTesting this program\n\nHome\nArticles\nSearch\nHome"
+  },
+  {
+    "route": "/admin/login",
+    "url": "http://localhost:3219/admin/login",
+    "text": "",
+    "inputCount": 0
+  }
+]

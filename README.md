@@ -6,9 +6,9 @@
 
 [![Release Blocked](https://img.shields.io/badge/Release-Blocked-red.svg?style=for-the-badge)](docs/release/BETA_RELEASE_NOTES.md)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-orange.svg?style=for-the-badge)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Strict%200%20Errors-3178C6.svg?style=for-the-badge&logo=typescript)](tsconfig.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=for-the-badge&logo=typescript)](tsconfig.json)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20Turbopack-black.svg?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
-[![Payload CMS](https://img.shields.io/badge/Payload-3.88-black.svg?style=for-the-badge)](https://payloadcms.com)
+[![Payload CMS](https://img.shields.io/badge/Payload-3.90.2-black.svg?style=for-the-badge)](https://payloadcms.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17.6-336791.svg?style=for-the-badge&logo=postgresql)](compose.production.yaml)
 
 <p align="center">
@@ -30,6 +30,8 @@
 
 ## 🌐 Why Renegade CMoS?
 
+> **Release status:** Acceptance remains open. See the [RC1 subpass ledger](docs/rc/RC1-70-SUBPASS-LEDGER.md) for scoped results and blockers. Historical receipts do not certify the current checkout.
+
 Traditional web publishing has degraded into **SaaS sprawl**: a WordPress site tethered to Substack or Mailchimp for newsletters, Discourse or Circle for forums, Cloudinary or S3 for assets, Shopify or Gumroad for commerce, and Zapier to glue them together.
 
 **Renegade CMoS is a Content & Media Operating System.** Instead of gluing ten subscriptions together with brittle webhooks, Renegade provides a single, resource-efficient appliance running on your own VPS. It requires **no Redis, Kafka, or RabbitMQ message brokers**—durable PostgreSQL queues and standalone Next.js handle everything.
@@ -43,7 +45,7 @@ Renegade CMoS is organized into nine product surfaces; current acceptance is rec
 ```mermaid
 graph TD
     subgraph Core ["Sovereign Kernel & Operations"]
-        OP[Operations, Health & 112 Registered Migrations]
+        OP[Operations, Health & Database Migrations]
         WF[Workflow & DST-Safe Release Scheduler]
         DS[Discovery, Schema.org & PostgreSQL Search]
     end
@@ -74,7 +76,7 @@ graph TD
 | **6** | **Audience & Sovereign Telecom**      | `Beta Module`     | Double opt-in consent lifecycle, preference centers, responsive email compilation, RFC compliant direct-to-MX SMTP transport, and quiet-hours-compliant SMS/RCS telecom emulators.                                   |
 | **7** | **Community & Real-Time Interaction** | `Beta Module`     | WebAuthn passkey member authentication, privacy profiles, nested discussion trees, forum spaces, topic locking, moderation triage, and direct messaging with attachments.                                            |
 | **8** | **Commerce Command Center**           | `Beta Module`     | Server-authoritative totals, cart tamper-proofing, deterministic payment webhooks, subscription dunning, donation anonymity walls, affiliate referral tracking, and POD preflight.                                   |
-| **9** | **Operations, Backup & Restore**      | `Acceptance open` | 112 fresh migrations and fixture upgrade pass; accounts/settings/media backup and separate restore pass. Complete business-state restore remains open.                                                               |
+| **9** | **Operations, Backup & Restore**      | `Acceptance open` | Migration, backup and restore tooling; acceptance and recovery limits are recorded in the release ledger.                                                                                                            |
 
 ---
 
@@ -136,7 +138,7 @@ npm run jobs:worker
 
 ## 🚀 Production Deployment
 
-Renegade CMoS is packaged as a lightweight, production-ready Docker Compose appliance:
+Renegade CMoS includes a Docker Compose deployment configuration. Release acceptance remains open; consult the [subpass ledger](docs/rc/RC1-70-SUBPASS-LEDGER.md) before deploying:
 
 - `postgres`: PostgreSQL 17.6 database (isolated on private Compose network)
 - `migrate`: One-shot migration runner (guarantees schema integrity before boot)
@@ -244,6 +246,10 @@ Renegade-CMS/
 
 ## 📚 Documentation Index
 
+Start with the [documentation guide](docs/README.md) for development, operations, UX work and release evidence.
+
+- **[RC1 Subpass Ledger](docs/rc/RC1-70-SUBPASS-LEDGER.md)**: Scoped acceptance results and outstanding work.
+- **[Beta UX Audit](docs/beta/GUI-01A-UX-AUDIT.md)**: Interface inventory and implementation priorities.
 - **[Beta Release Notes & Runbook](docs/release/BETA_RELEASE_NOTES.md)**: Release tiers, provider matrices, and operator launch guide.
 - **[Production Deployment](docs/PRODUCTION_DEPLOYMENT.md)**: Complete guide to VPS deployment, multi-instance setups, and reverse proxy configuration.
 - **[Operational Backup & Restore](docs/OPERATIONAL_BACKUP.md)**: Zero-data-loss backup manifests and cold-start disaster recovery rehearsals.

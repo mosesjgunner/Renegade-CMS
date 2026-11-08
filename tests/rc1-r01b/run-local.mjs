@@ -296,11 +296,15 @@ const testEnv = {
 // in this process, so a blocking spawnSync would freeze them for the entire
 // journey and every browser request would stall.
 const runStatus = await new Promise((resolve) => {
-  const child = spawn('npx', ['playwright', 'test', '-c', 'playwright.r01b.local.config.ts'], {
-    cwd: repo,
-    env: testEnv,
-    stdio: 'inherit',
-  })
+  const child = spawn(
+    'npx',
+    ['playwright', 'test', '-c', 'tests/playwright/playwright.r01b.local.config.ts'],
+    {
+      cwd: repo,
+      env: testEnv,
+      stdio: 'inherit',
+    },
+  )
   child.on('close', (code) => resolve(code ?? 1))
   child.on('error', () => resolve(1))
 })

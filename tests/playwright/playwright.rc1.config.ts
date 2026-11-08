@@ -1,10 +1,11 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 import { createHash, X509Certificate } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import './src/scripts/rc02-network.mjs'
+import '../../src/scripts/rc02-network.mjs'
 
 const databaseURL = process.env.E2E_DATABASE_URL
 const mediaDir = process.env.E2E_MEDIA_DIR
@@ -60,7 +61,8 @@ const env = {
 Object.assign(process.env, env)
 
 export default defineConfig({
-  testDir: './tests/browser',
+  outputDir: resolveFromRoot('test-results'),
+  testDir: resolveFromRoot('./tests/browser'),
   timeout: 30_000,
   workers: 1,
   use: {
@@ -76,6 +78,7 @@ export default defineConfig({
   },
   webServer: [
     {
+      cwd: process.cwd(),
       command: 'node .next/standalone/server.js',
       url: 'http://localhost:3110/health/ready',
       reuseExistingServer: false,
@@ -83,6 +86,7 @@ export default defineConfig({
       env,
     },
     {
+      cwd: process.cwd(),
       command: 'node tests/browser/rc1-local-proxy.mjs',
       url: 'https://127.0.0.1:3111/health/ready',
       ignoreHTTPSErrors: true,

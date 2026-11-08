@@ -38,3 +38,18 @@ scratch/
 .next*
 .freebuff/
 
+# Local backups, reports and personal workspace state
+/tmp-backups/
+/playwright/.cache/
+/blob-report/
+/coverage-final.json
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Temporary editor and merge files
+*.swp
+*.swo
+*~
+*.orig
+*.rej

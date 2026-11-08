@@ -1,12 +1,14 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
-  testDir: './tests/rc1-01b',
+  outputDir: resolveFromRoot('test-results'),
+  testDir: resolveFromRoot('./tests/rc1-r01b'),
   timeout: 120_000,
   workers: 1,
   reporter: [['list']],
   use: {
-    baseURL: 'https://rc1-01b.test:38743',
+    baseURL: 'https://rc1-01b.test:38756',
     browserName: 'chromium',
     ignoreHTTPSErrors: true,
     launchOptions: {

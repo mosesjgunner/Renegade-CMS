@@ -1,3 +1,4 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
@@ -16,10 +17,10 @@ if (!new URL(env.DATABASE_URL).pathname.endsWith('_release_acceptance')) {
 }
 Object.assign(process.env, env)
 export default defineConfig({
-  testDir: './tests/rc01',
+  testDir: resolveFromRoot('./tests/rc01'),
   workers: 1,
   timeout: 90_000,
-  outputDir: 'test-results/rc01',
+  outputDir: resolveFromRoot('test-results/rc01'),
   reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-01/browser-results.json' }]],
   projects: [
     { name: 'setup', testMatch: 'setup.spec.ts' },
@@ -33,6 +34,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
+    cwd: process.cwd(),
     command: 'node node_modules/next/dist/bin/next dev --port 3127',
     url: `${env.APP_URL}/api/setup/readiness`,
     reuseExistingServer: false,

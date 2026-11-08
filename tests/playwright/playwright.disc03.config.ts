@@ -1,3 +1,4 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig, devices } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
@@ -20,7 +21,8 @@ Object.assign(
 )
 
 export default defineConfig({
-  testDir: './tests/browser',
+  outputDir: resolveFromRoot('test-results'),
+  testDir: resolveFromRoot('./tests/browser'),
   timeout: 60_000,
   workers: 1,
   use: {

@@ -1,12 +1,13 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import { createHash, X509Certificate } from 'node:crypto'
-import './src/scripts/rc02-network.mjs'
+import '../../src/scripts/rc02-network.mjs'
 
 const env = Object.fromEntries(
-  readFileSync('.env.rc02', 'utf8')
+  readFileSync('.env.rc03', 'utf8')
     .trim()
     .split(/\r?\n/)
     .map((line) => {
@@ -25,13 +26,14 @@ const certificatePin = createHash('sha256')
   .update(certificate.publicKey.export({ type: 'spki', format: 'der' }))
   .digest('base64')
 export default defineConfig({
-  testDir: './tests/rc02',
+  testDir: resolveFromRoot('./tests/rc03'),
   workers: 1,
   timeout: 600_000,
-  outputDir: 'test-results/rc02',
-  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-02/browser-results.json' }]],
+  outputDir: resolveFromRoot('test-results/rc03'),
+  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-03/browser-results.json' }]],
   use: {
     baseURL: env.APP_URL,
+    storageState: 'scratch/rc02-owner.json',
     browserName: 'chromium',
     ignoreHTTPSErrors: true,
     launchOptions: {
@@ -40,13 +42,14 @@ export default defineConfig({
         `--ignore-certificate-errors-spki-list=${certificatePin}`,
       ],
     },
-    trace: 'on',
+    trace: 'off',
     screenshot: 'only-on-failure',
     actionTimeout: 20_000,
     navigationTimeout: 60_000,
   },
   webServer: {
-    command: 'node src/scripts/rc02-runtime.mjs',
+    cwd: process.cwd(),
+    command: 'node src/scripts/rc03-runtime.mjs',
     url: `${env.APP_URL}/api/setup/readiness`,
     reuseExistingServer: false,
     ignoreHTTPSErrors: true,

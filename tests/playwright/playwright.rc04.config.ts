@@ -1,9 +1,10 @@
+import { resolve as resolveFromRoot } from 'node:path'
 import { defineConfig } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 import { createHash, X509Certificate } from 'node:crypto'
-import './src/scripts/rc02-network.mjs'
+import '../../src/scripts/rc02-network.mjs'
 const env = Object.fromEntries(
-  readFileSync('.env.rc08b', 'utf8')
+  readFileSync('.env.rc04', 'utf8')
     .trim()
     .split(/\r?\n/)
     .map((line) => {
@@ -19,11 +20,11 @@ const pin = createHash('sha256')
   .update(certificate.publicKey.export({ type: 'spki', format: 'der' }))
   .digest('base64')
 export default defineConfig({
-  testDir: './tests/rc08b',
+  testDir: resolveFromRoot('./tests/rc04'),
   workers: 1,
   timeout: 600_000,
-  outputDir: 'test-results/rc08b',
-  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-08b/browser-results.json' }]],
+  outputDir: resolveFromRoot('test-results/rc04'),
+  reporter: [['list'], ['json', { outputFile: 'docs/rc/evidence/rc-04/browser-results.json' }]],
   use: {
     baseURL: env.APP_URL,
     ignoreHTTPSErrors: true,
@@ -40,7 +41,8 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'node src/scripts/rc08b-runtime.mjs',
+    cwd: process.cwd(),
+    command: 'node src/scripts/rc04-runtime.mjs',
     url: `${env.APP_URL}/api/setup/readiness`,
     timeout: 120_000,
     reuseExistingServer: false,
