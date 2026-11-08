@@ -1,0 +1,16 @@
+{
+  "harness": "tests/beta-gui01b/editor-journey.ts (mode=after; worker run + Harbor rerun Nov 8 2026)",
+  "note": "The after journey repeatedly stalled in this VM after the first checks (dev server dies / page blanks ~60s into authenticated runs). Only the checks and capture below were actually obtained; everything else is NOT VERIFIED, see RESULT.md.",
+  "checksPassed": [
+    "create view renders an editor form",
+    "new document does not falsely report autosave before first save"
+  ],
+  "captures": [
+    {
+      "file": "create-article-desktop.png",
+      "route": "/admin/collections/content/create?contentType=article",
+      "viewport": "1440 desktop",
+      "shows": "TOP of the new layout only (capture taken before the rest of the form finished mounting): [Untitled] header, Title and Subtitle leading the main column, save-state note, sidebar with Site/Publication/Space/Content Type/Status/Visibility/Published At"
+    }
+  ]
+}

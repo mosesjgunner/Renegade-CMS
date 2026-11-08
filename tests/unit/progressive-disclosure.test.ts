@@ -46,25 +46,39 @@ describe('progressive disclosure admin presentation', () => {
     expect(JSON.stringify(overview)).not.toContain('secret')
   })
 
-  it('keeps ordinary editor work in publisher field groups and technical fields in Advanced', () => {
-    const tabs = Content.fields?.[0] as {
+  it('lays the editor out writing-first: canvas up front, essentials in the sidebar, technical fields in Advanced', () => {
+    type FieldLike = {
+      name?: string
       type?: string
-      tabs?: Array<{ label: string; fields: Array<{ name?: string }> }>
+      label?: string
+      admin?: { position?: string }
+      fields?: FieldLike[]
     }
-    expect(tabs.type).toBe('tabs')
-    expect(tabs.tabs?.map((tab) => tab.label)).toEqual([
-      'Writing',
-      'Presentation',
-      'Media',
-      'Publish',
-      'SEO',
-      'Advanced',
-    ])
-    expect(
-      tabs.tabs?.find((tab) => tab.label === 'Writing')?.fields.map((field) => field.name),
-    ).toContain('body')
-    expect(
-      tabs.tabs?.find((tab) => tab.label === 'Advanced')?.fields.map((field) => field.name),
-    ).toContain('auditMetadata')
+    const fields = (Content.fields ?? []) as FieldLike[]
+    // No tabs: the writing surface is a single writing-first flow.
+    expect(fields.some((field) => field.type === 'tabs')).toBe(false)
+    const flatten = (list: FieldLike[]): FieldLike[] =>
+      list.flatMap((field) => [field, ...flatten(field.fields ?? [])])
+    const all = flatten(fields)
+    const named = all.filter((field) => field.name)
+    // Every persisted schema field survives the layout: 76 top-level named
+    // fields plus 8 named array subfields (arrays carry named children, e.g.
+    // correctionNotices.label) = 84 named entries at all depths. Verified
+    // identical, path by path, against the pre-GUI-01B schema at fcf046a.
+    expect(named).toHaveLength(84)
+    // The headline and body lead the main column, outside any settings group.
+    const topLevelNames = fields.map((field) => field.name)
+    expect(topLevelNames.indexOf('title')).toBeLessThan(topLevelNames.indexOf('body'))
+    expect(topLevelNames).toContain('draftAutosave')
+    // Identity and publishing essentials are pinned to the sidebar.
+    for (const name of ['site', 'publication', 'space', 'contentType', 'status', 'visibility']) {
+      expect(all.find((field) => field.name === name)?.admin?.position).toBe('sidebar')
+    }
+    // Technical metadata stays available under Advanced, not deleted.
+    const advanced = fields.find(
+      (field) =>
+        field.type === 'collapsible' && field.label === 'Advanced settings and technical metadata',
+    )
+    expect(advanced?.fields?.map((field) => field.name)).toContain('auditMetadata')
   })
 })

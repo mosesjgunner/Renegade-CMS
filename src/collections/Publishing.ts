@@ -157,104 +157,136 @@ const editorialActionOptions = [
 ] as const
 
 /**
- * Payload tabs are presentation-only: this keeps the existing persisted field
- * names and migration shape while giving a publisher one predictable set of
- * task groups. Everything not used in ordinary authoring remains available
- * under Advanced instead of being silently removed from the product.
+ * BETA GUI-01B Pass 1 — writing-first editor layout.
+ *
+ * Payload presentation wrappers (collapsible fields and the sidebar position)
+ * are presentation-only: every persisted field name, validation rule, hook and
+ * access contract from the schema below is preserved unchanged. The layout
+ * puts the headline and the Lexical canvas first, keeps identity and
+ * publishing essentials in the always-visible sidebar, and moves the
+ * remaining configuration into contextual, collapsible settings groups.
+ * Any schema field not named here falls back to Advanced, so a future field
+ * can never silently disappear from the editor.
  */
-const publisherFieldGroups = (fields: Field[]): Field[] => {
-  const groups: Array<{ label: string; names: readonly string[]; fields: Field[] }> = [
-    {
-      label: 'Writing',
-      names: [
-        'site',
-        'publication',
-        'space',
-        'owner',
-        'contentType',
-        'contentTypeEntry',
-        'title',
-        'subtitle',
-        'body',
-        'draftAutosave',
-        'summary',
-        'excerpt',
-        'authors',
-        'sections',
-        'categories',
-        'collections',
-        'sortOrder',
-        'topics',
-        'tags',
-        'series',
-      ],
-      fields: [],
-    },
-    {
-      label: 'Presentation',
-      names: [
-        'slug',
-        'pathOverride',
-        'canonicalPath',
-        'parentPage',
-        'pageTemplate',
-        'featured',
-        'pinned',
-        'readingTimeMinutes',
-        'tableOfContents',
-        'relatedContent',
-        'correctionNotices',
-        'changeNotes',
-      ],
-      fields: [],
-    },
-    { label: 'Media', names: ['heroMedia'], fields: [] },
-    {
-      label: 'Publish',
-      names: [
-        'status',
-        'visibility',
-        'requiredEntitlement',
-        'publishedAt',
-        'updatedAtEditorial',
-        'commentsPolicy',
-        'publicChangeHistoryPolicy',
-      ],
-      fields: [],
-    },
-    {
-      label: 'SEO',
-      names: [
-        'seoTitle',
-        'seoDescription',
-        'seoCanonicalURL',
-        'seoImageAlt',
-        'seoFocusKeyphrase',
-        'seoNoIndex',
-        'seoKeywords',
-        'discoveryOverrides',
-        'discoveryPanel',
-      ],
-      fields: [],
-    },
-    { label: 'Advanced', names: [], fields: [] },
-  ]
+const publisherFieldLayout = (fields: Field[]): Field[] => {
+  const byName = new Map<string, Field>()
+  const unnamed: Field[] = []
   for (const field of fields) {
-    const name = 'name' in field ? field.name : undefined
-    const group = groups.find((candidate) => name && candidate.names.includes(name)) ?? groups[5]!
-    group.fields.push(field)
+    if ('name' in field && typeof field.name === 'string') byName.set(field.name, field)
+    else unnamed.push(field)
   }
-  return [
-    {
-      type: 'tabs',
-      tabs: groups
-        .filter((group) => group.fields.length)
-        .map(({ label, fields: tabFields }) => ({
-          label,
-          fields: tabFields,
-        })),
-    },
-  ] as Field[]
+  const take = (name: string): Field | undefined => {
+    const field = byName.get(name)
+    if (field) byName.delete(name)
+    return field
+  }
+  const takeAll = (names: readonly string[]): Field[] =>
+    names.map(take).filter((field): field is Field => Boolean(field))
+  const sidebar = (field: Field): Field =>
+    ({
+      ...field,
+      admin: { ...(field.admin ?? {}), position: 'sidebar' },
+    }) as Field
+  const group = (label: string, names: readonly string[]): Field =>
+    ({
+      type: 'collapsible',
+      label,
+      admin: { initCollapsed: true },
+      fields: takeAll(names),
+    }) as Field
+
+  const layout: Field[] = [
+    // Identity and publishing essentials stay visible beside the canvas.
+    ...takeAll([
+      'site',
+      'publication',
+      'space',
+      'contentType',
+      'status',
+      'visibility',
+      'publishedAt',
+    ]).map(sidebar),
+    // The writing canvas: entry note, headline, subtitle, body, save state.
+    ...takeAll(['contentTypeEntry', 'title', 'subtitle', 'body', 'draftAutosave']),
+    group('Article details and classification', [
+      'summary',
+      'excerpt',
+      'sections',
+      'categories',
+      'collections',
+      'topics',
+      'tags',
+      'series',
+      'sortOrder',
+      'relatedContent',
+      'tableOfContents',
+      'readingTimeMinutes',
+      'correctionNotices',
+      'changeNotes',
+    ]),
+    group('Authors and attribution', ['owner', 'authors']),
+    group('Media and featured image', ['heroMedia', 'featured', 'pinned']),
+    group('SEO and discovery', [
+      'seoTitle',
+      'seoDescription',
+      'seoCanonicalURL',
+      'seoImageAlt',
+      'seoKeywords',
+      'seoFocusKeyphrase',
+      'seoNoIndex',
+      'discoveryOverrides',
+      'discoveryPanel',
+      'seoOverride',
+      'socialOverride',
+    ]),
+    group('URL and page configuration', [
+      'slug',
+      'pathOverride',
+      'canonicalPath',
+      'semanticUrlPreview',
+      'parentPage',
+      'pageTemplate',
+    ]),
+    group('Publishing and visibility', [
+      'requiredEntitlement',
+      'commentsPolicy',
+      'publicChangeHistoryPolicy',
+      'updatedAtEditorial',
+    ]),
+    group('Advanced settings and technical metadata', [
+      'aiContentProposals',
+      'relationships',
+      'structuredDataMode',
+      'structuredDataPrimaryType',
+      'structuredDataSourceCollection',
+      'structuredDataSourceIdentifier',
+      'structuredDataManual',
+      'structuredDataVersion',
+      'knowledgeGraphProjectionStatus',
+      'knowledgeGraphNodeKey',
+      'knowledgeGraphProjectionBoundary',
+      'importSourceSystem',
+      'importSourceIdentifier',
+      'importSourceChecksum',
+      'exportFormatVersion',
+      'exportOwnership',
+      'revisionCompatibility',
+      'auditMetadata',
+      'retentionMode',
+      'retentionExpiresAt',
+      'retentionHold',
+      'removeFromDiscovery',
+      'tombstoneLabel',
+      'publicModifiedAt',
+    ]),
+  ]
+  // Defensive fallback: unplaced schema fields remain editable under Advanced.
+  const remaining = [...byName.values(), ...unnamed]
+  if (remaining.length) {
+    const advanced = layout[layout.length - 1] as { fields: Field[] }
+    advanced.fields.push(...remaining)
+  }
+  return layout
 }
 
 /** Taxonomy is archival identity; refuse deletion while an editorial record still uses it. */
@@ -1147,7 +1179,7 @@ export const Content: CollectionConfig = {
       },
     ],
   },
-  fields: publisherFieldGroups([
+  fields: publisherFieldLayout([
     ...ownerFields(),
     {
       name: 'requiredEntitlement',
@@ -1181,7 +1213,12 @@ export const Content: CollectionConfig = {
       type: 'ui',
       admin: { components: { Field: '@/modules/admin/ContentTypeEntry#ContentTypeEntry' } },
     },
-    { name: 'title', type: 'text', required: true },
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+      admin: { components: { Field: '@/modules/admin/HeadlineField#HeadlineField' } },
+    },
     {
       name: 'slug',
       type: 'text',
@@ -1244,6 +1281,7 @@ export const Content: CollectionConfig = {
       admin: {
         description:
           'Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.',
+        components: { Field: '@/modules/admin/WritingCanvasField#WritingCanvasField' },
       },
     },
     {

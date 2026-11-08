@@ -1,0 +1,10 @@
+[
+  {
+    "name": "create view renders an editor form",
+    "pass": true
+  },
+  {
+    "name": "new document does not falsely report autosave before first save",
+    "pass": true
+  }
+]
