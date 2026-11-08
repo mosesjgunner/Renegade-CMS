@@ -1,6 +1,7 @@
 /* Generated-style Payload routing edge. Keep aligned with the installed Payload version. */
 import config from '@payload-config'
 import '@payloadcms/next/css'
+import '@/modules/admin/styles/admin-tokens.css'
 import { metadata, RootLayout } from '@payloadcms/next/layouts'
 import type { ReactNode } from 'react'
 

@@ -1,0 +1,54 @@
+/*
+ * Renegade admin semantic tokens (GUI-02A).
+ *
+ * A thin semantic layer over Payload's installed `--theme-*` variables.
+ * Operator-facing custom views should reference THESE names, never raw
+ * hex values and never the public `--presentation-*` tokens (those belong
+ * to the published site and are persisted user data).
+ *
+ * Payload switches `--theme-*` values under `html[data-theme='dark']`,
+ * so every mapping below works in both themes with no dark overrides.
+ * See docs/beta/gui-overhaul/design-system.md for the full map, the
+ * typography/spacing scales, and the reference component specs.
+ */
+
+:root {
+  /* Surfaces */
+  --admin-bg: var(--theme-bg);
+  --admin-surface: var(--theme-elevation-0);
+  --admin-surface-raised: var(--theme-elevation-50);
+  --admin-surface-sunken: var(--theme-input-bg);
+
+  /* Text */
+  --admin-text: var(--theme-text);
+  --admin-text-muted: var(--theme-elevation-600);
+
+  /* Lines and focus */
+  --admin-border: var(--theme-border-color);
+  --admin-focus: var(--theme-text);
+
+  /* Intent */
+  --admin-success: var(--theme-success-500);
+  --admin-warning: var(--theme-warning-500);
+  --admin-danger: var(--theme-error-500);
+
+  /* Typography (Payload exposes --font-body; admin adds no second stack) */
+  --admin-font: var(--font-body);
+  --admin-font-size-sm: 0.8125rem;
+  --admin-font-size: 0.9375rem;
+  --admin-font-size-lg: 1.125rem;
+  --admin-line-height: 1.55;
+
+  /* Spacing scale (4px base) */
+  --admin-space-1: 0.25rem;
+  --admin-space-2: 0.5rem;
+  --admin-space-3: 0.75rem;
+  --admin-space-4: 1rem;
+  --admin-space-6: 1.5rem;
+  --admin-space-8: 2rem;
+
+  /* Shape and measure */
+  --admin-radius: var(--style-radius-m, 0.375rem);
+  --admin-content-width: 72rem;
+  --admin-reading-width: 44rem;
+}
