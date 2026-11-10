@@ -1,0 +1,155 @@
+{
+  "prompt": "GUI-01B (pack) \u2014 Authenticated baseline and screenshot harness",
+  "sourceRevision": "aa92a5e3a465c1390412f1f53c83fb7897e32b18 (GitHub main at capture build; build-provenance.json in the standalone build records this SHA)",
+  "servingMode": "Production build (next standalone), LOCAL_E2E_TEST_MODE=true, loopback only",
+  "role": "owner (fixture user, disposable database)",
+  "site": "gui01b (fixture site, disposable database gui01b_capture_release_acceptance, PostgreSQL 16.15)",
+  "browser": "Playwright Chromium headless",
+  "note": "Captured AFTER PR #31 merged the GUI-04A editor to main (8b68f1c) but built from aa92a5e, which predates that merge \u2014 so the editor captures show the PRE-04A tabbed layout. This is the pack's before-state for the editor. The GUI-04A after-state evidence lives in PR #31 / docs/beta/evidence/GUI-01B/. A post-merge recapture is a listed follow-up in RESULT.md.",
+  "captures": [
+    {
+      "file": "admin-home-desktop.png",
+      "route": "/admin",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "206190e1ef98e65913e378ec60845513408d97e38ed19a822542f970b914d0be",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "content-list-desktop.png",
+      "route": "/admin/collections/content",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "f4393ed807208ee1a84496837fc3f770aa71f924184133287186eac7ff2a6374",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "create-article-desktop.png",
+      "route": "/admin/collections/content/create",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "714865d9d343c007f248a7ea6b076af869e6338192c70f78f00b26d6d016737c",
+      "probe": {
+        "docHeight": 2098,
+        "overflow": 0,
+        "fieldTitleTop": 777,
+        "fieldTitleFontPx": 13,
+        "editableCount": 1,
+        "editableHeight": 49,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "edit-article-desktop.png",
+      "route": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "1b259dbdfca9fa517124f624322c0b897b7a9818ee5dadf4fcd13eeadf6e97eb",
+      "probe": {
+        "docHeight": 2098,
+        "overflow": 0,
+        "fieldTitleTop": 777,
+        "fieldTitleFontPx": 13,
+        "editableCount": 1,
+        "editableHeight": 49,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "create-article-mobile-375.png",
+      "route": "/admin/collections/content/create",
+      "viewport": "375x800",
+      "theme": "light",
+      "captured": true,
+      "sha256": "cb93769c000f2baf6b39b26565c31373c1f241c56472f69c51b57d1ff53e19da",
+      "probe": {
+        "docHeight": 1913,
+        "overflow": 0,
+        "fieldTitleTop": 713,
+        "fieldTitleFontPx": 12,
+        "editableCount": 1,
+        "editableHeight": 49,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "create-article-tablet-768.png",
+      "route": "/admin/collections/content/create",
+      "viewport": "768x1000",
+      "theme": "light",
+      "captured": true,
+      "sha256": "408ed5078caa66fe5e670a8748fe13b0058e0ebe19ad43cfa4584edf042500e2",
+      "probe": {
+        "docHeight": 1833,
+        "overflow": 0,
+        "fieldTitleTop": 693,
+        "fieldTitleFontPx": 12,
+        "editableCount": 1,
+        "editableHeight": 49,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "edit-article-dark.png",
+      "route": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+      "viewport": "1440x950",
+      "theme": "dark",
+      "captured": true,
+      "sha256": "8988137bb05c5bd7c053d78de332edd8af1532be87d56def84a00da1bdb53e38",
+      "probe": {
+        "docHeight": 2098,
+        "overflow": 0,
+        "fieldTitleTop": 777,
+        "fieldTitleFontPx": 13,
+        "editableCount": 1,
+        "editableHeight": 49,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "media-library-desktop.png",
+      "route": "/admin/media-library",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "ed17c9cc8f50ad2642f42bd69424f44afdfe1b0dc86aea3c5fb4eb8100c7f3d2",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    }
+  ]
+}

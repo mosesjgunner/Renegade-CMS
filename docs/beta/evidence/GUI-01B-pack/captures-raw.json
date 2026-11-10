@@ -1,0 +1,170 @@
+[
+  {
+    "name": "admin-home-desktop",
+    "route": "/admin",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin",
+      "title": "Dashboard - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "content-list-desktop",
+    "route": "/admin/collections/content",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content",
+      "title": "All content - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "create-article-desktop",
+    "route": "/admin/collections/content/create?contentType=article",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/create",
+      "title": "Creating - Post or Page - Payload",
+      "docHeight": 2098,
+      "overflow": 0,
+      "fieldTitleTop": 777,
+      "fieldTitleFontPx": 13,
+      "bodyTop": 837,
+      "editableCount": 1,
+      "editableHeight": 49,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "edit-article-desktop",
+    "route": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+      "title": "Editing - Post or Page - Payload",
+      "docHeight": 2098,
+      "overflow": 0,
+      "fieldTitleTop": 777,
+      "fieldTitleFontPx": 13,
+      "bodyTop": 837,
+      "editableCount": 1,
+      "editableHeight": 49,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "create-article-mobile-375",
+    "route": "/admin/collections/content/create?contentType=article",
+    "viewport": "375x800",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/create",
+      "title": "Creating - Post or Page - Payload",
+      "docHeight": 1913,
+      "overflow": 0,
+      "fieldTitleTop": 713,
+      "fieldTitleFontPx": 12,
+      "bodyTop": 762,
+      "editableCount": 1,
+      "editableHeight": 49,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "create-article-tablet-768",
+    "route": "/admin/collections/content/create?contentType=article",
+    "viewport": "768x1000",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/create",
+      "title": "Creating - Post or Page - Payload",
+      "docHeight": 1833,
+      "overflow": 0,
+      "fieldTitleTop": 693,
+      "fieldTitleFontPx": 12,
+      "bodyTop": 742,
+      "editableCount": 1,
+      "editableHeight": 49,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "edit-article-dark",
+    "route": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+    "viewport": "1440x950",
+    "theme": "dark",
+    "probe": {
+      "url": "/admin/collections/content/72da3964-3881-4c82-8352-5f8da0fa42af",
+      "title": "Editing - Post or Page - Payload",
+      "docHeight": 2098,
+      "overflow": 0,
+      "fieldTitleTop": 777,
+      "fieldTitleFontPx": 13,
+      "bodyTop": 837,
+      "editableCount": 1,
+      "editableHeight": 49,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "dark"
+    },
+    "captured": true
+  },
+  {
+    "name": "media-library-desktop",
+    "route": "/admin/media-library",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/media-library",
+      "title": "Payload - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  }
+]
