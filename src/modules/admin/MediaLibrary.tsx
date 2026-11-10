@@ -36,10 +36,14 @@ export default async function MediaLibrary({ initPageResult, searchParams }: Adm
     <main>
       {siteId ? (
         <>
-          <MediaCommandCenter siteId={siteId} />
-          <section className="mt-8 border-t pt-8" aria-label="Media Assets Management">
+          {/* GUI-06A: assets first — the library leads; processing
+              diagnostics follow as context instead of leading the page. */}
+          <section aria-label="Media Assets Management">
             <MediaLibraryClient siteId={siteId} />
           </section>
+          <div className="mt-8 border-t pt-8">
+            <MediaCommandCenter siteId={siteId} />
+          </div>
         </>
       ) : (
         <p role="alert">Select a site from your publisher context before managing media.</p>

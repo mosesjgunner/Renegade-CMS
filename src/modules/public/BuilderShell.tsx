@@ -396,10 +396,10 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
       <div className="glass-panel border-b border-stone-200 dark:border-stone-800 px-6 py-3 flex flex-wrap items-center justify-between gap-4 sticky top-16 z-40">
         <div className="flex items-center gap-4">
           <Link
-            href="/"
+            href={`/admin/collections/page-layouts/${layout.id}`}
             className="text-xs text-stone-500 hover:text-stone-900 dark:hover:text-stone-100"
           >
-            &larr; Back
+            &larr; Back to Page (admin)
           </Link>
           <div className="flex items-center gap-2">
             <span className="font-bold text-sm text-stone-900 dark:text-stone-100">
@@ -543,7 +543,7 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
             }}
             className="btn btn-secondary text-xs px-3 py-1.5"
           >
-            Exact Preview ({previewViewport})
+            Preview Draft ({previewViewport})
           </Link>
 
           <span

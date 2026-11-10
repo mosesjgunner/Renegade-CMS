@@ -1301,7 +1301,6 @@ export const Content: CollectionConfig = {
       admin: {
         description:
           'Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.',
-        components: { Field: '@/modules/admin/WritingCanvasField#WritingCanvasField' },
       },
     },
     {

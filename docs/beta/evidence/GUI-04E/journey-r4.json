@@ -1,0 +1,44 @@
+{
+  "steps": [
+    {
+      "name": "editor mounts (title + Lexical)",
+      "ok": true,
+      "detail": "both present"
+    },
+    {
+      "name": "site prefilled from active-site context",
+      "ok": true,
+      "detail": "\"Site*GUI01B SiteEditEditAdd new SiteAdd new Site\""
+    },
+    {
+      "name": "first save creates the document",
+      "ok": true,
+      "detail": "http://127.0.0.1:39071/admin/collections/content/25ade467-277f-4f62-96f0-22724923fc94"
+    },
+    {
+      "name": "autosave fires and reports",
+      "ok": true,
+      "detail": "Draft saved automatically."
+    },
+    {
+      "name": "reload round-trips title",
+      "ok": true,
+      "detail": "\"Journey Article — typed live in the editor\""
+    },
+    {
+      "name": "reload round-trips body",
+      "ok": true,
+      "detail": "\"This paragraph was typed into the Lexical canvas by the GUI-04E journey and must\""
+    },
+    {
+      "name": "history view renders with breadcrumb",
+      "ok": true,
+      "detail": "Dashboard / Posts / History"
+    },
+    {
+      "name": "zero page errors across the journey",
+      "ok": true,
+      "detail": "none"
+    }
+  ]
+}

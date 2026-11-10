@@ -90,14 +90,27 @@ export default function NavigationCenter() {
 
   const handleSiteChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newSiteId = e.target.value
-    setSelectedSiteId(newSiteId)
+    // GUI-06C: same truthfulness rule as the GUI-03C switcher fix —
+    // this selector used to switch the display first and swallow a
+    // failed POST (catch {}), so menus could silently load for a site
+    // the operator's context never actually moved to. The selection
+    // now changes only after the context POST succeeds; failure keeps
+    // the previous site and says so.
     try {
-      await fetch('/api/admin/active-site', {
+      const res = await fetch('/api/admin/active-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ siteId: newSiteId }),
       })
-    } catch {}
+      if (!res.ok) throw new Error('switch failed')
+    } catch {
+      setMessage({
+        text: 'That site switch did not save. Menus still show the previous site — check your access and try again.',
+        type: 'error',
+      })
+      return
+    }
+    setSelectedSiteId(newSiteId)
     void loadNavigation(newSiteId)
   }
 
