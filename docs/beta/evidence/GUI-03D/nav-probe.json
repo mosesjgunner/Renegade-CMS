@@ -1,0 +1,62 @@
+{
+  "toggleClicked": "Open Menu",
+  "probe": {
+    "summaries": [
+      "Discovery",
+      "Workflow",
+      "Distribution",
+      "Audience & Community",
+      "Commerce",
+      "Intelligence",
+      "Platform"
+    ],
+    "detailsCount": 7,
+    "strongs": [
+      "Everyday"
+    ],
+    "ariaCurrent": 0,
+    "links": [
+      "/admin",
+      "/admin/posts",
+      "/admin/pages",
+      "/admin/collections/sections",
+      "/admin/collections/categories",
+      "/admin/collections/albums",
+      "/admin/media-library",
+      "/admin/collections/page-layouts",
+      "/admin/navigation",
+      "/admin/indexing",
+      "/admin/redirects",
+      "/admin/rendered-quality",
+      "/admin/workflow",
+      "/admin/history",
+      "/admin/audience",
+      "/admin/fulfillment",
+      "/admin/ai",
+      "/admin/capabilities",
+      "/admin/security",
+      "/admin/design-system",
+      "/admin/migration",
+      "/",
+      "/admin/capabilities",
+      "/admin/security",
+      "/admin/collections/sites",
+      "/admin/collections/users",
+      "/admin/globals/site-settings",
+      "/admin/collections/page-layouts",
+      "/admin/collections/brands",
+      "/admin/collections/authors",
+      "/admin/collections/publications",
+      "/admin/collections/content",
+      "/admin/collections/albums",
+      "/admin/collections/members",
+      "/admin/collections/profiles",
+      "/admin/collections/media-assets",
+      "/admin/collections/sections",
+      "/admin/collections/categories",
+      "/admin/collections/topics",
+      "/admin/collections/tags"
+    ],
+    "navTextStart": "EverydayDashboardPostsPagesSectionsCategoriesCollectionsMediaLayoutsMenusDiscoveryIndexingRedirectsRendered QualityWorkf"
+  }
+}

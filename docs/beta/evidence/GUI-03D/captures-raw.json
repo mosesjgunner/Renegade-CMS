@@ -1,0 +1,86 @@
+[
+  {
+    "name": "shell-dashboard-desktop",
+    "route": "/admin",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin",
+      "title": "Dashboard - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "shell-dashboard-mobile-375",
+    "route": "/admin",
+    "viewport": "375x800",
+    "theme": "light",
+    "probe": {
+      "url": "/admin",
+      "title": "Dashboard - Payload",
+      "docHeight": 800,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "shell-dashboard-dark",
+    "route": "/admin",
+    "viewport": "1440x950",
+    "theme": "dark",
+    "probe": {
+      "url": "/admin",
+      "title": "Dashboard - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "dark"
+    },
+    "captured": true
+  },
+  {
+    "name": "shell-media-desktop",
+    "route": "/admin/media-library",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/media-library",
+      "title": "Payload - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  }
+]

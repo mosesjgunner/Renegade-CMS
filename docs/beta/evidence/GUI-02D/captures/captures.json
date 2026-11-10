@@ -1,0 +1,79 @@
+{
+  "prompt": "GUI-02D showcase visual gate",
+  "sourceTree": "3dbbeb2+30d49cb tree",
+  "servingMode": "Production build (standalone), LOCAL_E2E_TEST_MODE=true, loopback; fixture owner session, disposable DB (recreated after VM replacement)",
+  "captures": [
+    {
+      "file": "design-system-desktop.png",
+      "route": "/admin/design-system",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "6201c07841d4e72f3ccca86ea5153fd35e450579722111cd9f50f0b0c64e1385",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "design-system-mobile-375.png",
+      "route": "/admin/design-system",
+      "viewport": "375x800",
+      "theme": "light",
+      "captured": true,
+      "sha256": "6871dcb2ce2d84b7c0472c22d142aef953916313a56107b2ab0fb93f2ddfb344",
+      "probe": {
+        "docHeight": 909,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "design-system-tablet-768.png",
+      "route": "/admin/design-system",
+      "viewport": "768x1000",
+      "theme": "light",
+      "captured": true,
+      "sha256": "459ab4ad5f276f55ef13d33eee898ea5cd28c36eb6766460f184e77eed1cb273",
+      "probe": {
+        "docHeight": 1000,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    },
+    {
+      "file": "design-system-dark.png",
+      "route": "/admin/design-system",
+      "viewport": "1440x950",
+      "theme": "dark",
+      "captured": true,
+      "sha256": "9d9a4d59eb380dd1730e63bfa76ddced68b2e164ccb57a56ec97d4a71f82e444",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    }
+  ]
+}

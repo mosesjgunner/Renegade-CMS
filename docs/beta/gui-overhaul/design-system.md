@@ -85,3 +85,25 @@ and type scale only.
   CSS import in the Payload layout.
 
 **Exact next prompt: GUI-02B.**
+
+## Primitives (GUI-02B)
+
+Location: `src/modules/admin/primitives/` (`index.tsx` +
+`primitives.module.css`). Styling consumes only `--admin-*` tokens.
+
+| Primitive | Props (summary) | Notes |
+| --- | --- | --- |
+| `WorkspaceHeader` | `title`, `purpose?`, `actions?`, `crumbs?` | Breadcrumb uses `aria-current` on the last crumb; actions wrap on small screens |
+| `SectionHeader` | children | One section heading style for operator views |
+| `ActionLink` | `href`, `intent: primary/secondary/destructive` | Real link; `:focus-visible` outline; disabled state styled via `[disabled]`/`aria-disabled` |
+| `StatusPill` | `tone: success/warning/danger/neutral`, children | Tone is a dot + text label — meaning never rides on color alone |
+| `EmptyState` | children | Distinct from no-results-after-filter copy; callers pass the right words |
+| `ErrorState` | `message`, `retryHref?`, `retryLabel?` | `role="alert"`; retry is a link back to the surface |
+| `DetailContainer` | children | Selected-item detail surface |
+| `LoadingSkeleton` | `rows?` | `role="status"` + `aria-busy`; honors `prefers-reduced-motion` |
+
+First adoption: `PublisherDashboard` (WorkspaceHeader, SectionHeader,
+StatusPill for content status, EmptyState for empty groups). Interactive
+button variants (pending/denied behavior in client components) arrive
+with the first client-side consumer; the link-based actions above carry
+keyboard/focus behavior natively.

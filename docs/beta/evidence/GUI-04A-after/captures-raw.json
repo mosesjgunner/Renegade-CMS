@@ -1,0 +1,65 @@
+[
+  {
+    "name": "edit-article-desktop",
+    "route": "/admin/collections/content/4e26cbca-80d1-4186-8d8c-27af37163373",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/4e26cbca-80d1-4186-8d8c-27af37163373",
+      "title": "Editing - Post or Page - Payload",
+      "docHeight": 1110,
+      "overflow": 0,
+      "fieldTitleTop": 291,
+      "fieldTitleFontPx": 21,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": true,
+      "collapsibles": 7,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "create-article-desktop",
+    "route": "/admin/collections/content/create?contentType=article",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/collections/content/create",
+      "title": "Creating - Post or Page - Payload",
+      "docHeight": 1110,
+      "overflow": 0,
+      "fieldTitleTop": 291,
+      "fieldTitleFontPx": 21,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": true,
+      "collapsibles": 7,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "dashboard-desktop",
+    "route": "/admin",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin",
+      "title": "Dashboard - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  }
+]

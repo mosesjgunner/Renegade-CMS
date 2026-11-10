@@ -1,0 +1,61 @@
+{
+  "prompt": "GUI-04A post-merge after-capture (closes 01B follow-up)",
+  "sourceTree": "3dbbeb2+30d49cb tree",
+  "servingMode": "Production build (standalone), LOCAL_E2E_TEST_MODE=true, loopback; fixture owner session, disposable DB (recreated after VM replacement)",
+  "captures": [
+    {
+      "file": "edit-article-desktop.png",
+      "route": "/admin/collections/content/4e26cbca-80d1-4186-8d8c-27af37163373",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "60344479d721db3638326f11ffb41cb045b2a8a212ee6338fda79a9521b3eead",
+      "probe": {
+        "docHeight": 1110,
+        "overflow": 0,
+        "fieldTitleTop": 291,
+        "fieldTitleFontPx": 21,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": true,
+        "collapsibles": 7
+      }
+    },
+    {
+      "file": "create-article-desktop.png",
+      "route": "/admin/collections/content/create",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "16f25354933c4b70c22f83d6944f503aae0a1158cf73ec969dbb37465896248b",
+      "probe": {
+        "docHeight": 1110,
+        "overflow": 0,
+        "fieldTitleTop": 291,
+        "fieldTitleFontPx": 21,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": true,
+        "collapsibles": 7
+      }
+    },
+    {
+      "file": "dashboard-desktop.png",
+      "route": "/admin",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "bd6bc8322f557515536570ad17245c4d26ab8c00caa6d460383cc1f6ff90a3cf",
+      "probe": {
+        "docHeight": 950,
+        "overflow": 0,
+        "fieldTitleTop": null,
+        "fieldTitleFontPx": null,
+        "editableCount": 0,
+        "editableHeight": null,
+        "hasSidebar": false,
+        "collapsibles": 0
+      }
+    }
+  ]
+}

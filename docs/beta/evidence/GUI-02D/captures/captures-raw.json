@@ -1,0 +1,86 @@
+[
+  {
+    "name": "design-system-desktop",
+    "route": "/admin/design-system",
+    "viewport": "1440x950",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/design-system",
+      "title": "Payload - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "design-system-mobile-375",
+    "route": "/admin/design-system",
+    "viewport": "375x800",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/design-system",
+      "title": "Payload - Payload",
+      "docHeight": 909,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "design-system-tablet-768",
+    "route": "/admin/design-system",
+    "viewport": "768x1000",
+    "theme": "light",
+    "probe": {
+      "url": "/admin/design-system",
+      "title": "Payload - Payload",
+      "docHeight": 1000,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "light"
+    },
+    "captured": true
+  },
+  {
+    "name": "design-system-dark",
+    "route": "/admin/design-system",
+    "viewport": "1440x950",
+    "theme": "dark",
+    "probe": {
+      "url": "/admin/design-system",
+      "title": "Payload - Payload",
+      "docHeight": 950,
+      "overflow": 0,
+      "fieldTitleTop": null,
+      "fieldTitleFontPx": null,
+      "bodyTop": null,
+      "editableCount": 0,
+      "editableHeight": null,
+      "hasSidebar": false,
+      "collapsibles": 0,
+      "theme": "dark"
+    },
+    "captured": true
+  }
+]

@@ -12,7 +12,11 @@ type Revision = {
   excerpt: string
 }
 
-type History = { currentRevision: string | null; revisions: Revision[] }
+type History = {
+  currentRevision: string | null
+  revisions: Revision[]
+  contentType?: string | null
+}
 
 export default function RevisionHistory({ contentId }: { contentId: string }) {
   const [history, setHistory] = useState<History | null>(null)
@@ -61,7 +65,13 @@ export default function RevisionHistory({ contentId }: { contentId: string }) {
   return (
     <main className={`gutter--left gutter--right ${styles.main}`}>
       <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
-        <Link href="/admin">Dashboard</Link> / <Link href="/admin/posts">Publishing</Link> / History
+        <Link href="/admin">Dashboard</Link> /{' '}
+        {history?.contentType === 'page' ? (
+          <Link href="/admin/pages">Pages</Link>
+        ) : (
+          <Link href="/admin/posts">Posts</Link>
+        )}{' '}
+        / History
       </nav>
       <h1>Saved revisions</h1>
       <p className={styles.intro}>
