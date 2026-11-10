@@ -73,3 +73,9 @@ acceptance still open) / RESOLVED (acceptance met) .
   need measurement, not assertion.
 
 **Exact next prompt: GUI-02A.**
+
+- **UX-02 follow-up (GUI-04B, Nov 9):** DraftAutosave audited truthful; DiscoveryPanel preview now states saved-revision vs unsaved-edits semantics. Remaining: relocate the saved-preview action beside Save via a custom document-header component (bounded 04B-R1 candidate).
+
+- **GUI-04C remaining item (Nov 9):** editor focus mode (hide inspector without unmounting form values; prove unsaved content survives) is assigned to GUI-08B, where focus/zoom/drawer behaviors are exercised together. Do not build it as bespoke CSS elsewhere.
+
+- **UX-10 status (GUI-04D, Nov 9):** the RevisionHistory breadcrumb defect is FIXED (contentType-aware). Remaining UX-10 vocabulary items ride their family passes.

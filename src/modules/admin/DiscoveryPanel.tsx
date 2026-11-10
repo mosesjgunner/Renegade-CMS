@@ -1,6 +1,6 @@
 'use client'
 
-import { useDocumentInfo } from '@payloadcms/ui'
+import { useDocumentInfo, useFormModified } from '@payloadcms/ui'
 import { useEffect, useState } from 'react'
 
 type SchemaInspectionNode = {
@@ -78,6 +78,7 @@ type Inspection = {
 
 export function DiscoveryPanel() {
   const { id, lastUpdateTime } = useDocumentInfo()
+  const formModified = useFormModified()
   const [inspection, setInspection] = useState<Inspection | null>(null)
   const [error, setError] = useState('')
   const [previewUrl, setPreviewUrl] = useState('')
@@ -141,6 +142,9 @@ export function DiscoveryPanel() {
               Open saved draft preview
             </a>{' '}
             (expires in 30 minutes)
+            {formModified
+              ? ' — heads up: you have unsaved edits since this preview was created. Save, then create a new preview to see them.'
+              : ' — reflects your last saved revision.'}
           </p>
         )}
       </div>

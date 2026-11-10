@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
+import { EmptyState, SectionHeader, StatusPill, WorkspaceHeader } from './primitives'
+
 type ContentRow = {
   id: string
   title?: string
@@ -74,16 +76,23 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
 
   return (
     <main className="gutter--left gutter--right" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <h1>Dashboard</h1>
-      <p>Your publishing work, in one calm place.</p>
-      <p>
-        <Link href="/admin/collections/content/create?contentType=article">Write a post</Link> ·{' '}
-        <Link href="/admin/collections/content/create?contentType=page">Create a page</Link> ·{' '}
-        <Link href="/admin/collections/media-assets/create">Add media</Link> ·{' '}
-        <Link href="/admin/navigation">Edit menus</Link>
-      </p>
+      <WorkspaceHeader
+        title="Dashboard"
+        purpose="Your publishing work, in one calm place."
+        actions={
+          <>
+            <Link href="/admin/collections/content/create?contentType=article">Write a post</Link>
+            {' · '}
+            <Link href="/admin/collections/content/create?contentType=page">Create a page</Link>
+            {' · '}
+            <Link href="/admin/collections/media-assets/create">Add media</Link>
+            {' · '}
+            <Link href="/admin/navigation">Edit menus</Link>
+          </>
+        }
+      />
       <section aria-label="Setup progress" style={{ marginTop: 28 }}>
-        <h2>Setup progress</h2>
+        <SectionHeader>Setup progress</SectionHeader>
         <p>
           {published.docs.length
             ? 'Your site has published content.'
@@ -94,13 +103,24 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       </section>
       {groups.map((group) => (
         <section key={group.title} style={{ marginTop: 28 }}>
-          <h2>{group.title}</h2>
+          <SectionHeader>{group.title}</SectionHeader>
           {group.rows.length ? (
             <ul>
               {group.rows.map((row) => (
                 <li key={row.id}>
-                  <Link href={`/admin/collections/content/${row.id}`}>{label(row)}</Link> —{' '}
-                  {row.status ?? 'draft'} · {date(row.publishedAt ?? row.updatedAt)}
+                  <Link href={`/admin/collections/content/${row.id}`}>{label(row)}</Link>{' '}
+                  <StatusPill
+                    tone={
+                      ['published', 'updated'].includes(row.status ?? '')
+                        ? 'success'
+                        : (row.status ?? 'draft') === 'scheduled'
+                          ? 'warning'
+                          : 'neutral'
+                    }
+                  >
+                    {row.status ?? 'draft'}
+                  </StatusPill>{' '}
+                  · {date(row.publishedAt ?? row.updatedAt)}
                   {row.canonicalPath && ['published', 'updated'].includes(row.status ?? '') ? (
                     <>
                       {' '}
@@ -114,12 +134,12 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
               ))}
             </ul>
           ) : (
-            <p>{group.empty}</p>
+            <EmptyState>{group.empty}</EmptyState>
           )}
         </section>
       ))}
       <section style={{ marginTop: 28 }}>
-        <h2>Needs attention</h2>
+        <SectionHeader>Needs attention</SectionHeader>
         <p>
           {redirects.docs.length
             ? 'Redirects are active. Review them after moving or renaming content.'

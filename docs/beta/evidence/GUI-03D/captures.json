@@ -1,0 +1,112 @@
+{
+  "prompt": "GUI-03D shell acceptance (cycle 4)",
+  "sourceTree": "9f3220f (cycle-3 build, clean source: true)",
+  "servingMode": "Production build (standalone), LOCAL_E2E_TEST_MODE=true, loopback; fixture owner session, disposable DB recreated Nov 9 after VM replacement",
+  "captures": [
+    {
+      "file": "shell-dashboard-desktop.png",
+      "route": "/admin",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "5aa049b259eff7ab904f72361ab1f591c4e3e765d3620c0b4d229b7741f99e58",
+      "overflow": 0
+    },
+    {
+      "file": "shell-dashboard-mobile-375.png",
+      "route": "/admin",
+      "viewport": "375x800",
+      "theme": "light",
+      "captured": true,
+      "sha256": "69674275efb724c27fdb25c8185516af481b66bd09168c356f5742d1d9cc9dfa",
+      "overflow": 0
+    },
+    {
+      "file": "shell-dashboard-dark.png",
+      "route": "/admin",
+      "viewport": "1440x950",
+      "theme": "dark",
+      "captured": true,
+      "sha256": "7878a670870123aa7cedbcdf574e149acdf63bd5abd02195c32d8076f4ade331",
+      "overflow": 0
+    },
+    {
+      "file": "shell-media-desktop.png",
+      "route": "/admin/media-library",
+      "viewport": "1440x950",
+      "theme": "light",
+      "captured": true,
+      "sha256": "ed17c9cc8f50ad2642f42bd69424f44afdfe1b0dc86aea3c5fb4eb8100c7f3d2",
+      "overflow": 0
+    },
+    {
+      "file": "shell-nav-open-desktop.png",
+      "route": "/admin (nav drawer open)",
+      "viewport": "1440x950",
+      "theme": "light",
+      "sha256": "8158e52d99e6aa0ffeda19916c225a724861e554e72b00e8839844e1c6343001"
+    }
+  ],
+  "navProbe": {
+    "toggleClicked": "Open Menu",
+    "probe": {
+      "summaries": [
+        "Discovery",
+        "Workflow",
+        "Distribution",
+        "Audience & Community",
+        "Commerce",
+        "Intelligence",
+        "Platform"
+      ],
+      "detailsCount": 7,
+      "strongs": [
+        "Everyday"
+      ],
+      "ariaCurrent": 0,
+      "links": [
+        "/admin",
+        "/admin/posts",
+        "/admin/pages",
+        "/admin/collections/sections",
+        "/admin/collections/categories",
+        "/admin/collections/albums",
+        "/admin/media-library",
+        "/admin/collections/page-layouts",
+        "/admin/navigation",
+        "/admin/indexing",
+        "/admin/redirects",
+        "/admin/rendered-quality",
+        "/admin/workflow",
+        "/admin/history",
+        "/admin/audience",
+        "/admin/fulfillment",
+        "/admin/ai",
+        "/admin/capabilities",
+        "/admin/security",
+        "/admin/design-system",
+        "/admin/migration",
+        "/",
+        "/admin/capabilities",
+        "/admin/security",
+        "/admin/collections/sites",
+        "/admin/collections/users",
+        "/admin/globals/site-settings",
+        "/admin/collections/page-layouts",
+        "/admin/collections/brands",
+        "/admin/collections/authors",
+        "/admin/collections/publications",
+        "/admin/collections/content",
+        "/admin/collections/albums",
+        "/admin/collections/members",
+        "/admin/collections/profiles",
+        "/admin/collections/media-assets",
+        "/admin/collections/sections",
+        "/admin/collections/categories",
+        "/admin/collections/topics",
+        "/admin/collections/tags"
+      ],
+      "navTextStart": "EverydayDashboardPostsPagesSectionsCategoriesCollectionsMediaLayoutsMenusDiscoveryIndexingRedirectsRendered QualityWorkf"
+    }
+  }
+}

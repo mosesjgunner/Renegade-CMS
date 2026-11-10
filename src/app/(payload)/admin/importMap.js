@@ -35,6 +35,7 @@ import { AiContentActionField as AiContentActionField_4db112374481e7b6e11792b2a6
 import { default as default_540c8fd8e80fc68e99ce7b541e67baa6 } from '../../../modules/admin/PublishingLinks'
 import { default as default_b2e9d352a88622b4016040a046ab3cc7 } from '../../../modules/admin/CapabilityCenterLink'
 import { default as default_4568b6c45b14a1b26da8fe5e64713f3d } from '../../../modules/admin/PublisherDashboard'
+import { default as default_fe35e1f410b072870cb675c432203da0 } from '../../../modules/admin/DesignSystemShowcase'
 import { default as default_3b4e427f915b118814e3c59e0f2d3df8 } from '../../../modules/admin/CapabilityCenter'
 import { default as default_0fd01bf67ceb7252ce62502db9f5efed } from '../../../modules/admin/SecurityCenter'
 import { default as default_1b612582b29e59ed900919e4be5e042e } from '../../../modules/admin/PublishingCenter'
@@ -91,6 +92,7 @@ export const importMap = {
   "./modules/admin/PublishingLinks#default": default_540c8fd8e80fc68e99ce7b541e67baa6,
   "./modules/admin/CapabilityCenterLink#default": default_b2e9d352a88622b4016040a046ab3cc7,
   "./modules/admin/PublisherDashboard#default": default_4568b6c45b14a1b26da8fe5e64713f3d,
+  "./modules/admin/DesignSystemShowcase#default": default_fe35e1f410b072870cb675c432203da0,
   "./modules/admin/CapabilityCenter#default": default_3b4e427f915b118814e3c59e0f2d3df8,
   "./modules/admin/SecurityCenter#default": default_0fd01bf67ceb7252ce62502db9f5efed,
   "./modules/admin/PublishingCenter#default": default_1b612582b29e59ed900919e4be5e042e,

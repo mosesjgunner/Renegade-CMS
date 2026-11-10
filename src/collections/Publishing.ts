@@ -187,6 +187,25 @@ const publisherFieldLayout = (fields: Field[]): Field[] => {
       ...field,
       admin: { ...(field.admin ?? {}), position: 'sidebar' },
     }) as Field
+  // GUI-04C / fix-list item 2 (Matthew, Nov 9 2026): Site is admin
+  // context, not a per-post choice. New posts opened without a site in
+  // the URL are aimed at the operator's active site (the
+  // renegade-active-site cookie the switcher persists); the server
+  // still enforces that the user is authorized for that site, so this
+  // prefill can never grant access — a stale or foreign cookie fails
+  // validation truthfully instead of saving anywhere unexpected.
+  const withSiteDefault = (field: Field): Field => {
+    if (!('name' in field)) return field
+    const named = field as Field & { defaultValue?: unknown }
+    return {
+      ...named,
+      defaultValue: (({ req }: { req?: { headers?: Headers } }) => {
+        const cookie = req?.headers?.get?.('cookie') ?? ''
+        const match = cookie.match(/(?:^|;\s*)renegade-active-site=([^;]+)/)
+        return match ? decodeURIComponent(match[1]) : undefined
+      }) as typeof named.defaultValue,
+    } as Field
+  }
   const group = (label: string, names: readonly string[]): Field =>
     ({
       type: 'collapsible',
@@ -197,15 +216,16 @@ const publisherFieldLayout = (fields: Field[]): Field[] => {
 
   const layout: Field[] = [
     // Identity and publishing essentials stay visible beside the canvas.
-    ...takeAll([
-      'site',
-      'publication',
-      'space',
-      'contentType',
-      'status',
-      'visibility',
-      'publishedAt',
-    ]).map(sidebar),
+    // Site leads with the active-site prefill (see withSiteDefault): the
+    // operator works IN a site; the field remains visible because record
+    // ownership must stay explicit, never silently reassigned.
+    ...(() => {
+      const siteField = take('site')
+      return siteField ? [sidebar(withSiteDefault(siteField))] : []
+    })(),
+    ...takeAll(['publication', 'space', 'contentType', 'status', 'visibility', 'publishedAt']).map(
+      sidebar,
+    ),
     // The writing canvas: entry note, headline, subtitle, body, save state.
     ...takeAll(['contentTypeEntry', 'title', 'subtitle', 'body', 'draftAutosave']),
     group('Article details and classification', [

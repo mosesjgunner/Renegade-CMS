@@ -1,0 +1,203 @@
+/* GUI-02B — shared operator primitives. Styles consume ONLY the GUI-02A
+   semantic tokens (--admin-*), which map onto Payload theme variables,
+   so every primitive works in light and dark admin themes. */
+
+.header {
+  border-bottom: 1px solid var(--admin-border);
+  margin-bottom: var(--admin-space-6);
+  padding-bottom: var(--admin-space-4);
+}
+
+.headerRow {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--admin-space-4);
+  justify-content: space-between;
+}
+
+.headerTitle {
+  font-size: var(--admin-font-size-lg);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.headerPurpose {
+  color: var(--admin-text-muted);
+  font-size: var(--admin-font-size-sm);
+  margin: var(--admin-space-1) 0 0;
+}
+
+.headerActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--admin-space-3);
+}
+
+.crumbs {
+  color: var(--admin-text-muted);
+  font-size: var(--admin-font-size-sm);
+  margin-bottom: var(--admin-space-2);
+}
+
+.crumbs a {
+  color: inherit;
+}
+
+.sectionHeader {
+  font-size: var(--admin-font-size);
+  margin: 0 0 var(--admin-space-3);
+}
+
+.action {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  color: var(--admin-text);
+  cursor: pointer;
+  display: inline-block;
+  font: inherit;
+  font-size: var(--admin-font-size-sm);
+  padding: var(--admin-space-2) var(--admin-space-4);
+  text-decoration: none;
+}
+
+.action:hover {
+  background: var(--admin-surface-raised);
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.actionPrimary {
+  background: var(--admin-text);
+  border-color: var(--admin-text);
+  color: var(--admin-bg);
+  font-weight: 600;
+}
+
+.actionDestructive {
+  border-color: var(--admin-danger);
+  color: var(--admin-danger);
+}
+
+.action[disabled],
+.action[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.status {
+  align-items: center;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: var(--admin-font-size-sm);
+  gap: var(--admin-space-2);
+  padding: 0 var(--admin-space-3);
+}
+
+.statusDot {
+  border-radius: 50%;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+.statusSuccess .statusDot {
+  background: var(--admin-success);
+}
+
+.statusWarning .statusDot {
+  background: var(--admin-warning);
+}
+
+.statusDanger .statusDot {
+  background: var(--admin-danger);
+}
+
+.statusNeutral .statusDot {
+  background: var(--admin-text-muted);
+}
+
+.empty {
+  color: var(--admin-text-muted);
+  font-size: var(--admin-font-size-sm);
+}
+
+.errorBox {
+  border: 1px solid var(--admin-danger);
+  border-radius: var(--admin-radius);
+  padding: var(--admin-space-3) var(--admin-space-4);
+}
+
+.detail {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: var(--admin-space-4);
+}
+
+.skeleton {
+  display: grid;
+  gap: var(--admin-space-2);
+}
+
+.skeletonBar {
+  animation: admin-pulse 1.4s ease-in-out infinite;
+  background: var(--admin-surface-raised);
+  border-radius: var(--admin-radius);
+  height: 0.9rem;
+}
+
+@keyframes admin-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeletonBar {
+    animation: none;
+  }
+}
+
+.summary {
+  border: 1px solid var(--admin-danger);
+  border-radius: var(--admin-radius);
+  margin-bottom: var(--admin-space-4);
+  padding: var(--admin-space-3) var(--admin-space-4);
+}
+
+.summaryTitle {
+  font-weight: 600;
+  margin: 0 0 var(--admin-space-2);
+}
+
+.summaryList {
+  margin: 0;
+  padding-left: var(--admin-space-6);
+}
+
+.summaryList a {
+  color: var(--admin-danger);
+}
+
+.saveState {
+  color: var(--admin-text-muted);
+  font-size: var(--admin-font-size-sm);
+}
+
+.saveState[data-state='error'] {
+  color: var(--admin-danger);
+}
+
+.saveState[data-state='saved'] {
+  color: var(--admin-success);
+}

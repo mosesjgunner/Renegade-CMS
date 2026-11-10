@@ -32,7 +32,17 @@ async function resolveHistory(request: Request, contentId: string) {
     overrideAccess: true,
   })
   const article = related.docs[0]
-  return { payload, user: auth.user, article }
+  // GUI-04D: the history view's breadcrumb/return path depends on the
+  // document's own type (a Page's history must not point back at Posts).
+  const contentDoc = await payload.findByID({
+    collection: 'content',
+    id: contentId,
+    depth: 0,
+    overrideAccess: true,
+  }).catch(() => null)
+  const contentType =
+    (contentDoc as { contentType?: string } | null)?.contentType ?? null
+  return { payload, user: auth.user, article, contentType }
 }
 
 export async function GET(request: Request) {
@@ -42,7 +52,8 @@ export async function GET(request: Request) {
   }
   const resolved = await resolveHistory(request, contentId)
   if (resolved.error) return resolved.error
-  if (!resolved.article) return NextResponse.json({ currentRevision: null, revisions: [] })
+  if (!resolved.article)
+    return NextResponse.json({ currentRevision: null, revisions: [], contentType: null })
   const result = await resolved.payload!.find({
     collection: 'revision-records',
     where: { article: { equals: resolved.article.id } },
@@ -62,7 +73,7 @@ export async function GET(request: Request) {
     typeof resolved.article.currentRevision === 'string'
       ? resolved.article.currentRevision
       : ((resolved.article.currentRevision as { id?: string } | null)?.id ?? null)
-  return NextResponse.json({ currentRevision, revisions })
+  return NextResponse.json({ currentRevision, revisions, contentType: resolved.contentType })
 }
 
 export async function POST(request: Request) {
