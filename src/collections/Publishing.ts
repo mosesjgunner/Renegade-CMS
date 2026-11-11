@@ -1,4 +1,9 @@
-import { lexicalEditor, RelationshipFeature, BlocksFeature } from '@payloadcms/richtext-lexical'
+import {
+  lexicalEditor,
+  RelationshipFeature,
+  BlocksFeature,
+  FixedToolbarFeature,
+} from '@payloadcms/richtext-lexical'
 import {
   guardEditorialReviewWrite,
   lockEditorialOperation,
@@ -206,6 +211,16 @@ const publisherFieldLayout = (fields: Field[]): Field[] => {
       }) as typeof named.defaultValue,
     } as Field
   }
+  // GUI-04H (Matthew, Nov 10 2026 — the settled scope model): Site is
+  // the website you are working in, never a question the editor asks.
+  // The field keeps its prefill (withSiteDefault) and stays required
+  // in the schema; it simply leaves the form. Moving a post between
+  // sites is a deliberate admin action elsewhere, not a dropdown.
+  const withSiteHidden = (field: Field): Field =>
+    ({
+      ...field,
+      admin: { ...(('admin' in field ? field.admin : undefined) ?? {}), hidden: true },
+    }) as Field
   const group = (label: string, names: readonly string[]): Field =>
     ({
       type: 'collapsible',
@@ -221,13 +236,15 @@ const publisherFieldLayout = (fields: Field[]): Field[] => {
     // ownership must stay explicit, never silently reassigned.
     ...(() => {
       const siteField = take('site')
-      return siteField ? [sidebar(withSiteDefault(siteField))] : []
+      return siteField ? [withSiteHidden(withSiteDefault(siteField))] : []
     })(),
-    ...takeAll(['publication', 'space', 'contentType', 'status', 'visibility', 'publishedAt']).map(
-      sidebar,
-    ),
+    ...takeAll(['contentType', 'status', 'visibility', 'publishedAt']).map(sidebar),
     // The writing canvas: entry note, headline, subtitle, body, save state.
     ...takeAll(['contentTypeEntry', 'title', 'subtitle', 'body', 'draftAutosave']),
+    // Placement (GUI-04H): where this post lives beyond the website
+    // itself — an outlet, or a person's space. Collapsed and silent
+    // unless already set: a new post asks zero placement questions.
+    group('Placement', ['publication', 'space']),
     group('Article details and classification', [
       'summary',
       'excerpt',
@@ -1283,6 +1300,14 @@ export const Content: CollectionConfig = {
       editor: lexicalEditor({
         features: ({ defaultFeatures }) => [
           ...defaultFeatures,
+          // GUI-04I (Matthew, Nov 10 2026 — "text formatting and links
+          // and everything" must be right there): Payload's defaults
+          // ship only the select-to-format INLINE toolbar; the
+          // always-visible fixed toolbar is opt-in and was never
+          // enabled, which is why the writing surface showed no
+          // controls at all. Enable it explicitly; the inline
+          // toolbar stays for selection formatting.
+          FixedToolbarFeature(),
           RelationshipFeature({ enabledCollections: ['media-assets', 'content'] }),
           BlocksFeature({
             blocks: [
@@ -1300,7 +1325,7 @@ export const Content: CollectionConfig = {
       }),
       admin: {
         description:
-          'Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.',
+          'Write it like you’d say it. The controls above give you headings, links, lists, and quotes.',
       },
     },
     {

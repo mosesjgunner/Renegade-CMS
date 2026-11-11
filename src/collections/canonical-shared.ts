@@ -185,8 +185,30 @@ export function isDiscoverable(record: Record<string, unknown>, now = new Date()
 
 export const siteScopeFields = (): Field[] => [
   { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
-  { name: 'publication', type: 'relationship', relationTo: 'publications', index: true },
-  { name: 'space', type: 'relationship', relationTo: 'spaces', index: true },
+  {
+    name: 'publication',
+    type: 'relationship',
+    relationTo: 'publications',
+    index: true,
+    // GUI-04H (Matthew, Nov 10 2026): plain words, said where the
+    // question is asked. A publication is an outlet; most posts are
+    // simply the website's own.
+    label: 'Publication (outlet)',
+    admin: {
+      description: 'The outlet this runs in. Leave empty — most posts are just the website’s own.',
+    },
+  },
+  {
+    name: 'space',
+    type: 'relationship',
+    relationTo: 'spaces',
+    index: true,
+    label: 'Community space (optional)',
+    admin: {
+      description:
+        'A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.',
+    },
+  },
 ]
 
 type TenantRelation = {
