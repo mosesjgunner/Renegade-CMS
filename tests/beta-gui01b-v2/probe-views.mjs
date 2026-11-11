@@ -8,7 +8,10 @@ const browser = await chromium.launch({ headless: true })
 let ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 let page = await ctx.newPage()
-await page.goto(BASE + '/admin/collections/content/create', { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/admin/collections/content/create', {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 15000))
 const create = await page.evaluate(`(() => {
   const ce = document.querySelector('.ContentEditable__root')
@@ -26,7 +29,10 @@ await ctx.close()
 ctx = await browser.newContext({ viewport: { width: 1440, height: 950 }, colorScheme: 'dark' })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 page = await ctx.newPage()
-await page.goto(BASE + '/admin/collections/content/' + session.articleId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/admin/collections/content/' + session.articleId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 15000))
 const dark = await page.evaluate(`(() => {
   const html = document.documentElement
@@ -40,7 +46,10 @@ const dark = await page.evaluate(`(() => {
   }
 })()`)
 await page.screenshot({ path: '/home/hatch/workspace/gui01b-logs/dark-v1.png' })
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-views.json', JSON.stringify({ create, dark }, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-views.json',
+  JSON.stringify({ create, dark }, null, 2),
+)
 console.log('VIEWS_DONE')
 await browser.close().catch(() => {})
 process.exit(0)

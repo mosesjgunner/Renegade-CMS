@@ -5,12 +5,12 @@ production build, fixture session, disposable DB.
 
 **Before → after (desktop create/edit probes):**
 
-| Measure | Before (01B baseline, aa92a5e) | After (this capture) |
-| --- | --- | --- |
-| Headline top | ≈777px | **291px** |
-| Headline font | 13px | **21px** (26px design at full render; probe reads the input's computed size) |
-| Layout | six tabs, no sidebar | sidebar present, 7 collapsible settings groups |
-| Horizontal overflow | 0 | 0 |
+| Measure             | Before (01B baseline, aa92a5e) | After (this capture)                                                         |
+| ------------------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| Headline top        | ≈777px                         | **291px**                                                                    |
+| Headline font       | 13px                           | **21px** (26px design at full render; probe reads the input's computed size) |
+| Layout              | six tabs, no sidebar           | sidebar present, 7 collapsible settings groups                               |
+| Horizontal overflow | 0                              | 0                                                                            |
 
 The edit screenshot shows the new layout end to end: Title first with
 "Draft autosave is ready", the seven collapsed groups (Article details,

@@ -12,7 +12,7 @@ The builder is frontend-tree, not admin: `BuilderShell` (1,006 lines,
   `/` (the public home page) — leaving the builder dumped the operator
   on the public site, not back at the page they were composing.
 - **Preview naming:** the preview route is literally
-  `DraftLayoutPreview` (staff-only, renders the *saved draft*), but
+  `DraftLayoutPreview` (staff-only, renders the _saved draft_), but
   the button called it "Exact Preview" — exact about what, it never
   said. The dirty-guard under it was already truthful (blocked with
   "Save your draft before opening its preview" when unsaved), matching

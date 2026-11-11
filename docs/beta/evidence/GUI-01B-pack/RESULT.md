@@ -9,16 +9,16 @@ fixture owner session against a disposable database — no production accounts
 or data involved. Full index with routes, viewports, themes, file hashes and
 DOM probes: `captures.json` in this directory.
 
-| Capture | Route | Viewport | Theme |
-| --- | --- | --- | --- |
-| admin-home-desktop | /admin | 1440×950 | light |
-| content-list-desktop | /admin/collections/content | 1440×950 | light |
-| create-article-desktop | /admin/collections/content/create?contentType=article | 1440×950 | light |
-| edit-article-desktop | /admin/collections/content/<fixture article> | 1440×950 | light |
-| create-article-mobile-375 | create (article) | 375×800 | light |
-| create-article-tablet-768 | create (article) | 768×1000 | light |
-| edit-article-dark | edit (fixture article) | 1440×950 | dark |
-| media-library-desktop | /admin/media-library | 1440×950 | light |
+| Capture                   | Route                                                 | Viewport | Theme |
+| ------------------------- | ----------------------------------------------------- | -------- | ----- |
+| admin-home-desktop        | /admin                                                | 1440×950 | light |
+| content-list-desktop      | /admin/collections/content                            | 1440×950 | light |
+| create-article-desktop    | /admin/collections/content/create?contentType=article | 1440×950 | light |
+| edit-article-desktop      | /admin/collections/content/<fixture article>          | 1440×950 | light |
+| create-article-mobile-375 | create (article)                                      | 375×800  | light |
+| create-article-tablet-768 | create (article)                                      | 768×1000 | light |
+| edit-article-dark         | edit (fixture article)                                | 1440×950 | dark  |
+| media-library-desktop     | /admin/media-library                                  | 1440×950 | light |
 
 ## Baseline facts the captures establish
 

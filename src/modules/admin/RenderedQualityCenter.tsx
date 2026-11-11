@@ -16,11 +16,16 @@ import {
  * row's title tooltip; the visible label is a plain-language
  * explanation of what is wrong and what to do about it. */
 const RULE_EXPLANATIONS: Record<string, string> = {
-  'DISC-05-TITLE-MISSING': 'Missing page title — add a title so search results and tabs name this page.',
-  'DISC-05-TITLE-BOUNDS': 'Title length out of bounds — shorten or lengthen the title to fit search display.',
-  'DISC-05-DESCRIPTION-MISSING': 'Missing meta description — add one so search results describe this page.',
-  'DISC-05-DESCRIPTION-BOUNDS': 'Description length out of bounds — adjust it to fit search display.',
-  'DISC-05-CANNIBALIZATION-REVIEW': 'Possible content overlap — two pages compete for the same search intent; review and differentiate or consolidate.',
+  'DISC-05-TITLE-MISSING':
+    'Missing page title — add a title so search results and tabs name this page.',
+  'DISC-05-TITLE-BOUNDS':
+    'Title length out of bounds — shorten or lengthen the title to fit search display.',
+  'DISC-05-DESCRIPTION-MISSING':
+    'Missing meta description — add one so search results describe this page.',
+  'DISC-05-DESCRIPTION-BOUNDS':
+    'Description length out of bounds — adjust it to fit search display.',
+  'DISC-05-CANNIBALIZATION-REVIEW':
+    'Possible content overlap — two pages compete for the same search intent; review and differentiate or consolidate.',
 }
 const ruleExplanation = (ruleId: string): string =>
   RULE_EXPLANATIONS[ruleId] ?? 'Discovery issue — see the evidence column for what was found.'

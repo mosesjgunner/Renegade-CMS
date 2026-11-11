@@ -3,6 +3,7 @@
 **Result: PARTIAL (audit — surface already honors the prompt's consent rules; no bounded fix found)**
 
 Audit findings (source, this tree):
+
 - The destructive audience action (erase subject) carries an
   exemplary scope confirmation, matching the GUI-02C dangerous-action
   pattern almost verbatim: it states what happens (suppress +

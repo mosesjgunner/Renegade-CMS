@@ -1,7 +1,14 @@
 import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
-import { ActionLink, EmptyState, ErrorState, SectionHeader, StatusPill, WorkspaceHeader } from './primitives'
+import {
+  ActionLink,
+  EmptyState,
+  ErrorState,
+  SectionHeader,
+  StatusPill,
+  WorkspaceHeader,
+} from './primitives'
 
 type ContentRow = {
   id: string
@@ -95,10 +102,15 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
         purpose="Your publishing work, in one calm place."
         actions={
           <>
-            <ActionLink href="/admin/collections/content/create?contentType=article" intent="primary">
+            <ActionLink
+              href="/admin/collections/content/create?contentType=article"
+              intent="primary"
+            >
               Write Article
             </ActionLink>{' '}
-            <ActionLink href="/admin/collections/content/create?contentType=page">New Page</ActionLink>{' '}
+            <ActionLink href="/admin/collections/content/create?contentType=page">
+              New Page
+            </ActionLink>{' '}
             <ActionLink href="/admin/collections/media-assets/create">Upload Media</ActionLink>
           </>
         }

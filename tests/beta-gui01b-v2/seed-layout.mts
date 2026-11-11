@@ -2,7 +2,8 @@ import { writeFile, readFile } from 'node:fs/promises'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-if (!process.env.DATABASE_URL?.endsWith('_release_acceptance')) throw new Error('disposable DB guard')
+if (!process.env.DATABASE_URL?.endsWith('_release_acceptance'))
+  throw new Error('disposable DB guard')
 const session = JSON.parse(await readFile(process.env.GUI01B_SESSION_FILE!, 'utf8'))
 void session
 const payload: any = await getPayload({ config })

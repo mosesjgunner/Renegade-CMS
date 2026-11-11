@@ -93,7 +93,8 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
         }
       })
       .catch(() => {
-        if (active) setDetailError('Asset details could not be refreshed. What you see may be out of date.')
+        if (active)
+          setDetailError('Asset details could not be refreshed. What you see may be out of date.')
       })
 
     fetch(`/api/media/${selectedId}/variants?siteId=${encodeURIComponent(siteId)}`)
@@ -111,7 +112,10 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
       })
       .catch(() => {
         if (active)
-          setDetailError((prev) => prev || 'Variant details could not be loaded. Processing state may be out of date.')
+          setDetailError(
+            (prev) =>
+              prev || 'Variant details could not be loaded. Processing state may be out of date.',
+          )
       })
 
     return () => {

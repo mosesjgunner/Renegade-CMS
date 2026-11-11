@@ -3,6 +3,7 @@
 **Result: PARTIAL**
 
 Verified (evidence-backed):
+
 - Zero horizontal overflow at 375/768/1280+ on every captured
   surface (03D captures + capture-runner overflow assertions).
 - Editor at desktop widths: keyboard typing journey passes end to

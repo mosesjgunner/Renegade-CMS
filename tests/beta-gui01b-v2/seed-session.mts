@@ -11,7 +11,8 @@ import { fixtureRichText } from '../helpers/fixture-rich-text'
 
 const out = process.env.GUI01B_SESSION_FILE
 if (!out) throw new Error('GUI01B_SESSION_FILE required')
-if (!process.env.DATABASE_URL?.endsWith('_release_acceptance')) throw new Error('disposable DB guard')
+if (!process.env.DATABASE_URL?.endsWith('_release_acceptance'))
+  throw new Error('disposable DB guard')
 
 const payload: any = await getPayload({ config })
 const existingSite = await payload.find({
@@ -86,13 +87,24 @@ const article =
     },
     overrideAccess: true,
   }))
-const sessionValue = await createPasskeySession(ownerUser, process.env.PAYLOAD_SECRET!, async (id, expires) => {
-  await payload.db.pool.query(
-    'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING',
-    [id, ownerUser.id, expires],
-  )
-})
-await writeFile(out, JSON.stringify({ cookieName: 'renegade-passkey', token: sessionValue.token, articleId: article.id }))
+const sessionValue = await createPasskeySession(
+  ownerUser,
+  process.env.PAYLOAD_SECRET!,
+  async (id, expires) => {
+    await payload.db.pool.query(
+      'INSERT INTO admin_sessions(id,user_id,expires_at) VALUES ($1,$2,$3) ON CONFLICT (id) DO NOTHING',
+      [id, ownerUser.id, expires],
+    )
+  },
+)
+await writeFile(
+  out,
+  JSON.stringify({
+    cookieName: 'renegade-passkey',
+    token: sessionValue.token,
+    articleId: article.id,
+  }),
+)
 console.log(`seeded: site=${site.id} article=${article.id}`)
 await payload.db?.pool?.end?.().catch(() => {})
 process.exit(0)

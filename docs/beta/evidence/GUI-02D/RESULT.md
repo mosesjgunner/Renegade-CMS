@@ -1,4 +1,3 @@
-
 ## Visual gate addendum (Nov 8, 2026, capture cycle 2)
 
 Showcase captured and inspected: desktop 1440, tablet 768, mobile 375,

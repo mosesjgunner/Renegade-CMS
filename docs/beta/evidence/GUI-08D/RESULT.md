@@ -4,15 +4,15 @@
 
 Fresh runs, this tree, this cycle (PostgreSQL 16.15, local):
 
-| Gate | Result |
-|---|---|
-| Typecheck | PASS (exit 0) |
-| Unit suite | **284 files, 2,104/2,104 PASS** |
-| Migrations on a fresh DB | PASS (exit 0) |
-| Integration suite | **54 files, 317/317 PASS** |
-| Production build | PASS — cycle-10, source `e17542b`, clean tree |
-| Editor end-to-end journey | **8/8 PASS** (GUI-04E addendum) |
-| Unauthenticated denial | login page served, no shell leakage |
+| Gate                      | Result                                        |
+| ------------------------- | --------------------------------------------- |
+| Typecheck                 | PASS (exit 0)                                 |
+| Unit suite                | **284 files, 2,104/2,104 PASS**               |
+| Migrations on a fresh DB  | PASS (exit 0)                                 |
+| Integration suite         | **54 files, 317/317 PASS**                    |
+| Production build          | PASS — cycle-10, source `e17542b`, clean tree |
+| Editor end-to-end journey | **8/8 PASS** (GUI-04E addendum)               |
+| Unauthenticated denial    | login page served, no shell leakage           |
 
 The editorial-acceptance integration test (create → review →
 preview → schedule → publish exactly once → restore → embargo

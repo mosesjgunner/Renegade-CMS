@@ -8,7 +8,10 @@ await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BAS
 const page = await ctx.newPage()
 const pageErrors = []
 page.on('pageerror', (e) => pageErrors.push(String(e).slice(0, 200)))
-await page.goto(BASE + '/admin/collections/content/' + session.articleId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/admin/collections/content/' + session.articleId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 15000))
 await page.click('.ContentEditable__root')
 await page.keyboard.press('Control+End')
@@ -33,7 +36,10 @@ await page.screenshot({ path: '/home/hatch/workspace/gui01b-logs/toolbar-final.p
 let autosaved = false
 for (let i = 0; i < 25; i++) {
   const t = await page.evaluate(`document.body.innerText`)
-  if (/saved automatically/i.test(t)) { autosaved = true; break }
+  if (/saved automatically/i.test(t)) {
+    autosaved = true
+    break
+  }
   await new Promise((r) => setTimeout(r, 2000))
 }
 await page.reload({ timeout: 180000, waitUntil: 'domcontentloaded' })
@@ -47,7 +53,10 @@ const after = await page.evaluate(`(() => {
     boldSpans: [...p.querySelectorAll('span')].filter((s) => s.className.includes('textBold')).map((s) => s.textContent),
   }
 })()`)
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-toolbar5.json', JSON.stringify({ mid, autosaved, after, pageErrors }, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-toolbar5.json',
+  JSON.stringify({ mid, autosaved, after, pageErrors }, null, 2),
+)
 console.log('TB5_DONE')
 await browser.close().catch(() => {})
 process.exit(0)

@@ -48,7 +48,12 @@ type EvaluationCounts = {
 }
 
 export default function EmailComposer() {
-  const [site, setSite] = useState<{ id: string; name: string; slug: string; canonicalOrigin?: string } | null>(null)
+  const [site, setSite] = useState<{
+    id: string
+    name: string
+    slug: string
+    canonicalOrigin?: string
+  } | null>(null)
   const [articles, setArticles] = useState<ArticleItem[]>([])
   const [templates, setTemplates] = useState<TemplateItem[]>([])
   const [segments, setSegments] = useState<SegmentItem[]>([])

@@ -34,14 +34,15 @@ async function resolveHistory(request: Request, contentId: string) {
   const article = related.docs[0]
   // GUI-04D: the history view's breadcrumb/return path depends on the
   // document's own type (a Page's history must not point back at Posts).
-  const contentDoc = await payload.findByID({
-    collection: 'content',
-    id: contentId,
-    depth: 0,
-    overrideAccess: true,
-  }).catch(() => null)
-  const contentType =
-    (contentDoc as { contentType?: string } | null)?.contentType ?? null
+  const contentDoc = await payload
+    .findByID({
+      collection: 'content',
+      id: contentId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)
+  const contentType = (contentDoc as { contentType?: string } | null)?.contentType ?? null
   return { payload, user: auth.user, article, contentType }
 }
 

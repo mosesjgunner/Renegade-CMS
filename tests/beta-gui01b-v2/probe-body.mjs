@@ -6,7 +6,10 @@ const browser = await chromium.launch({ headless: true })
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 const page = await ctx.newPage()
-await page.goto(BASE + '/admin/collections/content/' + session.articleId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/admin/collections/content/' + session.articleId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 40000))
 const probe = await page.evaluate(`(() => {
   const wrap = document.querySelector('.field-type.rich-text-lexical')
@@ -22,7 +25,13 @@ const probe = await page.evaluate(`(() => {
   }
 })()`)
 writeFileSync('/home/hatch/workspace/gui01b-logs/probe-body.json', JSON.stringify(probe, null, 2))
-await page.screenshot({ path: '/home/hatch/workspace/gui01b-logs/probe-body.png', fullPage: true, timeout: 120000 }).catch(() => {})
+await page
+  .screenshot({
+    path: '/home/hatch/workspace/gui01b-logs/probe-body.png',
+    fullPage: true,
+    timeout: 120000,
+  })
+  .catch(() => {})
 console.log('PROBE2_DONE')
 await browser.close().catch(() => {})
 process.exit(0)
