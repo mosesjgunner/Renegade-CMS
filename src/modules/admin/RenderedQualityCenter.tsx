@@ -2,6 +2,15 @@
 
 import { useState } from 'react'
 
+import {
+  DetailContainer,
+  EmptyState,
+  ErrorState,
+  SectionHeader,
+  StatusPill,
+  WorkspaceHeader,
+} from './primitives'
+
 /* GUI-07A: operators act on explanations, not internal rule codes.
  * The DISC-05 ruleId stays available in the audit data and as the
  * row's title tooltip; the visible label is a plain-language
@@ -71,6 +80,7 @@ export default function RenderedQualityCenter() {
   >('lifecycle')
   const [acceptingId, setAcceptingId] = useState<string | null>(null)
   const [acceptedSet, setAcceptedSet] = useState<Set<string>>(new Set())
+  const [actionError, setActionError] = useState<string | null>(null)
 
   const handleRunAudit = async () => {
     setRunning(true)
@@ -104,12 +114,13 @@ export default function RenderedQualityCenter() {
       })
       if (res.ok) {
         setAcceptedSet((prev) => new Set(prev).add(sug.id))
+        setActionError(null)
       } else {
         const err = await res.json()
-        alert(err.error || 'Failed to accept proposal.')
+        setActionError(err.error || 'Failed to accept proposal.')
       }
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Accept proposal failed.')
+      setActionError(err instanceof Error ? err.message : 'Accept proposal failed.')
     } finally {
       setAcceptingId(null)
     }
@@ -125,42 +136,34 @@ export default function RenderedQualityCenter() {
     <div
       style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif' }}
     >
-      <header
-        style={{
-          marginBottom: '24px',
-          borderBottom: '1px solid #e2e8f0',
-          paddingBottom: '16px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>
-            Rendered Quality & Discovery
-          </h1>
-          <p style={{ color: '#64748b', margin: '4px 0 0 0' }}>
-            HTTP-rendered audit, sitemap/feed/robots cross-checks, cannibalization analysis, and AI
-            boundary proposals.
-          </p>
+      <WorkspaceHeader
+        title="Rendered Quality & Discovery"
+        purpose="HTTP-rendered audit, sitemap/feed/robots cross-checks, cannibalization analysis, and AI boundary proposals."
+        actions={
+          <button
+            data-primary-task
+            onClick={() => void handleRunAudit()}
+            disabled={running}
+            style={{
+              padding: '10px 20px',
+              background: '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              fontSize: '14px',
+            }}
+          >
+            {running ? 'Crawling Public Origin...' : 'Run Rendered Audit'}
+          </button>
+        }
+      />
+      {actionError ? (
+        <div style={{ marginBottom: '16px' }}>
+          <ErrorState message={actionError} />
         </div>
-        <button
-          onClick={() => void handleRunAudit()}
-          disabled={running}
-          style={{
-            padding: '10px 20px',
-            background: '#2563eb',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            fontSize: '14px',
-          }}
-        >
-          {running ? 'Crawling Public Origin...' : 'Run Rendered Audit'}
-        </button>
-      </header>
+      ) : null}
 
       {/* Summary Cards */}
       {lifecycle && (
@@ -300,30 +303,15 @@ export default function RenderedQualityCenter() {
 
       {/* Tab Contents */}
       {data?.error ? (
-        <div
-          style={{ padding: '16px', background: '#fef2f2', color: '#991b1b', borderRadius: '6px' }}
-        >
-          {data.error}
-        </div>
+        <ErrorState message={data.error} onRetry={() => void handleRunAudit()} />
       ) : !data ? (
-        <div
-          style={{
-            padding: '32px',
-            textAlign: 'center',
-            color: '#64748b',
-            background: '#f8fafc',
-            borderRadius: '8px',
-            border: '1px border #e2e8f0',
-          }}
-        >
-          Click &quot;Run Rendered Audit&quot; above to execute public origin crawl, cross-checks,
-          cannibalization review, and AI proposal generation.
-        </div>
+        <EmptyState>
+          Run the audit above to execute the public origin crawl, cross-checks, cannibalization
+          review, and AI proposal generation.
+        </EmptyState>
       ) : activeTab === 'lifecycle' ? (
         <div>
-          <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
-            Rendered Audit Findings
-          </h2>
+          <SectionHeader>Rendered Audit Findings</SectionHeader>
           <table
             style={{
               width: '100%',
@@ -349,28 +337,17 @@ export default function RenderedQualityCenter() {
                     {ruleExplanation(item.ruleId)}
                   </td>
                   <td style={{ padding: '10px' }}>
-                    <span
-                      style={{
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        background:
-                          item.severity === 'publication_blocking'
-                            ? '#fee2e2'
-                            : item.severity === 'warning'
-                              ? '#fef3c7'
-                              : '#e0f2fe',
-                        color:
-                          item.severity === 'publication_blocking'
-                            ? '#991b1b'
-                            : item.severity === 'warning'
-                              ? '#92400e'
-                              : '#0369a1',
-                      }}
+                    <StatusPill
+                      tone={
+                        item.severity === 'publication_blocking'
+                          ? 'danger'
+                          : item.severity === 'warning'
+                            ? 'warning'
+                            : 'neutral'
+                      }
                     >
-                      {item.severity}
-                    </span>
+                      {item.severity.replace(/_/g, ' ')}
+                    </StatusPill>
                   </td>
                   <td style={{ padding: '10px', fontFamily: 'monospace' }}>{item.url}</td>
                   <td style={{ padding: '10px', color: '#334155' }}>{item.evidence}</td>
@@ -382,9 +359,7 @@ export default function RenderedQualityCenter() {
         </div>
       ) : activeTab === 'crosschecks' ? (
         <div>
-          <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
-            Sitemap, Feed & Robots Cross-Checks
-          </h2>
+          <SectionHeader>Sitemap, Feed &amp; Robots Cross-Checks</SectionHeader>
           <div style={{ marginBottom: '16px', fontSize: '13px', color: '#475569' }}>
             Checked {data.crossChecks?.checkedSitemapUrls || 0} Sitemap URLs &amp;{' '}
             {data.crossChecks?.checkedFeedUrls || 0} RSS Feed URLs. Robots Sitemap Directive:{' '}
@@ -413,7 +388,19 @@ export default function RenderedQualityCenter() {
                   <td style={{ padding: '10px' }} title={item.ruleId}>
                     {ruleExplanation(item.ruleId)}
                   </td>
-                  <td style={{ padding: '10px' }}>{item.severity}</td>
+                  <td style={{ padding: '10px' }}>
+                    <StatusPill
+                      tone={
+                        item.severity === 'publication_blocking'
+                          ? 'danger'
+                          : item.severity === 'warning'
+                            ? 'warning'
+                            : 'neutral'
+                      }
+                    >
+                      {String(item.severity).replace(/_/g, ' ')}
+                    </StatusPill>
+                  </td>
                   <td style={{ padding: '10px', fontFamily: 'monospace' }}>{item.url}</td>
                   <td style={{ padding: '10px' }}>{item.evidence}</td>
                 </tr>
@@ -423,9 +410,7 @@ export default function RenderedQualityCenter() {
         </div>
       ) : activeTab === 'cannibalization' ? (
         <div>
-          <h2 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px' }}>
-            Lexical Similarity &amp; Cannibalization Review Suggestions
-          </h2>
+          <SectionHeader>Lexical Similarity &amp; Cannibalization Review Suggestions</SectionHeader>
           {cannibalizationReviews.length === 0 ? (
             <p style={{ color: '#64748b' }}>
               No lexical cannibalization review suggestions found across analyzed pages.
