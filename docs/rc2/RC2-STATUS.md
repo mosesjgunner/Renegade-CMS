@@ -28,7 +28,8 @@ merge of PR #39; GitHub CI on that commit is green (run 43017632098).
 | RC2-A-03    | Cross-system seams, route owners, dependency map                 | PASS               | evidence/RC2-A-03/RESULT.md |
 | RC2-A-04    | Two-site, multi-role, module-profile fixtures                    | PASS               | evidence/RC2-A-04/RESULT.md |
 | RC2-B-01    | Publishing journey on the two-site fixture                       | PASS               | evidence/RC2-B-01/RESULT.md |
-| RC2-B-02…03 | Presentation journeys                                            | NEXT — not started | —                           |
+| RC2-B-02    | Presentation journey: builder, themes, navigation                | PASS               | evidence/RC2-B-02/RESULT.md |
+| RC2-B-03    | Presentation depth (next)                                        | NEXT — not started | —                           |
 | RC2-C-01…03 | Media & discovery journeys                                       | not started        | —                           |
 | RC2-D-01…04 | Workflow, distribution, audience, campaign                       | not started        | —                           |
 | RC2-E-01…03 | Members, community, moderation, notifications                    | not started        | —                           |
