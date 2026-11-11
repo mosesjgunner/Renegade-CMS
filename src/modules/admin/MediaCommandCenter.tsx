@@ -35,6 +35,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
   const [showUploader, setShowUploader] = useState(false)
   const [isActionInProgress, setIsActionInProgress] = useState(false)
   const [usagesList, setUsagesList] = useState<Array<Record<string, unknown>>>([])
+  const [moduleOff, setModuleOff] = useState(false)
   const [impactList, setImpactList] = useState<Array<Record<string, unknown>>>([])
 
   const loadData = useCallback(async () => {
@@ -42,6 +43,10 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
       const res = await fetch(`/api/media/command-center?siteId=${encodeURIComponent(siteId)}`)
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Failed to load command center.')
+      if (json.moduleAvailable === false) {
+        setModuleOff(true)
+        return
+      }
       setData(json.overview)
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Error loading media command center.')
@@ -55,6 +60,11 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
         const json = await res.json()
         if (!res.ok) throw new Error(json.error || 'Failed to load command center.')
         if (active) {
+          if (json.moduleAvailable === false) {
+            setModuleOff(true)
+            setLoading(false)
+            return
+          }
           setData(json.overview)
           setLoading(false)
         }
@@ -125,6 +135,18 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
     }
     return true
   })
+
+  // GUI-06A (NEW-01): on installs without the media-studio module the
+  // processing pipeline is off — one quiet line, not a raw error banner.
+  // The asset library below it works either way.
+  if (moduleOff) {
+    return (
+      <p role="note">
+        Media processing diagnostics are off on this install (the media-studio module is not
+        enabled). The asset library below works normally.
+      </p>
+    )
+  }
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '1rem' }}>

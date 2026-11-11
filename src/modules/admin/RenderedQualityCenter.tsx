@@ -2,6 +2,20 @@
 
 import { useState } from 'react'
 
+/* GUI-07A: operators act on explanations, not internal rule codes.
+ * The DISC-05 ruleId stays available in the audit data and as the
+ * row's title tooltip; the visible label is a plain-language
+ * explanation of what is wrong and what to do about it. */
+const RULE_EXPLANATIONS: Record<string, string> = {
+  'DISC-05-TITLE-MISSING': 'Missing page title — add a title so search results and tabs name this page.',
+  'DISC-05-TITLE-BOUNDS': 'Title length out of bounds — shorten or lengthen the title to fit search display.',
+  'DISC-05-DESCRIPTION-MISSING': 'Missing meta description — add one so search results describe this page.',
+  'DISC-05-DESCRIPTION-BOUNDS': 'Description length out of bounds — adjust it to fit search display.',
+  'DISC-05-CANNIBALIZATION-REVIEW': 'Possible content overlap — two pages compete for the same search intent; review and differentiate or consolidate.',
+}
+const ruleExplanation = (ruleId: string): string =>
+  RULE_EXPLANATIONS[ruleId] ?? 'Discovery issue — see the evidence column for what was found.'
+
 type AuditIssue = {
   ruleId: string
   severity: 'informational' | 'warning' | 'publication_blocking'
@@ -123,7 +137,7 @@ export default function RenderedQualityCenter() {
       >
         <div>
           <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>
-            Rendered Quality & Discovery Command Center — DISC-05
+            Rendered Quality & Discovery
           </h1>
           <p style={{ color: '#64748b', margin: '4px 0 0 0' }}>
             HTTP-rendered audit, sitemap/feed/robots cross-checks, cannibalization analysis, and AI
@@ -331,8 +345,8 @@ export default function RenderedQualityCenter() {
             <tbody>
               {issues.map((item, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '13px' }}>
-                  <td style={{ padding: '10px', fontFamily: 'monospace', fontWeight: '600' }}>
-                    {item.ruleId}
+                  <td style={{ padding: '10px' }} title={item.ruleId}>
+                    {ruleExplanation(item.ruleId)}
                   </td>
                   <td style={{ padding: '10px' }}>
                     <span
@@ -396,8 +410,8 @@ export default function RenderedQualityCenter() {
             <tbody>
               {crossCheckIssues.map((item, idx) => (
                 <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '13px' }}>
-                  <td style={{ padding: '10px', fontFamily: 'monospace', fontWeight: '600' }}>
-                    {item.ruleId}
+                  <td style={{ padding: '10px' }} title={item.ruleId}>
+                    {ruleExplanation(item.ruleId)}
                   </td>
                   <td style={{ padding: '10px' }}>{item.severity}</td>
                   <td style={{ padding: '10px', fontFamily: 'monospace' }}>{item.url}</td>

@@ -31,6 +31,11 @@ export default function PublishingLinks({ payload }: { payload: Payload }) {
       {registered('podcast-shows') && <Link href="/admin/collections/podcast-shows">Podcasts</Link>}
       <Link href="/admin/collections/page-layouts">Layouts</Link>
       <Link href="/admin/navigation">Menus</Link>
+      {/* GUI-06C: themes live inside the Capability Center today (its
+          ThemeCenter section) with no route of their own — the
+          prompt forbids inventing one, so the nav names the real
+          destination instead of leaving themes undiscoverable. */}
+      <Link href="/admin/capabilities">Themes (in Capability Center)</Link>
       <details>
         <summary>Discovery</summary>
         <Link href="/admin/indexing">Indexing</Link>

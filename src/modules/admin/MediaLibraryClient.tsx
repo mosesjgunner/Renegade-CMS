@@ -53,6 +53,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
   const [refreshKey, setRefreshKey] = useState(0)
   const [message, setMessage] = useState('')
   const [inspection, setInspection] = useState<VariantsInspection | null>(null)
+  const [detailError, setDetailError] = useState('')
   const [focalPoint, setFocalPoint] = useState<{ x: number; y: number }>({ x: 0.5, y: 0.5 })
   const [isRegenerating, setIsRegenerating] = useState(false)
   const [replacementImpact, setReplacementImpact] = useState<
@@ -75,18 +76,31 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
     if (!selectedId) return
 
     let active = true
+    // GUI-06A: detail/variant failures used to vanish into silent
+    // catches, leaving a stale inspector that looked authoritative.
+    // Failures are now surfaced with a retry; the last good detail is
+    // kept and labeled as such instead of being silently stale.
+    setDetailError('')
     fetch(`/api/media/${selectedId}?siteId=${encodeURIComponent(siteId)}`)
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (!res.ok) throw new Error(`detail ${res.status}`)
+        return res.json()
+      })
       .then((data: { asset?: PickableMedia; media?: PickableMedia } | null) => {
         const detail = data?.asset ?? data?.media
         if (active && detail) {
           setSelected((prev) => (prev && prev.id === detail.id ? detail : prev))
         }
       })
-      .catch(() => undefined)
+      .catch(() => {
+        if (active) setDetailError('Asset details could not be refreshed. What you see may be out of date.')
+      })
 
     fetch(`/api/media/${selectedId}/variants?siteId=${encodeURIComponent(siteId)}`)
-      .then((res) => (res.ok ? res.json() : null))
+      .then((res) => {
+        if (!res.ok) throw new Error(`variants ${res.status}`)
+        return res.json()
+      })
       .then((data: VariantsInspection | null) => {
         if (active && data) {
           setInspection(data)
@@ -95,7 +109,10 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
           }
         }
       })
-      .catch(() => undefined)
+      .catch(() => {
+        if (active)
+          setDetailError((prev) => prev || 'Variant details could not be loaded. Processing state may be out of date.')
+      })
 
     return () => {
       active = false
@@ -767,6 +784,14 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
         </section>
       )}
       {message && <p role="status">{message}</p>}
+      {detailError && (
+        <p role="alert">
+          {detailError}{' '}
+          <button type="button" onClick={refresh}>
+            Retry
+          </button>
+        </p>
+      )}
       <ImageEditorModal
         asset={editingAsset}
         isOpen={Boolean(editingAsset)}

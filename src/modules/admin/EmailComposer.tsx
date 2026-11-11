@@ -48,7 +48,7 @@ type EvaluationCounts = {
 }
 
 export default function EmailComposer() {
-  const [site, setSite] = useState<{ id: string; name: string; slug: string } | null>(null)
+  const [site, setSite] = useState<{ id: string; name: string; slug: string; canonicalOrigin?: string } | null>(null)
   const [articles, setArticles] = useState<ArticleItem[]>([])
   const [templates, setTemplates] = useState<TemplateItem[]>([])
   const [segments, setSegments] = useState<SegmentItem[]>([])
@@ -250,9 +250,16 @@ export default function EmailComposer() {
       article.summary ||
       'We are pleased to share our newest report with you. Read key takeaways and explore our interactive resources below.'
     setBodyText(derivedBody)
+    // GUI-07C: resolve against the SITE's canonical origin (returned
+    // by the campaign API from site settings). No hardcoded host: if
+    // no origin is configured, the relative path is kept as-is rather
+    // than minting a link to someone else's domain.
+    const origin = site?.canonicalOrigin?.replace(/\/$/, '')
     const resolvedUrl = article.canonicalPath.startsWith('http')
       ? article.canonicalPath
-      : `https://renegadeparty.org${article.canonicalPath}`
+      : origin
+        ? `${origin}${article.canonicalPath.startsWith('/') ? '' : '/'}${article.canonicalPath}`
+        : article.canonicalPath
     setButtonLabel('Read Story')
     setButtonHref(resolvedUrl)
 

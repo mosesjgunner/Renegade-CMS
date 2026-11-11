@@ -1,0 +1,15 @@
+/* GUI-04E-R4: writing-canvas presentation for the STOCK lexical
+ * field. The canvas used to be a custom Field component; three
+ * integration attempts (see the GUI-04E evidence) showed a
+ * presentation wrapper cannot safely re-render or re-compose the
+ * editor — the stock field renders itself correctly with no
+ * override at all. These rules target the stock field's own DOM
+ * inside the document form, preserving the GUI-01B/04A proportions
+ * (taller surface, reading typography) with zero component
+ * interference. */
+.doc .field-type.rich-text-lexical [contenteditable] {
+  min-height: 24rem;
+  padding: 1.25rem 1.5rem;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}

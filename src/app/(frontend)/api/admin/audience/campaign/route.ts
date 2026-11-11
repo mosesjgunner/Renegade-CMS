@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 import { publicSiteForHost } from '@/modules/public/site-scope'
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 import {
   evaluateSegmentRecipients,
   createRecipientSnapshot,
@@ -104,12 +105,22 @@ export async function GET(request: Request) {
         : { docs: [] },
     ])
 
+    // GUI-07C: the composer's article-derivation used to prefix
+    // relative canonical paths with a hardcoded production host
+    // (renegadeparty.org) — wrong for every other install and site.
+    // Resolve the canonical origin the supported way (per-site map,
+    // then the global canonical origin) and hand it to the client.
+    const resolvedSettings = await resolveSiteSettings(payload)
+    const canonicalOrigin =
+      resolvedSettings.canonicalOriginsBySite[siteId] ?? resolvedSettings.canonicalOrigin
+
     return Response.json(
       {
         site: {
           id: siteId,
           name: siteDoc?.name ?? 'Renegade Site',
           slug: siteDoc?.slug ?? 'site',
+          canonicalOrigin,
         },
         articles: articlesRes.docs.map((doc) => ({
           id: doc.id,

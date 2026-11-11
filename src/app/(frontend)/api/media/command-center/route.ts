@@ -24,8 +24,21 @@ export async function GET(request: Request) {
       'content.read',
     )
     const appConfig = loadConfig()
+    // GUI-06A (NEW-01): media-jobs belongs to the optional media-studio
+    // module. On floor installs the collection is not registered and
+    // the overview query throws the raw "collection can't be found"
+    // error, which the page used to render as a banner. Report module
+    // availability explicitly so the surface can render a quiet
+    // module-off state instead. No permission behavior changes: the
+    // staff permission assertion above still runs first.
+    const moduleAvailable = Boolean(
+      (payload.collections as Record<string, unknown>)['media-jobs'],
+    )
+    if (!moduleAvailable) {
+      return NextResponse.json({ overview: null, moduleAvailable: false })
+    }
     const overview = await getMediaCommandCenterOverview(payload, appConfig, siteId)
-    return NextResponse.json({ overview })
+    return NextResponse.json({ overview, moduleAvailable: true })
   } catch (error) {
     const status = error instanceof MediaWorkflowError ? error.status : 400
     return NextResponse.json(

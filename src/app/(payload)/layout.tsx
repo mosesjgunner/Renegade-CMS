@@ -2,6 +2,7 @@
 import config from '@payload-config'
 import '@payloadcms/next/css'
 import '@/modules/admin/styles/admin-tokens.css'
+import '@/modules/admin/writing-canvas.css'
 import { metadata, RootLayout } from '@payloadcms/next/layouts'
 import type { ReactNode } from 'react'
 
