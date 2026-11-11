@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
-import { EmptyState, SectionHeader, StatusPill, WorkspaceHeader } from './primitives'
+import { ActionLink, EmptyState, ErrorState, SectionHeader, StatusPill, WorkspaceHeader } from './primitives'
 
 type ContentRow = {
   id: string
@@ -19,10 +19,19 @@ const date = (value?: string) =>
 /** A deliberately small work queue: publishing tasks, not a database console. */
 export default async function PublisherDashboard({ initPageResult }: AdminViewServerProps) {
   const payload = initPageResult.req.payload
-  const [drafts, scheduled, published, redirects] = await Promise.all([
+  const [drafts, reviews, scheduled, published, redirects] = await Promise.all([
     payload.find({
       collection: 'content',
       where: { status: { in: ['draft', 'review', 'approved'] } },
+      sort: '-updatedAt',
+      limit: 5,
+      depth: 0,
+      req: initPageResult.req,
+      overrideAccess: false,
+    } as never),
+    payload.find({
+      collection: 'content',
+      where: { status: { equals: 'review' } },
       sort: '-updatedAt',
       limit: 5,
       depth: 0,
@@ -58,17 +67,22 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
   ])
   const groups = [
     {
-      title: 'Recent drafts',
+      title: `Waiting for review${reviews.totalDocs ? ` (${reviews.totalDocs})` : ''}`,
+      rows: reviews.docs as ContentRow[],
+      empty: 'Nothing is waiting for review.',
+    },
+    {
+      title: `Recent drafts${drafts.totalDocs ? ` (${drafts.totalDocs})` : ''}`,
       rows: drafts.docs as ContentRow[],
       empty: 'Start a post or page when you are ready.',
     },
     {
-      title: 'Scheduled',
+      title: `Scheduled${scheduled.totalDocs ? ` (${scheduled.totalDocs})` : ''}`,
       rows: scheduled.docs as ContentRow[],
       empty: 'Nothing is scheduled. Choose a publish date to plan ahead.',
     },
     {
-      title: 'Recently published',
+      title: `Recently published${published.totalDocs ? ` (${published.totalDocs})` : ''}`,
       rows: published.docs as ContentRow[],
       empty: 'Published work will appear here with a direct public link.',
     },
@@ -81,26 +95,33 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
         purpose="Your publishing work, in one calm place."
         actions={
           <>
-            <Link href="/admin/collections/content/create?contentType=article">Write a post</Link>
-            {' · '}
-            <Link href="/admin/collections/content/create?contentType=page">Create a page</Link>
-            {' · '}
-            <Link href="/admin/collections/media-assets/create">Add media</Link>
-            {' · '}
-            <Link href="/admin/navigation">Edit menus</Link>
+            <ActionLink href="/admin/collections/content/create?contentType=article" intent="primary">
+              Write Article
+            </ActionLink>{' '}
+            <ActionLink href="/admin/collections/content/create?contentType=page">New Page</ActionLink>{' '}
+            <ActionLink href="/admin/collections/media-assets/create">Upload Media</ActionLink>
           </>
         }
       />
-      <section aria-label="Setup progress" style={{ marginTop: 28 }}>
-        <SectionHeader>Setup progress</SectionHeader>
-        <p>
-          {published.docs.length
-            ? 'Your site has published content.'
-            : 'Publish your first item to make the site feel lived in.'}{' '}
-          <Link href="/admin/globals/site-settings">Review Site Settings</Link> and{' '}
-          <Link href="/admin/navigation">add a menu</Link> before sharing the site.
-        </p>
-      </section>
+      {published.docs.length ? (
+        <details style={{ marginTop: 28 }}>
+          <summary>Site setup and details</summary>
+          <p>
+            Your site has published content.{' '}
+            <Link href="/admin/globals/site-settings">Review Site Settings</Link> and{' '}
+            <Link href="/admin/navigation">edit menus</Link> when you need them.
+          </p>
+        </details>
+      ) : (
+        <section aria-label="Setup progress" style={{ marginTop: 28 }}>
+          <SectionHeader>Setup progress</SectionHeader>
+          <p>
+            Publish your first item to make the site feel lived in.{' '}
+            <Link href="/admin/globals/site-settings">Review Site Settings</Link> and{' '}
+            <Link href="/admin/navigation">add a menu</Link> before sharing the site.
+          </p>
+        </section>
+      )}
       {groups.map((group) => (
         <section key={group.title} style={{ marginTop: 28 }}>
           <SectionHeader>{group.title}</SectionHeader>

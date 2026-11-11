@@ -107,10 +107,12 @@ export function EmptyState({ children }: { children: ReactNode }) {
 export function ErrorState({
   message,
   retryHref,
+  onRetry,
   retryLabel = 'Retry',
 }: {
   message: string
   retryHref?: string
+  onRetry?: () => void
   retryLabel?: string
 }) {
   return (
@@ -119,6 +121,12 @@ export function ErrorState({
       {retryHref ? (
         <p>
           <Link href={retryHref}>{retryLabel}</Link>
+        </p>
+      ) : onRetry ? (
+        <p>
+          <button type="button" onClick={onRetry}>
+            {retryLabel}
+          </button>
         </p>
       ) : null}
     </div>

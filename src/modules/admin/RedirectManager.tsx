@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+import { EmptyState, ErrorState, SectionHeader, StatusPill, WorkspaceHeader } from './primitives'
+
 type PublicRedirectItem = {
   id: string
   fromPath: string
@@ -181,17 +183,10 @@ export default function RedirectManager() {
     <div
       style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'sans-serif' }}
     >
-      <header
-        style={{ marginBottom: '24px', borderBottom: '1px solid #e2e8f0', paddingBottom: '16px' }}
-      >
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#0f172a' }}>
-          Redirect Manager — Public Rules & Import/Export
-        </h1>
-        <p style={{ color: '#64748b', margin: '4px 0 0 0' }}>
-          Manage canonical 301/302/307/308 redirects, import CSV/JSON rules, detect circular loops,
-          and track hit counts.
-        </p>
-      </header>
+      <WorkspaceHeader
+        title="Redirects"
+        purpose="Manage canonical 301/302/307/308 redirects, import CSV/JSON rules, detect circular loops, and track hit counts."
+      />
 
       {/* Save / Edit Form */}
       <section
@@ -203,9 +198,7 @@ export default function RedirectManager() {
           marginBottom: '24px',
         }}
       >
-        <h2 style={{ fontSize: '16px', fontWeight: '600', marginTop: 0, marginBottom: '12px' }}>
-          {editingId ? 'Edit Redirect Rule' : 'Create New Redirect Rule'}
-        </h2>
+        <SectionHeader>{editingId ? 'Edit Redirect Rule' : 'Create New Redirect Rule'}</SectionHeader>
         {formError && (
           <div
             style={{
@@ -386,9 +379,7 @@ export default function RedirectManager() {
           marginBottom: '24px',
         }}
       >
-        <h2 style={{ fontSize: '16px', fontWeight: '600', marginTop: 0, marginBottom: '12px' }}>
-          Bulk CSV / JSON Import & Export
-        </h2>
+        <SectionHeader>Bulk CSV / JSON Import &amp; Export</SectionHeader>
         <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           <form onSubmit={handleImportSubmit} style={{ flex: '1 1 400px' }}>
             <textarea
@@ -512,19 +503,15 @@ export default function RedirectManager() {
         {loading ? (
           <p>Loading rules...</p>
         ) : error ? (
-          <div
-            style={{
-              padding: '12px',
-              background: '#fef2f2',
-              color: '#991b1b',
-              borderRadius: '4px',
-            }}
-          >
-            {error}
-          </div>
+          <ErrorState message={error} onRetry={() => void loadRules()} />
         ) : filteredRules.length === 0 ? (
-          <p style={{ color: '#64748b' }}>No redirect rules found.</p>
+          <EmptyState>
+            {rules.length === 0
+              ? 'No redirect rules yet. Add the first one above.'
+              : `No rules match “${search}”. Try a different search.`}
+          </EmptyState>
         ) : (
+          <div style={{ overflowX: 'auto' }}>
           <table
             style={{
               width: '100%',
@@ -556,25 +543,17 @@ export default function RedirectManager() {
             <tbody>
               {filteredRules.map((rule) => (
                 <tr key={rule.id} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '14px' }}>
-                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#0f172a' }}>
+                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#0f172a', overflowWrap: 'anywhere' }}>
                     {rule.fromPath}
                   </td>
-                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#2563eb' }}>
+                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#2563eb', overflowWrap: 'anywhere' }}>
                     {rule.toPath}
                   </td>
                   <td style={{ padding: '10px 12px' }}>
-                    <span
-                      style={{
-                        padding: '2px 6px',
-                        background: '#e0f2fe',
-                        color: '#0369a1',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                      }}
-                    >
+                    <StatusPill tone={rule.enabled === false ? 'neutral' : 'success'}>
                       {rule.statusCode}
-                    </span>
+                      {rule.enabled === false ? ' · off' : ''}
+                    </StatusPill>
                   </td>
                   <td style={{ padding: '10px 12px', fontSize: '13px', color: '#64748b' }}>
                     {rule.match}
@@ -616,6 +595,7 @@ export default function RedirectManager() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>
