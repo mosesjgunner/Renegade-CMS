@@ -26,8 +26,8 @@ merge of PR #39; GitHub CI on that commit is green (run 43017632098).
 | RC2-A-01    | Freeze the baseline and reconcile RC1 → RC2                      | PASS               | evidence/RC2-A-01/RESULT.md |
 | RC2-A-02    | Build the all-90 executable maturity ledger                      | PASS               | evidence/RC2-A-02/RESULT.md |
 | RC2-A-03    | Cross-system seams, route owners, dependency map                 | PASS               | evidence/RC2-A-03/RESULT.md |
-| RC2-A-04    | Two-site, multi-role, module-profile fixtures                    | NEXT — not started | —                           |
-| RC2-B-01…03 | Publishing & presentation journeys                               | not started        | —                           |
+| RC2-A-04    | Two-site, multi-role, module-profile fixtures                    | PASS               | evidence/RC2-A-04/RESULT.md |
+| RC2-B-01…03 | Publishing & presentation journeys                               | NEXT — not started | —                           |
 | RC2-C-01…03 | Media & discovery journeys                                       | not started        | —                           |
 | RC2-D-01…04 | Workflow, distribution, audience, campaign                       | not started        | —                           |
 | RC2-E-01…03 | Members, community, moderation, notifications                    | not started        | —                           |
