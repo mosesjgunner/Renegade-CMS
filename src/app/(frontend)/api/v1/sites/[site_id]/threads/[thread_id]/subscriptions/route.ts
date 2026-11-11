@@ -31,10 +31,11 @@ export async function GET(
   const payload = await getPayload({ config })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
 
-  const memberId =
-    actor.memberId ??
-    request.headers.get('x-member-id') ??
-    (actor.isStaff ? actor.userId : undefined)
+  // TA-P1-2: identity comes from the resolved session actor only. This
+  // route previously fell back to a caller-supplied x-member-id header,
+  // which let anyone impersonate any member's subscription state; the
+  // resolver never sets userId, so the staff branch was dead scaffolding.
+  const memberId = actor.memberId
 
   if (!memberId) {
     return problem(401, 'UNAUTHORIZED', 'Authentication required.')
@@ -56,10 +57,11 @@ export async function POST(
   const payload = await getPayload({ config })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
 
-  const memberId =
-    actor.memberId ??
-    request.headers.get('x-member-id') ??
-    (actor.isStaff ? actor.userId : undefined)
+  // TA-P1-2: identity comes from the resolved session actor only. This
+  // route previously fell back to a caller-supplied x-member-id header,
+  // which let anyone impersonate any member's subscription state; the
+  // resolver never sets userId, so the staff branch was dead scaffolding.
+  const memberId = actor.memberId
 
   if (!memberId) {
     return problem(401, 'UNAUTHORIZED', 'Authentication required to subscribe.')
@@ -82,10 +84,11 @@ export async function DELETE(
   const payload = await getPayload({ config })
   const actor = await resolveCommunityActor(payload, request.headers, site_id)
 
-  const memberId =
-    actor.memberId ??
-    request.headers.get('x-member-id') ??
-    (actor.isStaff ? actor.userId : undefined)
+  // TA-P1-2: identity comes from the resolved session actor only. This
+  // route previously fell back to a caller-supplied x-member-id header,
+  // which let anyone impersonate any member's subscription state; the
+  // resolver never sets userId, so the staff branch was dead scaffolding.
+  const memberId = actor.memberId
 
   if (!memberId) {
     return problem(401, 'UNAUTHORIZED', 'Authentication required to unsubscribe.')
