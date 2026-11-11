@@ -346,6 +346,28 @@ export async function POST(request: Request) {
       if (search.docs.length > 0) existingDoc = search.docs[0]
     }
 
+    // TA-P0-1: an update target resolved by caller-supplied id must belong
+    // to a site the operator is authorized for — the same check the test
+    // and disconnect actions above already perform. Without it, an operator
+    // of one site could overwrite another site's account, including its
+    // stored credentials.
+    if (existingDoc) {
+      const accountSiteId =
+        typeof existingDoc.site === 'object' && existingDoc.site
+          ? existingDoc.site.id
+          : existingDoc.site
+      if (
+        accountSiteId &&
+        !grant.isGlobalOwner &&
+        !grant.authorizedSiteIds.includes(String(accountSiteId))
+      ) {
+        return NextResponse.json(
+          { error: 'Forbidden. You do not have operator access to this site.' },
+          { status: 403 },
+        )
+      }
+    }
+
     const diagnosticsPayload = {
       mode: capabilityTruth.mode,
       configuredAt: new Date().toISOString(),
