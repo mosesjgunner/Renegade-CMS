@@ -1,15 +1,130 @@
-/* GUI-04E-R4: writing-canvas presentation for the STOCK lexical
- * field. The canvas used to be a custom Field component; three
- * integration attempts (see the GUI-04E evidence) showed a
- * presentation wrapper cannot safely re-render or re-compose the
- * editor — the stock field renders itself correctly with no
- * override at all. These rules target the stock field's own DOM
- * inside the document form, preserving the GUI-01B/04A proportions
- * (taller surface, reading typography) with zero component
- * interference. */
-.doc .field-type.rich-text-lexical [contenteditable] {
-  min-height: 24rem;
-  padding: 1.25rem 1.5rem;
-  font-size: 1.0625rem;
-  line-height: 1.75;
+/* Writing surface — GUI-04E-R4 mechanism, GUI-04F design (Nov 10, 2026).
+ *
+ * Matthew's verdict on the R4 state: "still looks blah — you can't
+ * even tell where you're supposed to write; ugly Joomla." He was
+ * right, and the DOM probe showed why: the R4 rules targeted `.doc`,
+ * a class this Payload build never renders, so they never applied.
+ * These selectors target the real classes (verified live):
+ *   form.collection-edit__form > .collection-edit__main-wrapper
+ *     > .collection-edit__main > .document-fields > .document-fields__main
+ *       > .gutter > .render-fields > .field-type.rich-text-lexical
+ *         > .rich-text-lexical__wrap > .editor-container > .editor
+ *           > .ContentEditable__root
+ *
+ * Target feel: between Joomla's field stack and WordPress's bare
+ * canvas — the writing area reads as a SHEET OF PAPER: a bordered,
+ * shadowed, input-surface-colored page standing off the grey admin
+ * background, with the title and subtitle set INTO the top of the
+ * sheet (document-style, not form boxes) and the settings sections
+ * quieted below it. Presentation only; the stock editor renders
+ * itself (the R1–R3 lesson: never wrap or re-render this field).
+ */
+
+/* The admin canvas behind the sheet: a step darker than the sheet. */
+.collection-edit__main {
+  background: var(--theme-elevation-50);
+}
+
+/* Title + subtitle + body become one continuous sheet: the three
+ * field blocks share the input surface color; side borders run the
+ * full height of the group; the sheet's outer border + shadow sit
+ * on the group via the first and last blocks. */
+.document-fields__main .render-fields > .field-type.text:has(#field-title),
+.document-fields__main .render-fields > .field-type.text:has(#field-subtitle),
+.document-fields__main .render-fields > .field-type.rich-text-lexical {
+  background: var(--theme-input-bg);
+  border-left: 1px solid var(--theme-elevation-150);
+  border-right: 1px solid var(--theme-elevation-150);
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  padding-left: 2.5rem;
+  padding-right: 2.5rem;
+}
+
+/* Sheet top: rounded, bordered, shadowed; title set like a document. */
+.document-fields__main .render-fields > .field-type.text:has(#field-title) {
+  border-top: 1px solid var(--theme-elevation-150);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.10);
+  margin-top: 1.5rem;
+  padding-top: 1.75rem;
+}
+.document-fields__main #field-title {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding-left: 0;
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+/* Subtitle: a deck line under the title, not a form box. */
+.document-fields__main #field-subtitle {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding-left: 0;
+  font-size: 1.125rem;
+  color: var(--theme-elevation-600);
+}
+
+/* Sheet bottom: the editor block closes the page. */
+.document-fields__main .render-fields > .field-type.rich-text-lexical {
+  border-bottom: 1px solid var(--theme-elevation-150);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.10);
+  padding-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* The writing area itself: a tall, quiet page interior. The toolbar
+ * row (when the editor shows one) sits above it inside the sheet. */
+.document-fields__main .rich-text-lexical__wrap {
+  border: none;
+  background: transparent;
+}
+.document-fields__main .field-type.rich-text-lexical [contenteditable] {
+  min-height: 26rem;
+  padding: 0.5rem 0;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--theme-text);
+  outline: none;
+}
+.document-fields__main .field-type.rich-text-lexical [contenteditable] p {
+  margin-bottom: 1em;
+}
+
+/* Settings sections below the sheet: quieter, narrower presence so
+ * the page leads and the database follows. */
+.document-fields__main .collapsible {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  opacity: 0.92;
+}
+
+/* GUI-04G — the form vocabulary comes off the page (Matthew, Nov 10,
+ * 2026: "keep pushing the design"). */
+.document-fields__main label.field-label[for='field-title'],
+.document-fields__main label.field-label[for='field-subtitle'],
+.document-fields__main .field-type.rich-text-lexical > .field-label,
+.document-fields__main .field-type.rich-text-lexical label.field-label {
+  display: none;
+}
+
+/* The duplicated document title in Payload's page header: the same
+ * words sit at the top of the sheet in document type. Keep the
+ * header (dates, actions) — drop only the repeated title. */
+.doc-header__title {
+  display: none;
+}
+
+/* The writing sidebar becomes a panel, not loose fields on grey. */
+.document-fields__sidebar {
+  background: var(--theme-input-bg);
+  border-left: 1px solid var(--theme-elevation-100);
+  padding: 1.25rem;
 }
