@@ -1,0 +1,29 @@
+# RC2 — 12-Family Journey Ledger
+
+One row per system family from the 90-area inventory. A family earns its
+E2 journey mark only from an executable journey run against the A-04
+two-site fixture (or its successors) — never from unit tests, sandbox
+providers, or code reading. Evidence ladder: E0 concept / E1 mounted
+demo / E2 connected workflow / E3 supported operational / E4 mature.
+
+| #   | Family (system)                    | Journey proof                                                                                                                                                                           | Status      | Evidence                     |
+| --- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------------------------- |
+| 1   | Publishing & Content Management    | RC2-B-01: editor authors in the real UI (taxonomy + media), workflow submit -> review -> approve -> publish, canonical URL, cross-site 404s, revision, unpublish/restore — 23/23 stages | E2 proven   | evidence/RC2-B-01/RESULT.md  |
+| 2   | Presentation & Website Building    | —                                                                                                                                                                                       | not started | B-02                         |
+| 3   | Media & Multimedia                 | —                                                                                                                                                                                       | not started | C-family                     |
+| 4   | Editorial Workflow & Orchestration | Core transitions exercised inside B-01 (submit/approve, guards, quality gate, lock behavior); full family journey lands with D-01                                                       | partial     | evidence/RC2-B-01/RESULT.md  |
+| 5   | Distribution, Marketing & Audience | —                                                                                                                                                                                       | not started | D-family                     |
+| 6   | Analytics & Optimization           | —                                                                                                                                                                                       | not started | G-family                     |
+| 7   | Community & Member Systems         | —                                                                                                                                                                                       | not started | E-family                     |
+| 8   | Commerce & Monetization            | —                                                                                                                                                                                       | not started | F-family                     |
+| 9   | AI & Editorial Intelligence        | —                                                                                                                                                                                       | not started | G-family                     |
+| 10  | Identity, Permissions & Security   | Tenant isolation audited + remediated (RC2-TENANT-AUDIT, PRs #43–#47); role-matrix journey lands with H-02                                                                              | partial     | RC2-TENANT-BOUNDARY-AUDIT.md |
+| 11  | Network & Extensibility            | —                                                                                                                                                                                       | not started | G-family                     |
+| 12  | Installation, Infrastructure & Ops | Baseline gates green at A-01 freeze; lifecycle journey lands with H-family                                                                                                              | partial     | evidence/RC2-A-01/RESULT.md  |
+
+Notes:
+
+- "Partial" means real proof exists for part of the family but the
+  family's own journey prompt has not run; it is not an E-level claim.
+- Under the governing amendment (2026-11-11), a family shortfall is a
+  named, ranked RC3 item — never a concealed cell and never relabeled.
