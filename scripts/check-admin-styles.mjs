@@ -31,7 +31,11 @@ for (const file of files) {
       hexHits++
       if (hexHits <= 10) console.log(`hex  ${file}:${i + 1}  ${line.trim().slice(0, 90)}`)
     }
-    if (line.includes('--presentation-') && !/admin-tokens/.test(file) && !line.trim().startsWith('*')) {
+    if (
+      line.includes('--presentation-') &&
+      !/admin-tokens/.test(file) &&
+      !line.trim().startsWith('*')
+    ) {
       presentationHits++
       console.log(`pres ${file}:${i + 1}  ${line.trim().slice(0, 90)}`)
     }

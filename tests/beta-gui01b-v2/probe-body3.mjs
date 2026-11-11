@@ -7,10 +7,16 @@ const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 const page = await ctx.newPage()
 const chunks = []
-page.on('response', (r) => { const u = r.url(); if (u.includes('_next/static') && u.endsWith('.js')) chunks.push(u.split('/').pop()) })
+page.on('response', (r) => {
+  const u = r.url()
+  if (u.includes('_next/static') && u.endsWith('.js')) chunks.push(u.split('/').pop())
+})
 const errors = []
-page.on('pageerror', (e) => errors.push(String(e && e.message || e).slice(0, 300)))
-await page.goto(BASE + '/admin/collections/content/' + session.articleId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+page.on('pageerror', (e) => errors.push(String((e && e.message) || e).slice(0, 300)))
+await page.goto(BASE + '/admin/collections/content/' + session.articleId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 30000))
 const deep = await page.evaluate(`(() => {
   const title = document.getElementById('field-title')
@@ -27,7 +33,10 @@ const deep = await page.evaluate(`(() => {
     totalDivs: form ? form.querySelectorAll('div').length : 0,
   }
 })()`)
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-body3.json', JSON.stringify({ deep, chunkCount: chunks.length, errors: errors.slice(0, 6) }, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-body3.json',
+  JSON.stringify({ deep, chunkCount: chunks.length, errors: errors.slice(0, 6) }, null, 2),
+)
 console.log('PROBE4_DONE')
 await browser.close().catch(() => {})
 process.exit(0)

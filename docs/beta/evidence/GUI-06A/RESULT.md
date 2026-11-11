@@ -24,7 +24,7 @@ improvised against a build that predates it.
 **R1 IMPLEMENTED same day (typecheck PASS; visual proof rides the next
 capture cycle):** the command-center GET route now checks whether the
 `media-jobs` collection is registered and, when it is not, returns
-`{ overview: null, moduleAvailable: false }` *after* the existing
+`{ overview: null, moduleAvailable: false }` _after_ the existing
 staff permission assertion (no permission behavior change); the
 component renders one quiet module-off note in that case, in both its
 fetch paths. The page was also reordered per the prompt: the asset

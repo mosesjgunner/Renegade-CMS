@@ -159,9 +159,7 @@ export function focusFieldBySelector(selector: string): boolean {
   if (!field) return false
   const collapsible = field.closest('.collapsible')
   if (collapsible?.classList.contains('collapsible--collapsed')) {
-    collapsible
-      .querySelector<HTMLElement>('.collapsible__toggle, [aria-expanded="false"]')
-      ?.click()
+    collapsible.querySelector<HTMLElement>('.collapsible__toggle, [aria-expanded="false"]')?.click()
   }
   window.setTimeout(() => {
     field.scrollIntoView({ block: 'center' })

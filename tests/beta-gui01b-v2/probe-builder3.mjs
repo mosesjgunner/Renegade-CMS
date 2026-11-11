@@ -9,9 +9,14 @@ await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BAS
 const page = await ctx.newPage()
 const pageErrors = []
 page.on('pageerror', (e) => pageErrors.push(String(e).slice(0, 200)))
-page.on('dialog', async (d) => { await d.accept() })
+page.on('dialog', async (d) => {
+  await d.accept()
+})
 const result = {}
-await page.goto(BASE + '/builder/' + layout.layoutId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/builder/' + layout.layoutId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 20000))
 
 // Add a Hero block via the shell controls
@@ -47,7 +52,10 @@ result.afterReload = await page.evaluate(`(() => {
     canvasText: doc ? doc.body.innerText.slice(0, 300) : 'no-frame-doc',
   }
 })()`)
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-builder3.json', JSON.stringify({ result, pageErrors }, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-builder3.json',
+  JSON.stringify({ result, pageErrors }, null, 2),
+)
 console.log('B3_DONE')
 await browser.close().catch(() => {})
 process.exit(0)

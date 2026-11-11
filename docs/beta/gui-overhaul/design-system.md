@@ -29,16 +29,16 @@ token maps onto an installed Payload `--theme-*` variable, which Payload
 itself switches under `html[data-theme='dark']` — so the map is verified
 structurally in both themes with zero dark-specific overrides.
 
-| Semantic token | Payload source | Use |
-| --- | --- | --- |
-| `--admin-bg` | `--theme-bg` | App background |
-| `--admin-surface` | `--theme-elevation-0` | Cards, panels |
-| `--admin-surface-raised` | `--theme-elevation-50` | Raised/hover surfaces |
-| `--admin-surface-sunken` | `--theme-input-bg` | Inputs, wells |
-| `--admin-text` | `--theme-text` | Primary text |
-| `--admin-text-muted` | `--theme-elevation-600` | Metadata, help text |
-| `--admin-border` | `--theme-border-color` | Dividers, control borders |
-| `--admin-focus` | `--theme-text` | Focus outline color |
+| Semantic token                                           | Payload source                                                      | Use                                                          |
+| -------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `--admin-bg`                                             | `--theme-bg`                                                        | App background                                               |
+| `--admin-surface`                                        | `--theme-elevation-0`                                               | Cards, panels                                                |
+| `--admin-surface-raised`                                 | `--theme-elevation-50`                                              | Raised/hover surfaces                                        |
+| `--admin-surface-sunken`                                 | `--theme-input-bg`                                                  | Inputs, wells                                                |
+| `--admin-text`                                           | `--theme-text`                                                      | Primary text                                                 |
+| `--admin-text-muted`                                     | `--theme-elevation-600`                                             | Metadata, help text                                          |
+| `--admin-border`                                         | `--theme-border-color`                                              | Dividers, control borders                                    |
+| `--admin-focus`                                          | `--theme-text`                                                      | Focus outline color                                          |
 | `--admin-success` / `--admin-warning` / `--admin-danger` | `--theme-success-500` / `--theme-warning-500` / `--theme-error-500` | Status + intent (always paired with text, never color alone) |
 
 Typography: `--admin-font` = Payload `--font-body` (no second stack in
@@ -91,16 +91,16 @@ and type scale only.
 Location: `src/modules/admin/primitives/` (`index.tsx` +
 `primitives.module.css`). Styling consumes only `--admin-*` tokens.
 
-| Primitive | Props (summary) | Notes |
-| --- | --- | --- |
-| `WorkspaceHeader` | `title`, `purpose?`, `actions?`, `crumbs?` | Breadcrumb uses `aria-current` on the last crumb; actions wrap on small screens |
-| `SectionHeader` | children | One section heading style for operator views |
-| `ActionLink` | `href`, `intent: primary/secondary/destructive` | Real link; `:focus-visible` outline; disabled state styled via `[disabled]`/`aria-disabled` |
-| `StatusPill` | `tone: success/warning/danger/neutral`, children | Tone is a dot + text label — meaning never rides on color alone |
-| `EmptyState` | children | Distinct from no-results-after-filter copy; callers pass the right words |
-| `ErrorState` | `message`, `retryHref?`, `retryLabel?` | `role="alert"`; retry is a link back to the surface |
-| `DetailContainer` | children | Selected-item detail surface |
-| `LoadingSkeleton` | `rows?` | `role="status"` + `aria-busy`; honors `prefers-reduced-motion` |
+| Primitive         | Props (summary)                                  | Notes                                                                                       |
+| ----------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| `WorkspaceHeader` | `title`, `purpose?`, `actions?`, `crumbs?`       | Breadcrumb uses `aria-current` on the last crumb; actions wrap on small screens             |
+| `SectionHeader`   | children                                         | One section heading style for operator views                                                |
+| `ActionLink`      | `href`, `intent: primary/secondary/destructive`  | Real link; `:focus-visible` outline; disabled state styled via `[disabled]`/`aria-disabled` |
+| `StatusPill`      | `tone: success/warning/danger/neutral`, children | Tone is a dot + text label — meaning never rides on color alone                             |
+| `EmptyState`      | children                                         | Distinct from no-results-after-filter copy; callers pass the right words                    |
+| `ErrorState`      | `message`, `retryHref?`, `retryLabel?`           | `role="alert"`; retry is a link back to the surface                                         |
+| `DetailContainer` | children                                         | Selected-item detail surface                                                                |
+| `LoadingSkeleton` | `rows?`                                          | `role="status"` + `aria-busy`; honors `prefers-reduced-motion`                              |
 
 First adoption: `PublisherDashboard` (WorkspaceHeader, SectionHeader,
 StatusPill for content status, EmptyState for empty groups). Interactive

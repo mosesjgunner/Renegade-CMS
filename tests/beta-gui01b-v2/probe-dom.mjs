@@ -6,7 +6,10 @@ const browser = await chromium.launch({ headless: true })
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 const page = await ctx.newPage()
-await page.goto(BASE + '/admin/collections/content/' + session.articleId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/admin/collections/content/' + session.articleId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 15000))
 const info = await page.evaluate(`(() => {
   const ce = document.querySelector('.ContentEditable__root')

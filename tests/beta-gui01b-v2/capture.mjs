@@ -23,10 +23,13 @@ const { readFileSync, mkdirSync, writeFileSync } = await import('node:fs')
 mkdirSync(OUT, { recursive: true })
 const session = JSON.parse(readFileSync(SESSION_FILE, 'utf8'))
 
-setTimeout(() => {
-  console.error('WATCHDOG: hard exit at 20 min')
-  process.exit(3)
-}, 20 * 60 * 1000)
+setTimeout(
+  () => {
+    console.error('WATCHDOG: hard exit at 20 min')
+    process.exit(3)
+  },
+  20 * 60 * 1000,
+)
 
 const PROBE = `(() => {
   const q = (s) => document.querySelector(s)
@@ -59,10 +62,16 @@ async function capturePage(browser, spec, results) {
   ctx.setDefaultTimeout(90000)
   await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
   const page = await ctx.newPage()
-  const rec = { name: spec.name, route: spec.route, viewport: `${spec.width}x${spec.height}`, theme: spec.dark ? 'dark' : 'light' }
+  const rec = {
+    name: spec.name,
+    route: spec.route,
+    viewport: `${spec.width}x${spec.height}`,
+    theme: spec.dark ? 'dark' : 'light',
+  }
   try {
     await page.goto(BASE + spec.route, { timeout: 180000, waitUntil: 'domcontentloaded' })
-    if (spec.waitFor) await page.locator(spec.waitFor).first().waitFor({ state: 'visible', timeout: 180000 })
+    if (spec.waitFor)
+      await page.locator(spec.waitFor).first().waitFor({ state: 'visible', timeout: 180000 })
     // settle: Lexical mounts lazily; poll the probe until stable or 3 min pass
     let last = ''
     for (let i = 0; i < 12; i++) {
@@ -80,7 +89,9 @@ async function capturePage(browser, spec, results) {
     rec.error = String(e?.message ?? e).slice(0, 300)
   }
   results.push(rec)
-  console.log(`${rec.captured ? 'CAPTURED' : 'FAILED'}: ${spec.name}${rec.error ? ' — ' + rec.error : ''}`)
+  console.log(
+    `${rec.captured ? 'CAPTURED' : 'FAILED'}: ${spec.name}${rec.error ? ' — ' + rec.error : ''}`,
+  )
   await ctx.close().catch(() => {})
 }
 

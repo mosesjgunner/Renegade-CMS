@@ -31,9 +31,7 @@ export async function GET(request: Request) {
     // availability explicitly so the surface can render a quiet
     // module-off state instead. No permission behavior changes: the
     // staff permission assertion above still runs first.
-    const moduleAvailable = Boolean(
-      (payload.collections as Record<string, unknown>)['media-jobs'],
-    )
+    const moduleAvailable = Boolean((payload.collections as Record<string, unknown>)['media-jobs'])
     if (!moduleAvailable) {
       return NextResponse.json({ overview: null, moduleAvailable: false })
     }

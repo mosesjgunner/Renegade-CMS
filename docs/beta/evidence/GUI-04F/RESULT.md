@@ -2,9 +2,10 @@
 
 **Trigger:** Matthew, Nov 10, 2026, on the R4 state: "It still looks blahhh… You can't even tell where you're supposed to write really still. We need something between Joomla and WordPress — right now it's ugly Joomla."
 
-**Root cause of the blah (found, not guessed):** the R4 canvas CSS targeted `.doc`, a class this Payload build never renders (real chain: `form.collection-edit__form > .collection-edit__main-wrapper > .collection-edit__main > .document-fields > .document-fields__main`). The rules never applied; computed styles on the "fixed" editor were min-height 0, font 16px, padding 8px 0. The R4 functional fix was real; its styling was fiction. The GUI-08B note "canvas measured 338px" measured a build where a *different* rule matched — recorded here so the record stays honest.
+**Root cause of the blah (found, not guessed):** the R4 canvas CSS targeted `.doc`, a class this Payload build never renders (real chain: `form.collection-edit__form > .collection-edit__main-wrapper > .collection-edit__main > .document-fields > .document-fields__main`). The rules never applied; computed styles on the "fixed" editor were min-height 0, font 16px, padding 8px 0. The R4 functional fix was real; its styling was fiction. The GUI-08B note "canvas measured 338px" measured a build where a _different_ rule matched — recorded here so the record stays honest.
 
 **Design (CSS only, `src/modules/admin/writing-canvas.css`, selectors verified against the live DOM):**
+
 - The admin canvas behind the page steps darker (`--theme-elevation-50`).
 - Title + subtitle + body form ONE continuous sheet: shared `--theme-input-bg` surface, continuous side borders, rounded outer corners, one soft shadow.
 - Title set document-style into the sheet (borderless, 2rem design size); subtitle as a muted deck line (its field is `type: text` — the first selector missed it; fixed and re-verified).

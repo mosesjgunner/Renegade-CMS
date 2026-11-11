@@ -57,7 +57,10 @@ await page.screenshot({ path: '/home/hatch/workspace/gui01b-logs/toolbar-v1.png'
 let autosaved = false
 for (let i = 0; i < 20; i++) {
   const t = await page.evaluate(`document.body.innerText`)
-  if (/saved automatically/i.test(t)) { autosaved = true; break }
+  if (/saved automatically/i.test(t)) {
+    autosaved = true
+    break
+  }
   await new Promise((r) => setTimeout(r, 2000))
 }
 await page.reload({ timeout: 180000, waitUntil: 'domcontentloaded' })

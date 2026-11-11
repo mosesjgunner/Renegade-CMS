@@ -9,7 +9,7 @@
   `partial-failure`, `failed`, and `rolled-back` with separate
   status colors and raw status text (never collapsed into a generic
   success). Partially-failed releases surface "Retry Failed Steps";
-  rollback is offered for completed *and* partially-failed releases
+  rollback is offered for completed _and_ partially-failed releases
   (suppressed only when a distribution/newsletter artifact already
   succeeded — a deliberate guard, since those cannot be unsent).
 - **Rollback/waiver protection: HOLDS in structure.** Destructive

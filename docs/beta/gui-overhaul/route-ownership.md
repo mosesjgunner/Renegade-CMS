@@ -21,13 +21,13 @@ Runtime precedence (verified): where both trees claim a path, the
 
 ## Collisions (both trees register the path; frontend serves)
 
-| Path | Payload view (shadowed) | Frontend page (serving) | Verified |
-| --- | --- | --- | --- |
-| /admin/email-composer | EmailComposer view | `admin/email-composer/page.tsx` → same `EmailComposer` component | 200, frontend HTML signature |
-| /admin/workflow | EditorialWorkflowCenter view | `admin/workflow/page.tsx` | 200, frontend signature |
-| /admin/audience | AudienceCommandCenter view | `admin/audience/page.tsx` | 200 (content check pending) |
-| /admin/releases | ReleaseCenter view | `admin/releases/page.tsx` | 200 (content check pending) |
-| /admin/telemetry | Telemetry view (registered) | `admin/telemetry/page.tsx` | by registration |
+| Path                  | Payload view (shadowed)      | Frontend page (serving)                                          | Verified                     |
+| --------------------- | ---------------------------- | ---------------------------------------------------------------- | ---------------------------- |
+| /admin/email-composer | EmailComposer view           | `admin/email-composer/page.tsx` → same `EmailComposer` component | 200, frontend HTML signature |
+| /admin/workflow       | EditorialWorkflowCenter view | `admin/workflow/page.tsx`                                        | 200, frontend signature      |
+| /admin/audience       | AudienceCommandCenter view   | `admin/audience/page.tsx`                                        | 200 (content check pending)  |
+| /admin/releases       | ReleaseCenter view           | `admin/releases/page.tsx`                                        | 200 (content check pending)  |
+| /admin/telemetry      | Telemetry view (registered)  | `admin/telemetry/page.tsx`                                       | by registration              |
 
 Note the email-composer collision is benign in content (both render
 the same component) but not in chrome: the frontend copy renders

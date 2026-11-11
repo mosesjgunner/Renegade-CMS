@@ -54,7 +54,9 @@ export default function DesignSystemShowcase(_props: AdminViewServerProps) {
         <SaveStateNote state="dirty">Unsaved changes</SaveStateNote>
         <SaveStateNote state="saving">Saving…</SaveStateNote>
         <SaveStateNote state="saved">Saved just now</SaveStateNote>
-        <SaveStateNote state="error">Save failed — your changes are still here. Retry.</SaveStateNote>
+        <SaveStateNote state="error">
+          Save failed — your changes are still here. Retry.
+        </SaveStateNote>
       </section>
 
       <section style={{ marginTop: 28 }}>
@@ -70,7 +72,10 @@ export default function DesignSystemShowcase(_props: AdminViewServerProps) {
       <section style={{ marginTop: 28 }}>
         <SectionHeader>Empty, error, and loading states</SectionHeader>
         <EmptyState>Nothing is scheduled. Choose a publish date to plan ahead.</EmptyState>
-        <ErrorState message="The media list could not be loaded. Your last loaded list is still shown below." retryHref="/admin/design-system" />
+        <ErrorState
+          message="The media list could not be loaded. Your last loaded list is still shown below."
+          retryHref="/admin/design-system"
+        />
         <LoadingSkeleton rows={3} />
       </section>
 

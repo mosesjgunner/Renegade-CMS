@@ -4,8 +4,11 @@ import { readFileSync } from 'node:fs'
 
 const BASE = process.env.GUI01B_BASE || 'http://127.0.0.1:39071'
 const OUT = process.env.GUI01B_OUT || '/home/hatch/workspace/gui01b-logs'
-const session = JSON.parse(readFileSync(process.env.GUI01B_SESSION_FILE || '/tmp/gui01b-session.json', 'utf8'))
-const exe = process.env.CHROME_EXE || '/home/hatch/.cache/ms-playwright/chromium-1181/chrome-linux/chrome'
+const session = JSON.parse(
+  readFileSync(process.env.GUI01B_SESSION_FILE || '/tmp/gui01b-session.json', 'utf8'),
+)
+const exe =
+  process.env.CHROME_EXE || '/home/hatch/.cache/ms-playwright/chromium-1181/chrome-linux/chrome'
 
 const browser = await chromium.launch({ executablePath: exe, args: ['--no-sandbox'] })
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } })
@@ -29,17 +32,34 @@ async function visit(path, name, checks) {
   return found
 }
 
-await visit('/admin', 'dash-desktop', ['Write Article', 'New Page', 'Upload Media', 'Waiting for review', 'Recent drafts', 'Site setup and details'])
-await visit('/admin/redirects', 'redirects-desktop', ['Redirects', 'Create New Redirect Rule', 'Active Redirect Rules'])
+await visit('/admin', 'dash-desktop', [
+  'Write Article',
+  'New Page',
+  'Upload Media',
+  'Waiting for review',
+  'Recent drafts',
+  'Site setup and details',
+])
+await visit('/admin/redirects', 'redirects-desktop', [
+  'Redirects',
+  'Create New Redirect Rule',
+  'Active Redirect Rules',
+])
 await page.fill('input[placeholder="Search from or to path..."]', 'zzz-no-match-zzz')
 await page.waitForTimeout(800)
 const noMatch = await page.evaluate(() => document.body.innerText.includes('No rules match'))
 console.log('redirects-nomatch-state', JSON.stringify({ noMatch }))
 await page.screenshot({ path: `${OUT}/redirects-nomatch.png` })
-await visit('/admin/rendered-quality', 'quality-desktop', ['Rendered Quality & Discovery', 'Run Rendered Audit'])
+await visit('/admin/rendered-quality', 'quality-desktop', [
+  'Rendered Quality & Discovery',
+  'Run Rendered Audit',
+])
 
 const dark = await browser.newContext({ viewport: { width: 1280, height: 900 } })
-await dark.addCookies([{ name: session.cookieName, value: session.token, url: BASE }, { name: 'payload-theme', value: 'dark', url: BASE }])
+await dark.addCookies([
+  { name: session.cookieName, value: session.token, url: BASE },
+  { name: 'payload-theme', value: 'dark', url: BASE },
+])
 const dp = await dark.newPage()
 dp.on('pageerror', (e) => errors.push('dark:' + String(e).slice(0, 150)))
 await dp.goto(BASE + '/admin', { waitUntil: 'domcontentloaded', timeout: 60000 })

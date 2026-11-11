@@ -51,7 +51,7 @@ describe('progressive disclosure admin presentation', () => {
       name?: string
       type?: string
       label?: string
-      admin?: { position?: string }
+      admin?: { position?: string; hidden?: boolean }
       fields?: FieldLike[]
     }
     const fields = (Content.fields ?? []) as FieldLike[]
@@ -70,10 +70,21 @@ describe('progressive disclosure admin presentation', () => {
     const topLevelNames = fields.map((field) => field.name)
     expect(topLevelNames.indexOf('title')).toBeLessThan(topLevelNames.indexOf('body'))
     expect(topLevelNames).toContain('draftAutosave')
-    // Identity and publishing essentials are pinned to the sidebar.
-    for (const name of ['site', 'publication', 'space', 'contentType', 'status', 'visibility']) {
+    // Publishing essentials are pinned to the sidebar (GUI-04A, kept by 04H).
+    for (const name of ['contentType', 'status', 'visibility', 'publishedAt']) {
       expect(all.find((field) => field.name === name)?.admin?.position).toBe('sidebar')
     }
+    // Site is website-level context, never a per-post field (GUI-04H,
+    // Matthew's directive): still present in the schema, hidden from the form.
+    expect(all.find((field) => field.name === 'site')?.admin?.hidden).toBe(true)
+    // Publication and Space live in the collapsed Placement group (GUI-04H):
+    // where a post lives beyond the website, in one deliberate place.
+    const placement = fields.find(
+      (field) => field.type === 'collapsible' && field.label === 'Placement',
+    )
+    expect(placement?.fields?.map((field) => field.name)).toEqual(
+      expect.arrayContaining(['publication', 'space']),
+    )
     // Technical metadata stays available under Advanced, not deleted.
     const advanced = fields.find(
       (field) =>

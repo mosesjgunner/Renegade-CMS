@@ -198,7 +198,9 @@ export default function RedirectManager() {
           marginBottom: '24px',
         }}
       >
-        <SectionHeader>{editingId ? 'Edit Redirect Rule' : 'Create New Redirect Rule'}</SectionHeader>
+        <SectionHeader>
+          {editingId ? 'Edit Redirect Rule' : 'Create New Redirect Rule'}
+        </SectionHeader>
         {formError && (
           <div
             style={{
@@ -512,89 +514,103 @@ export default function RedirectManager() {
           </EmptyState>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              textAlign: 'left',
-              background: '#fff',
-              border: '1px solid #e2e8f0',
-              borderRadius: '6px',
-              overflow: 'hidden',
-            }}
-          >
-            <thead>
-              <tr
-                style={{
-                  background: '#f1f5f9',
-                  borderBottom: '1px solid #e2e8f0',
-                  fontSize: '13px',
-                  color: '#475569',
-                }}
-              >
-                <th style={{ padding: '10px 12px' }}>Source (fromPath)</th>
-                <th style={{ padding: '10px 12px' }}>Target (toPath)</th>
-                <th style={{ padding: '10px 12px' }}>Status</th>
-                <th style={{ padding: '10px 12px' }}>Match</th>
-                <th style={{ padding: '10px 12px' }}>Hits</th>
-                <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRules.map((rule) => (
-                <tr key={rule.id} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '14px' }}>
-                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#0f172a', overflowWrap: 'anywhere' }}>
-                    {rule.fromPath}
-                  </td>
-                  <td style={{ padding: '10px 12px', fontFamily: 'monospace', color: '#2563eb', overflowWrap: 'anywhere' }}>
-                    {rule.toPath}
-                  </td>
-                  <td style={{ padding: '10px 12px' }}>
-                    <StatusPill tone={rule.enabled === false ? 'neutral' : 'success'}>
-                      {rule.statusCode}
-                      {rule.enabled === false ? ' · off' : ''}
-                    </StatusPill>
-                  </td>
-                  <td style={{ padding: '10px 12px', fontSize: '13px', color: '#64748b' }}>
-                    {rule.match}
-                  </td>
-                  <td style={{ padding: '10px 12px', fontSize: '13px', color: '#64748b' }}>
-                    {rule.hitCount || 0}
-                  </td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => handleEdit(rule)}
-                      style={{
-                        padding: '4px 8px',
-                        background: '#e2e8f0',
-                        border: 'none',
-                        borderRadius: '4px',
-                        marginRight: '6px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => void handleDelete(rule.id)}
-                      style={{
-                        padding: '4px 8px',
-                        background: '#fee2e2',
-                        color: '#991b1b',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </td>
+            <table
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                textAlign: 'left',
+                background: '#fff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                overflow: 'hidden',
+              }}
+            >
+              <thead>
+                <tr
+                  style={{
+                    background: '#f1f5f9',
+                    borderBottom: '1px solid #e2e8f0',
+                    fontSize: '13px',
+                    color: '#475569',
+                  }}
+                >
+                  <th style={{ padding: '10px 12px' }}>Source (fromPath)</th>
+                  <th style={{ padding: '10px 12px' }}>Target (toPath)</th>
+                  <th style={{ padding: '10px 12px' }}>Status</th>
+                  <th style={{ padding: '10px 12px' }}>Match</th>
+                  <th style={{ padding: '10px 12px' }}>Hits</th>
+                  <th style={{ padding: '10px 12px', textAlign: 'right' }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredRules.map((rule) => (
+                  <tr key={rule.id} style={{ borderBottom: '1px solid #f1f5f9', fontSize: '14px' }}>
+                    <td
+                      style={{
+                        padding: '10px 12px',
+                        fontFamily: 'monospace',
+                        color: '#0f172a',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {rule.fromPath}
+                    </td>
+                    <td
+                      style={{
+                        padding: '10px 12px',
+                        fontFamily: 'monospace',
+                        color: '#2563eb',
+                        overflowWrap: 'anywhere',
+                      }}
+                    >
+                      {rule.toPath}
+                    </td>
+                    <td style={{ padding: '10px 12px' }}>
+                      <StatusPill tone={rule.enabled === false ? 'neutral' : 'success'}>
+                        {rule.statusCode}
+                        {rule.enabled === false ? ' · off' : ''}
+                      </StatusPill>
+                    </td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#64748b' }}>
+                      {rule.match}
+                    </td>
+                    <td style={{ padding: '10px 12px', fontSize: '13px', color: '#64748b' }}>
+                      {rule.hitCount || 0}
+                    </td>
+                    <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleEdit(rule)}
+                        style={{
+                          padding: '4px 8px',
+                          background: '#e2e8f0',
+                          border: 'none',
+                          borderRadius: '4px',
+                          marginRight: '6px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => void handleDelete(rule.id)}
+                        style={{
+                          padding: '4px 8px',
+                          background: '#fee2e2',
+                          color: '#991b1b',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '12px',
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </section>

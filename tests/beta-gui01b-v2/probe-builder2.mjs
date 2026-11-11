@@ -7,7 +7,10 @@ const browser = await chromium.launch({ headless: true })
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
 await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BASE }])
 const page = await ctx.newPage()
-await page.goto(BASE + '/builder/' + layout.layoutId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/builder/' + layout.layoutId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 20000))
 const info = await page.evaluate(`(() => {
   const all = [...document.querySelectorAll('button, select, a')]
@@ -24,7 +27,10 @@ const info = await page.evaluate(`(() => {
   }))
   return { addCtx, selects }
 })()`)
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-builder2.json', JSON.stringify(info, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-builder2.json',
+  JSON.stringify(info, null, 2),
+)
 console.log('B2_DONE')
 await browser.close().catch(() => {})
 process.exit(0)

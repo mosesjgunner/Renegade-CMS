@@ -3,6 +3,7 @@
 **Result: PARTIAL (audit — honest-state patterns verified; convergence rides captures)**
 
 Audit findings (source, this tree):
+
 - The specialist surfaces (AI Studio, Telemetry, Connections,
   Security, Capability Center, migration/recovery) consistently use
   the platform's honest-state vocabulary: providers report degraded/

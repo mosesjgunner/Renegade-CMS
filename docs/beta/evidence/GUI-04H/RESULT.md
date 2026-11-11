@@ -3,6 +3,7 @@
 **Approval:** Matthew, Nov 10, 2026 16:38 CT: "Okay.. so do that then keep going?" — implementing the scope model settled the same afternoon (spec: `files/scope-model-spaces-profiles-2026-11-10.md` in the goal folder).
 
 **Changes:**
+
 - `Publishing.ts` (`publisherFieldLayout`): the `site` field is now `admin.hidden` — it keeps the GUI-04C active-site prefill and stays required in the schema, but the editor never renders it. Publication/Space leave the sidebar and move into a new first settings group, **Placement** (collapsed via the standard group builder).
 - `canonical-shared.ts` (`siteScopeFields`): Publication gains label "Publication (outlet)" + description "The outlet this runs in. Leave empty — most posts are just the website's own." Space gains label "Community space (optional)" + a plain description (a member's own space; most posts don't need one). Labels/descriptions ride the shared helper, so every collection using `siteScopeFields()` speaks the same words. (The taxonomy variant of these fields in Publishing.ts is untouched — follow-up if wanted.)
 - `ContentTypeEntry.tsx`: "Editing a post. Back to posts" → "You're writing a post — it saves as you go. All posts."

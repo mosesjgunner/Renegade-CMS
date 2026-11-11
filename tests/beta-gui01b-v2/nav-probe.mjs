@@ -31,7 +31,11 @@ const probe = await page.evaluate(`(() => {
   const links = [...nav.querySelectorAll('a')].map(a => (a.getAttribute('href') || '')).filter(Boolean).slice(0, 40)
   return { summaries, detailsCount, strongs, ariaCurrent, links, navTextStart: (nav.textContent || '').slice(0, 120) }
 })()`)
-await page.screenshot({ path: `${OUT}/shell-nav-open-desktop.png`, fullPage: true, timeout: 120000 })
+await page.screenshot({
+  path: `${OUT}/shell-nav-open-desktop.png`,
+  fullPage: true,
+  timeout: 120000,
+})
 writeFileSync(`${OUT}/nav-probe.json`, JSON.stringify({ toggleClicked: clicked, probe }, null, 2))
 console.log('toggle:', clicked)
 console.log(JSON.stringify(probe, null, 1))

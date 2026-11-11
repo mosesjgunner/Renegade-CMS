@@ -3,6 +3,7 @@
 **Result: PARTIAL**
 
 Verified:
+
 - Unauthenticated /admin returns the login page (03D + every cycle's
   unauthenticated curl check) — no shell leakage.
 - Site context is truthful in the UI after 03C/06C: a failed switch

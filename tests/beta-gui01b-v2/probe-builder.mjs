@@ -9,7 +9,10 @@ await ctx.addCookies([{ name: session.cookieName, value: session.token, url: BAS
 const page = await ctx.newPage()
 const pageErrors = []
 page.on('pageerror', (e) => pageErrors.push(String(e).slice(0, 200)))
-await page.goto(BASE + '/builder/' + layout.layoutId, { timeout: 180000, waitUntil: 'domcontentloaded' })
+await page.goto(BASE + '/builder/' + layout.layoutId, {
+  timeout: 180000,
+  waitUntil: 'domcontentloaded',
+})
 await new Promise((r) => setTimeout(r, 20000))
 const info = await page.evaluate(`(() => {
   const text = document.body.innerText
@@ -25,7 +28,10 @@ const info = await page.evaluate(`(() => {
   }
 })()`)
 await page.screenshot({ path: '/home/hatch/workspace/gui01b-logs/builder-v1.png' })
-writeFileSync('/home/hatch/workspace/gui01b-logs/probe-builder.json', JSON.stringify({ info, pageErrors }, null, 2))
+writeFileSync(
+  '/home/hatch/workspace/gui01b-logs/probe-builder.json',
+  JSON.stringify({ info, pageErrors }, null, 2),
+)
 console.log('BUILDER_DONE')
 await browser.close().catch(() => {})
 process.exit(0)
