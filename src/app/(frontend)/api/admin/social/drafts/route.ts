@@ -269,6 +269,26 @@ export async function POST(request: Request) {
         )
       }
 
+      // TA-P1-1: every destination account must belong to the draft's site.
+      // Caller-supplied accountIds were previously accepted unverified, so a
+      // draft on one site could be bound to another site's social account.
+      for (const v of body.variants) {
+        const account = (await payload
+          .findByID({
+            collection: 'social-accounts' as never,
+            id: v.accountId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)) as any
+        if (!account || idOf(account.site) !== siteId) {
+          return NextResponse.json(
+            { error: 'Variant account belongs to a different site.' },
+            { status: 400 },
+          )
+        }
+      }
+
       // Create SocialDraft
       const createdDraft = (await payload.create({
         collection: 'social-drafts' as never,
@@ -394,6 +414,46 @@ export async function POST(request: Request) {
             },
             { status: 400 },
           )
+        }
+
+        // TA-P1-1: bind every variant mutation to this draft and this site
+        // before applying any of them. Caller-supplied variant ids are
+        // loaded and must belong to this (already site-checked) draft;
+        // brand-new variants must name an account of the draft's own site.
+        // Previously a variant id from another tenant's draft could be
+        // overwritten — including its approval state — through this action.
+        for (const v of body.variants) {
+          if (v.id) {
+            const existingVariant = (await payload
+              .findByID({
+                collection: 'social-network-variants' as never,
+                id: v.id,
+                depth: 0,
+                overrideAccess: true,
+              })
+              .catch(() => null)) as any
+            if (!existingVariant || idOf(existingVariant.draft) !== String(draft.id)) {
+              return NextResponse.json(
+                { error: 'Forbidden. Variant belongs to another draft.' },
+                { status: 403 },
+              )
+            }
+          } else {
+            const account = (await payload
+              .findByID({
+                collection: 'social-accounts' as never,
+                id: v.accountId,
+                depth: 0,
+                overrideAccess: true,
+              })
+              .catch(() => null)) as any
+            if (!account || idOf(account.site) !== draftSite) {
+              return NextResponse.json(
+                { error: 'Variant account belongs to a different site.' },
+                { status: 400 },
+              )
+            }
+          }
         }
 
         // Apply variant updates
