@@ -149,12 +149,21 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       linkUrl: variant.linkUrl,
       attachments,
     })
+    // A queue item is bound to its approved content in one of two ways:
+    // the standalone scheduling path embeds the approval hash as the key
+    // suffix, while the release saga keys its outbox rows
+    // `release:<releaseId>:<artifactId>:<variantId>` — bound to this
+    // variant instead. Both are checked against the live records here;
+    // the content-hash comparison above still applies to either path.
+    const releaseKeyBound =
+      queue.idempotencyKey.startsWith('release:') &&
+      queue.idempotencyKey.split(':').pop() === id(variant)
     const invalid =
       id(variant.account) !== id(account) ||
       id(draft.site) !== id(account.site) ||
       !variant.approvalHash ||
       hash !== variant.approvalHash ||
-      !queue.idempotencyKey.endsWith(variant.approvalHash) ||
+      (!queue.idempotencyKey.endsWith(variant.approvalHash) && !releaseKeyBound) ||
       ['cancelled', 'draft', 'review'].includes(draft.status)
     // Read-only recovery never sends content even if a legacy row is inconsistent.
     if (invalid)
