@@ -30,8 +30,9 @@ merge of PR #39; GitHub CI on that commit is green (run 43017632098).
 | RC2-B-01    | Publishing journey on the two-site fixture                       | PASS               | evidence/RC2-B-01/RESULT.md |
 | RC2-B-02    | Presentation journey: builder, themes, navigation                | PASS               | evidence/RC2-B-02/RESULT.md |
 | RC2-B-03    | Publication identity, archives and reusable content surfaces     | PASS               | evidence/RC2-B-03/RESULT.md |
-| RC2-C-01    | Media & discovery journeys (next)                                | NEXT — not started | —                           |
-| RC2-C-01…03 | Media & discovery journeys                                       | not started        | —                           |
+| RC2-C-01    | Media upload, rights, derivative and public usage                | PASS 16/16         | evidence/RC2-C-01/RESULT.md |
+| RC2-C-02    | Search indexing and consistent discovery (next)                  | NEXT — not started | —                           |
+| RC2-C-03    | Media & discovery journeys                                       | not started        | —                           |
 | RC2-D-01…04 | Workflow, distribution, audience, campaign                       | not started        | —                           |
 | RC2-E-01…03 | Members, community, moderation, notifications                    | not started        | —                           |
 | RC2-F-01…03 | Commerce and financial integrity                                 | not started        | —                           |
