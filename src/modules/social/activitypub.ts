@@ -188,7 +188,7 @@ export function remoteReply(input: {
     paginationAnchor: `federation:${input.activityId}`,
     status: 'hidden' as const,
     visibility: 'public' as const,
-    moderationState: 'pending' as const,
+    moderationState: 'review' as const,
     federation: { actor: input.actor, activityId: input.activityId, inReplyTo: input.inReplyTo },
   }
 }
