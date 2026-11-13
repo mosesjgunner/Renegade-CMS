@@ -138,8 +138,8 @@ async function reviewProposal(
     return fail('The target changed after this proposal. Request a fresh proposal.', 409)
   if (
     target.collection === 'content' &&
-    target.context.revisionId !==
-      (proposal.contextPreview as { revisionId?: string } | undefined)?.revisionId
+    (target.context.revisionId ?? null) !==
+      ((proposal.contextPreview as { revisionId?: string | null } | undefined)?.revisionId ?? null)
   )
     return fail('The editorial revision changed. Request a fresh proposal.', 409)
   if (
