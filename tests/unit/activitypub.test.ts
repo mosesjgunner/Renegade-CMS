@@ -111,5 +111,5 @@ describe('ActivityPub protocol boundary', () => {
         inReplyTo: 'https://example.test/a',
         discussionId: 'd',
       }).moderationState,
-    ).toBe('pending'))
+    ).toBe('review'))
 })
