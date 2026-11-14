@@ -152,3 +152,46 @@ RC3 backlog.
 concurrent sharing, sequential freshness, no cross-request/user sharing,
 uncached parity) plus the unchanged tenant-authorization matrix
 (21/21 integration) — the optimization holds the tenant boundary.
+
+## Performance Pass 0, Lane 01 — request-scoped render dedupe (2026-11-14)
+
+Baseline (Prompt 00, this VM, Standard, 20 articles/site): home 32 SQL
+statements per GET of which 9 were the site-settings global read; article
+67 statements, likewise 9 settings reads; `publicSiteForHost` re-derived
+host → site in every render phase.
+
+**Change.** `resolveSiteSettings` (`src/modules/core/site-settings.ts`)
+and `publicSiteForHost` (`src/modules/public/site-scope.ts`) are wrapped
+in React `cache()` — the pattern `requestTheme` already used. Keys:
+(payload, includeTheme) for settings — the with/without-theme variants
+stay distinct because host resolution must not load a theme — and
+(payload, host) for site scope. The memo lives for one render pass only;
+there is no cross-request caching.
+
+**Verification (Matthew's gate, run on his 16 GB PC — this VM could not
+complete a production build: repeated PostCSS loader crashes under
+shared-cell memory pressure, then a VM replacement).** Production build
+of this branch passed there in 160 s. Freshness: home fetched, site name
+saved through `payload.updateGlobal` (the REST probe used PATCH, which
+Payload's globals endpoint correctly 404s — it takes POST), and the very
+next fetch of the same URL on the same running build showed the new name
+in the page H1. Original name restored and confirmed. Only then, counts
+over 5 sequential GETs each, from PostgreSQL statement logs:
+
+| Route   | Statements before | Statements after | Settings reads before | Settings reads after |
+| ------- | ----------------- | ---------------- | --------------------- | -------------------- |
+| Home    | 32                | 26               | 9                     | 3                    |
+| Article | 67                | 68 (flat)        | 9                     | 3                    |
+
+Three settings reads remain — one per Next render pass (metadata is its
+own pass); reaching one would require caching across passes, which is
+exactly the cross-request staleness the gate forbids. Tenant checks on
+the PC fixture: site A's article serves its own marker on host A, 404s
+on host B; site B home serves its own content; site A's draft 404s
+anonymously. Unit anchor: `tests/unit/site-settings-request-dedupe.test.ts`
+(identical results across calls, per-payload isolation, includeTheme
+split, failure fallback) plus the existing host-theme recursion guard.
+
+**Side finding for lane 08:** on Windows the standalone artifact lacks
+Sharp's libvips DLLs and 500s until they are copied from node_modules by
+hand; Linux standalone is unaffected.
