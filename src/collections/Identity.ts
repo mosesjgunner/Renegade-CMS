@@ -22,7 +22,8 @@ const identityStoreAccess: NonNullable<CollectionConfig['access']> = {
   create: () => false,
   update: () => false,
   delete: () => false,
-  read: async ({ req }) => (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+  read: async ({ req }) =>
+    (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
 }
 
 export const Brands: CollectionConfig = {
@@ -86,9 +87,9 @@ export const Members: CollectionConfig = {
   access: {
     ...operatorMemberScopeAccess('id'),
     create: async ({ req }) =>
-      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+      (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
     delete: async ({ req }) =>
-      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+      (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
   },
   fields: [
     { name: 'displayName', type: 'text', required: true },
@@ -99,9 +100,9 @@ export const Members: CollectionConfig = {
       index: true,
       access: {
         read: async ({ req }) =>
-          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+          (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
         update: async ({ req }) =>
-          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+          (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
       },
     },
     {
@@ -300,7 +301,7 @@ export const IdentityAuditEvents: CollectionConfig = {
       // event metadata, but private history uses the owner/self-service boundary.
       access: {
         read: async ({ req }) =>
-          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+          (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
       },
     },
   ],

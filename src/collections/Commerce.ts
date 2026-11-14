@@ -666,7 +666,7 @@ export const PaymentWebhookEvents: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const merchants = await req.payload.find({
@@ -1048,7 +1048,7 @@ export const DonationEvents: CollectionConfig = {
     create: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const [scopedDonations, scopedIntents] = await Promise.all([

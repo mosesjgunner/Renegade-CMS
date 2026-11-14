@@ -99,7 +99,11 @@ function mediaCollectionAccess(
       : slug === 'media-jobs'
         ? {
             create: (async (args) => {
-              const grant = await resolveOperatorGrantContext(args.req.payload, args.req.user)
+              const grant = await resolveOperatorGrantContext(
+                args.req.payload,
+                args.req.user,
+                args.req,
+              )
               if (!grant.authorized) return false
               if (grant.isGlobalOwner) return true
               const siteId = relationId(
@@ -113,7 +117,11 @@ function mediaCollectionAccess(
               return grant.authorizedSiteIds.includes(siteId)
             }) as Access,
             read: (async (args) => {
-              const grant = await resolveOperatorGrantContext(args.req.payload, args.req.user)
+              const grant = await resolveOperatorGrantContext(
+                args.req.payload,
+                args.req.user,
+                args.req,
+              )
               if (!grant.authorized) return false
               if (grant.isGlobalOwner) return true
               if (args.id) {
@@ -131,11 +139,11 @@ function mediaCollectionAccess(
               return true
             }) as Access,
             update: (async ({ req }) => {
-              const grant = await resolveOperatorGrantContext(req.payload, req.user)
+              const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
               return grant.authorized
             }) as Access,
             delete: (async ({ req }) => {
-              const grant = await resolveOperatorGrantContext(req.payload, req.user)
+              const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
               return grant.authorized
             }) as Access,
           }

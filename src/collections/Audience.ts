@@ -702,7 +702,7 @@ export const EmailDeliveries: CollectionConfig = {
     delete: () => false,
     read: async ({ req }) => {
       if (!req.payload.collections['email-messages']) return false
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const messages = await req.payload.find({
@@ -771,7 +771,7 @@ export const EmailDeliveryEvents: CollectionConfig = {
       ) {
         return false
       }
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const messages = await req.payload.find({
@@ -869,7 +869,7 @@ export const DigestRuns: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const defs = await req.payload.find({
@@ -942,7 +942,7 @@ export const AutomationRuns: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       if (!req.payload.collections['automation-definitions']) return false
@@ -976,7 +976,7 @@ export const AutomationFailures: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       if (
@@ -1121,7 +1121,7 @@ export const TelecomDeliveryEvents: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
       const deliveries = await req.payload.find({

@@ -9,10 +9,10 @@ export const Sites: CollectionConfig = {
   access: {
     create: async ({ req }) =>
       req.user?.role === 'owner' &&
-      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+      (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner,
     delete: async ({ req }) => {
       if (req.user?.role !== 'owner') return false
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       return !grant.authorized
         ? false
         : grant.isGlobalOwner
@@ -22,7 +22,7 @@ export const Sites: CollectionConfig = {
     // Public pages use explicit public projections; the native API is the
     // operator's site/settings directory and must not enumerate other tenants.
     read: async ({ req }) => {
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       return !grant.authorized
         ? false
         : grant.isGlobalOwner
@@ -31,7 +31,7 @@ export const Sites: CollectionConfig = {
     },
     update: async ({ req }) => {
       if (!['owner', 'administrator'].includes(String(req.user?.role))) return false
-      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
       if (!grant.authorized) return false
       return grant.isGlobalOwner ? true : { id: { in: grant.authorizedSiteIds } }
     },
