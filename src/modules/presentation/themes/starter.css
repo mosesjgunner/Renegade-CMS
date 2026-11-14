@@ -18,7 +18,9 @@
     --color-accent-hover: #991b1b;
     --color-accent-subtle: #fef2f2;
     --color-accent-border: #fecaca;
-    --color-highlight: #0284c7;
+    /* #0284c7 measured 3.84:1 as badge text on the subtle background —
+     * under the 4.5:1 minimum (RC2-H-01). One step darker passes. */
+    --color-highlight: #0369a1;
     --color-highlight-subtle: #f0f9ff;
   }
 

@@ -128,3 +128,90 @@
   border-left: 1px solid var(--theme-elevation-100);
   padding: 1.25rem;
 }
+
+/* RC2-H-01 accessibility fixes, each one measured against the live
+ * editor before and after (tests/rc2-h01/probe.mjs). */
+
+/* The sidebar group labels ("Publishing", "Media", ...) render at
+ * 2.81:1 contrast in Payload's stock nav — under the 4.5:1 minimum
+ * for text. Darken the label in light mode, lighten it in dark;
+ * the links themselves already pass. */
+.nav-group__toggle {
+  color: #6f6f6f;
+}
+
+html[data-theme='dark'] .nav-group__toggle {
+  color: #a6a6a6;
+}
+
+/* The document meta row (Last Modified / Created) is one non-wrapping
+ * flex row about 475px wide; on a phone it pushes the whole editor
+ * sideways. Let it wrap instead. */
+.doc-controls__meta {
+  flex-wrap: wrap;
+}
+
+/* The small grey labels over those meta values use Payload's
+ * elevation-500 token and measure 3.95:1 — same fix as the group
+ * labels above. */
+.doc-controls__label {
+  color: #6f6f6f;
+}
+
+html[data-theme='dark'] .doc-controls__label {
+  color: #a6a6a6;
+}
+
+/* The empty editor's placeholder line ("Start typing, or press '/'…")
+ * is the only prompt a writer gets, and it also measures 3.95:1. The
+ * class is our own editor theme's — darken it the same way. */
+.LexicalEditorTheme__placeholder {
+  color: #6f6f6f;
+}
+
+html[data-theme='dark'] .LexicalEditorTheme__placeholder {
+  color: #a6a6a6;
+}
+
+/* Payload's nav and header links take keyboard focus with no visible
+ * indicator at all — measured: no outline, no background change, no
+ * shadow on the focused link. Give every admin control a plain
+ * outline when it is reached by keyboard. This stylesheet loads only
+ * in the admin, so nothing public changes. */
+:focus-visible {
+  outline: 2px solid var(--theme-text);
+  outline-offset: 1px;
+}
+
+/* On small screens the nav rows are 20px tall — under the 24px
+ * minimum target size. Give the drawer rows room to be tapped. */
+@media (max-width: 768px) {
+  /* The drawer header is offset 16px and a full viewport wide, so its
+   * right edge (and the account avatar in it) sticks 16px past the
+   * screen and the page scrolls sideways. Narrow it by the offset. */
+  .nav__header {
+    width: calc(100% - 16px);
+  }
+
+  .nav a,
+  .nav-group__toggle {
+    min-height: 32px;
+  }
+
+  .nav a {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* Focus mode (FocusModeToggle.tsx): the sheet becomes the screen.
+ * The chrome returns the moment the class comes off. */
+html.rg-focus-mode .nav,
+html.rg-focus-mode .document-fields__sidebar-wrap {
+  display: none;
+}
+
+html.rg-focus-mode .template-default__wrap {
+  margin-left: 0;
+  width: 100%;
+}
