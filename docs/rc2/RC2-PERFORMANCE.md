@@ -195,3 +195,51 @@ split, failure fallback) plus the existing host-theme recursion guard.
 **Side finding for lane 08:** on Windows the standalone artifact lacks
 Sharp's libvips DLLs and 500s until they are copied from node_modules by
 hand; Linux standalone is unaffected.
+
+## Perf lane 05 — stale media-variant job claims (2026-11-14)
+
+**The lead, reproduced before any fix.** The audit observed media-variant
+jobs stuck in `processing` forever. Reproduction on the b01 world: a real
+image uploaded through `uploadMedia` completed all 20 variants under a
+live worker; a 75 MB image whose worker was SIGKILLed mid-generation
+stayed `processing=true, total_tried=0` across a worker restart that
+completed 69 other jobs — the asset stranded at 1 of 20 variants. Root
+cause: Payload's runner claim query requires `processing=false` and has
+no stale-claim timeout; retries only engage when a handler throws, and a
+killed process never throws. Compounding it, `queueAssetVariantGeneration`
+returns the existing job for the same idempotency key, so re-requesting
+the image hands back the stuck job.
+
+**Fix (media queue only).** `recoverStaleMediaVariantJobs` in
+`src/modules/media/tasks.ts`, called from the worker cycle immediately
+before the media queue drains (the slot commerce's and video's own
+recoveries already use). It resets `media-variant-generate` claims older
+than `MEDIA_STALE_CLAIM_MS` (default 15 min — far beyond any legitimate
+variant run; the per-asset concurrency key and the handler's
+last-known-good preservation make a reset safe). Each reset consumes one
+of the task's own retry attempts (4) with its exponential backoff as
+`waitUntil`; a job that exhausts the budget is marked `hasError` —
+terminal in Payload's claim query — instead of looping. Payment, email
+and scheduling queues are untouched.
+
+**Acceptance (disposable fixture data, `tests/perf05/`).**
+
+- Case 1 (crash recovery): kill mid-generation → restart → the ORIGINAL
+  job completes; 20 of 20 variants ready, zero duplicates by
+  recipe+format+label, no re-upload, no manual reset.
+- Case 2 (slow live job): the reconciler at the production threshold
+  returns 0 while a job is mid-run; the job completes normally, 20/20.
+- Case 3 (crash loop terminates): four full cycles each observed in
+  order — RESET (processing true→false, totalTried +1, no completedAt),
+  fresh CLAIM, kill — taking totalTried 0→4; the next worker then marked
+  the job `hasError=true, processing=false` with no manual reset; a
+  separate restart completed a sentinel media job (proving the worker
+  reached the media queue) while the failed job's counters and variant
+  rows stayed exactly unchanged.
+
+**Bug the acceptance caught in the fix itself:** the first terminal
+marks silently failed — Payload's jobs `error` field is JSON
+(`{ name, message, ... }`), and writing a plain string failed validation
+while a `.catch(() => undefined)` hid it. The reconciler now writes the
+JSON shape and only counts updates that actually landed; a unit test
+pins both behaviors (`tests/unit/media-stale-claim-recovery.test.ts`).
