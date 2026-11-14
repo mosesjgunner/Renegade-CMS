@@ -180,6 +180,25 @@ export async function recordInbound(
   }
 }
 
+/**
+ * Rolls back an inbound record whose processing failed, so a legitimate
+ * retry of the same activity is processed fresh instead of being treated
+ * as a duplicate replay (RC2-DEBT-22). Best effort: a failed rollback
+ * leaves the record for operator review rather than masking the original
+ * processing error.
+ */
+export async function releaseInbound(payload: PayloadLike, recordId: string) {
+  try {
+    await payload.delete({
+      collection: 'inbound-network-activities',
+      id: recordId,
+      overrideAccess: true,
+    })
+  } catch {
+    // The caller rethrows the processing error either way.
+  }
+}
+
 export async function findActor(payload: PayloadLike, handle: string) {
   const accounts = await payload.find({
     collection: 'social-accounts',

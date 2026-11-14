@@ -8,6 +8,7 @@ import {
 import {
   queueActivityDelivery,
   recordInbound,
+  releaseInbound,
   verifyInboundActivity,
 } from '@/modules/social/activitypub-runtime'
 import { takeNetworkQuota } from '@/modules/network/experience'
@@ -21,6 +22,7 @@ export async function POST(request: Request, context: { params: Promise<{ handle
     return Response.json({ error: 'Actor not found.' }, { status: 404 })
   let body = ''
   let remoteActorId = 'unknown'
+  let createdRecordId: string | null = null
   try {
     body = await readBoundedActivityBody(request)
     const sender =
@@ -45,6 +47,7 @@ export async function POST(request: Request, context: { params: Promise<{ handle
       },
     })
     if (inbound.duplicate) return new Response(null, { status: 202 })
+    if (inbound.record) createdRecordId = String(inbound.record.id)
     if (verified.activity.type === 'Follow' && verified.activity.object === actor.document.id) {
       const relationship = await actor.payload.find({
         collection: 'network-relationships',
@@ -121,9 +124,14 @@ export async function POST(request: Request, context: { params: Promise<{ handle
         overrideAccess: true,
       })
     }
+    createdRecordId = null
     return new Response(null, { status: 202 })
   } catch (error) {
     console.error('INBOX VERIFY ERROR:', error)
+    // A failed processing must not burn the dedupe key (RC2-DEBT-22): roll
+    // back the record this request created so the peer's legitimate retry
+    // is processed fresh instead of acknowledged as a duplicate.
+    if (createdRecordId) await releaseInbound(actor.payload, createdRecordId)
     try {
       remoteActorId = boundedActivity(body).actor ?? remoteActorId
     } catch {
