@@ -10,6 +10,7 @@ import { checkOperatorSiteAccess } from '../operations/operator-grants'
 import { findIfRegistered } from '../public/registered-collections'
 import { inspectAudioMetadata, inspectMedia, mediaObjectKey, mediaStorage } from './storage'
 import { queueAssetVariantGeneration } from './variants'
+import { recordMediaUsage } from './usage'
 import { validateWebVtt } from './video'
 
 type Doc = Record<string, unknown>
@@ -370,14 +371,6 @@ export async function attachMediaToContent(
     purpose === 'hero'
       ? `content:${input.contentId}:hero`
       : `content:${input.contentId}:${field}:${input.mediaId}`
-  const existing = await payload.find({
-    collection: 'media-usages',
-    where: { usageKey: { equals: usageKey } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
-  const usage = (existing.docs as unknown as Doc[])[0]
   const data = {
     site: input.scope.siteId,
     media: input.mediaId,
@@ -397,14 +390,7 @@ export async function attachMediaToContent(
     publication: id(content.publication) || null,
     lastReconciledAt: new Date().toISOString(),
   }
-  if (usage)
-    await payload.update({
-      collection: 'media-usages',
-      id: usage.id,
-      data,
-      overrideAccess: true,
-    } as never)
-  else await payload.create({ collection: 'media-usages', data, overrideAccess: true } as never)
+  await recordMediaUsage(payload, data)
   return updated
 }
 

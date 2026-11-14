@@ -50,14 +50,18 @@ export async function GET(request: Request) {
         read: item.status === 'read',
       }
     })
+    // RC2-H-03 (RC2-DEBT-21): the canonical notifications collection is the
+    // single primary read. The inbox projection's only writer is an unwired
+    // projector, yet any rows in its table previously SHADOWED the canonical
+    // list here (and switched the unread count to its own counter), which
+    // would hide real notifications. The inbox rows are still returned in
+    // their own field for compatibility; wire-or-remove the projector is
+    // the remaining DEBT-21 decision, owned by RC3.
     return Response.json({
-      notifications: inboxResult.notifications.length > 0 ? inboxResult.notifications : projected,
+      notifications: projected,
       inboxNotifications: inboxResult.notifications,
       canonicalNotifications,
-      unreadCount:
-        inboxResult.notifications.length > 0
-          ? inboxResult.unreadCount
-          : projected.filter((item) => !item.read).length,
+      unreadCount: projected.filter((item) => !item.read).length,
     })
   } catch (err: unknown) {
     if (err instanceof CommunityError) {
@@ -85,14 +89,15 @@ export async function PATCH(request: Request) {
   const notificationId = body.notificationId ? String(body.notificationId) : undefined
 
   try {
-    let unreadCount = 0
+    // The legacy inbox table is still marked read for the v1 surface, but
+    // its counter no longer feeds this response (RC2-H-03 / DEBT-21): the
+    // canonical unread count below is the single source.
     try {
-      const res = await markInboxRead(payload, {
+      await markInboxRead(payload, {
         siteId,
         memberId: actor.memberId,
         notificationId,
       })
-      unreadCount = res.unreadCount
     } catch {
       // Ignored if table not matching
     }
@@ -112,7 +117,7 @@ export async function PATCH(request: Request) {
     const remaining = await getMemberNotifications(payload, actor.memberId, { siteId, actor })
     return Response.json({
       success: true,
-      unreadCount: unreadCount + remaining.filter((item) => item.status !== 'read').length,
+      unreadCount: remaining.filter((item) => item.status !== 'read').length,
     })
   } catch (err: unknown) {
     if (err instanceof CommunityError) {
