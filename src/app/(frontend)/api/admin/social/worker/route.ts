@@ -169,6 +169,11 @@ export async function POST(request: Request) {
         queueItemId: String(queue.id),
         workerId: 'operator-social',
         mode,
+        // An explicit per-item retry is a deliberate operator act (already
+        // site-access checked above): it may recover failure classes the
+        // automatic sweep must not touch. Batch retries keep the strict
+        // gate. (RC2-H-05)
+        operatorRequested: mode === 'retry' && Boolean(body.queueItemId),
       })
       results.push({ queueItemId: queue.id, ...result.output })
     }

@@ -25,6 +25,13 @@ export type SocialDispatchInput = {
   queueItemId: string
   workerId: string
   mode?: 'dispatch' | 'retry' | 'reconcile'
+  /**
+   * True only for an operator's explicit per-item retry request (the admin
+   * worker route with a queueItemId). Widens the retry gate past the
+   * error-kind check — see canOperatorRetrySocialQueueItem — while the
+   * automatic sweep keeps the strict gate.
+   */
+  operatorRequested?: boolean
 }
 
 async function atomic<T>(payload: Payload, operation: (tx: Payload) => Promise<T>): Promise<T> {
@@ -70,6 +77,27 @@ export function canRetrySocialQueueItem(queue: any, now = Date.now()): boolean {
   )
 }
 
+/**
+ * The operator's explicit retry gate (RC2-H-05). The automatic gate above
+ * only retries error kinds that are safe to repeat blindly (transient,
+ * rate-limit). That strands a real failure class forever: a provider
+ * refusal classified 'validation' — e.g. a destination that was disabled
+ * and later repaired — can never be recovered, even by the operator's
+ * retry action, despite the provider's own "repair then retry" contract.
+ * An explicit per-item operator request therefore skips only the
+ * error-kind check. The duplicate-safety guards still bind: an item whose
+ * remote outcome is unknown must be reconciled, never blind-retried, and
+ * the provider attempt bound still applies.
+ */
+export function canOperatorRetrySocialQueueItem(queue: any, now = Date.now()): boolean {
+  return (
+    queue.status === 'failed' &&
+    Number(queue.attemptCount ?? 0) < MAX_PROVIDER_ATTEMPTS &&
+    queue.deadLetterReason?.remoteOutcome !== 'unknown' &&
+    (!queue.nextAttemptAt || Date.parse(queue.nextAttemptAt) <= now)
+  )
+}
+
 export async function executeSocialQueueItem(payload: Payload, input: SocialDispatchInput) {
   const initial: any = await payload.findByID({
     collection: 'social-queue-items',
@@ -110,7 +138,12 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
         (queue.nextAttemptAt && Date.parse(queue.nextAttemptAt) > Date.now())
       )
         return { output: { skipped: true, reason: 'not-due', status: queue.status } }
-      if (queue.status === 'failed' && (mode !== 'retry' || !canRetrySocialQueueItem(queue)))
+      if (
+        queue.status === 'failed' &&
+        (mode !== 'retry' ||
+          (!canRetrySocialQueueItem(queue) &&
+            !(input.operatorRequested && canOperatorRetrySocialQueueItem(queue))))
+      )
         return { output: { skipped: true, reason: 'not-retryable', status: queue.status } }
       if (Number(queue.attemptCount ?? 0) >= MAX_PROVIDER_ATTEMPTS)
         return { output: { skipped: true, bounded: true, status: queue.status } }
