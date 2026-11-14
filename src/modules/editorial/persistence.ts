@@ -363,6 +363,77 @@ export const loadBundleByArticleId = async (
   return { article, content, revisions }
 }
 
+type EditorialPresentationBundle = {
+  article: Doc
+  content: Doc
+  revision: Doc
+}
+
+/**
+ * Perf Pass 0, lane 02: the presentation path (public article + preview)
+ * renders exactly ONE immutable revision, but previously loaded up to 100
+ * revision records through loadBundleByArticleId just to select it. This
+ * narrow loader resolves the companion exactly as the bundle loader does,
+ * derives the same selected revision id (explicit revision wins; preview
+ * uses the current revision; public rendering uses the latest published
+ * revision, falling back to current), and fetches only that revision.
+ * loadBundleByArticleId is unchanged: workflow, history and restore
+ * callers keep the full revision list.
+ */
+export const loadPresentationBundleByArticleId = async (
+  payload: Payload,
+  articleId: string,
+  input: { revisionId?: string | null; preview?: boolean } = {},
+): Promise<EditorialPresentationBundle> => {
+  let article = (await payload
+    .findByID({
+      collection: 'article-family-content',
+      id: articleId,
+      depth: 2,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)) as Doc
+
+  if (!article) {
+    article = (await findOne(
+      payload,
+      'article-family-content',
+      { content: { equals: articleId } },
+      2,
+    )) as Doc
+  }
+
+  if (!article) {
+    throw new Error(`Article companion document for ID "${articleId}" not found.`)
+  }
+
+  const revisionId =
+    input.revisionId ??
+    (input.preview
+      ? idOf(article.currentRevision)
+      : article.latestPublishedRevision
+        ? idOf(article.latestPublishedRevision)
+        : idOf(article.currentRevision))
+  if (!revisionId) throw new Error('Requested revision does not exist.')
+  const revision = (await payload
+    .findByID({
+      collection: 'revision-records',
+      id: revisionId,
+      depth: 1,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)) as Doc
+  if (!revision) throw new Error('Requested revision does not exist.')
+
+  const content = (await payload.findByID({
+    collection: 'content',
+    id: idOf(article.content),
+    depth: 2,
+    overrideAccess: true,
+  })) as Doc
+  return { article, content, revision }
+}
+
 const createRevisionRecord = async (
   payload: Payload,
   articleId: string,
@@ -1340,16 +1411,11 @@ export async function buildArticlePresentation(
     previewMode?: 'desktop' | 'mobile'
   },
 ): Promise<EditorialPresentation> {
-  const bundle = await loadBundleByArticleId(payload, input.articleId)
-  const revisionId =
-    input.revisionId ??
-    (input.preview
-      ? idOf(bundle.article.currentRevision)
-      : bundle.article.latestPublishedRevision
-        ? idOf(bundle.article.latestPublishedRevision)
-        : idOf(bundle.article.currentRevision))
-  const revision = bundle.revisions.find((entry) => String(entry.id) === revisionId)
-  if (!revision) throw new Error('Requested revision does not exist.')
+  const bundle = await loadPresentationBundleByArticleId(payload, input.articleId, {
+    revisionId: input.revisionId,
+    preview: input.preview,
+  })
+  const revision = bundle.revision
   const document = toRichTextDocument(revision.document)
   const sources = await sourceLookup(payload, bundle.article)
   const heroMediaId = idOf(bundle.content.heroMedia)
