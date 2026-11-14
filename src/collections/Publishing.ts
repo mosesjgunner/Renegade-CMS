@@ -1027,6 +1027,7 @@ export const Content: CollectionConfig = {
     defaultColumns: ['title', 'contentType', 'status', 'canonicalPath', 'updatedAt'],
     description:
       'Posts and Pages share one editorial record. Use the Posts and Pages links for focused work.',
+    components: { edit: { beforeDocumentControls: ['./modules/admin/FocusModeToggle'] } },
   },
   access: {
     create: tenantCreateAccess,

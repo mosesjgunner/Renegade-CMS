@@ -7,7 +7,9 @@ const baseTokens: ThemeTokens = {
     ink: '#191614',
     muted: '#857d74',
     accent: '#b91c1c',
-    focus: '#0284c7',
+    // #0284c7 measured 3.84:1 as badge text on the highlight-subtle
+    // background — under the 4.5:1 minimum (RC2-H-01). One step darker.
+    focus: '#0369a1',
   },
   typography: {
     display: 'var(--font-serif), Georgia, serif',
