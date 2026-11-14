@@ -1,8 +1,15 @@
+import { cache } from 'react'
 import type { Payload } from 'payload'
 import { resolveSiteSettings } from '../core/site-settings'
 
-/** Unknown or ambiguous hosts never select the first tenant on a multi-site installation. */
-export async function publicSiteForHost(payload: Payload, hostValue: string | null) {
+/**
+ * Unknown or ambiguous hosts never select the first tenant on a multi-site installation.
+ * Wrapped in React `cache` (Perf Pass 0, lane 01): host → site resolution is
+ * re-derived by the layout, page, metadata and discovery phases of a single
+ * render; the memo is scoped to that one request, so tenant resolution is
+ * never shared across requests.
+ */
+export const publicSiteForHost = cache(async (payload: Payload, hostValue: string | null) => {
   const host = hostValue?.toLowerCase() ?? ''
   if (!host) return ''
   const settings = await resolveSiteSettings(payload, { includeTheme: false })
@@ -75,7 +82,7 @@ export async function publicSiteForHost(payload: Payload, hostValue: string | nu
     }
   }
   return ''
-}
+})
 
 /** Compare the browser origin with configured public origins, not the HTTP proxy upstream URL. */
 export async function samePublicOrigin(payload: Payload, request: Request, requireOrigin = false) {

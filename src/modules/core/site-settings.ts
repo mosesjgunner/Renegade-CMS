@@ -1,3 +1,5 @@
+import { cache } from 'react'
+
 import { requestTheme } from '../presentation/request-theme'
 import type { Configuration } from '../presentation/lifecycle'
 import { DEFAULT_SITE_NAME } from '../presentation/themes/identity'
@@ -60,7 +62,7 @@ const idOf = (value: unknown): string | null => {
   return null
 }
 
-export async function resolveSiteSettings(
+async function resolveSiteSettingsUncached(
   payload: Payload,
   options: { includeTheme?: boolean } = {},
 ): Promise<ResolvedSiteSettings> {
@@ -223,4 +225,29 @@ export async function resolveSiteSettings(
       homepageSelection: { mode: 'default' },
     }
   }
+}
+
+/**
+ * Per-request dedupe for settings resolution (Perf Pass 0, lane 01).
+ * A single public render previously re-read the site-settings global up
+ * to nine times (layout, page, metadata, JSON-LD and discovery each
+ * resolve settings independently). React `cache` scopes the memo to one
+ * request render — the same pattern `requestTheme` already uses — so
+ * sequential phases of one render share one read, while separate
+ * requests, route handlers and worker/CLI calls (no request store)
+ * resolve fresh exactly as before. The two includeTheme variants stay
+ * distinct keys: host resolution deliberately loads settings without a
+ * theme, and that distinction is load-bearing (see the note inside the
+ * resolver about requestTheme's in-flight promise).
+ */
+const resolveSiteSettingsCached = cache(
+  async (payload: Payload, includeTheme: boolean): Promise<ResolvedSiteSettings> =>
+    resolveSiteSettingsUncached(payload, { includeTheme }),
+)
+
+export async function resolveSiteSettings(
+  payload: Payload,
+  options: { includeTheme?: boolean } = {},
+): Promise<ResolvedSiteSettings> {
+  return resolveSiteSettingsCached(payload, options.includeTheme !== false)
 }
