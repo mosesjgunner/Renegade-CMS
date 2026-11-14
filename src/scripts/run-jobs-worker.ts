@@ -6,12 +6,20 @@ import config from '../payload.config'
 import { getPayload, type Where } from 'payload'
 
 const pollInterval = Number(process.env.WORKER_POLL_INTERVAL_MS ?? 10_000)
+const mediaStaleClaimMs = Number(process.env.MEDIA_STALE_CLAIM_MS ?? 15 * 60_000)
 const heartbeatFile = process.env.WORKER_HEARTBEAT_FILE ?? '/tmp/renegade-worker/heartbeat.json'
 const workerProfile = process.env.WORKER_PROFILE ?? 'default'
 const workerId = `worker-${randomUUID()}`
 
 if (!Number.isInteger(pollInterval) || pollInterval < 1_000 || pollInterval > 60_000) {
   throw new Error('WORKER_POLL_INTERVAL_MS must be an integer between 1000 and 60000')
+}
+if (
+  !Number.isInteger(mediaStaleClaimMs) ||
+  mediaStaleClaimMs < 1_000 ||
+  mediaStaleClaimMs > 24 * 60 * 60_000
+) {
+  throw new Error('MEDIA_STALE_CLAIM_MS must be an integer between 1000 and 86400000')
 }
 
 const payload = await getPayload({ config })
@@ -52,6 +60,12 @@ async function cycle(): Promise<void> {
       if (payload.collections['social-queue-items']) {
         const { recoverSocialOutbox } = await import('../modules/social/tasks')
         await recoverSocialOutbox(payload)
+      }
+      if (payload.collections['media-assets']) {
+        const { recoverStaleMediaVariantJobs } = await import('../modules/media/tasks')
+        await recoverStaleMediaVariantJobs(payload as never, mediaStaleClaimMs).catch(
+          () => undefined,
+        )
       }
       await payload.jobs.run({ queue: 'media', where: registeredJobs }).catch(() => undefined)
     }
