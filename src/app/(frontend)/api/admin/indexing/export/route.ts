@@ -1,3 +1,4 @@
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -9,6 +10,13 @@ export async function GET(request: Request) {
   const { user } = await payload.auth({ headers: request.headers })
   if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role)))
     return Response.json({ error: 'Staff access required.' }, { status: 403 })
+
+  // The handoff is per-site operationally, and the change feed carries
+  // every site's URLs: scope it to a site the caller is granted on,
+  // exactly like the sibling redirects export. Before RC2-H-02 this
+  // returned all sites' changes to any staff account.
+  const siteId = await resolveRedirectSite(payload, user, request)
+  if (!siteId) return Response.json({ error: 'Staff site access required.' }, { status: 403 })
 
   const changes: Array<{
     idempotencyKey?: string | null
@@ -36,6 +44,7 @@ export async function GET(request: Request) {
     for (const raw of events.docs) {
       const event = raw as unknown as Record<string, unknown>
       const detail = event.payload as Record<string, unknown>
+      if (!detail?.siteId || String(detail.siteId) !== siteId) continue
       changes.push({
         idempotencyKey: event.idempotencyKey ? String(event.idempotencyKey) : null,
         occurredAt: String(event.occurredAt || event.createdAt),
