@@ -1070,7 +1070,7 @@ export const Content: CollectionConfig = {
             }
             incoming.site = cookieSite
           } else if (req?.payload && req?.user) {
-            const grant = await resolveOperatorGrantContext(req.payload, req.user)
+            const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
             if (grant.authorizedSiteIds.length === 1) {
               incoming.site = grant.authorizedSiteIds[0]
             }

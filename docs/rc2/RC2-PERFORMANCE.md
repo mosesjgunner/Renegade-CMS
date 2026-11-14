@@ -93,3 +93,62 @@ Not bottlenecks at this volume: editor data reads (p50 ~20 ms), REST list reads 
 - Public article: warm p50 ≤ 100 ms on the standard world.
 - Any admin API route: p95 ≤ 250 ms on the standard world.
 - Lean full-matrix peak RSS ≤ 800 MB under the bench load (1 GB cap with OS/PG headroom).
+
+## RC2-H-07 optimization record (2026-11-14)
+
+**Pick:** bottleneck #1 only — the schedule-health / admin-auth query flood.
+Bottleneck #2 (public article latency) was profiled and NOT picked (below);
+#3 (cold first-hit) was not attempted. The cap is a maximum, not a quota.
+
+**Root cause (traced, not guessed).** The schedule-health route itself is
+thin: one `payload.auth()` plus one access-filtered find (5 statements).
+The flood lives in `payload.auth()`: Payload's auth operation
+unconditionally computes the full admin permissions object
+(`getAccessResults`), evaluating access for every collection and global —
+concurrently. Renegade's access functions resolve operator site grants
+from the database on every evaluation (`resolveOperatorGrantContext`: a
+`member-site-roles` find plus a `sites` find). One auth therefore cost
+**1,106 statements** (547 role selects + 542 site selects), and the route
+total was ~1,235 statements/request at p50 700 ms.
+
+**Fix.** Concurrent grant resolutions for the same (request, user) now
+share one in-flight promise in `resolveOperatorGrantContext`
+(`src/modules/operations/operator-grants.ts`), threaded through the
+collection access closures. The entry is dropped when the resolution
+settles, so sequential calls always resolve fresh — a coarser per-request
+cache was built first and REJECTED: it broke the pinned semantics that a
+flow may change a user's grants mid-request and re-evaluate access
+(`tests/unit/related-site-access.test.ts` caught it; the in-flight design
+passes it).
+
+**Before / after (same box, same day, same world; Standard profile):**
+
+| Measure                                            | Before (H-06)     | After (H-07)                                   |
+| -------------------------------------------------- | ----------------- | ---------------------------------------------- |
+| schedule-health warm p50                           | 700 ms            | 131 ms                                         |
+| schedule-health warm p95                           | 1,051 ms          | 219 ms                                         |
+| schedule-health cold                               | 1,233 ms          | 542 ms                                         |
+| schedule-health statements/request                 | ~1,235            | 85                                             |
+| `payload.auth()` statements (in-process)           | 1,106             | 30                                             |
+| Standard peak RSS under the matrix                 | 929 MB            | 402 MB                                         |
+| Other routes (home/article/admin/queue/editor p50) | 83/137/60/9/19 ms | 93/143/55/10/24 ms (noise band, no regression) |
+
+**Threshold status, honestly:** the H-06 proposed target for this route
+(p50 ≤ 50 ms and ≤ 50 statements) is NOT met — 131 ms and 85 statements.
+The remaining statements come from per-evaluation site/theme resolution
+outside the grant path (~19 site-settings + ~19 site selects per request).
+That is the named next target for RC3 performance work; it was not folded
+into this pass. The auth permissions pass itself went from ~1,106 to ~30
+statements.
+
+**Pick #2 assessment (public article):** profiled at 74 statements/request,
+spread across content/settings/publication/site/revision reads that scale
+with page composition; no single redundant-fetch defect isolated, and
+warm p50 (137 → 143 ms) is unchanged by the auth fix as expected (public
+routes do not authenticate). Not picked; the profile travels with the
+RC3 backlog.
+
+**Regression anchor:** `tests/unit/operator-grant-cache.test.ts` (5 tests:
+concurrent sharing, sequential freshness, no cross-request/user sharing,
+uncached parity) plus the unchanged tenant-authorization matrix
+(21/21 integration) — the optimization holds the tenant boundary.

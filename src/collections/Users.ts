@@ -14,7 +14,7 @@ import {
 // role or delete it for every other tenant that shares the same member.
 const globalAccountWrite: NonNullable<CollectionConfig['access']>['update'] = async ({ req }) =>
   req.user?.role === 'owner' &&
-  (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner
+  (await resolveOperatorGrantContext(req.payload, req.user, req)).isGlobalOwner
 
 export function createUsersCollection(
   config: Pick<AppConfig, 'payloadSecret' | 'secureCookies'>,

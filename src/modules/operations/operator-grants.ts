@@ -32,12 +32,12 @@ export function preserveRecordRelationshipsAccess(
 export function operatorRelatedSiteAccess(sitePath: string, parentCollection: CollectionSlug) {
   const [relation, ...parentPath] = sitePath.split('.')
   const read: Access = async ({ req }) => {
-    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
     if (!grant.authorized) return false
     return grant.isGlobalOwner ? true : { [sitePath]: { in: grant.authorizedSiteIds } }
   }
   const canReference: Access = async ({ req, data }) => {
-    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
     if (!grant.authorized) return false
     if (!data || !Object.prototype.hasOwnProperty.call(data, relation)) return true
     const id = asId(data[relation])
@@ -63,7 +63,7 @@ export function operatorRelatedSiteAccess(sitePath: string, parentCollection: Co
 /** Canonical members are global; their site membership determines a scoped operator's visibility. */
 export function operatorMemberScopeAccess(memberField = 'member') {
   const scope = async (req: Parameters<Access>[0]['req']) => {
-    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
     if (!grant.authorized) return { allowed: false, global: false, ids: [] as string[] }
     if (grant.isGlobalOwner) return { allowed: true, global: true, ids: [] as string[] }
     const memberships = await req.payload.find({
@@ -93,7 +93,7 @@ export function operatorMemberScopeAccess(memberField = 'member') {
 
 /** Native Payload reads must apply the same site grants as operator APIs. */
 export const operatorSiteReadAccess: Access = async ({ req }) => {
-  const grant = await resolveOperatorGrantContext(req.payload, req.user)
+  const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
   if (!grant.authorized) return false
   if (grant.isGlobalOwner) return true
   return { site: { in: grant.authorizedSiteIds } }
@@ -101,7 +101,7 @@ export const operatorSiteReadAccess: Access = async ({ req }) => {
 
 /** A global changes every site's fallback settings; a one-site grant is insufficient. */
 export const operatorAllSitesAccess: Access = async ({ req }) => {
-  const grant = await resolveOperatorGrantContext(req.payload, req.user)
+  const grant = await resolveOperatorGrantContext(req.payload, req.user, req)
   if (!grant.authorized) return false
   if (grant.isGlobalOwner) return true
   const foreign = await req.payload.count({
@@ -118,8 +118,9 @@ export async function checkOperatorRecordAccess(
   collection: CollectionSlug,
   id: string,
   sitePath = 'site',
+  req?: object,
 ): Promise<boolean> {
-  const grant = await resolveOperatorGrantContext(payload, user)
+  const grant = await resolveOperatorGrantContext(payload, user, req)
   if (!grant.authorized) return false
   const result = await payload.count({
     collection,
@@ -136,15 +137,15 @@ export async function checkOperatorRecordAccess(
 export const operatorSiteCreateAccess: Access = async ({ req, data }) => {
   // Payload evaluates permission to open the create form before it has form data.
   if (data?.site === undefined)
-    return (await resolveOperatorGrantContext(req.payload, req.user)).authorized
-  return checkOperatorSiteAccess(req.payload, req.user, asId(data?.site))
+    return (await resolveOperatorGrantContext(req.payload, req.user, req)).authorized
+  return checkOperatorSiteAccess(req.payload, req.user, asId(data?.site), req)
 }
 
 export const operatorSiteUpdateAccess: Access = async ({ req, data }) => {
   if (
     data &&
     Object.prototype.hasOwnProperty.call(data, 'site') &&
-    !(await checkOperatorSiteAccess(req.payload, req.user, asId(data.site)))
+    !(await checkOperatorSiteAccess(req.payload, req.user, asId(data.site), req))
   )
     return false
   return operatorSiteReadAccess({ req })
@@ -170,15 +171,70 @@ const asId = (value: unknown): string => {
   return String(value)
 }
 
+type GrantUser =
+  | {
+      id?: unknown
+      email?: unknown
+      role?: unknown
+      member?: unknown
+    }
+  | null
+  | undefined
+
+/**
+ * In-flight grant-resolution dedupe (RC2-H-07).
+ *
+ * Payload evaluates collection/field access for EVERY collection when a
+ * route calls `payload.auth()` (its permissions pass runs the collections
+ * concurrently via Promise.all), and each evaluation used to re-run this
+ * resolution's database queries — one admin auth cost ~1,100 SQL
+ * statements (measured in RC2-H-06/H-07) for hundreds of simultaneous
+ * resolutions of the same user. When the caller passes its request
+ * object, concurrent resolutions of the same (request, user) share one
+ * in-flight promise. The entry is dropped the moment the resolution
+ * settles, so SEQUENTIAL calls always resolve fresh: flows that change a
+ * user's grants mid-request and re-evaluate access (pinned by
+ * tests/unit/related-site-access.test.ts) keep their semantics exactly.
+ */
+const grantContextByRequest = new WeakMap<object, Map<string, Promise<OperatorGrantContext>>>()
+
+export function resolveOperatorGrantContext(
+  payload: Payload,
+  user: GrantUser,
+  req?: object,
+): Promise<OperatorGrantContext> {
+  if (!req) return resolveOperatorGrantContextUncached(payload, user)
+  const key = [
+    asId(user?.id),
+    String(user?.role ?? ''),
+    asId(user?.member),
+    String(user?.email ?? ''),
+  ].join('|')
+  let perRequest = grantContextByRequest.get(req)
+  if (!perRequest) {
+    perRequest = new Map()
+    grantContextByRequest.set(req, perRequest)
+  }
+  const inFlight = perRequest.get(key)
+  if (inFlight) return inFlight
+  const pending = resolveOperatorGrantContextUncached(payload, user)
+  perRequest.set(key, pending)
+  const evict = () => {
+    if (perRequest.get(key) === pending) perRequest.delete(key)
+  }
+  pending.then(evict, evict)
+  return pending
+}
+
 /**
  * Resolves the canonical site grants for an administrative / staff user.
  * - 'owner': Global superuser; has implicit authority over all sites.
  * - 'administrator', 'publisher', 'staff': Authority bounded strictly by their
  *   linked canonical Member record and explicit `member-site-roles` grants.
  */
-export async function resolveOperatorGrantContext(
+async function resolveOperatorGrantContextUncached(
   payload: Payload,
-  user: { id?: unknown; email?: unknown; role?: unknown; member?: unknown } | null | undefined,
+  user: GrantUser,
 ): Promise<OperatorGrantContext> {
   const role = String(user?.role ?? '')
   const userId = asId(user?.id) || (role ? 'operator' : '')
@@ -362,9 +418,10 @@ export async function checkOperatorSiteAccess(
   payload: Payload,
   user: { id?: unknown; email?: unknown; role?: unknown; member?: unknown } | null | undefined,
   siteId: string | null | undefined,
+  req?: object,
 ): Promise<boolean> {
   if (!siteId) return false
-  const grant = await resolveOperatorGrantContext(payload, user)
+  const grant = await resolveOperatorGrantContext(payload, user, req)
   if (!grant.authorized) return false
   if (grant.isGlobalOwner) return true
   return grant.authorizedSiteIds.includes(String(siteId))
