@@ -3,6 +3,7 @@ import type { Payload } from 'payload'
 import { canonicalizeHandle, changeMemberHandle } from '../identity/member-identity'
 import { loadConfig } from '../core/config'
 import { uploadMedia, MediaWorkflowError } from '../media/workflow'
+import { recordMediaUsage } from '../media/usage'
 import {
   normalizeFieldAudience,
   normalizeProfileLinks,
@@ -105,24 +106,20 @@ export async function uploadMemberProfileImage(
     throw error
   }
   const usageKey = `profile:${String(profile.id)}:${input.field}:${String(asset.id)}`
-  await payload.create({
-    collection: 'media-usages',
-    overrideAccess: true,
-    data: {
-      site: siteId,
-      media: asset.id,
-      usageKey,
-      usedBy: { relationTo: 'profiles', value: profile.id },
-      targetType: 'profile',
-      targetId: String(profile.id),
-      field: input.field,
-      purpose: input.field === 'avatar' ? 'avatar' : 'cover',
-      lifecycle: 'draft',
-      approvedForPublic: false,
-      replaceGlobally: false,
-      lastReconciledAt: new Date().toISOString(),
-    },
-  } as never)
+  await recordMediaUsage(payload, {
+    site: siteId,
+    media: asset.id,
+    usageKey,
+    usedBy: { relationTo: 'profiles', value: profile.id },
+    targetType: 'profile',
+    targetId: String(profile.id),
+    field: input.field,
+    purpose: input.field === 'avatar' ? 'avatar' : 'cover',
+    lifecycle: 'draft',
+    approvedForPublic: false,
+    replaceGlobally: false,
+    lastReconciledAt: new Date().toISOString(),
+  })
   await payload.update({
     collection: 'profiles',
     id: String(profile.id),

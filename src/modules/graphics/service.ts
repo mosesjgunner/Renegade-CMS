@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
 import { assertGraphicDocument } from '../media/contracts'
+import { recordMediaUsage } from '../media/usage'
 
 import { graphicTemplatePresets, type GraphicTemplate } from './contracts'
 export { graphicTemplatePresets, type GraphicTemplate } from './contracts'
@@ -107,17 +108,13 @@ export async function createGraphicDerivative(
     },
     overrideAccess: true,
   } as never)) as Doc
-  await payload.create({
-    collection: 'media-usages',
-    data: {
-      media: input.sourceMediaId,
-      usageKey: `graphic:${derivative.id}`,
-      usageType: 'graphic-source',
-      targetCollection: 'media-derivatives',
-      targetId: derivative.id,
-      approved: true,
-    },
-    overrideAccess: true,
-  } as never)
+  await recordMediaUsage(payload, {
+    media: input.sourceMediaId,
+    usageKey: `graphic:${derivative.id}`,
+    usageType: 'graphic-source',
+    targetCollection: 'media-derivatives',
+    targetId: derivative.id,
+    approved: true,
+  })
   return { document, derivative }
 }
