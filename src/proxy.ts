@@ -24,7 +24,7 @@ export async function proxy(request: NextRequest) {
     !/^\/(api|admin|_next)(\/|$)/.test(path) &&
     !/\.(ico|png|jpg|svg|css|js|woff2?)$/.test(path)
   ) {
-    const [{ getPayload }, { default: config }, { publicSiteForHost }, { resolveRedirect }] =
+    const [{ getPayload }, { default: config }, { publicSiteForHost }, { resolveRedirectForSite }] =
       await Promise.all([
         import('payload'),
         import('@payload-config'),
@@ -34,22 +34,8 @@ export async function proxy(request: NextRequest) {
     const payload = await getPayload({ config })
     const siteId = await publicSiteForHost(payload, request.headers.get('host'))
     if (siteId) {
-      const result = await payload.find({
-        collection: 'public-redirects',
-        where: { site: { equals: siteId } },
-        pagination: false,
-        limit: 0,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const resolution = resolveRedirect(
-        result.docs.map((rule) => ({
-          ...rule,
-          siteId,
-          preserveQuery: rule.preserveQuery !== false,
-          enabled: rule.enabled !== false,
-          statusCode: Number(rule.statusCode) as 301 | 302 | 307 | 308,
-        })),
+      const { resolution } = await resolveRedirectForSite(
+        payload,
         siteId,
         path,
         request.nextUrl.search,

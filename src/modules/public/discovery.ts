@@ -557,6 +557,32 @@ export function validateRedirectRule(rule: RedirectRule): string | true {
   return true
 }
 
+/** First rule (in array order) that matches `path` for the site, or undefined. */
+export function matchRedirectRule(
+  rules: readonly RedirectRule[],
+  siteId: string,
+  path: string,
+): RedirectRule | undefined {
+  return rules.find(
+    (candidate) =>
+      candidate.siteId === siteId &&
+      candidate.enabled !== false &&
+      ((candidate.match === 'exact' && candidate.fromPath === path) ||
+        (candidate.match === 'prefix' &&
+          (path === candidate.fromPath || path.startsWith(`${candidate.fromPath}/`))) ||
+        (candidate.match === 'regex' && new RegExp(candidate.fromPath).test(path))),
+  )
+}
+
+/** Apply one matched rule to `path`, producing the next path. */
+export function applyRedirectRule(rule: RedirectRule, path: string): string {
+  return rule.match === 'prefix'
+    ? `${rule.toPath}${path.slice(rule.fromPath.length)}`
+    : rule.match === 'regex'
+      ? path.replace(new RegExp(rule.fromPath), rule.toPath)
+      : rule.toPath
+}
+
 export function resolveRedirect(
   rules: readonly RedirectRule[],
   siteId: string,
@@ -568,15 +594,7 @@ export function resolveRedirect(
   const visited = new Set<string>()
   const ruleIds: string[] = []
   for (let hop = 0; hop < maxHops; hop++) {
-    const rule = rules.find(
-      (candidate) =>
-        candidate.siteId === siteId &&
-        candidate.enabled !== false &&
-        ((candidate.match === 'exact' && candidate.fromPath === path) ||
-          (candidate.match === 'prefix' &&
-            (path === candidate.fromPath || path.startsWith(`${candidate.fromPath}/`))) ||
-          (candidate.match === 'regex' && new RegExp(candidate.fromPath).test(path))),
-    )
+    const rule = matchRedirectRule(rules, siteId, path)
     if (!rule)
       return ruleIds.length
         ? { target: `${path}${query && query !== '?' ? query : ''}`, statusCode: 308, ruleIds }
@@ -586,25 +604,9 @@ export function resolveRedirect(
     visited.add(rule.id)
     visited.add(path)
     ruleIds.push(rule.id)
-    path =
-      rule.match === 'prefix'
-        ? `${rule.toPath}${path.slice(rule.fromPath.length)}`
-        : rule.match === 'regex'
-          ? path.replace(new RegExp(rule.fromPath), rule.toPath)
-          : rule.toPath
+    path = applyRedirectRule(rule, path)
     if (!normalPath(path)) return { error: 'missing-target' }
-    if (
-      !rules.some(
-        (candidate) =>
-          candidate.siteId === siteId &&
-          candidate.enabled !== false &&
-          (candidate.match === 'exact'
-            ? candidate.fromPath === path
-            : candidate.match === 'prefix'
-              ? path === candidate.fromPath || path.startsWith(`${candidate.fromPath}/`)
-              : new RegExp(candidate.fromPath).test(path)),
-      )
-    )
+    if (!matchRedirectRule(rules, siteId, path))
       return {
         target: `${path}${rule.preserveQuery === false ? '' : query}`,
         statusCode: rule.statusCode ?? 308,
@@ -612,6 +614,141 @@ export function resolveRedirect(
       }
   }
   return { error: 'hop-limit' }
+}
+
+type RedirectCandidate = {
+  rule: RedirectRule
+  createdAt: string
+  hitCount: number
+}
+
+/** `/a/b/c` -> [`/a/b/c`, `/a/b`, `/a`, `/`] — every path a prefix rule could match from. */
+export function segmentAncestors(path: string): string[] {
+  const ancestors: string[] = []
+  let current = path
+  for (;;) {
+    ancestors.push(current)
+    if (current === '/') return ancestors
+    const cut = current.lastIndexOf('/')
+    current = cut <= 0 ? '/' : current.slice(0, cut)
+  }
+}
+
+const byCreationOrder = (a: RedirectCandidate, b: RedirectCandidate) =>
+  a.createdAt < b.createdAt
+    ? -1
+    : a.createdAt > b.createdAt
+      ? 1
+      : a.rule.id < b.rule.id
+        ? -1
+        : a.rule.id > b.rule.id
+          ? 1
+          : 0
+
+/**
+ * Resolve a redirect for one request WITHOUT loading the site's whole rule
+ * set. The full-set loaders this replaces returned rows in unspecified
+ * database order; candidates here are ordered by creation (oldest first,
+ * id tie-break) — the deterministic form of the order those loaders
+ * observed in practice. Completeness is by construction: a rule can match
+ * a path only if it is the exact rule for that path, a prefix rule on one
+ * of its segment ancestors, or a regex rule, so per hop the candidate set
+ * is exactly those rows plus the site's regex rules. Load failures degrade
+ * to "no rules", matching the tolerance the page and discovery loaders
+ * already had.
+ */
+export async function resolveRedirectForSite(
+  payload: Payload,
+  siteId: string,
+  pathname: string,
+  query = '',
+  maxHops = 8,
+): Promise<{ resolution: RedirectResolution | null; matchedRules: RedirectCandidate[] }> {
+  const toCandidate = (item: Record<string, unknown>): RedirectCandidate => ({
+    rule: {
+      id: String(item.id),
+      siteId,
+      fromPath: String(item.fromPath),
+      toPath: String(item.toPath),
+      match: item.match as RedirectRule['match'],
+      statusCode: Number(item.statusCode) as RedirectRule['statusCode'],
+      preserveQuery: item.preserveQuery !== false,
+      enabled: item.enabled !== false,
+    },
+    createdAt: String(item.createdAt ?? ''),
+    hitCount: Number(item.hitCount ?? 0),
+  })
+  const loadCandidates = async (where: Record<string, unknown>): Promise<RedirectCandidate[]> => {
+    const result = await payload
+      .find({
+        collection: 'public-redirects',
+        where,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] }))
+    return (result.docs as unknown as Array<Record<string, unknown>>).map(toCandidate)
+  }
+  const regexCandidates = await loadCandidates({
+    and: [{ site: { equals: siteId } }, { match: { equals: 'regex' } }],
+  })
+  const candidatesFor = async (path: string): Promise<RedirectCandidate[]> => {
+    const targeted = await loadCandidates({
+      and: [
+        { site: { equals: siteId } },
+        {
+          or: [
+            { and: [{ match: { equals: 'exact' } }, { fromPath: { equals: path } }] },
+            {
+              and: [{ match: { equals: 'prefix' } }, { fromPath: { in: segmentAncestors(path) } }],
+            },
+          ],
+        },
+      ],
+    })
+    const byId = new Map<string, RedirectCandidate>()
+    for (const candidate of [...targeted, ...regexCandidates])
+      byId.set(candidate.rule.id, candidate)
+    return [...byId.values()].sort(byCreationOrder)
+  }
+
+  let path = pathname
+  const visited = new Set<string>()
+  const matchedRules: RedirectCandidate[] = []
+  const ruleIds: string[] = []
+  let candidates = await candidatesFor(path)
+  for (let hop = 0; hop < maxHops; hop++) {
+    const candidate = candidates.find((entry) => matchRedirectRule([entry.rule], siteId, path))
+    if (!candidate)
+      return {
+        resolution: ruleIds.length
+          ? { target: `${path}${query && query !== '?' ? query : ''}`, statusCode: 308, ruleIds }
+          : null,
+        matchedRules,
+      }
+    const rule = candidate.rule
+    if (!normalPath(rule.toPath)) return { resolution: { error: 'missing-target' }, matchedRules }
+    if (visited.has(rule.id) || visited.has(rule.toPath))
+      return { resolution: { error: 'loop' }, matchedRules }
+    visited.add(rule.id)
+    visited.add(path)
+    ruleIds.push(rule.id)
+    matchedRules.push(candidate)
+    path = applyRedirectRule(rule, path)
+    if (!normalPath(path)) return { resolution: { error: 'missing-target' }, matchedRules }
+    candidates = await candidatesFor(path)
+    if (!candidates.some((entry) => matchRedirectRule([entry.rule], siteId, path)))
+      return {
+        resolution: {
+          target: `${path}${rule.preserveQuery === false ? '' : query}`,
+          statusCode: rule.statusCode ?? 308,
+          ruleIds,
+        },
+        matchedRules,
+      }
+  }
+  return { resolution: { error: 'hop-limit' }, matchedRules }
 }
 
 /** Introduce a dedicated service only after 10k public documents or p95 local search >250ms for seven days. */
@@ -852,27 +989,8 @@ export async function resolveDiscoveryDocument(
 
   // 2. Check Redirect Rules across public-redirects (only when resolving by path without a known record)
   if (siteId && !input.record) {
-    const redirects = await payload
-      .find({
-        collection: 'public-redirects',
-        where: { site: { equals: siteId } },
-        limit: 1000,
-        depth: 0,
-        overrideAccess: true,
-      } as never)
-      .catch(() => ({ docs: [] }))
-
-    const resolution = resolveRedirect(
-      (redirects.docs as unknown as Array<Record<string, unknown>>).map((item) => ({
-        id: String(item.id),
-        siteId: siteId!,
-        fromPath: String(item.fromPath),
-        toPath: String(item.toPath),
-        match: item.match as RedirectRule['match'],
-        statusCode: Number(item.statusCode) as RedirectRule['statusCode'],
-        preserveQuery: item.preserveQuery !== false,
-        enabled: item.enabled !== false,
-      })),
+    const { resolution } = await resolveRedirectForSite(
+      payload,
       siteId,
       normalizedPath,
       input.query ? `?${input.query}` : '',

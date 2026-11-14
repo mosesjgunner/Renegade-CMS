@@ -19,7 +19,7 @@ import type { Metadata } from 'next'
 import {
   discoveryToMetadata,
   resolveDiscoveryDocument,
-  resolveRedirect,
+  resolveRedirectForSite,
   serializeJsonLd,
   type RedirectRule,
 } from '@/modules/public/discovery'
@@ -142,26 +142,8 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
   if (!publication) notFound()
 
-  const redirects = await payload
-    .find({
-      collection: 'public-redirects',
-      where: { site: { equals: siteId } },
-      limit: 1000,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    .catch(() => ({ docs: [] }))
-  const resolution = resolveRedirect(
-    (redirects.docs as unknown as Array<Record<string, unknown>>).map((item) => ({
-      id: String(item.id),
-      siteId,
-      fromPath: String(item.fromPath),
-      toPath: String(item.toPath),
-      match: item.match as RedirectRule['match'],
-      statusCode: Number(item.statusCode) as RedirectRule['statusCode'],
-      preserveQuery: item.preserveQuery !== false,
-      enabled: item.enabled !== false,
-    })),
+  const { resolution, matchedRules } = await resolveRedirectForSite(
+    payload,
     siteId,
     path,
     query ? `?${query}` : '',
@@ -169,17 +151,12 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   if (resolution && 'target' in resolution) {
     // Best-effort telemetry must not make a redirect unavailable.
     await Promise.all(
-      resolution.ruleIds.map((id) =>
+      matchedRules.map((matched) =>
         payload.update({
           collection: 'public-redirects',
-          id,
+          id: matched.rule.id,
           data: {
-            hitCount:
-              Number(
-                (redirects.docs as Array<{ id: unknown; hitCount?: unknown }>).find(
-                  (rule) => String(rule.id) === id,
-                )?.hitCount ?? 0,
-              ) + 1,
+            hitCount: matched.hitCount + 1,
             lastHitAt: new Date().toISOString(),
           },
           overrideAccess: true,

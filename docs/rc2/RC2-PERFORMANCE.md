@@ -243,3 +243,43 @@ marks silently failed — Payload's jobs `error` field is JSON
 while a `.catch(() => undefined)` hid it. The reconciler now writes the
 JSON shape and only counts updates that actually landed; a unit test
 pins both behaviors (`tests/unit/media-stale-claim-recovery.test.ts`).
+
+## Perf lane 03 — narrow public redirect lookups (2026-11-14)
+
+**Baseline behavior.** Three public loaders each fetched the site's
+ENTIRE redirect rule set on every eligible request: the proxy
+(`pagination: false`, unbounded), the catch-all page (`limit: 1000`),
+and `resolveDiscoveryDocument` (`limit: 1000`) — then resolved in
+memory. Statement counts stayed flat as rules grew (Prompt 00), but
+rows read per request grew linearly: at 1,000 rules every page view
+hydrated 1,000 rule rows, and home latency rose 97 → 283 ms.
+
+**Fix.** One shared resolver, `resolveRedirectForSite` in
+`src/modules/public/discovery.ts`, used by all three call sites (the
+load-and-resolve block existed in three copies; now it exists once).
+Per hop it loads only the rows that can match: the exact rule for the
+path (the (site, fromPath) unique index already exists), prefix rules
+on the path's segment ancestors, and the site's regex rules (loaded
+once). Completeness is by construction — no other row can match.
+`resolveRedirect` keeps its exact semantics for array callers; its
+single-step match/apply are now shared helpers both paths use.
+
+**Ordering, stated plainly.** The old loaders specified no sort, so
+first-match precedence was unspecified database order. The resolver
+orders candidates by creation (oldest first, id tie-break) — the
+deterministic form of the order observed in practice. This is a
+specification choice, recorded here rather than disguised as a pure
+optimization.
+
+**Proof (real Payload adapter, scratch DB, 1,000 rules seeded).** Old
+loader: 1,000 rows per request. New resolver rows per request:
+no-match 1, exact hit 2, prefix hit 2, regex hit 1, overlap 3, chain 3,
+disabled 2 — a ≥99% reduction, past the lane's ≥80% keep-bar. All seven
+battery paths resolve identically to the full-set resolver in creation
+order, including the overlap (older prefix beats newer exact, as the
+full set resolves it), the two-hop chain, and the disabled rule.
+Scorecard honesty: statement count rises from 1 broad find to 2–4
+small indexed finds per request; rows read is the cost that grew
+without bound, and it is the one that collapsed. Unit anchor:
+`tests/unit/redirect-candidate-resolution.test.ts` (rows-read counts
+against a 1,000-rule stub set, precedence, chains, loops, equivalence).
