@@ -21,6 +21,57 @@ demo / E2 connected workflow / E3 supported operational / E4 mature.
 | 11  | Network & Extensibility            | Publication actor discovered via WebFinger → HTTP-signed Follow from an independent local peer verified + persisted (followers readback) → signed Accept delivered to the peer inbox → replay dedupe + forged-signature refusal → federated reply persisted into the article discussion, held for review → operator block denies further signed activity → unknown actors 404; networking-off baseline 404s with the CMS unaffected (G-03)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | E2 proven (local-peer bounded, G-03); public-instance interop NOT VERIFIED; R2R E0                                                                                                                | G-family                                                                              |
 | 12  | Installation, Infrastructure & Ops | Baseline gates green at A-01 freeze; lifecycle journey lands with H-family                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | partial                                                                                                                                                                                           | evidence/RC2-A-01/RESULT.md                                                           |
 
+## I-01 independent replay (2026-11-15)
+
+Every row above was independently replayed against the frozen RC2
+candidate `17e115910b25f730949bccc95f6979b65eda7cdb` (main after PRs
+#77 and #78–#82) — one supported E2 positive journey plus at least one
+meaningful negative case per family, re-run, not rolled up from the
+original passes. Full matrix, environment identity and findings:
+evidence/RC2-I-01/RESULT.md.
+
+- Families 1, 2, 3, 4, 6: replay PASS, stage counts identical to the
+  original proofs (23/23 + 13/13; 14/14; 16/16 + 10/10 + 12/12; 11/11;
+  8/8). Family 6's row above predates the G batch; the G-02 journey
+  itself is recorded in evidence/RC2-G-02/RESULT.md and its replay
+  here closes the "not started" cell.
+- Family 5: PASS with one open decision — D-02 7/7 and D-04 8/8
+  replayed clean; D-03 replayed 6/7 because scheduling a campaign to a
+  zero-eligible segment now refuses with a 400 "Empty audience" guard
+  where the original journey contract expected schedule-anyway. The
+  unsubscribe/suppression machinery itself verified clean. Decision
+  (keep the guard + update the contract, or restore schedule-anyway)
+  is an I-02 item.
+- Family 7: PASS at proven scope (E-01 11/11 + 4/4, E-02 12/12 + 3/3,
+  E-03 11/11 + 4/4 replayed). The mandated negatives measured the
+  known gaps again on the candidate: a never-joined-site post returns
+  201 (member-standing model C is decided, enforcement not built), and
+  a scope-less suspend returns 200 while restricting nothing
+  (RC2-DEBT-24). RC2-DEBT-18 (magic-link GET 500) and RC2-DEBT-19
+  (role-less member unreportable, 404) re-proven live.
+- Family 8: PASS at proven scope (F-01 12/12, F-02 11/11, F-03 13/13
+  replayed). Provider labels unchanged: recurring checkout NOT
+  executable in the sandbox; POD emulator-proven, #51 stays E1.
+- Family 9: PASS at proven scope (G-01 12/12 replayed against the
+  local fixture; no hosted provider verified).
+- Family 10: the H-02 role matrix replayed in full — 32 boundary
+  holds, 0 breaches, 7 measures, every measure matching its registered
+  expectation (RC2-DEBT-16 cells B1/B2 = 403/403; standing cells
+  G2/G3/G5 = 201; RC2-DEBT-19 cell G7 = 404; per-site scope cell G12
+  holds). The "partial" cell above is superseded by this replay plus
+  evidence/RC2-H-02/RESULT.md.
+- Family 11: PASS at proven scope (G-03 ALL PASS, 9 stages, local
+  HTTPS peer). #69 stays E2 local-peer bounded, public interop NOT
+  VERIFIED, #70 stays E0.
+- Family 12: PASS with the same two bounded findings as H-08 — the
+  full lifecycle replayed in fresh databases (311 tables, 228 rows, 0
+  digest mismatches; upgrade rehearsal passed; install.sh refuses
+  cleanly without a Docker daemon, so Compose provisioning stays
+  unverifiable here and #77 stays E2), and the portable round trip is
+  again PARTIAL at 14/19, reproducing RC2-DEBT-26 exactly. The
+  "partial" cell above is superseded by this replay plus
+  evidence/RC2-H-08/RESULT.md.
+
 Notes:
 
 - "Partial" means real proof exists for part of the family but the
