@@ -45,6 +45,58 @@ async function projectionQuery(
 const idOf = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: unknown } | null)?.id || '')
 
+/**
+ * Request-scoped read memo for one search query. Per-hit discovery
+ * resolution repeats several identical reads (the site's publication,
+ * the site row, shared taxonomy) once per match; within a single query
+ * those reads are deterministic, so identical find/findByID calls are
+ * served from a memo instead of the database. Results are cloned on the
+ * way out so callers cannot mutate a shared record. Anything that is
+ * not a plain read (writes, transactions, req-scoped calls) passes
+ * straight through untouched.
+ */
+function memoizeSearchReads(payload: Payload): Payload {
+  const memo = new Map<string, Promise<unknown>>()
+  const keyFor = (method: string, args: unknown) => {
+    try {
+      return `${method}:${JSON.stringify(args, (_key, value) =>
+        typeof value === 'function' || typeof value === 'symbol' ? undefined : value,
+      )}`
+    } catch {
+      return null
+    }
+  }
+  const wrap =
+    <A extends unknown[], R>(
+      method: string,
+      fn: (...args: A) => Promise<R>,
+    ): ((...args: A) => Promise<R>) =>
+    async (...args: A): Promise<R> => {
+      const first = args[0] as { req?: unknown; overrideAccess?: unknown } | undefined
+      if (!first || typeof first !== 'object' || first.req) return fn(...args)
+      const key = keyFor(method, args)
+      if (!key) return fn(...args)
+      const existing = memo.get(key)
+      if (existing) return structuredClone(await existing) as R
+      const pending = fn(...args)
+      memo.set(key, pending)
+      try {
+        return await pending
+      } catch (error) {
+        memo.delete(key)
+        throw error
+      }
+    }
+  return new Proxy(payload, {
+    get(target, property, receiver) {
+      if (property === 'find') return wrap('find', target.find.bind(target) as never)
+      if (property === 'findByID') return wrap('findByID', target.findByID.bind(target) as never)
+      const value = Reflect.get(target, property, receiver)
+      return typeof value === 'function' ? value.bind(target) : value
+    },
+  })
+}
+
 export type ProjectedSearchDocument = SearchDocument & {
   collection: string
   canonicalRevisionId: string | null
@@ -291,21 +343,87 @@ export async function querySearchProjection(
     settings.indexingMode === 'index' &&
     !settings.seoNoIndex
   ) {
+    // Batch the canonical re-read: one depth-2 find per collection for
+    // every candidate id, instead of one findByID per match (each of
+    // which re-ran the full relationship population). Authorization and
+    // freshness are unchanged — every candidate is still checked against
+    // its live record and its current discovery projection below, in the
+    // original rank order. The memoized reader additionally collapses
+    // the identical reads per-hit discovery resolution repeats (site,
+    // publication, shared lookups) to one execution per query.
+    const readPayload = memoizeSearchReads(payload)
+    const rowsByCollection = new Map<string, Array<(typeof result.rows)[number]>>()
     for (const row of result.rows) {
-      const record = await payload
-        .findByID({
-          collection: row.collection as never,
-          id: String(row.id),
+      const group = rowsByCollection.get(String(row.collection)) ?? []
+      group.push(row)
+      rowsByCollection.set(String(row.collection), group)
+    }
+    const recordsByKey = new Map<string, Record<string, unknown>>()
+    for (const [collection, rows] of rowsByCollection) {
+      const found = await readPayload
+        .find({
+          collection: collection as never,
+          where: { id: { in: rows.map((row) => String(row.id)) } },
           depth: 2,
+          pagination: false,
           overrideAccess: true,
-        })
+        } as never)
+        .catch(() => ({ docs: [] }))
+      for (const doc of found.docs as unknown as Array<Record<string, unknown>>)
+        recordsByKey.set(`${collection}:${String(doc.id)}`, doc)
+    }
+    // Batch the article-family and published-revision reads discovery
+    // would otherwise repeat for every article hit: one find for all
+    // families of the matched content, one for all their revisions.
+    // A failed batch leaves the maps empty, and discovery falls back to
+    // its own per-record loads — never to a wrong "absent".
+    const familiesByContentId = new Map<string, Record<string, unknown> | null>()
+    const revisionsById = new Map<string, Record<string, unknown>>()
+    const contentRows = result.rows.filter((row) => String(row.collection) === 'content')
+    if (contentRows.length) {
+      const families = await readPayload
+        .find({
+          collection: 'article-family-content',
+          where: { content: { in: contentRows.map((row) => String(row.id)) } },
+          depth: 1,
+          pagination: false,
+          overrideAccess: true,
+        } as never)
         .catch(() => null)
-      if (!record || idOf((record as unknown as Record<string, unknown>).site) !== input.siteId)
-        continue
-      const doc = await resolveDiscoveryDocument(payload, {
+      if (families) {
+        for (const row of contentRows) familiesByContentId.set(String(row.id), null)
+        const revisionIds: string[] = []
+        for (const fam of families.docs as unknown as Array<Record<string, unknown>>) {
+          familiesByContentId.set(idOf(fam.content), fam)
+          const revisionId = idOf(fam.latestPublishedRevision)
+          if (revisionId) revisionIds.push(revisionId)
+        }
+        if (revisionIds.length) {
+          const revisions = await readPayload
+            .find({
+              collection: 'revision-records',
+              where: { id: { in: revisionIds } },
+              depth: 0,
+              pagination: false,
+              overrideAccess: true,
+            } as never)
+            .catch(() => ({ docs: [] }))
+          for (const revision of revisions.docs as unknown as Array<Record<string, unknown>>)
+            revisionsById.set(String(revision.id), revision)
+        }
+      }
+    }
+    for (const row of result.rows) {
+      const record = recordsByKey.get(`${String(row.collection)}:${String(row.id)}`)
+      if (!record || idOf(record.site) !== input.siteId) continue
+      const family = familiesByContentId.get(String(row.id))
+      const revisionId = family ? idOf(family.latestPublishedRevision) : ''
+      const doc = await resolveDiscoveryDocument(readPayload, {
         collection: String(row.collection),
-        record: record as unknown as Record<string, unknown>,
+        record,
         siteId: input.siteId,
+        preloadedArticleFamily: family,
+        preloadedPublishedRevision: revisionId ? revisionsById.get(revisionId) : undefined,
       })
       const current = searchProjectionFromDiscovery(doc, String(row.collection))
       if (current) hits.push(current)

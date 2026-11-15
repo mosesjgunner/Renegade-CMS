@@ -885,6 +885,14 @@ export type DiscoveryResolveInput = {
   siteId?: string
   query?: string
   now?: Date
+  /**
+   * Batch-preloaded article family / published revision for the record
+   * (search resolves many records at once and loads these in bulk).
+   * `null` means "known absent". When undefined, discovery loads them
+   * itself, exactly as before.
+   */
+  preloadedArticleFamily?: Record<string, unknown> | null
+  preloadedPublishedRevision?: Record<string, unknown> | null
 }
 
 export async function resolveDiscoveryDocument(
@@ -1473,6 +1481,8 @@ export async function resolveDiscoveryDocument(
         base,
         now,
         siteId,
+        preloadedArticleFamily: input.preloadedArticleFamily,
+        preloadedPublishedRevision: input.preloadedPublishedRevision,
       })
     }
   }
@@ -1778,6 +1788,8 @@ async function buildContentDiscoveryDocument(input: {
   base: string
   now: Date
   siteId?: string
+  preloadedArticleFamily?: Record<string, unknown> | null
+  preloadedPublishedRevision?: Record<string, unknown> | null
 }): Promise<DiscoveryDocument> {
   const { content, payload, settings, base: initialBase, now } = input
   const contentSiteId = idOf(content.site) || input.siteId
@@ -1859,25 +1871,37 @@ async function buildContentDiscoveryDocument(input: {
   let plainTextBody = typeof content.bodyText === 'string' ? content.bodyText : ''
 
   try {
-    const articleFamily = await payload.find({
-      collection: 'article-family-content',
-      where: { content: { equals: String(content.id) } },
-      limit: 1,
-      depth: 1,
-      overrideAccess: true,
-    } as never)
-    const fam = articleFamily.docs[0] as Record<string, any> | undefined
+    const fam =
+      input.preloadedArticleFamily !== undefined
+        ? ((input.preloadedArticleFamily ?? undefined) as Record<string, any> | undefined)
+        : (((
+            await payload.find({
+              collection: 'article-family-content',
+              where: { content: { equals: String(content.id) } },
+              limit: 1,
+              depth: 1,
+              overrideAccess: true,
+            } as never)
+          ).docs[0] ?? undefined) as Record<string, any> | undefined)
     if (fam) {
       publishedRevisionId = idOf(fam.latestPublishedRevision) || null
       if (publishedRevisionId) {
         // A saved edit must not replace the body used by public search.
         plainTextBody = ''
-        const rev = await payload.findByID({
-          collection: 'revision-records',
-          id: publishedRevisionId,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
+        const preloadedRevision =
+          input.preloadedPublishedRevision &&
+          String((input.preloadedPublishedRevision as { id?: unknown }).id ?? '') ===
+            publishedRevisionId
+            ? input.preloadedPublishedRevision
+            : undefined
+        const rev =
+          preloadedRevision ??
+          (await payload.findByID({
+            collection: 'revision-records',
+            id: publishedRevisionId,
+            depth: 0,
+            overrideAccess: true,
+          } as never))
         publishedRevision = rev as Record<string, any> | undefined
         plainTextBody =
           typeof publishedRevision?.document?.plainTextProjection === 'string'
