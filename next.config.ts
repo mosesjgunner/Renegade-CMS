@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
   // alternate directory prevents a build from deleting files owned by that process.
   distDir: process.env.RENEGADE_NEXT_DIST_DIR || '.next',
   output: 'standalone',
+  // Perf Pass 0, lane 08: dynamic filesystem reads rooted at the process
+  // working directory (theme package discovery) make the standalone tracer
+  // include the repository docs tree — 797 MB of the 1,209 MB artifact at
+  // the Prompt 00 baseline. Docs are never read at runtime; exclude them
+  // from tracing so the shipped artifact carries only runnable files.
+  outputFileTracingExcludes: { '*': ['./docs/**/*'] },
   env: { RENEGADE_ARTIFACT_SHA: process.env.RENEGADE_ARTIFACT_SHA ?? '' },
   generateBuildId: async () => process.env.RENEGADE_ARTIFACT_SHA || null,
   // Default Turbopack builds do not use the development-only Webpack watcher rules.
