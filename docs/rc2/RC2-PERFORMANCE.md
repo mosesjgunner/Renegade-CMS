@@ -283,3 +283,47 @@ small indexed finds per request; rows read is the cost that grew
 without bound, and it is the one that collapsed. Unit anchor:
 `tests/unit/redirect-candidate-resolution.test.ts` (rows-read counts
 against a 1,000-rule stub set, precedence, chains, loops, equivalence).
+
+## Perf lane 04 — batch canonical search reads (2026-11-14)
+
+**Baseline behavior.** `querySearchProjection` ran one ranked SQL query
+over `search_documents`, then re-read EVERY match from its canonical
+collection with `findByID` at depth 2 — the full relationship
+population per match — and resolved a discovery document per hit, whose
+article case re-read the article family and its published revision per
+hit. Prompt 00 measured the slope: ~8 extra SQL statements per
+additional match (a 22-hit query cost 191 statements against 31 for a
+single hit).
+
+**Fix (three parts, all inside the search read path).**
+
+1. The canonical re-read is batched: one depth-2 `find` per collection
+   over all candidate ids, instead of one `findByID` per match.
+2. Article families and their published revisions are batch-loaded
+   (one find each, keyed by the matched content ids) and handed to
+   discovery resolution through an explicit preload seam on
+   `DiscoveryResolveInput`; when the seam is absent or a batch fails,
+   discovery performs its own per-record loads exactly as before.
+3. A per-query read memo collapses identical find/findByID calls that
+   per-hit resolution repeats (site, publication, shared lookups) to a
+   single execution per query; results are cloned on the way out, and
+   req-scoped or non-read calls pass through untouched.
+
+Authorization and freshness are unchanged: every candidate is still
+checked against its live record's site and its current discovery
+projection, in the original rank order, and the returned total still
+counts only authorized hits.
+
+**Proof (live b01 world corpus, real adapter, before/after in one
+session).** Identical hits, titles, totals, and order for both probe
+queries in every run. Per-match `findByID` calls on the 3-hit query:
+5 → 0. Payload find calls: 22 → 18, with the article-family reads
+collapsed to a single batched find. Combined SQL statements for the
+two probe queries (PostgreSQL statement log): 57 before → 50 after,
+on a shallow 3-document corpus where fixed costs dominate; the
+structural change is that per-match cost no longer scales with match
+count for the re-read, family, or revision reads — the remaining
+per-hit reads are the hit's own canonical-target checks and type-case
+lookups. The audit's slope target was set against the deep article
+corpus of Prompt 00; re-measuring that exact corpus is the follow-up
+if the slope needs a fresh number.
