@@ -236,16 +236,13 @@ export async function provisionOnboardingSite(
   const space = await upsert(
     payload,
     'spaces',
-    { handle: { equals: input.slug } },
+    {
+      and: [{ site: { equals: site.id } }, { profile: { equals: profile.id } }],
+    },
     {
       site: site.id,
-      member: member.id,
       profile: profile.id,
-      handle: input.slug,
-      canonicalPath: `/members/${input.slug}`,
-      displayName: `${input.name} Space`,
-      bio: input.description || undefined,
-      visibility: 'public',
+      canonicalPath: `/members/${profileHandle}`,
       moderationState: 'clear',
       capabilities: [{ key: 'space.blog', status: 'enabled' }],
       providerOwnership: { local: true },
