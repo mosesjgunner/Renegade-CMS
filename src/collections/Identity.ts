@@ -374,7 +374,7 @@ export const Profiles: CollectionConfig = {
 
 export const Spaces: CollectionConfig = {
   slug: 'spaces',
-  admin: { useAsTitle: 'handle', group: 'Community' },
+  admin: { useAsTitle: 'canonicalPath', group: 'Community' },
   access: {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
@@ -384,34 +384,18 @@ export const Spaces: CollectionConfig = {
   hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
-    { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
-    { name: 'profile', type: 'relationship', relationTo: 'profiles' },
-    {
-      name: 'handle',
-      type: 'text',
-      required: true,
-      index: true,
-      validate: canonicalSlug,
-    },
+    // RC2-DEBT-01: the profile is the one canonical member-home record.
+    // A space is only the per-site presence of that profile — identity
+    // fields (member, handle, displayName, avatar, cover, bio,
+    // visibility, fieldAudience, layoutTheme) live on the profile and
+    // are never duplicated here; resolve them through this relation.
+    { name: 'profile', type: 'relationship', relationTo: 'profiles', required: true, index: true },
     {
       name: 'canonicalPath',
       type: 'text',
       required: true,
       defaultValue: '/members/',
     },
-    { name: 'displayName', type: 'text', required: true },
-    { name: 'avatar', type: 'relationship', relationTo: 'media-assets' },
-    { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
-    { name: 'bio', type: 'textarea' },
-    {
-      name: 'visibility',
-      type: 'select',
-      required: true,
-      defaultValue: 'public',
-      options: visibilityOptions,
-    },
-    { name: 'fieldAudience', type: 'json' },
-    { name: 'layoutTheme', type: 'json' },
     ...capabilityFields(),
     { name: 'providerOwnership', type: 'json' },
     {
@@ -431,7 +415,7 @@ export const Spaces: CollectionConfig = {
     },
   ],
   indexes: [
-    { fields: ['site', 'handle'], unique: true },
+    { fields: ['site', 'profile'], unique: true },
     { fields: ['site', 'canonicalPath'], unique: true },
   ],
 }
