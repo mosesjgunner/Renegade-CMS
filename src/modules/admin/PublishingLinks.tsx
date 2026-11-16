@@ -40,7 +40,9 @@ export default function PublishingLinks({ payload }: { payload: Payload }) {
         <summary>Discovery</summary>
         <Link href="/admin/indexing">Indexing</Link>
         <Link href="/admin/redirects">Redirects</Link>
-        <Link href="/admin/rendered-quality">Rendered Quality</Link>
+        {registered('quality-scans') && (
+          <Link href="/admin/rendered-quality">Rendered Quality</Link>
+        )}
       </details>
       <details>
         <summary>Workflow</summary>

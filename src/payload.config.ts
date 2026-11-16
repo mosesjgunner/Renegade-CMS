@@ -18,8 +18,9 @@ const dirname = path.dirname(fileURLToPath(import.meta.url))
 const config = loadConfig()
 // Register the lean floor by default; optional modules are switched on via
 // RENEGADE_MODULES. See src/modules/module-registry.ts for the full contract.
+const enabledModules = parseEnabledModules(process.env.RENEGADE_MODULES)
 const domainRegistrations = gatePayloadRegistrations(registeredPayloadDomains(config), {
-  enabled: parseEnabledModules(process.env.RENEGADE_MODULES),
+  enabled: enabledModules,
   allowUnsafeCollectionCount: process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT === 'true',
 })
 const users = domainRegistrations.collections.find(({ slug }) => slug === 'users')
@@ -44,10 +45,18 @@ export default buildConfig({
         mediaLibrary: { Component: './modules/admin/MediaLibrary', path: '/media-library' },
         indexing: { Component: './modules/admin/IndexingCenter', path: '/indexing' },
         redirects: { Component: './modules/admin/RedirectManager', path: '/redirects' },
-        renderedQuality: {
-          Component: './modules/admin/RenderedQualityCenter',
-          path: '/rendered-quality',
-        },
+        // RC2-DEBT-07: the rendered-quality surface persists into the
+        // quality module's collections, so the view registers only when
+        // that module is enabled — on the lean floor the route answers
+        // a clean 503 instead (see the discovery audit route).
+        ...(enabledModules.has('quality')
+          ? {
+              renderedQuality: {
+                Component: './modules/admin/RenderedQualityCenter',
+                path: '/rendered-quality',
+              },
+            }
+          : {}),
         workflow: {
           Component: './modules/admin/EditorialWorkflowCenter',
           path: '/workflow',
