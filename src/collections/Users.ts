@@ -201,6 +201,22 @@ export function createUsersCollection(
       // This links an enterprise administrator account to the canonical member identity.
       // It intentionally does not create a second authentication system.
       { name: 'member', type: 'relationship', relationTo: 'members', unique: true, index: true },
+      // RC2-DEBT-16: global ownership is a real, stored fact about the
+      // installation owner — set once by the installer (and backfilled for
+      // existing installs from installation_state.owner_user_id). The grant
+      // resolver reads this flag; without it no principal could ever satisfy
+      // the all-sites access check and site settings were unwritable in
+      // multi-site installs. Only an existing global owner can change it
+      // (the collection's update access is globalAccountWrite).
+      {
+        name: 'isGlobalOwner',
+        type: 'checkbox',
+        defaultValue: false,
+        admin: {
+          description:
+            'Installation owner: authority over every site, including site settings. Set by the installer; changeable only by a global owner.',
+        },
+      },
     ],
   }
 }

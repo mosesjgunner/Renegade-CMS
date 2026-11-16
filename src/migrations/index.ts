@@ -1,4 +1,5 @@
 import * as rc1ExecutionEventsSiteDetach from './20261107_120000_rc1_execution_events_site_detach'
+import * as rc2GlobalOwnerFlag from './20261116_120000_rc2_global_owner_flag'
 import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
@@ -773,6 +774,11 @@ export const migrations = [
     up: rc1ExecutionEventsSiteDetach.up,
     down: rc1ExecutionEventsSiteDetach.down,
     name: '20261107_120000_rc1_execution_events_site_detach',
+  },
+  {
+    up: rc2GlobalOwnerFlag.up,
+    down: rc2GlobalOwnerFlag.down,
+    name: '20261116_120000_rc2_global_owner_flag',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

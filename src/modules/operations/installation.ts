@@ -349,7 +349,7 @@ export async function completeInstallation(
     }
 
     const owner = await client.query<{ id: string }>(
-      `INSERT INTO users (email, role, member_id) VALUES ($1, 'owner', $2) RETURNING id`,
+      `INSERT INTO users (email, role, member_id, is_global_owner) VALUES ($1, 'owner', $2, true) RETURNING id`,
       [current.registration_email, provisioned.member?.id ?? null],
     )
     const ownerId = owner.rows[0]?.id

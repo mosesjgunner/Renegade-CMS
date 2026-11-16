@@ -76,6 +76,30 @@ export async function exportPortableSite(payload: Payload, siteId: string) {
       .filter((owner): owner is string => typeof owner === 'string' && owner.length > 0),
   )
   if (ownerIds.size) await query('members', { id: { in: [...ownerIds] } })
+  // Spaces point at a member and at that member's profile, and neither
+  // profiles nor members carry a site field — the site scan never reaches
+  // them, and the owner pull above only covers members some record owns.
+  // A space whose profile is missing from the archive can never import
+  // (RC2-DEBT-26: the whole member-space-post chain failed on the
+  // unresolvable profile reference), so pull both by reference, exactly
+  // like authors and owners.
+  const spaceRecords = records.filter((record) => record.collection === 'spaces')
+  const spaceMemberIds = new Set(
+    spaceRecords
+      .map((record) => record.data.member)
+      .filter((member): member is string => typeof member === 'string' && member.length > 0),
+  )
+  const exportedMemberIds = new Set(
+    records.filter((record) => record.collection === 'members').map((record) => record.id),
+  )
+  const missingSpaceMembers = [...spaceMemberIds].filter((id) => !exportedMemberIds.has(id))
+  if (missingSpaceMembers.length) await query('members', { id: { in: missingSpaceMembers } })
+  const spaceProfileIds = new Set(
+    spaceRecords
+      .map((record) => record.data.profile)
+      .filter((profile): profile is string => typeof profile === 'string' && profile.length > 0),
+  )
+  if (spaceProfileIds.size) await query('profiles', { id: { in: [...spaceProfileIds] } })
   const storage = mediaStorage(loadConfig())
   const media = await Promise.all(
     records
