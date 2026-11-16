@@ -1,5 +1,13 @@
 # RC2-I-02 — Repair reconciliation
 
+**Landing note (Nov 16, 2026):** PR #84 merged at the branch head that
+predated the DEBT-07 fold-in commits — the merge and the fold-in
+pushes raced, and the five repairs landed while the DEBT-07 fix did
+not. The DEBT-07 commits (byte-identical to the versions verified
+below) were re-landed on fresh main as the follow-up branch
+`rc2-debt07-foldin`. The DEBT-07 evidence below was produced on this
+exact content before the race was discovered.
+
 **Verdict: PASS.** All five repairs I-01 handed over are fixed and proven
 end-to-end on a production build of this tree: RC2-DEBT-18 (magic-link
 GET 500), RC2-DEBT-16 (site settings unwritable in multi-site),
@@ -8,10 +16,11 @@ model C), RC2-DEBT-24 (scope-less suspend restricted nothing), and
 RC2-DEBT-26 (portable import corrupting the member-space-post chain).
 I-01's one open decision — the newsletter empty-audience guard — is
 resolved as **option A** (guard kept, journey contract updated; flagged
-for the owner's veto at merge). RC2-DEBT-07's floor proof was run: the
-defect is **real** (see below); its fix is a bounded follow-up whose
-disposition is the owner's call at this pass's merge. No Red-gate
-defects were found or introduced. Nothing else was repaired.
+for the owner's veto at merge). RC2-DEBT-07's floor proof was also run:
+the defect was **real**, and on the owner's "fix anything busted
+before RC3" direction the bounded gate fix was built, rebuilt, and
+re-verified inside this same pass — DEBT-07 is closed too (see its
+section below). No Red-gate defects were found or introduced.
 
 ## Candidate identity
 
@@ -24,8 +33,10 @@ defects were found or introduced. Nothing else was repaired.
   was rebuilt (PostgreSQL, databases, migrations including the new
   `20261116_120000_rc2_global_owner_flag`, server, jobs worker, seeded
   worlds) and every leg below ran after the rebuild.
-- Unit suite on the final tree: **291 files / 2,137 tests, all
-  passing.** Typecheck and lint clean. Run logs for every leg are
+- Unit suite on the final tree: **291 files / 2,138 tests, all
+  passing** (the count includes one test added by the DEBT-07 fix,
+  covering the audit route's 503 when the quality module is off).
+  Typecheck and lint clean. Run logs for every leg are
   retained with this pass's working papers.
 
 ## Repairs and their proofs
@@ -130,31 +141,48 @@ the address. This was Harbor's recommended option, taken so the pass
 could close; it is flagged in the merge request for the owner's veto —
 restoring schedule-anyway is a small, well-understood reversal.
 
-## RC2-DEBT-07 — Lean floor proof: defect CONFIRMED, fix disposition open
+## RC2-DEBT-07 — Lean floor proof: defect CONFIRMED, then FIXED in this pass — CLOSED
 
-The register asked for proof, not presumption. Proof, on this build:
-with the Lean profile (`RENEGADE_MODULES` empty = floor only, 67
-collections registered), `quality-scans` and `quality-issues` are
+The register asked for proof, not presumption. Proof, on the pre-fix
+build: with the Lean profile (`RENEGADE_MODULES` empty = floor only,
+67 collections registered), `quality-scans` and `quality-issues` are
 **not registered**, and the rendered-audit lifecycle's first write
 throws `The collection with slug quality-scans can't be found`. So on
-a Lean install the Rendered Quality admin view mounts (its
-registration in `payload.config.ts` is unconditional), an operator
-can run an audit, and the run fails at the persistence step — the
-results cannot be saved. This is a real missing seam, not a graceful
-empty state. The bounded fix (gate the view and the audit routes on
-the `quality` module, with a clear "module not enabled" response) is
-**not** in this pass: it touches the shared admin config after the
-verification build, and the staging brief reserves deferral calls to
-the owner. Recommended disposition: a small follow-up repair, or RC3
-— owner's call at this merge. The row stays open at P1 with this
-proof attached.
+a Lean install the Rendered Quality admin view mounted (its
+registration in `payload.config.ts` was unconditional), an operator
+could run an audit, and the run failed at the persistence step — the
+results could not be saved. A real missing seam, not a graceful
+empty state.
+
+The owner then directed that busted items be fixed before RC3 rather
+than passed on ("Fix anything busted befor rc3", Nov 16, 2026), so
+the bounded fix landed in this same pass, after a fresh production
+build, with both profiles re-verified:
+
+- `src/payload.config.ts`: the `renderedQuality` view now registers
+  only when the `quality` module is enabled (the enabled set was
+  already parsed in this file for collection gating).
+- `src/modules/admin/PublishingLinks.tsx`: the Rendered Quality nav
+  link is gated on `registered('quality-scans')` — the same pattern
+  the module-gated Podcasts link already uses in that component.
+- The discovery audit route refuses cleanly before doing any work
+  when the module is off: **503, "The quality module is not enabled
+  on this install."**
+
+Verification on the rebuilt tree: in-process config probe — Lean:
+view absent, quality collections absent; full profile: view present,
+collections present, lifecycle persist succeeds. Over HTTP against
+the production build — full profile: audit POST returns 200 and the
+`quality_scans` count rises 0 → 1 (results persist again); Lean
+instance on the same database: home page serves 200 and the audit
+POST returns the 503 above. The `tests/rc2-h08/i02-lean-probe.ts`
+harness ships with this pass.
 
 ## Register reconciliation
 
 - **Closed by this pass:** DEBT-16, DEBT-18, DEBT-19, DEBT-24,
-  DEBT-26 (closure notes appended to each row, with the evidence
-  above).
-- **DEBT-07:** proof run (above); row annotated, still open.
+  DEBT-26, and DEBT-07 (proof run, then fixed and re-verified on the
+  owner's direction; closure notes appended to each row).
 - **DEBT-01 (P1, profile/space duplicate state):** not in this pass's
   repair set — the decided merge is its own design pass (H-03
   lineage). It remains the largest open P1 and its disposition
