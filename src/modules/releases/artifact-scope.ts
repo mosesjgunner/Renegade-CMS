@@ -82,7 +82,12 @@ export async function assertReleaseArtifactScope(
         text: v.text,
         linkUrl: v.linkUrl,
         attachments: v.attachments,
-        approvalHash: v.approvalHash,
+        // approvalHash is deliberately NOT fingerprinted: it is a
+        // deterministic hash of network/text/linkUrl/attachments (all
+        // fingerprinted directly above), so it adds no content protection —
+        // and including it made the approval transition itself invalidate
+        // the pin, which is the RC2-DEBT-17 deadlock in another form
+        // (pin → release-scoped approve → execution refused as "changed").
       }))
       .sort((a, b) => String(a.id).localeCompare(String(b.id)))
     for (const variant of variants.docs as unknown as Record<string, unknown>[]) {
