@@ -50,6 +50,20 @@ export async function POST(request: Request) {
     )
   }
 
+  // RC2-DEBT-24: a member sanction (suspend_posting / ban_member) submitted
+  // without a scope used to default to 'object' with the profile as its
+  // object, which matches nothing in the posting gate — the action returned
+  // success while restricting nothing site-wide. Member sanctions now
+  // default to site_global, and the applied scope is echoed in the response
+  // so a caller can never silently believe a narrower sanction landed.
+  const memberSanction = action === 'suspend_posting' || action === 'ban_member'
+  const appliedScope = String(body.scope ?? (memberSanction ? 'site_global' : 'object'))
+  const appliedScopeId = body.scopeId
+    ? String(body.scopeId)
+    : appliedScope === 'object'
+      ? targetId
+      : null
+
   try {
     const result = await applyModerationAction(payload, {
       siteId,
@@ -58,18 +72,20 @@ export async function POST(request: Request) {
       targetType,
       targetId,
       action,
-      scope: String(body.scope ?? 'object') as never,
-      scopeId: body.scopeId
-        ? String(body.scopeId)
-        : String(body.scope ?? 'object') === 'object'
-          ? targetId
-          : null,
+      scope: appliedScope as never,
+      scopeId: appliedScopeId,
       expiresAt: body.expiresAt ? String(body.expiresAt) : null,
       reason,
       details,
     })
     return Response.json(
-      { success: true, actionId: result.actionId, data: result },
+      {
+        success: true,
+        actionId: result.actionId,
+        scope: appliedScope,
+        scopeId: appliedScopeId,
+        data: result,
+      },
       { status: 200 },
     )
   } catch (err: unknown) {

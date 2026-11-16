@@ -38,6 +38,16 @@ export async function POST(request: Request) {
   )
 }
 
+function redirectWithCookies(location: URL, cookies: string[]): Response {
+  // Response.redirect() returns a response whose headers are immutable in
+  // the Node runtime, so appending Set-Cookie to it throws and the request
+  // 500s after the single-use token has already been consumed
+  // (RC2-DEBT-18). Build the redirect as a plain mutable Response instead.
+  const response = new Response(null, { status: 302, headers: { location: location.href } })
+  for (const cookie of cookies) response.headers.append('set-cookie', cookie)
+  return response
+}
+
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const token = url.searchParams.get('token') ?? ''
@@ -47,15 +57,15 @@ export async function GET(request: Request) {
   const policy = await resolveCommunityRegistrationPolicy(payload as never, siteId)
   const result = await consumeMagicLink(payload as never, token, new Date(), { policy })
   if (!result) {
-    return Response.redirect(new URL('/member-auth?error=invalid-token', request.url))
+    return redirectWithCookies(new URL('/member-auth?error=invalid-token', request.url), [])
   }
   if (result.pendingApproval) {
-    return Response.redirect(new URL('/member-auth?status=pending-approval', request.url))
+    return redirectWithCookies(new URL('/member-auth?status=pending-approval', request.url), [])
   }
   const secure = loadConfig().secureCookies
   const csrfToken = issueCsrfToken()
-  const redirectResponse = Response.redirect(new URL('/members/settings', request.url), 302)
-  redirectResponse.headers.append('set-cookie', memberSessionCookie(result.sessionToken, secure))
-  redirectResponse.headers.append('set-cookie', csrfCookie(csrfToken, secure))
-  return redirectResponse
+  return redirectWithCookies(new URL('/members/settings', request.url), [
+    memberSessionCookie(result.sessionToken, secure),
+    csrfCookie(csrfToken, secure),
+  ])
 }
