@@ -54,21 +54,29 @@ describe('canonical information architecture integration', () => {
   it('keeps main publication, member space, and member blog ownership isolated', async () => {
     const site = await findOne('sites', { slug: { equals: 'demo-publication' } })
     const member = await findOne('members', { email: { equals: 'river@example.test' } })
-    const space = await findOne('spaces', { handle: { equals: 'river-morgan' } })
+    // RC2-DEBT-01: spaces carry no handle/member of their own — find the
+    // space by its canonical path and resolve ownership via its profile.
+    const space = await findOne('spaces', {
+      canonicalPath: { equals: '/members/river-morgan' },
+    })
+    const spaceProfile = await findOne('profiles', { handle: { equals: 'river-morgan' } })
     const main = await findOne('publications', {
       and: [{ site: { equals: site.id } }, { slug: { equals: 'main' } }],
     })
     const blog = await findOne('publications', { slug: { equals: 'river-morgan' } })
 
     expect(main.owner).toBeNull()
-    expect(idOf(space.member)).toBe(member.id)
+    expect(idOf(space.profile)).toBe(spaceProfile.id)
+    expect(idOf(spaceProfile.member)).toBe(member.id)
     expect(idOf(blog.owner)).toBe(member.id)
     expect(idOf(blog.space)).toBe(space.id)
     expect(blog.canonicalBasePath).toBe('/blogs/river-morgan')
   })
 
   it('hides disabled space creation capability without deleting existing records', async () => {
-    const space = await findOne('spaces', { handle: { equals: 'river-morgan' } })
+    const space = await findOne('spaces', {
+      canonicalPath: { equals: '/members/river-morgan' },
+    })
     const album = await findOne('albums', { canonicalPath: { equals: '/albums/demo-portfolio' } })
 
     await payload.update({
@@ -77,7 +85,9 @@ describe('canonical information architecture integration', () => {
       data: { capabilities: [{ key: 'space.albums', status: 'disabled' }] },
       overrideAccess: true,
     })
-    const disabled = await findOne('spaces', { handle: { equals: 'river-morgan' } })
+    const disabled = await findOne('spaces', {
+      canonicalPath: { equals: '/members/river-morgan' },
+    })
     expect(disabled.capabilities).toEqual([
       { id: expect.any(String), key: 'space.albums', status: 'disabled' },
     ])
@@ -91,7 +101,9 @@ describe('canonical information architecture integration', () => {
       data: { capabilities: [{ key: 'space.albums', status: 'enabled' }] },
       overrideAccess: true,
     })
-    const enabled = await findOne('spaces', { handle: { equals: 'river-morgan' } })
+    const enabled = await findOne('spaces', {
+      canonicalPath: { equals: '/members/river-morgan' },
+    })
     expect(enabled.capabilities[0].status).toBe('enabled')
   })
 
