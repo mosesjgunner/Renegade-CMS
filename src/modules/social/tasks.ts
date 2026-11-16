@@ -98,6 +98,19 @@ export function canOperatorRetrySocialQueueItem(queue: any, now = Date.now()): b
   )
 }
 
+/**
+ * RC2-DEBT-25: a bounded-out failed item (attempt bound spent) can still
+ * diverge from provider truth — the measured case is a lose-response
+ * provider that committed the post on the final attempt while the item
+ * recorded a known failure. Retry is exhausted and must stay exhausted
+ * (no blind resend), but a read-only reconcile lookup by the item's
+ * deterministic key can settle the record from provider truth without
+ * spending an attempt. Only the reconcile mode may take this path.
+ */
+export function canReconcileBoundedFailure(queue: any): boolean {
+  return queue.status === 'failed' && Number(queue.attemptCount ?? 0) >= MAX_PROVIDER_ATTEMPTS
+}
+
 export async function executeSocialQueueItem(payload: Payload, input: SocialDispatchInput) {
   const initial: any = await payload.findByID({
     collection: 'social-queue-items',
@@ -121,7 +134,10 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       Date.parse(queue.leaseUntil) > Date.now()
     )
       return { output: { skipped: true, locked: true, status: 'publishing' } }
-    const recovery = queue.status === 'unknown' || queue.status === 'publishing'
+    const recovery =
+      queue.status === 'unknown' ||
+      queue.status === 'publishing' ||
+      (mode === 'reconcile' && canReconcileBoundedFailure(queue))
     if (queue.status === 'unknown' && mode !== 'reconcile')
       return {
         output: {
@@ -522,6 +538,15 @@ export async function recoverSocialOutbox(payload: Payload) {
       or: [
         { and: [{ status: { equals: 'scheduled' } }, { scheduledFor: { less_than_equal: now } }] },
         { and: [{ status: { equals: 'failed' } }, { nextAttemptAt: { less_than_equal: now } }] },
+        // RC2-DEBT-25: bounded-out failures are terminal (no nextAttemptAt),
+        // so the retry clause above never sees them. They join the sweep in
+        // reconcile mode — settled from provider truth, never re-sent.
+        {
+          and: [
+            { status: { equals: 'failed' } },
+            { attemptCount: { greater_than_equal: MAX_PROVIDER_ATTEMPTS } },
+          ],
+        },
         { and: [{ status: { equals: 'publishing' } }, { leaseUntil: { less_than_equal: now } }] },
       ],
     },
@@ -532,7 +557,12 @@ export async function recoverSocialOutbox(payload: Payload) {
       await executeSocialQueueItem(payload, {
         queueItemId: String(queue.id),
         workerId: 'social-outbox-recovery',
-        mode: queue.status === 'failed' ? 'retry' : 'dispatch',
+        mode:
+          queue.status === 'failed'
+            ? canReconcileBoundedFailure(queue)
+              ? 'reconcile'
+              : 'retry'
+            : 'dispatch',
       }),
     )
   return results
