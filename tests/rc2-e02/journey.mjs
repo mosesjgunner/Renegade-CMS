@@ -258,19 +258,28 @@ const profileReportBefore = await api(hostA, '/api/community/reports', {
   },
 })
 stage(
-  'a member with no site role row cannot be reported by profile (measured gap)',
+  'a member who has not joined the site cannot be reported by profile (model C: no standing, no target)',
   profileReportBefore.status === 404,
   `profileReport=${profileReportBefore.status} ${profileReportBefore.data?.error ?? ''}`,
 )
-// The member_profile target resolves only once the member holds a
-// site role row (profiles JOIN member_site_roles in both the report
-// and action services). Provision one through the operator path —
-// the same boundary as the moderator grant — and re-file.
-runSpec('tests/rc2-e02/grant-mod.spec.ts', {
-  E02_MEMBER_ID: members.troll.id,
-  E02_SITE_ID: siteA,
-  E02_ROLE: 'member',
+// The member_profile target resolves through the member's per-site
+// standing row (profiles JOIN member_site_roles in both the report and
+// action services). Since RC2-I-02 (RC2-DEBT-19) the member provisions
+// that row themselves by joining the site — no operator path involved.
+const trollJoin = await api(hostA, '/api/community/join', {
+  method: 'POST',
+  cookie: members.troll.cookie,
+  csrf: members.troll.csrf,
+  origin: originA,
+  body: { siteId: siteA },
 })
+stage(
+  'the member joins the site and gains plain standing (idempotent)',
+  trollJoin.status === 201 &&
+    trollJoin.data?.joined === true &&
+    trollJoin.data?.standing?.role === 'member',
+  `join=${trollJoin.status} created=${trollJoin.data?.created} role=${trollJoin.data?.standing?.role}`,
+)
 const profileReportAfter = await api(hostA, '/api/community/reports', {
   method: 'POST',
   cookie: members.author.cookie,
@@ -461,6 +470,66 @@ stage(
     liftSuspend.status === 200 &&
     trollAfterLift.status === 201,
   `suspend=${suspend.status} blocked=${trollAttempt.status} lift=${liftSuspend.status} after=${trollAfterLift.status}`,
+)
+
+// ---------- stage 7b: a scope-less suspend defaults to site_global (RC2-DEBT-24) ----------
+const suspendNoScope = await api(hostA, '/api/community/moderation', {
+  method: 'POST',
+  cookie: members.mod.cookie,
+  csrf: members.mod.csrf,
+  origin: originA,
+  body: {
+    caseId: caseMember,
+    action: 'suspend_posting',
+    targetType: 'member_profile',
+    targetId: members.troll.profileId,
+    reason: 'Scope default check',
+  },
+})
+const trollAttemptNoScope = await api(hostA, '/api/community/comments', {
+  method: 'POST',
+  cookie: members.troll.cookie,
+  csrf: members.troll.csrf,
+  body: {
+    siteId: siteA,
+    attachedToId: world.siteA.publishedArticleId,
+    attachedToCollection: 'content',
+    body: 'Posting while scope-less suspended.',
+  },
+})
+const liftNoScope = await api(hostA, '/api/community/moderation', {
+  method: 'POST',
+  cookie: members.mod.cookie,
+  csrf: members.mod.csrf,
+  origin: originA,
+  body: {
+    caseId: caseMember,
+    action: 'reinstate',
+    targetType: 'member_profile',
+    targetId: members.troll.profileId,
+    reason: 'Scope default check complete',
+    scope: 'site_global',
+  },
+})
+const trollAfterNoScopeLift = await api(hostA, '/api/community/comments', {
+  method: 'POST',
+  cookie: members.troll.cookie,
+  csrf: members.troll.csrf,
+  body: {
+    siteId: siteA,
+    attachedToId: world.siteA.publishedArticleId,
+    attachedToCollection: 'content',
+    body: 'Posting after scope-less suspension lifted.',
+  },
+})
+stage(
+  'a scope-less suspend defaults to site_global, echoes its scope, and actually blocks posting',
+  suspendNoScope.status === 200 &&
+    suspendNoScope.data?.scope === 'site_global' &&
+    trollAttemptNoScope.status !== 201 &&
+    liftNoScope.status === 200 &&
+    trollAfterNoScopeLift.status === 201,
+  `suspend=${suspendNoScope.status} scope=${suspendNoScope.data?.scope} blocked=${trollAttemptNoScope.status} lift=${liftNoScope.status} after=${trollAfterNoScopeLift.status}`,
 )
 
 // ---------- stage 8: reinstate the quarantined post (reversal) ----------

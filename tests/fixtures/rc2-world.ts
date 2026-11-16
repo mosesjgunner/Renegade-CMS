@@ -140,6 +140,13 @@ export interface Rc2World {
   siteB: Rc2SiteWorld
   /** A Site B admin with no authority on Site A — the denied principal. */
   outsider: Rc2Principal
+  /**
+   * The installation owner exactly as the installer creates them
+   * (RC2-DEBT-16): a users record with role 'owner' and isGlobalOwner
+   * set, linked to a member with NO per-site grants. Distinct from the
+   * per-site owner principals, whose authority is site-scoped.
+   */
+  installationOwner: Rc2Principal
   createdIds: Record<string, string[]>
   priorSiteSettings: any
 }
@@ -477,6 +484,31 @@ export async function buildRc2World(payload: Payload): Promise<Rc2World> {
   const siteA = await buildSite('A')
   const siteB = await buildSite('B')
 
+  // The installation owner (RC2-DEBT-16): created the way the installer
+  // creates them — global flag set, no per-site grants at all.
+  const installationOwnerMember = await create('members', {
+    displayName: `installation owner ${suffix}`,
+    email: `installation-owner-${suffix}@example.test`,
+    status: 'active',
+  })
+  const installationOwnerUser = await create(
+    'users',
+    {
+      email: String(installationOwnerMember.email),
+      role: 'owner',
+      member: installationOwnerMember.id,
+      isGlobalOwner: true,
+    },
+    { skipEnrollmentToken: true, seeding: true },
+  )
+  const installationOwner: Rc2Principal = {
+    key: 'installation-owner',
+    memberId: String(installationOwnerMember.id),
+    userId: String(installationOwnerUser.id),
+    email: String(installationOwnerMember.email),
+    user: installationOwnerUser,
+  }
+
   // Host → site mapping through the production site-settings global.
   await (payload as any).updateGlobal({
     slug: 'site-settings',
@@ -495,6 +527,7 @@ export async function buildRc2World(payload: Payload): Promise<Rc2World> {
     siteA,
     siteB,
     outsider: siteB.admin,
+    installationOwner,
     createdIds,
     priorSiteSettings,
   }

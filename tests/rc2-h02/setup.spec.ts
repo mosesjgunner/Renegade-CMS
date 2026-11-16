@@ -86,6 +86,7 @@ describe('RC2-H-02 setup', () => {
       siteA: siteShape(world.siteA),
       siteB: siteShape(world.siteB),
       staff: {
+        installationOwner: await staff(world.installationOwner),
         ownerA: await staff(world.siteA.owner),
         adminA: await staff(world.siteA.admin),
         editorA: await staff(world.siteA.editor),
