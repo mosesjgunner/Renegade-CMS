@@ -20,7 +20,12 @@ for (const record of manifest.records)
   byCollection.set(record.collection, (byCollection.get(record.collection) ?? 0) + 1)
 const space = manifest.records.find((record) => record.collection === 'spaces')
 const profileId = space ? String(space.data.profile ?? '') : ''
-const memberId = space ? String(space.data.member ?? '') : ''
+// RC2-DEBT-01: spaces carry no member field; the member is the
+// profile's member.
+const profileRecord = manifest.records.find(
+  (record) => record.collection === 'profiles' && record.id === profileId,
+)
+const memberId = profileRecord ? String(profileRecord.data.member ?? '') : ''
 const summary = {
   total: manifest.records.length,
   byCollection: Object.fromEntries([...byCollection.entries()].sort()),

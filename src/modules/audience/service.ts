@@ -915,21 +915,39 @@ export async function evaluateSegmentRecipients(
         addFact(communityBySubscriber, subId, 'profile')
     }
     if (payload.collections?.['spaces']) {
+      // RC2-DEBT-01: spaces no longer carry a member field — a space is
+      // a profile's per-site presence, so the fact resolves through
+      // the space's profile to the profile's member.
       const spaces = await payload.find({
         collection: 'spaces',
-        where: {
-          and: [{ member: { in: memberIds } }, { site: { equals: input.siteId } }],
-        },
+        where: { site: { equals: input.siteId } },
         limit: 0,
         pagination: false,
         depth: 0,
         overrideAccess: true,
       })
-      for (const space of spaces.docs as Doc[]) {
-        const memberId = relationId(space.member)
-        if (!memberId) continue
-        for (const subId of subscriberByMember.get(memberId) ?? [])
-          addFact(communityBySubscriber, subId, 'space')
+      const spaceProfileIds = [
+        ...new Set(
+          (spaces.docs as Doc[])
+            .map((space) => relationId(space.profile))
+            .filter((id): id is string => Boolean(id)),
+        ),
+      ]
+      if (spaceProfileIds.length) {
+        const spaceProfiles = await payload.find({
+          collection: 'profiles',
+          where: { id: { in: spaceProfileIds } },
+          limit: 0,
+          pagination: false,
+          depth: 0,
+          overrideAccess: true,
+        })
+        for (const profile of spaceProfiles.docs as Doc[]) {
+          const memberId = relationId(profile.member)
+          if (!memberId || !memberIds.includes(memberId)) continue
+          for (const subId of subscriberByMember.get(memberId) ?? [])
+            addFact(communityBySubscriber, subId, 'space')
+        }
       }
     }
   }

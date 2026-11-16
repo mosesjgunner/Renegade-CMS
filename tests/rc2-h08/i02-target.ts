@@ -37,12 +37,24 @@ if (mode === 'create') {
   })
   const space = spaces.docs[0] as unknown as Record<string, unknown> | undefined
   const spacePosts = space ? await count('content', { space: { equals: String(space.id) } }) : 0
+  // RC2-DEBT-01: spaces carry no member field; the member resolves
+  // through the space's profile.
+  const spaceProfileDoc = space
+    ? await payload
+        .findByID({
+          collection: 'profiles',
+          id: String(space.profile ?? ''),
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+    : null
   console.log(
     JSON.stringify(
       {
         spaces: spaces.totalDocs,
         spaceProfile: space ? String(space.profile ?? '') : null,
-        spaceMember: space ? String(space.member ?? '') : null,
+        spaceMember: spaceProfileDoc ? String(spaceProfileDoc.member ?? '') : null,
         spacePosts,
         profiles: await count('profiles', { id: { equals: String(space?.profile ?? '') } }),
         content: await count('content'),

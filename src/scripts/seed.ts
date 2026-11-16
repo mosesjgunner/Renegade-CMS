@@ -147,16 +147,11 @@ export async function seed(payload: Payload): Promise<void> {
 
   const space = await upsert(payload, {
     collection: 'spaces',
-    where: { and: [{ site: { equals: site.id } }, { handle: { equals: 'river-morgan' } }] },
+    where: { and: [{ site: { equals: site.id } }, { profile: { equals: profile.id } }] },
     data: {
       site: site.id,
-      member: member.id,
       profile: profile.id,
-      handle: 'river-morgan',
       canonicalPath: '/members/river-morgan',
-      displayName: 'River Morgan Space',
-      bio: 'Member-owned demo space.',
-      visibility: 'public',
       capabilities: [
         { key: 'space.blog', status: 'enabled' },
         { key: 'space.albums', status: 'enabled' },

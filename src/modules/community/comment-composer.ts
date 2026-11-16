@@ -311,10 +311,12 @@ export async function resolveSiteMentions(
 
         if (!isScoped) {
           try {
+            // RC2-DEBT-01: spaces carry no member field; a member is
+            // space-scoped when their profile holds a space on the site.
             const spaceCheck = await payload.find({
               collection: 'spaces',
               where: {
-                and: [{ site: { equals: siteId } }, { member: { equals: memberId } }],
+                and: [{ site: { equals: siteId } }, { 'profile.member': { equals: memberId } }],
               },
               limit: 1,
               depth: 0,

@@ -565,7 +565,7 @@ describe('09D closure — canonical selector projections from persisted facts', 
       member: profileOnlyMember.id,
     })
     const foreignSpaceMember = await makeMember(`comm-foreign-${suffix}@example.test`)
-    await makeSubscriber(siteA, `comm-foreign-${suffix}@example.test`, {
+    const foreign = await makeSubscriber(siteA, `comm-foreign-${suffix}@example.test`, {
       member: foreignSpaceMember.id,
     })
     const profile = (memberId: string, handle: string) =>
@@ -574,22 +574,24 @@ describe('09D closure — canonical selector projections from persisted facts', 
         data: { member: memberId, displayName: `Profile ${handle}`, handle },
         overrideAccess: true,
       } as never)
-    await profile(spacedMember.id, `space-${suffix}`)
+    const spacedProfile = await profile(spacedMember.id, `space-${suffix}`)
     await profile(profileOnlyMember.id, `profile-${suffix}`)
-    const space = (siteId: string, memberId: string, handle: string) =>
+    const foreignProfile = await profile(foreignSpaceMember.id, `foreign-${suffix}`)
+    // RC2-DEBT-01: a space is a profile's per-site presence — it carries
+    // no member/handle/displayName of its own; identity lives on the
+    // profile created above.
+    const space = (siteId: string, profileId: string, handle: string) =>
       payload.create({
         collection: 'spaces',
         data: {
           site: siteId,
-          member: memberId,
-          handle,
+          profile: profileId,
           canonicalPath: `/members/${handle}`,
-          displayName: `Space ${handle}`,
         },
         overrideAccess: true,
       } as never)
-    await space(siteA, spacedMember.id, `space-${suffix}`)
-    await space(siteB, foreignSpaceMember.id, `foreign-${suffix}`)
+    await space(siteA, spacedProfile.id, `space-${suffix}`)
+    await space(siteB, foreignProfile.id, `foreign-${suffix}`)
 
     const spaceSegment = await makeSegment(siteA, {
       predicate: { field: 'communityFact', op: 'in', value: ['space'] },
@@ -599,8 +601,13 @@ describe('09D closure — canonical selector projections from persisted facts', 
     const profileSegment = await makeSegment(siteA, {
       predicate: { field: 'communityFact', op: 'in', value: ['profile'] },
     })
+    // RC2-DEBT-01: a space now requires a profile, so the foreign-space
+    // member necessarily carries the (install-global) profile fact too —
+    // while the site-scoped space fact above still excludes them. The
+    // two facts remain distinct: profileOnly and foreign have a profile
+    // but no space on this site.
     expect(await eligibleIds(siteA, profileSegment)).toEqual(
-      [String(spaced.id), String(profileOnly.id)].sort(),
+      [String(spaced.id), String(profileOnly.id), String(foreign.id)].sort(),
     )
   })
 
