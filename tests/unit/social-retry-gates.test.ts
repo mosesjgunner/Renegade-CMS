@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   canOperatorRetrySocialQueueItem,
+  canReconcileBoundedFailure,
   canRetrySocialQueueItem,
 } from '../../src/modules/social/tasks'
 
@@ -66,5 +67,19 @@ describe('social retry gates (RC2-H-05)', () => {
   it('neither gate touches a non-failed item', () => {
     expect(canRetrySocialQueueItem(failed({ status: 'published' }), now)).toBe(false)
     expect(canOperatorRetrySocialQueueItem(failed({ status: 'scheduled' }), now)).toBe(false)
+  })
+
+  // RC2-DEBT-25: retry stays exhausted at the bound, but a bounded-out
+  // failed item becomes eligible for read-only reconcile — the settle
+  // path for a lose-response provider that committed the post on the
+  // final attempt while the item recorded a known failure.
+  it('bounded-out failures are reconcile-eligible but never retry-eligible', () => {
+    const bounded = failed({ attemptCount: 3 })
+    expect(canReconcileBoundedFailure(bounded)).toBe(true)
+    expect(canRetrySocialQueueItem(bounded, now)).toBe(false)
+    expect(canOperatorRetrySocialQueueItem(bounded, now)).toBe(false)
+    expect(canReconcileBoundedFailure(failed({ attemptCount: 2 }))).toBe(false)
+    expect(canReconcileBoundedFailure(failed({ attemptCount: 3, status: 'unknown' }))).toBe(false)
+    expect(canReconcileBoundedFailure(failed({ attemptCount: 3, status: 'published' }))).toBe(false)
   })
 })

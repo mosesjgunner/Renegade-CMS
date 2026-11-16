@@ -13,6 +13,72 @@ const idOf = (val: unknown): string => {
   return String(val ?? '')
 }
 
+type ReleaseScopedApproval = { releaseId: string; pinnedRevisionId: string }
+
+/**
+ * RC2-DEBT-17 (release-scoped approval exception): a source-linked draft
+ * may be approved while its source content is unpublished when the draft
+ * is pinned into a not-yet-executed release on the same site that also
+ * pins the source article's approved revision — that release publishes
+ * the article as part of its own execution, so requiring publication
+ * before approval deadlocked the draft out of its own article's release.
+ * The exception is scoped to that release's pinned revision; the
+ * distribution executor still re-checks publication at execution time.
+ */
+async function findReleaseScopedApproval(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  siteId: string,
+  draftId: string,
+  sourceContentId: string,
+): Promise<ReleaseScopedApproval | null> {
+  const releases = await payload.find({
+    collection: 'content-releases' as never,
+    where: {
+      and: [
+        { site: { equals: siteId } },
+        { status: { in: ['draft', 'in-review', 'approved', 'scheduled'] } },
+      ],
+    },
+    limit: 100,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const release of releases.docs as any[]) {
+    const artifacts = (release.artifacts ?? release.executionItems ?? []) as any[]
+    const distributesDraft = artifacts.some(
+      (item) =>
+        String(item?.distributionDraftId ?? '') === draftId ||
+        (item?.targetType === 'distribution' && String(item?.targetId ?? '') === draftId),
+    )
+    if (!distributesDraft) continue
+    for (const item of artifacts) {
+      if (item?.targetType !== 'article' || !item?.pinnedRevisionId) continue
+      // Release article artifacts pin the article-family companion; the
+      // draft's sourceContent is the underlying content document. Match
+      // either the direct id or the companion's content link.
+      let articleContentId = String(item.targetId ?? '')
+      if (articleContentId !== sourceContentId) {
+        const companion = (await payload
+          .findByID({
+            collection: 'article-family-content' as never,
+            id: articleContentId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)) as any
+        if (companion?.content) articleContentId = idOf(companion.content)
+      }
+      if (articleContentId === sourceContentId) {
+        return {
+          releaseId: String(release.id),
+          pinnedRevisionId: String(item.pinnedRevisionId),
+        }
+      }
+    }
+  }
+  return null
+}
+
 /**
  * GET /api/admin/social/drafts
  * Lists social drafts scoped by site and tenant permissions, or returns details of a single draft.
@@ -571,6 +637,7 @@ export async function POST(request: Request) {
       }
 
       // If draft links source content, verify content is published before external action
+      let releaseScopedApproval: ReleaseScopedApproval | null = null
       if (draft.sourceContent) {
         const sourceDoc = (await payload.findByID({
           collection: 'content',
@@ -579,10 +646,24 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })) as any
         if (sourceDoc && sourceDoc.status !== 'published') {
-          return NextResponse.json(
-            { error: 'Canonical source content must be published before social approval.' },
-            { status: 400 },
+          // RC2-DEBT-17: the release-scoped exception — approval is
+          // allowed when this draft is pinned into a release that pins
+          // the source article's approved revision (see helper above).
+          releaseScopedApproval = await findReleaseScopedApproval(
+            payload,
+            draftSite,
+            String(draft.id),
+            idOf(draft.sourceContent),
           )
+          if (!releaseScopedApproval) {
+            return NextResponse.json(
+              {
+                error:
+                  'Canonical source content must be published before social approval, unless the draft is pinned into a release that publishes it.',
+              },
+              { status: 400 },
+            )
+          }
         }
       }
 
@@ -635,6 +716,7 @@ export async function POST(request: Request) {
         success: true,
         draft: updatedDraft,
         status: 'approved',
+        ...(releaseScopedApproval ? { releaseScopedApproval } : {}),
       })
     }
 

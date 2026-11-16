@@ -153,10 +153,13 @@ async function socialDraft(articleId, canonicalUrl, label) {
       action: 'create-draft',
       siteId: siteA,
       title: `D04 ${label} ${stamp}`,
-      // No sourceContent link: a source-linked draft cannot be approved
-      // until its article is published, but the release that publishes the
-      // article needs the draft approved first (finding F1 in RESULT.md).
-      // The draft carries the canonical URL instead.
+      // RC2-DEBT-17: the draft is source-linked to its article. Approval
+      // happens after the release pins both the article's approved
+      // revision and this draft (see approveDraft below) — the
+      // release-scoped exception replaced the F1 deadlock, where a
+      // source-linked draft could never be approved before its own
+      // article's release.
+      sourceContentId: articleId,
       canonicalUrl,
       variants: [
         {
@@ -171,18 +174,20 @@ async function socialDraft(articleId, canonicalUrl, label) {
     },
   })
   const draftId = created.data?.draft?.id ?? created.data?.draftId ?? created.data?.id
-  if (!draftId) return { draftId: null, created, approved: null }
+  if (!draftId) return { draftId: null, created }
   await api('/api/admin/social/drafts', {
     method: 'POST',
     cookie: adminA,
     body: { action: 'submit-review', siteId: siteA, draftId },
   })
-  const approved = await api('/api/admin/social/drafts', {
+  return { draftId, created }
+}
+async function approveDraft(draftId) {
+  return api('/api/admin/social/drafts', {
     method: 'POST',
     cookie: adminA,
     body: { action: 'approve', siteId: siteA, draftId },
   })
-  return { draftId, created, approved }
 }
 async function makeRelease(name, publicationId) {
   const created = await api('/api/admin/releases', {
@@ -296,6 +301,16 @@ for (const artifact of [
 ]) {
   await releaseAction(release1, { action: 'pin-artifact', artifact })
 }
+// RC2-DEBT-17: with both pins in place, the source-linked draft approves
+// against the release's pinned article revision even though the article
+// is not published yet — the release publishes it during execution.
+const draft1Approved = await approveDraft(draft1.draftId)
+stage(
+  'source-linked draft approves against the release pinned revision before its article is published (DEBT-17)',
+  draft1Approved.status === 200 &&
+    String(draft1Approved.data?.releaseScopedApproval?.releaseId ?? '') === String(release1),
+  `approve=${draft1Approved.status} scoped=${JSON.stringify(draft1Approved.data?.releaseScopedApproval ?? null)} error=${draft1Approved.data?.error ?? ''}`,
+)
 const gates1 = await releaseAction(release1, { action: 'evaluate-gates' })
 const blockerCount1 = gates1.data?.snapshot?.blockerCount
 await releaseAction(release1, { action: 'submit-review' })
@@ -305,7 +320,7 @@ stage(
   Boolean(release1 && media1.id && draft1.draftId && message1Id) &&
     approveMain.status === 200 &&
     blockerCount1 === 0,
-  `release=${release1} upload=${media1.status} attach=${attach1.status} submit=${submitMain.status} approve=${approveMain.status} draftCreate=${draft1.created?.status} draft=${draft1.approved?.status} campaign=${campaign1.status} confirm=${confirmRes.status} reader=${readerRow?.status} gates=${gates1.status}/${blockerCount1}`,
+  `release=${release1} upload=${media1.status} attach=${attach1.status} submit=${submitMain.status} approve=${approveMain.status} draftCreate=${draft1.created?.status} draft=${draft1Approved.status} campaign=${campaign1.status} confirm=${confirmRes.status} reader=${readerRow?.status} gates=${gates1.status}/${blockerCount1}`,
 )
 
 // ---------- execute: every destination resolves ----------
@@ -458,6 +473,13 @@ for (const artifact of [
 ]) {
   await releaseAction(release2, { action: 'pin-artifact', artifact })
 }
+const draft2Approved = await approveDraft(draft2.draftId)
+stage(
+  'retry release: source-linked draft also approves release-scoped (DEBT-17)',
+  draft2Approved.status === 200 &&
+    String(draft2Approved.data?.releaseScopedApproval?.releaseId ?? '') === String(release2),
+  `approve=${draft2Approved.status} error=${draft2Approved.data?.error ?? ''}`,
+)
 await releaseAction(release2, { action: 'evaluate-gates' })
 await releaseAction(release2, { action: 'submit-review' })
 await releaseAction(release2, { action: 'approve' })

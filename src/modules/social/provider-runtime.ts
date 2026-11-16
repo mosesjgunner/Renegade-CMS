@@ -182,6 +182,92 @@ export const blueskyAdapter: SocialProviderAdapter = {
       }
     }
   },
+  // RC2-DEBT-25: read-only reconciliation by the deterministic record
+  // key. The roster adapter previously had no reconcile at all, so the
+  // executor's recovery path could never settle any item from provider
+  // truth. Found-with-matching-text settles published; missing or
+  // mismatched stays quarantined as unknown — reconcile never sends.
+  async reconcile(variant: SocialVariant, context): Promise<AdapterResult> {
+    const identifier = context?.credentials?.identifier,
+      password = context?.credentials?.appPassword,
+      service = context?.credentials?.service ?? 'https://bsky.social'
+    const unknown = (message: string): AdapterResult => ({
+      status: 'unknown',
+      error: normalizeProviderError({
+        kind: 'remote-unknown',
+        message,
+        remoteOutcome: 'unknown',
+      }),
+    })
+    if (!identifier || !password)
+      return unknown(
+        'Reconnect the account before read-only reconciliation. No provider request was made.',
+      )
+    try {
+      const session = await fetch(
+        service.replace(/\/$/, '') + '/xrpc/com.atproto.server.createSession',
+        {
+          method: 'POST',
+          signal: AbortSignal.timeout(30_000),
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ identifier, password }),
+        },
+      )
+      if (!session.ok)
+        return unknown('Read-only reconciliation could not confirm delivery: session refused.')
+      const auth = (await session.json()) as { accessJwt?: string; did?: string }
+      if (!auth.accessJwt || !auth.did)
+        return unknown('Read-only reconciliation could not confirm delivery: incomplete session.')
+      const rkey = createHash('sha256')
+        .update(variant.idempotencyKey || variant.id)
+        .digest('hex')
+        .slice(0, 32)
+      const recordUrl = new URL(service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.getRecord')
+      recordUrl.searchParams.set('repo', auth.did)
+      recordUrl.searchParams.set('collection', 'app.bsky.feed.post')
+      recordUrl.searchParams.set('rkey', rkey)
+      const existing = await fetch(recordUrl, {
+        signal: AbortSignal.timeout(30_000),
+        headers: { authorization: 'Bearer ' + auth.accessJwt },
+      })
+      if (existing.ok) {
+        const record = (await existing.json()) as { uri?: string; value?: { text?: string } }
+        if (record.uri && record.value?.text === variant.text)
+          return {
+            status: 'published',
+            remoteId: record.uri,
+            remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+            receipt: {
+              remotePostId: record.uri,
+              remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+              publishedAt: new Date(),
+              rawResponse: { ...record, reconciled: true, providerMode: 'live' },
+            },
+          }
+        return unknown(
+          'Provider idempotency key is occupied by different content. Keep this delivery quarantined; no new post was submitted.',
+        )
+      }
+      const missing =
+        existing.status === 404 ||
+        (existing.status === 400 &&
+          (
+            await existing
+              .clone()
+              .json()
+              .catch(() => null)
+          )?.error === 'RecordNotFound')
+      if (missing)
+        return unknown(
+          'No matching provider record is visible. Keep this delivery quarantined; no new post was submitted.',
+        )
+      return unknown(
+        `Read-only reconciliation could not confirm delivery: HTTP ${existing.status}.`,
+      )
+    } catch {
+      return unknown('Read-only reconciliation could not confirm delivery: provider unreachable.')
+    }
+  },
 }
 
 import { ADAPTER_REGISTRY, getSocialAdapter } from './worker'

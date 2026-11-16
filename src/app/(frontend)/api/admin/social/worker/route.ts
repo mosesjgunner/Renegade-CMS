@@ -120,7 +120,21 @@ export async function POST(request: Request) {
           ],
         }
       : mode === 'reconcile'
-        ? { or: [{ status: { equals: 'unknown' } }, expired] }
+        ? {
+            // RC2-DEBT-25: bounded-out failed items join the reconcile
+            // sweep — a read-only provider lookup settles them from
+            // provider truth without spending an attempt.
+            or: [
+              { status: { equals: 'unknown' } },
+              expired,
+              {
+                and: [
+                  { status: { equals: 'failed' } },
+                  { attemptCount: { greater_than_equal: MAX_PROVIDER_ATTEMPTS } },
+                ],
+              },
+            ],
+          }
         : {
             or: [
               {
