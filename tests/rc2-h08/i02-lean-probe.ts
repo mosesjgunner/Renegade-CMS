@@ -8,12 +8,20 @@ import { persistRenderedAuditLifecycle } from '../../src/modules/public/discover
 
 const payload = await getPayload({ config })
 const slugs = Object.keys(payload.collections)
+const viewPaths = Object.values(
+  (
+    payload.config as {
+      admin?: { components?: { views?: Record<string, { path?: string }> } }
+    }
+  ).admin?.components?.views ?? {},
+).map((view) => view.path)
 console.log(
   JSON.stringify({
     profileModules: process.env.RENEGADE_MODULES ?? '(unset)',
     collectionCount: slugs.length,
     qualityScansRegistered: slugs.includes('quality-scans'),
     qualityIssuesRegistered: slugs.includes('quality-issues'),
+    renderedQualityViewRegistered: viewPaths.includes('/rendered-quality'),
   }),
 )
 const site = await payload.find({ collection: 'sites', limit: 1, depth: 0, overrideAccess: true })

@@ -21,6 +21,15 @@ export async function POST(request: Request) {
   if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role)))
     return Response.json({ error: 'Staff access required.' }, { status: 403 })
 
+  // RC2-DEBT-07: audit results persist into the quality module's
+  // collections. When that module is not enabled (lean floor), refuse
+  // cleanly instead of running an audit whose results cannot be saved.
+  if (!payload.collections['quality-scans'])
+    return Response.json(
+      { error: 'The quality module is not enabled on this install.' },
+      { status: 503 },
+    )
+
   const body = (await request.json().catch(() => ({}))) as {
     siteId?: unknown
     concurrency?: unknown
