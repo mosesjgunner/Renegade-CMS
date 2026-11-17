@@ -97,6 +97,18 @@ report.
 - Integration (real Postgres): rc08b 13/13 — including the digest
   projection over folded comments and a 501-comment member export —
   and thread-subscriptions-identity 2/2.
+- Full integration suite (65 files / 366 tests, run for CI
+  parity): one more fixture of the same class surfaced — the
+  cross-site boundaries moderator journey seeded its objectionable
+  comment by INSERT into the retired tables and asserted the old
+  store's quarantine state; it now creates the comment in the
+  article's attached discussion and asserts the folded quarantine
+  (`hidden` / `restricted`). Journey file 7/7 after the re-pin;
+  the other 64 files were green before and after.
+- CI parity: the first CI run on the PR failed `format:check` —
+  this pass's STATUS table row and the closure audit's
+  `probe-lean.mjs` were not prettier-formatted. Both formatted;
+  the tracked tree is format-clean.
 - Production build: exit 0.
 - Journeys on the production build: E-02 **14/14 API + 3/3 browser**
   (identical to the pre-change baseline; stage 9's v1 rate guard now

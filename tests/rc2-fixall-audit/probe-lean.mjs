@@ -44,13 +44,26 @@ function call(label, method, path, body) {
   })
 }
 
-await call('floor-registered  GET /api/donation-campaigns', 'GET', '/api/donation-campaigns?limit=1')
-await call('commerce-gated   GET /api/merchant-connections', 'GET', '/api/merchant-connections?limit=1')
-await call('donate seam      POST /api/commerce/donations/intent', 'POST', '/api/commerce/donations/intent', {
-  campaignId,
-  currency: 'USD',
-  amountMinor: '1000',
-  recurrence: 'one-time',
-  recognition: 'anonymous',
-  email: 'donor@fixall-audit.test',
-})
+await call(
+  'floor-registered  GET /api/donation-campaigns',
+  'GET',
+  '/api/donation-campaigns?limit=1',
+)
+await call(
+  'commerce-gated   GET /api/merchant-connections',
+  'GET',
+  '/api/merchant-connections?limit=1',
+)
+await call(
+  'donate seam      POST /api/commerce/donations/intent',
+  'POST',
+  '/api/commerce/donations/intent',
+  {
+    campaignId,
+    currency: 'USD',
+    amountMinor: '1000',
+    recurrence: 'one-time',
+    recognition: 'anonymous',
+    email: 'donor@fixall-audit.test',
+  },
+)
