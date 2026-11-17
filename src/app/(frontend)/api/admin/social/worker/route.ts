@@ -9,6 +9,8 @@ import {
   checkOperatorRecordAccess,
   resolveOperatorGrantContext,
 } from '@/modules/operations/operator-grants'
+import { redactSocialAccountRelations } from '@/modules/social/account-view'
+import { logSocialError } from '@/modules/social/security'
 
 async function context(request: Request) {
   const payload = await getPayload({ config })
@@ -206,8 +208,10 @@ export async function POST(request: Request) {
     return Response.json({
       success: true,
       action,
-      item,
-      results,
+      // SOC-SEC-1 (Red F-1): the queue item is read at depth 1, so its
+      // populated `account` relation carries the credential envelope.
+      item: item ? redactSocialAccountRelations(item) : item,
+      results: redactSocialAccountRelations(results),
       summary: {
         processedCount: processed.length,
         skippedCount: results.length - processed.length,
@@ -219,7 +223,7 @@ export async function POST(request: Request) {
       },
     })
   } catch (error) {
-    console.error('[worker-route-error]', error)
+    logSocialError('worker-route', error)
     return Response.json(
       { error: error instanceof Error ? error.message : 'Social worker failed.' },
       { status: 422 },

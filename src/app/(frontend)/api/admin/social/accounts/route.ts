@@ -45,7 +45,10 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json({
-      accounts: accountsResult.docs,
+      // SOC-SEC-1 (Red F-1): raw account docs carry the `enc:` credential
+      // envelope in connectionReference. Only the redacted view leaves
+      // the server.
+      accounts: (accountsResult.docs as Record<string, unknown>[]).map(toRedactedSocialAccountView),
     })
   } catch (error) {
     return NextResponse.json(
@@ -56,6 +59,7 @@ export async function GET(request: Request) {
 }
 
 import { encryptSecret, sanitizeSocialLog } from '@/modules/social/security'
+import { toRedactedSocialAccountView } from '@/modules/social/account-view'
 import {
   getProviderCapabilityTruth,
   socialProviderFor,
@@ -143,7 +147,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: true,
         action: 'disconnect',
-        account: updated,
+        account: toRedactedSocialAccountView(updated as Record<string, unknown>),
       })
     }
 
@@ -231,7 +235,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         success: health === 'healthy',
         health,
-        account: updated,
+        account: toRedactedSocialAccountView(updated as Record<string, unknown>),
         capabilityTruth,
       })
     }
@@ -263,6 +267,19 @@ export async function POST(request: Request) {
     const capabilityTruth = getProviderCapabilityTruth(network, requestedMode)
 
     let connectionRef: string | null = body.connectionReference || null
+    // SOC-SEC-1 (Red F-3): a caller-supplied plaintext credential JSON
+    // reference would be stored verbatim — unencrypted secrets at rest.
+    // Refuse it; credentials belong in the `credentials` field, which is
+    // encrypted into the envelope before storage.
+    if (!body.credentials && connectionRef && connectionRef.startsWith('{')) {
+      return NextResponse.json(
+        {
+          error:
+            'Plaintext credential references are not accepted. Send credentials in the credentials field so they are stored encrypted.',
+        },
+        { status: 400 },
+      )
+    }
     let credentialHealth: 'healthy' | 'revoked' | 'expired' | 'not-configured' = 'not-configured'
     let verificationError: string | null = null
 
@@ -416,7 +433,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: credentialHealth === 'healthy',
-      account: savedAccount,
+      account: toRedactedSocialAccountView(savedAccount as Record<string, unknown>),
       capabilityTruth,
     })
   } catch (error) {

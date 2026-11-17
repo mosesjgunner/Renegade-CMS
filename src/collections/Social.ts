@@ -87,7 +87,18 @@ export const SocialAccounts: CollectionConfig = {
       options: ['healthy', 'expiring', 'expired', 'revoked', 'not-configured'],
     },
     { name: 'credentialExpiresAt', type: 'date' },
-    { name: 'connectionReference', type: 'text' },
+    {
+      name: 'connectionReference',
+      type: 'text',
+      // SOC-SEC-1 (Red F-1): the reference is a credential envelope. It is
+      // read server-side only (overrideAccess reads in the executor and
+      // account routes) and must never be returned by the API — the same
+      // protection the POD credential envelopes already carry.
+      access: { read: () => false },
+      admin: {
+        description: 'Encrypted credential envelope; never display or store plaintext secrets.',
+      },
+    },
     { name: 'lastVerifiedAt', type: 'date' },
     {
       name: 'diagnostics',

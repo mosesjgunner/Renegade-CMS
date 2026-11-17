@@ -197,6 +197,10 @@ export function sanitizeSocialLog(input: unknown): string {
   // Mask Bearer tokens
   text = text.replace(/Bearer\s+([A-Za-z0-9\-._~+/]+=*)/gi, 'Bearer [REDACTED]')
 
+  // Mask encrypted credential envelopes (SOC-SEC-1: the enc: envelope is
+  // credential material and must not survive into a log line either)
+  text = text.replace(/enc:[A-Za-z0-9\-_]+:[A-Za-z0-9\-_]+:[A-Za-z0-9\-_]+/g, 'enc:[REDACTED]')
+
   // Mask authorization headers in JSON or text
   text = text.replace(/(["']?authorization["']?\s*:\s*["'])[^"']+([^"'])/gi, '$1[REDACTED]$2')
 
@@ -224,6 +228,17 @@ export function sanitizeSocialLog(input: unknown): string {
   }
 
   return text
+}
+
+/**
+ * SOC-SEC-1: the single logging path for the social module. Provider
+ * error text can embed credentials (session payloads, tokens in URLs),
+ * so every social error log goes through sanitizeSocialLog here —
+ * sanitization is enforced centrally, not opted into per call site.
+ */
+export function logSocialError(scope: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error)
+  console.error(`[social:${scope}]`, sanitizeSocialLog(message))
 }
 
 /**

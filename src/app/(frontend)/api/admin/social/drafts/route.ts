@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { redactSocialAccountRelations } from '@/modules/social/account-view'
 import { socialHash } from '@/modules/social/contracts'
 import { getSocialAdapter } from '@/modules/social/worker'
 
@@ -168,13 +169,19 @@ export async function GET(request: Request) {
           })
         : { docs: [] }
 
-      return NextResponse.json({
-        draft,
-        variants: variants.docs,
-        queueItems: queueItems.docs,
-        externalPosts: externalPosts.docs,
-        publishAttempts: publishAttempts.docs,
-      })
+      return NextResponse.json(
+        // SOC-SEC-1 (Red F-1): variants and queue items are read at
+        // depth 1, so their populated `account` relation is a full
+        // social-account document — including the credential envelope.
+        // Redact any embedded account before the payload leaves.
+        redactSocialAccountRelations({
+          draft,
+          variants: variants.docs,
+          queueItems: queueItems.docs,
+          externalPosts: externalPosts.docs,
+          publishAttempts: publishAttempts.docs,
+        }),
+      )
     }
 
     const where = effectiveSiteId

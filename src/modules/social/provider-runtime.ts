@@ -331,6 +331,26 @@ export function getProviderCapabilityTruth(
   }
 }
 
+export type ConnectionReferenceKind = 'empty' | 'envelope' | 'plaintext-json' | 'named-reference'
+
+/**
+ * Classifies a stored connection reference without resolving it. Only two
+ * kinds may ever hold or locate credentials: `envelope` (AES-256-GCM,
+ * decrypted server-side) and `named-reference` (a name resolved against
+ * server environment variables — the row itself holds no secret).
+ * `plaintext-json` rows stored usable secrets unencrypted at rest; the
+ * credential scan (modules/social/credential-scan) migrates or
+ * invalidates them.
+ */
+export const classifyConnectionReference = (
+  connectionReference?: string | null,
+): ConnectionReferenceKind => {
+  if (!connectionReference) return 'empty'
+  if (connectionReference.startsWith('enc:')) return 'envelope'
+  if (connectionReference.startsWith('{')) return 'plaintext-json'
+  return 'named-reference'
+}
+
 export const credentialsForSocialAccount = (connectionReference?: string | null) => {
   if (!connectionReference) return null
 
@@ -344,13 +364,12 @@ export const credentialsForSocialAccount = (connectionReference?: string | null)
     }
   }
 
-  // Support direct unencrypted JSON string
+  // SOC-SEC-1 (Red F-3): plaintext credential JSON is never resolved.
+  // A reference beginning with '{' is unencrypted secrets at rest; such
+  // rows cannot dispatch and are migrated or invalidated by the
+  // credential scan — they are never silently honored here.
   if (connectionReference.startsWith('{')) {
-    try {
-      return JSON.parse(connectionReference)
-    } catch {
-      return null
-    }
+    return null
   }
 
   // Fallback to environment variable lookup

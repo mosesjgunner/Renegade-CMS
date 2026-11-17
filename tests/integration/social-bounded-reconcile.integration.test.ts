@@ -6,6 +6,7 @@ import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
 import { socialHash } from '../../src/modules/social/contracts'
+import { encryptSecret } from '../../src/modules/social/security'
 import { executeSocialQueueItem } from '../../src/modules/social/tasks'
 import {
   assertFixtureSafeDatabase,
@@ -54,11 +55,14 @@ describe('RC2-DEBT-25: bounded-out failed items settle via read-only reconcile',
         displayName: `DEBT25 ${identifier} ${stamp}`,
         externalAccountId: `debt25-${identifier}-${stamp}`,
         credentialHealth: 'healthy',
-        connectionReference: JSON.stringify({
-          identifier,
-          appPassword: 'pw',
-          service: FIXTURE,
-        }),
+        // SOC-SEC-1: fixtures seed the encrypted envelope, never plaintext.
+        connectionReference: `enc:${encryptSecret(
+          JSON.stringify({
+            identifier,
+            appPassword: 'pw',
+            service: FIXTURE,
+          }),
+        )}`,
       },
       overrideAccess: true,
     })
