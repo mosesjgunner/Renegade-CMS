@@ -38,7 +38,7 @@ describe('COMM-05B moderation actions, sanctions, quarantine, and outbox', () =>
         return { rows: [] }
       }
       if (text.includes('FROM moderation_cases')) return { rows: [{ id: ids.case }] }
-      if (text.includes('FROM comments'))
+      if (text.includes('FROM discussion_posts'))
         return { rows: [{ authorId: ids.author, threadId: 'thread-1' }] }
       if (text.includes('INSERT INTO moderation_actions')) return { rows: [{ id: 'action-1' }] }
       return { rows: [] }
@@ -58,7 +58,7 @@ describe('COMM-05B moderation actions, sanctions, quarantine, and outbox', () =>
       reason: 'abuse',
     })
     expect(committed).toBe(true)
-    expect(calls.some((call) => call.includes('UPDATE comments SET status'))).toBe(true)
+    expect(calls.some((call) => call.includes('UPDATE discussion_posts SET status'))).toBe(true)
     expect(calls.some((call) => call.includes('INSERT INTO moderation_actions'))).toBe(true)
     expect(calls.some((call) => call.includes('moderation.action.v1'))).toBe(true)
   })
@@ -69,7 +69,7 @@ describe('COMM-05B moderation actions, sanctions, quarantine, and outbox', () =>
       calls.push(text)
       if (text === 'BEGIN' || text === 'ROLLBACK') return { rows: [] }
       if (text.includes('FROM moderation_cases')) return { rows: [{ id: ids.case }] }
-      if (text.includes('FROM comments'))
+      if (text.includes('FROM discussion_posts'))
         return { rows: [{ authorId: ids.author, threadId: 'thread-1' }] }
       if (text.includes('INSERT INTO moderation_actions')) return { rows: [{ id: 'action-1' }] }
       if (text.includes('INSERT INTO outbox_events')) throw new Error('OUTBOX_FAILED')
