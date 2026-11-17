@@ -2,10 +2,13 @@ import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
 import xss from 'xss'
 
-import { createCanonicalComment, type CommentThread } from './comment-identity'
 import type { CommunityActor } from './contracts'
+import { executeDbQuery } from './db-query'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 import { triageSubmission } from './abuse-triage'
+import { getThreadLifecycle } from './thread-lifecycle'
+
+export { executeDbQuery } from './db-query'
 
 const escapeXssAttr = (xss as unknown as { escapeAttrValue: (value: string) => string })
   .escapeAttrValue
@@ -20,30 +23,6 @@ export class CommentComposerError extends Error {
     super(message)
     this.name = 'CommentComposerError'
   }
-}
-
-type QueryablePayload = Payload & {
-  db: {
-    pool?: { query: (text: string, values?: unknown[]) => Promise<{ rows: unknown[] }> }
-    drizzle?: { execute: (text: string, values?: unknown[]) => Promise<{ rows?: unknown[] }> }
-  }
-}
-
-export async function executeDbQuery<T = Record<string, unknown>>(
-  payload: Payload,
-  text: string,
-  values: unknown[] = [],
-): Promise<T[]> {
-  const queryable = payload as unknown as QueryablePayload
-  if (queryable.db?.pool?.query) {
-    return (await queryable.db.pool.query(text, values)).rows as T[]
-  }
-  if (queryable.db?.drizzle?.execute) {
-    const res = await queryable.db.drizzle.execute(text, values)
-    const rows = (res.rows ?? res) as T[]
-    return rows
-  }
-  throw new Error('Database adapter query execution not available')
 }
 
 // ---------------------------------------------------------------------------
@@ -211,43 +190,9 @@ export async function resolveSiteMentions(
 
   const lowerHandles = handles.map((h) => h.toLowerCase())
 
-  // 1. Try resolving via SQL if database adapter is available
-  try {
-    const rows = await executeDbQuery<{ handle: string; member_id: string }>(
-      payload,
-      `
-      SELECT LOWER(p.handle) AS handle, m.id AS member_id
-      FROM profiles p
-      JOIN members m ON p.member_id = m.id
-      JOIN member_site_roles msr ON msr.member_id = m.id
-      WHERE LOWER(p.handle) = ANY($1)
-        AND msr.site_id = $2
-        AND m.status = 'active'
-      UNION
-      SELECT LOWER(s.handle) AS handle, m.id AS member_id
-      FROM spaces s
-      JOIN members m ON s.member_id = m.id
-      WHERE LOWER(s.handle) = ANY($1)
-        AND s.site_id = $2
-        AND m.status = 'active'
-      `,
-      [lowerHandles, siteId],
-    )
-
-    for (const row of rows) {
-      if (row.handle && row.member_id) {
-        result.set(row.handle.toLowerCase(), {
-          memberId: String(row.member_id),
-          handle: String(row.handle),
-        })
-      }
-    }
-    if (result.size > 0) return result
-  } catch {
-    // Fall back to Payload collection queries (e.g. in mocked test environments)
-  }
-
-  // 2. Try resolving via Payload collections (handles unit test mocks)
+  // Site-scoped resolution through Payload collections. (The pre-fold
+  // SQL fast path referenced spaces.member_id, removed by RC2-DEBT-01;
+  // it had been silently falling back to this path ever since.)
   try {
     if (typeof payload.find === 'function') {
       const profilesRes = await payload.find({
@@ -268,7 +213,6 @@ export async function resolveSiteMentions(
           typeof p.member === 'object' && p.member ? String(p.member.id) : String(p.member ?? '')
         if (!memberId) continue
 
-        // Check member status
         let memberStatus = 'active'
         try {
           const memberDoc = (await payload.findByID({
@@ -284,7 +228,6 @@ export async function resolveSiteMentions(
 
         if (memberStatus !== 'active') continue
 
-        // Check site scoping
         let isScoped = false
         const docSite =
           typeof p.site === 'object' && p.site ? String(p.site.id) : String(p.site ?? '')
@@ -305,8 +248,6 @@ export async function resolveSiteMentions(
             })
             if (roleCheck.docs.length > 0) isScoped = true
           } catch (error) {
-            // RC2-DEBT-10: fail-closed (not scoped) but logged — a database
-            // error must not be indistinguishable from "no role grant".
             console.error('[comment-composer] mention scope role check failed.', error)
           }
         }
@@ -326,7 +267,6 @@ export async function resolveSiteMentions(
             })
             if (spaceCheck.docs.length > 0) isScoped = true
           } catch (error) {
-            // RC2-DEBT-10: fail-closed (not scoped) but logged.
             console.error('[comment-composer] mention scope space check failed.', error)
           }
         }
@@ -340,7 +280,6 @@ export async function resolveSiteMentions(
       }
     }
   } catch (error) {
-    // RC2-DEBT-10: mention resolution is best-effort, but failures are logged.
     console.error('[comment-composer] mention resolution failed.', error)
   }
 
@@ -381,160 +320,114 @@ export function linkResolvedMentions(
   return out.join('')
 }
 
-// ---------------------------------------------------------------------------
-// Transactional Comment & Outbox Persistence
-// ---------------------------------------------------------------------------
-export async function persistCommentWithOutbox(
-  payload: Payload,
-  input: {
-    siteId: string
-    threadId: string
-    canonicalContentId: string | null
-    parentId?: string | null
-    authorId: string
-    authorType: 'member' | 'anonymous' | 'system'
-    status: 'visible' | 'pending_review'
-    bodyRaw: string
-    bodyHtml: string
-    clientMutationId: string | null
-    mentionedHandles: string[]
-    timestamp: string
-  },
-): Promise<Record<string, unknown>> {
-  const queryable = payload as unknown as QueryablePayload
-
-  if (queryable.db?.pool?.connect) {
-    const client = await queryable.db.pool.connect()
-    try {
-      await client.query('BEGIN')
-
-      let depth = 0
-      let rootId: string | null = null
-      if (input.parentId) {
-        const parents = (
-          await client.query<{
-            id: string
-            thread_id: string
-            root_id: string | null
-            depth: number
-          }>(`SELECT id, thread_id, root_id, depth FROM comments WHERE id = $1`, [input.parentId])
-        ).rows
-        const parent = parents[0]
-        if (!parent || parent.thread_id !== input.threadId) {
-          throw new CommentComposerError(
-            'Parent comment is not in this thread',
-            422,
-            'INVALID_COMMENT_PARENT',
-          )
-        }
-        depth = parent.depth + 1
-        rootId = parent.root_id ?? parent.id
-        if (depth > 5) {
-          throw new CommentComposerError(
-            'Comment nesting cannot exceed depth 5',
-            422,
-            'COMMENT_DEPTH_EXCEEDED',
-          )
-        }
-      }
-
-      const commentRes = await client.query<Record<string, unknown>>(
-        `INSERT INTO comments (
-           thread_id, parent_id, root_id, author_id, author_type,
-           depth, body_raw, body_html, client_mutation_id, status
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-         RETURNING *`,
-        [
-          input.threadId,
-          input.parentId ?? null,
-          rootId,
-          input.authorId,
-          input.authorType,
-          depth,
-          input.bodyRaw,
-          input.bodyHtml,
-          input.clientMutationId,
-          input.status,
-        ],
-      )
-      const comment = commentRes.rows[0]!
-
-      const outboxPayload = {
-        site_id: input.siteId,
-        comment_id: String(comment.id),
-        thread_id: input.threadId,
-        canonical_content_id: input.canonicalContentId,
-        author_id: input.authorId,
-        parent_id: input.parentId ?? null,
-        mentioned_handles: input.mentionedHandles,
-        timestamp: input.timestamp,
-      }
-
-      await client.query(
-        `INSERT INTO outbox_events (event_type, payload, created_at)
-         VALUES ($1, $2, now())`,
-        ['comment.created.v1', JSON.stringify(outboxPayload)],
-      )
-
-      await client.query('COMMIT')
-      return comment
-    } catch (err) {
-      await client.query('ROLLBACK')
-      throw err
-    } finally {
-      client.release?.()
-    }
-  }
-
-  // Database adapter fallback
-  await executeDbQuery(payload, 'BEGIN')
-  try {
-    const created = await createCanonicalComment(payload as never, {
-      threadId: input.threadId,
-      parentId: input.parentId ?? null,
-      authorId: input.authorId,
-      authorType: input.authorType,
-      bodyRaw: input.bodyRaw,
-      bodyHtml: input.bodyHtml,
-      clientMutationId: input.clientMutationId,
-      status: input.status,
-    })
-
-    const outboxPayload = {
-      site_id: input.siteId,
-      comment_id: String(created?.id),
-      thread_id: input.threadId,
-      canonical_content_id: input.canonicalContentId,
-      author_id: input.authorId,
-      parent_id: input.parentId ?? null,
-      mentioned_handles: input.mentionedHandles,
-      timestamp: input.timestamp,
-    }
-
-    await executeDbQuery(
-      payload,
-      `INSERT INTO outbox_events (event_type, payload, created_at)
-       VALUES ($1, $2, now())`,
-      ['comment.created.v1', JSON.stringify(outboxPayload)],
-    )
-
-    await executeDbQuery(payload, 'COMMIT')
-    return created as Record<string, unknown>
-  } catch (err) {
-    try {
-      await executeDbQuery(payload, 'ROLLBACK')
-    } catch (rollbackError) {
-      // RC2-DEBT-10: the original error still propagates; a failed rollback
-      // is logged instead of vanishing.
-      console.error('[comment-composer] transaction rollback failed.', rollbackError)
-    }
-    throw err
-  }
+/**
+ * The live discussion store keeps comment bodies as plain text. The
+ * folded composer sanitizes rich input exactly as before, links
+ * resolved mentions, then reduces the result to its text content —
+ * mention anchors collapse back to their @handle text.
+ */
+export function commentBodyToText(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&amp;/g, '&')
+    .trim()
 }
 
 // ---------------------------------------------------------------------------
-// Comment Creation & Idempotency
+// RC2-DEBT-20 fold: the composer writes to the live Payload
+// discussions / discussion-posts store. A v1 thread id is a discussion
+// id. The v1 contracts preserved: Idempotency-Key required with a
+// 60-second replay window (backed by discussion-posts.clientMutationId),
+// 5-per-60s member rate limit, depth cap 5, sanction gate, submission
+// triage, the comment.created.v1 outbox event, and the 15-minute edit
+// window. The v1 record shape returned to callers is unchanged.
 // ---------------------------------------------------------------------------
+
+type Doc = Record<string, unknown>
+
+function relationId(value: unknown): string {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && 'id' in (value as Doc)) return String((value as Doc).id ?? '')
+  return ''
+}
+
+function mapPostStatusToV1(status: unknown): string {
+  const value = String(status ?? 'published')
+  if (value === 'published') return 'visible'
+  if (value === 'removed') return 'deleted'
+  return 'pending_review'
+}
+
+function postToCommentRecord(
+  post: Doc,
+  extra: { depth: number; rootId: string | null; authorType: string },
+): Record<string, unknown> {
+  return {
+    id: String(post.id),
+    thread_id: relationId(post.discussion),
+    parent_id: relationId(post.parent) || null,
+    root_id: extra.rootId,
+    author_id: relationId(post.authorMember) || relationId(post.authorGuest) || null,
+    author_type: extra.authorType,
+    depth: extra.depth,
+    body_raw: String(post.body ?? ''),
+    body_html: String(post.body ?? ''),
+    client_mutation_id: (post.clientMutationId as string | null) ?? null,
+    status: mapPostStatusToV1(post.status),
+    created_at: post.createdAt,
+    updated_at: post.updatedAt,
+  }
+}
+
+async function discussionDoc(payload: Payload, discussionId: string): Promise<Doc | null> {
+  const found = await payload
+    .findByID({ collection: 'discussions', id: discussionId, depth: 0, overrideAccess: true })
+    .catch(() => null)
+  return (found as unknown as Doc | null) ?? null
+}
+
+async function parentChain(
+  payload: Payload,
+  parentId: string,
+  discussionId: string,
+): Promise<{ depth: number; rootId: string }> {
+  let depth = 0
+  let rootId = parentId
+  let currentId: string | null = parentId
+  const seen = new Set<string>()
+  while (currentId) {
+    if (seen.has(currentId)) break
+    seen.add(currentId)
+    const doc = (await payload
+      .findByID({ collection: 'discussion-posts', id: currentId, depth: 0, overrideAccess: true })
+      .catch(() => null)) as unknown as Doc | null
+    if (!doc) {
+      throw new CommentComposerError(
+        'Parent comment is not in this thread',
+        422,
+        'INVALID_COMMENT_PARENT',
+      )
+    }
+    if (relationId(doc.discussion) !== discussionId) {
+      throw new CommentComposerError(
+        'Parent comment is not in this thread',
+        422,
+        'INVALID_COMMENT_PARENT',
+      )
+    }
+    rootId = String(doc.id)
+    const next = relationId(doc.parent) || null
+    if (next) depth++
+    currentId = next
+  }
+  return { depth: depth + 1, rootId }
+}
+
 export interface PostThreadCommentInput {
   siteId: string
   threadId: string
@@ -563,41 +456,56 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
 
   const clientMutationId = toDeterministicUuid(input.idempotencyKey.trim())
   const currentTime = (input.now ?? new Date()).getTime()
+  const authorType = input.authorType ?? 'member'
 
-  // 1. Check for existing comment by client_mutation_id within 60 seconds (Idempotency Replay)
-  try {
-    const priorRows = await executeDbQuery<Record<string, unknown>>(
-      payload,
-      `SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2`,
-      [input.threadId, clientMutationId],
-    )
-    const existing = priorRows[0]
-    if (existing) {
-      if (String(existing.author_id) !== input.authorId)
-        throw new CommentComposerError(
-          'Idempotency key belongs to another author.',
-          409,
-          'IDEMPOTENCY_AUTHOR_MISMATCH',
-        )
-      const createdAt = new Date(String(existing.created_at)).getTime()
-      if (currentTime - createdAt <= 60_000) {
-        return {
-          comment: existing,
-          replayed: true,
-        }
-      }
+  // 1. Idempotency replay: an existing post carrying this mutation id
+  // within the thread replays for 60 seconds, then the key expires.
+  const prior = await payload.find({
+    collection: 'discussion-posts',
+    where: {
+      and: [
+        { discussion: { equals: input.threadId } },
+        { clientMutationId: { equals: clientMutationId } },
+      ],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const existing = prior.docs[0] as unknown as Doc | undefined
+  if (existing) {
+    if (relationId(existing.authorMember) !== input.authorId)
       throw new CommentComposerError(
-        'Idempotency key has expired (60s replay window).',
+        'Idempotency key belongs to another author.',
         409,
-        'IDEMPOTENCY_KEY_EXPIRED',
+        'IDEMPOTENCY_AUTHOR_MISMATCH',
       )
+    const createdAt = new Date(String(existing.createdAt)).getTime()
+    if (currentTime - createdAt <= 60_000) {
+      const chain = existing.parent
+        ? await parentChain(payload, relationId(existing.parent), input.threadId).catch(() => ({
+            depth: 0,
+            rootId: null as string | null,
+          }))
+        : { depth: 0, rootId: null as string | null }
+      return {
+        comment: postToCommentRecord(existing, {
+          depth: chain.depth,
+          rootId: chain.rootId,
+          authorType,
+        }),
+        replayed: true,
+      }
     }
-  } catch (err) {
-    if (err instanceof CommentComposerError) throw err
+    throw new CommentComposerError(
+      'Idempotency key has expired (60s replay window).',
+      409,
+      'IDEMPOTENCY_KEY_EXPIRED',
+    )
   }
 
-  // 2. Check rate limit for authenticated members
-  if (input.authorType !== 'anonymous' && input.authorId) {
+  // 2. Rate limit for authenticated members
+  if (authorType !== 'anonymous' && input.authorId) {
     const rate = consumeCommentRateLimit(input.authorId, currentTime, 5, 60_000, clientMutationId)
     if (!rate.allowed) {
       throw new CommentComposerError(
@@ -609,64 +517,33 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
     }
   }
 
-  // 3. Thread validation (scoped to site)
-  let thread: CommentThread | null = null
-  try {
-    const threadRows = await executeDbQuery<CommentThread>(
-      payload,
-      `SELECT id, site_id AS "siteId", canonical_content_id AS "canonicalContentId",
-              content_type AS "contentType", is_closed AS "isClosed", is_frozen AS "isFrozen",
-              premoderation_enabled AS "premoderationEnabled"
-       FROM comment_threads
-       WHERE id = $1 AND site_id = $2`,
-      [input.threadId, input.siteId],
+  // 3. Thread validation on the live store (scoped to site)
+  const thread = await getThreadLifecycle(payload, {
+    siteId: input.siteId,
+    threadId: input.threadId,
+  }).catch(() => null)
+  if (!thread) {
+    throw new CommentComposerError('Comment thread not found.', 404, 'THREAD_NOT_FOUND')
+  }
+  if (thread.isFrozen) {
+    throw new CommentComposerError('This comment thread is frozen.', 403, 'THREAD_FROZEN')
+  }
+  if (thread.isClosed) {
+    throw new CommentComposerError(
+      'This comment thread is closed to new comments.',
+      403,
+      'THREAD_CLOSED',
     )
-    thread = threadRows[0] ?? null
-  } catch {
-    // Check via payload.find if DB query failed
   }
 
-  if (!thread && typeof payload.find === 'function') {
-    try {
-      const found = await payload.find({
-        collection: 'comment-threads' as never,
-        where: {
-          and: [{ id: { equals: input.threadId } }, { site: { equals: input.siteId } }],
-        },
-        limit: 1,
-        depth: 0,
-        overrideAccess: true,
-      })
-      if (found.docs[0]) {
-        thread = found.docs[0] as unknown as CommentThread
-      }
-    } catch (error) {
-      // RC2-DEBT-10: logged — a failed lookup falls through to thread
-      // creation, and this line is the only trace of why.
-      console.error('[comment-composer] comment thread lookup failed.', error)
-    }
+  // Sanction gate. Payload-only test/adaptor mode has no SQL read
+  // boundary; production PostgreSQL always has one, so it cannot
+  // silently bypass sanctions.
+  const queryable = payload as unknown as {
+    db?: { pool?: unknown; drizzle?: unknown }
   }
-
-  if (thread) {
-    if (thread.isFrozen) {
-      throw new CommentComposerError('This comment thread is frozen.', 403, 'THREAD_FROZEN')
-    }
-    if (thread.isClosed) {
-      throw new CommentComposerError(
-        'This comment thread is closed to new comments.',
-        403,
-        'THREAD_CLOSED',
-      )
-    }
-  }
-
-  // Payload-only test/adaptor mode has no SQL read boundary. Production PostgreSQL
-  // always has one, so it cannot silently bypass sanctions.
-  const hasDbBoundary = Boolean(
-    (payload as unknown as QueryablePayload).db?.pool ||
-      (payload as unknown as QueryablePayload).db?.drizzle,
-  )
-  if (hasDbBoundary && (input.authorType ?? 'member') === 'member' && input.authorId) {
+  const hasDbBoundary = Boolean(queryable.db?.pool || queryable.db?.drizzle)
+  if (hasDbBoundary && authorType === 'member' && input.authorId) {
     try {
       await assertMemberCanPost(payload, {
         siteId: input.siteId,
@@ -680,72 +557,117 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
     }
   }
 
-  const initialStatus: 'visible' | 'pending_review' = thread?.premoderationEnabled
-    ? 'pending_review'
-    : 'visible'
+  // 4. Parent validation + depth (cap 5)
+  let depth = 0
+  let rootId: string | null = null
+  if (input.parentId) {
+    const chain = await parentChain(payload, input.parentId, input.threadId)
+    depth = chain.depth
+    rootId = chain.rootId
+    if (depth > 5) {
+      throw new CommentComposerError(
+        'Comment nesting cannot exceed depth 5',
+        422,
+        'COMMENT_DEPTH_EXCEEDED',
+      )
+    }
+  }
 
-  // 4. Sanitize rich text
+  // 5. Sanitize rich text, resolve mentions, reduce to the live
+  // store's plain-text body model.
   const sanitized = sanitizeCommentHtml(rawBody)
-
-  // 5. Extract & resolve mentions
   const handles = extractMentions(rawBody)
   const resolvedMentions = await resolveSiteMentions(payload, input.siteId, handles)
-  const bodyHtml = linkResolvedMentions(sanitized, resolvedMentions)
+  const bodyText = commentBodyToText(linkResolvedMentions(sanitized, resolvedMentions))
 
-  // 6. Insert comment and outbox event atomically in the same transaction
-  try {
-    const created = await persistCommentWithOutbox(payload, {
-      siteId: input.siteId,
-      threadId: input.threadId,
-      canonicalContentId: thread ? thread.canonicalContentId : null,
-      parentId: input.parentId ?? null,
-      authorId: input.authorId,
-      authorType: input.authorType ?? 'member',
-      status: initialStatus,
-      bodyRaw: rawBody,
-      bodyHtml,
+  // 6. Allocate display order + permalink like the live comment path.
+  const discussion = await discussionDoc(payload, input.threadId)
+  const canonicalPath = String(discussion?.canonicalPath ?? `/discussions/${input.threadId}`)
+  const countRes = await payload.find({
+    collection: 'discussion-posts',
+    where: { discussion: { equals: input.threadId } },
+    limit: 0,
+    overrideAccess: true,
+  })
+  let nextOrder = countRes.totalDocs + 1
+  let permalink = `${canonicalPath}#comment-${nextOrder}`
+  let collision = await payload.find({
+    collection: 'discussion-posts',
+    where: { permalink: { equals: permalink } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  while (collision.totalDocs > 0) {
+    nextOrder++
+    permalink = `${canonicalPath}#comment-${nextOrder}`
+    collision = await payload.find({
+      collection: 'discussion-posts',
+      where: { permalink: { equals: permalink } },
+      limit: 1,
+      overrideAccess: true,
+    })
+  }
+
+  const created = (await payload.create({
+    collection: 'discussion-posts' as never,
+    data: {
+      discussion: input.threadId,
+      authorMember: authorType === 'member' && input.authorId ? input.authorId : null,
+      body: bodyText,
+      parent: input.parentId ?? null,
+      displayOrder: nextOrder,
+      permalink,
+      paginationAnchor: `comment-${nextOrder}`,
+      status: 'published',
+      visibility: 'public',
+      moderationState: 'clear',
       clientMutationId,
-      mentionedHandles: handles,
-      timestamp: new Date(currentTime).toISOString(),
+    } as never,
+    depth: 0,
+    overrideAccess: true,
+  })) as unknown as Doc
+
+  // 7. Outbox event, same payload shape as the v1 store emitted. If
+  // the outbox write fails, the created post is removed again — the
+  // pair commits or neither does.
+  const outboxPayload = {
+    site_id: input.siteId,
+    comment_id: String(created.id),
+    thread_id: input.threadId,
+    canonical_content_id: thread.canonicalContentId || null,
+    author_id: input.authorId,
+    parent_id: input.parentId ?? null,
+    mentioned_handles: handles,
+    timestamp: new Date(currentTime).toISOString(),
+  }
+  try {
+    await executeDbQuery(
+      payload,
+      `INSERT INTO outbox_events (event_type, payload, created_at) VALUES ($1, $2, now())`,
+      ['comment.created.v1', JSON.stringify(outboxPayload)],
+    )
+  } catch (error) {
+    await payload
+      .delete({ collection: 'discussion-posts', id: String(created.id), overrideAccess: true })
+      .catch((compensationError) =>
+        console.error('[comment-composer] outbox compensation delete failed.', compensationError),
+      )
+    throw error
+  }
+
+  // Triage only ever moves a submission into review; it never performs a sanction.
+  if (authorType === 'member' && input.authorId)
+    await triageSubmission(payload, {
+      siteId: input.siteId,
+      targetType: 'comment',
+      targetId: String(created.id),
+      authorId: input.authorId,
+      text: rawBody,
     })
 
-    // Triage only ever moves a submission into review; it never performs a sanction.
-    if ((input.authorType ?? 'member') === 'member' && input.authorId)
-      await triageSubmission(payload, {
-        siteId: input.siteId,
-        targetType: 'comment',
-        targetId: String(created.id),
-        authorId: input.authorId,
-        text: rawBody,
-      })
-
-    return {
-      comment: created,
-      replayed: false,
-    }
-  } catch (err: unknown) {
-    // Under concurrency, duplicate mutation key violates unique constraint
-    const errorStr = String(err)
-    if (errorStr.includes('23505') || errorStr.includes('client_mutation')) {
-      const priorRows = await executeDbQuery<Record<string, unknown>>(
-        payload,
-        `SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2`,
-        [input.threadId, clientMutationId],
-      )
-      if (priorRows[0]) {
-        if (String(priorRows[0].author_id) !== input.authorId)
-          throw new CommentComposerError(
-            'Idempotency key belongs to another author.',
-            409,
-            'IDEMPOTENCY_AUTHOR_MISMATCH',
-          )
-        return {
-          comment: priorRows[0],
-          replayed: true,
-        }
-      }
-    }
-    throw err
+  return {
+    comment: postToCommentRecord(created, { depth, rootId, authorType }),
+    replayed: false,
   }
 }
 
@@ -753,6 +675,8 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
 // Comment Editing & 15-Minute Edit Window
 // Allow author edits for exactly 15 minutes.
 // Allow staff edits after 15 minutes only with staff:community_moderate.
+// The previous body is preserved in the community audit log
+// (event comment.edited.v1), the folded equivalent of comment_revisions.
 // ---------------------------------------------------------------------------
 export interface EditThreadCommentInput {
   siteId: string
@@ -772,38 +696,38 @@ export async function editThreadComment(payload: Payload, input: EditThreadComme
     throw new CommentComposerError('Comment body cannot be empty.', 422, 'EMPTY_COMMENT_BODY')
   }
 
-  const commentRows = await executeDbQuery<Record<string, unknown>>(
-    payload,
-    `SELECT c.*, t.site_id AS "threadSiteId"
-     FROM comments c
-     LEFT JOIN comment_threads t ON c.thread_id = t.id
-     WHERE c.id = $1`,
-    [input.commentId],
-  )
-
-  const comment = commentRows[0]
+  const comment = (await payload
+    .findByID({
+      collection: 'discussion-posts',
+      id: input.commentId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)) as unknown as Doc | null
   if (!comment) {
     throw new CommentComposerError('Comment not found.', 404, 'COMMENT_NOT_FOUND')
   }
 
-  if (comment.threadSiteId && String(comment.threadSiteId) !== input.siteId) {
+  const discussionId = relationId(comment.discussion)
+  const discussion = await discussionDoc(payload, discussionId)
+  if (discussion && String(relationId(discussion.site)) !== input.siteId) {
     throw new CommentComposerError('Site mismatch for this comment.', 403, 'SITE_MISMATCH')
   }
 
-  if (input.threadId && String(comment.thread_id) !== input.threadId) {
+  if (input.threadId && discussionId !== input.threadId) {
     throw new CommentComposerError('Thread mismatch for this comment.', 422, 'THREAD_MISMATCH')
   }
 
-  if (comment.status === 'deleted') {
+  if (String(comment.status) === 'removed') {
     throw new CommentComposerError('Cannot edit a deleted comment.', 422, 'COMMENT_DELETED')
   }
 
-  const createdAt = new Date(String(comment.created_at)).getTime()
+  const createdAt = new Date(String(comment.createdAt)).getTime()
   const currentTime = (input.now ?? new Date()).getTime()
   const elapsedMs = currentTime - createdAt
 
   const isAuthor = Boolean(
-    input.actor.memberId && String(comment.author_id) === input.actor.memberId,
+    input.actor.memberId && relationId(comment.authorMember) === input.actor.memberId,
   )
 
   const hasStaffModerate = Boolean(
@@ -816,7 +740,6 @@ export async function editThreadComment(payload: Payload, input: EditThreadComme
   )
 
   if (elapsedMs <= EDIT_WINDOW_MS) {
-    // Within 15 minutes: author or staff may edit
     if (!isAuthor && !input.actor.isStaff && !input.actor.isModerator) {
       throw new CommentComposerError(
         'Only the comment author or staff can edit this comment.',
@@ -825,7 +748,6 @@ export async function editThreadComment(payload: Payload, input: EditThreadComme
       )
     }
   } else {
-    // After 15 minutes: authors cannot edit; staff require staff:community_moderate
     if (isAuthor && !hasStaffModerate) {
       throw new CommentComposerError(
         'Author edit window has expired (15 minutes).',
@@ -842,32 +764,46 @@ export async function editThreadComment(payload: Payload, input: EditThreadComme
     }
   }
 
-  // Sanitize new rich-text body
   const sanitized = sanitizeCommentHtml(trimmedBody)
-
-  // Extract & resolve mentions
   const handles = extractMentions(trimmedBody)
   const resolvedMentions = await resolveSiteMentions(payload, input.siteId, handles)
-  const bodyHtml = linkResolvedMentions(sanitized, resolvedMentions)
+  const bodyText = commentBodyToText(linkResolvedMentions(sanitized, resolvedMentions))
 
-  // Record revision in comment_revisions
-  const editorId = input.actor.memberId ?? input.actor.userId ?? String(comment.author_id)
+  const editorId = input.actor.memberId ?? input.actor.userId ?? relationId(comment.authorMember)
   await executeDbQuery(
     payload,
-    `INSERT INTO comment_revisions (comment_id, editor_id, previous_body_raw, reason)
-     VALUES ($1, $2, $3, $4)`,
-    [input.commentId, editorId, String(comment.body_raw), input.reason ?? null],
-  )
+    'INSERT INTO community_audit_log (site_id,event_type,event_payload,record_hash) VALUES ($1,$2,$3::jsonb,$4)',
+    [
+      input.siteId,
+      'comment.edited.v1',
+      JSON.stringify({
+        comment_id: input.commentId,
+        editor_id: editorId,
+        previous_body: String(comment.body ?? ''),
+        reason: input.reason ?? null,
+      }),
+      'trigger-derived',
+    ],
+  ).catch((error) => console.error('[comment-composer] edit audit record failed.', error))
 
-  // Update comment in comments table
-  const updatedRows = await executeDbQuery<Record<string, unknown>>(
-    payload,
-    `UPDATE comments
-     SET body_raw = $1, body_html = $2, updated_at = now()
-     WHERE id = $3
-     RETURNING *`,
-    [trimmedBody, bodyHtml, input.commentId],
-  )
+  const updated = (await payload.update({
+    collection: 'discussion-posts',
+    id: input.commentId,
+    data: { body: bodyText },
+    depth: 0,
+    overrideAccess: true,
+  })) as unknown as Doc
 
-  return updatedRows[0]
+  const chain = updated.parent
+    ? await parentChain(payload, relationId(updated.parent), discussionId).catch(() => ({
+        depth: 0,
+        rootId: null as string | null,
+      }))
+    : { depth: 0, rootId: null as string | null }
+
+  return postToCommentRecord(updated, {
+    depth: chain.depth,
+    rootId: chain.rootId,
+    authorType: updated.authorMember ? 'member' : 'anonymous',
+  })
 }
