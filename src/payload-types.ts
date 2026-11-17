@@ -6045,6 +6045,10 @@ export interface DiscussionPost {
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
   solution?: boolean | null;
   helpful?: boolean | null;
+  /**
+   * Idempotency key (deterministic UUID) stamped by the versioned comment composer; null for posts created through other surfaces.
+   */
+  clientMutationId?: string | null;
   moderationState: 'clear' | 'review' | 'restricted' | 'removed';
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
@@ -13067,6 +13071,7 @@ export interface DiscussionPostsSelect<T extends boolean = true> {
   visibility?: T;
   solution?: T;
   helpful?: T;
+  clientMutationId?: T;
   moderationState?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
