@@ -30,7 +30,16 @@ describe('complete site-scoped segment counts', () => {
           ],
         }
       if (input.collection === 'suppressions')
-        return { docs: input.where.emailHash?.equals === 'no' ? [{}] : [] }
+        // RC2-DEBT-13 bulk load (no emailHash condition) gets the site's
+        // suppressed hashes as docs; legacy per-hash lookups keep working.
+        return {
+          docs:
+            input.where.emailHash?.equals === undefined
+              ? [{ emailHash: 'no' }]
+              : input.where.emailHash.equals === 'no'
+                ? [{ emailHash: 'no' }]
+                : [],
+        }
       return { docs: [] }
     })
     const result = await evaluateSegmentRecipients(
