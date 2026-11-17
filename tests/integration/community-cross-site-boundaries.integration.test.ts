@@ -20,6 +20,7 @@ import {
 import {
   resolveCommunityActor,
   createForumThread,
+  getOrCreateAttachedDiscussion,
   replyToForumThread,
   toggleCommunityReaction,
   blockMember,
@@ -516,26 +517,33 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       },
       overrideAccess: true,
     } as never)
-    const testThreadId = randomUUID()
-    const testCommentId = randomUUID()
     const canonicalContentId = String(modContent.id)
-    await queryDb(
-      payload,
-      `INSERT INTO comment_threads (id, site_id, canonical_content_id, content_type) VALUES ($1, $2, $3, $4)`,
-      [testThreadId, siteAId, canonicalContentId, 'article'],
-    )
-    await queryDb(
-      payload,
-      `INSERT INTO comments (id, thread_id, author_id, author_type, body_raw, body_html, status)
-       VALUES ($1, $2, $3, 'member', $4, $5, 'visible')`,
-      [
-        testCommentId,
-        testThreadId,
-        bobMemberId,
-        'Disruptive comment content that violates standards',
-        '<p>Disruptive comment content that violates standards</p>',
-      ],
-    )
+    // DEBT-20 fold: a comment lives in the live discussion store — the
+    // article's attached discussion plus a discussion post by Bob.
+    const modDiscussion = await getOrCreateAttachedDiscussion(payload, {
+      siteId: siteAId,
+      attachedToCollection: 'content',
+      attachedToId: canonicalContentId,
+      title: `Test Moderation Article ${suffix}`,
+      canonicalPath: `/articles/test-mod-${suffix}`,
+    })
+    const testThreadId = String(modDiscussion.id)
+    const objectionablePost = (await payload.create({
+      collection: 'discussion-posts',
+      data: {
+        discussion: testThreadId,
+        authorMember: bobMemberId,
+        body: 'Disruptive comment content that violates standards',
+        displayOrder: 1,
+        permalink: `/articles/test-mod-${suffix}#comment-1`,
+        paginationAnchor: 'comment-1',
+        status: 'published',
+        visibility: 'public',
+        moderationState: 'clear',
+      },
+      overrideAccess: true,
+    } as never)) as unknown as { id: string }
+    const testCommentId = String(objectionablePost.id)
 
     // Step 3: Alice reports Bob's objectionable comment
     const reportRes = await ingestModerationReport(payload, {
@@ -572,13 +580,16 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       reason: 'Violates civility policy; quarantined pending full review',
     })
 
-    // Step 6: Verify comment is quarantined (status = 'rejected') in persisted database
-    const quarantinedComment = await queryDb<{ status: string }>(
+    // Step 6: Verify the comment is quarantined in the live store
+    // (DEBT-20 fold: a comment quarantine hides the discussion post and
+    // marks its moderation state restricted)
+    const quarantinedComment = await queryDb<{ status: string; moderation_state: string }>(
       payload,
-      `SELECT status FROM "comments" WHERE id = $1`,
+      `SELECT status, moderation_state FROM "discussion_posts" WHERE id = $1`,
       [testCommentId],
     )
-    expect(quarantinedComment.rows[0].status).toBe('rejected')
+    expect(quarantinedComment.rows[0].status).toBe('hidden')
+    expect(quarantinedComment.rows[0].moderation_state).toBe('restricted')
 
     // Step 7: Verify moderation action recorded with Charlie as actor
     const recordedAction = await queryDb<{ action: string; actor: string }>(
