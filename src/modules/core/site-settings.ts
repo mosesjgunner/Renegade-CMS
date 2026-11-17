@@ -11,6 +11,13 @@ import {
 } from '../public/semantic-url'
 import type { Payload } from 'payload'
 
+/** Search-engine ownership verification tokens (F3), sanitized at resolution. */
+export type SiteVerificationTokens = {
+  google?: string
+  bing?: string
+  yandex?: string
+}
+
 export type ResolvedSiteSettings = {
   themeId?: string
   themeConfiguration?: Configuration | null
@@ -18,6 +25,12 @@ export type ResolvedSiteSettings = {
   siteDescription: string
   canonicalOrigin: string
   canonicalOriginsBySite: Record<string, string>
+  /** Which configuration layer supplied the canonical origin (F4 diagnostics). */
+  canonicalOriginSource: 'configured' | 'onboarding' | 'app-url' | 'default'
+  siteVerification: {
+    tokens: SiteVerificationTokens
+    bySite: Record<string, SiteVerificationTokens>
+  }
   locale: string
   timezone: string
   logoId: string | null
@@ -87,11 +100,46 @@ async function resolveSiteSettingsUncached(
     ).trim()
 
     const onboarding = (settings?.onboarding as Record<string, unknown> | undefined) ?? {}
+    const canonicalOriginSource: ResolvedSiteSettings['canonicalOriginSource'] =
+      typeof settings?.canonicalOrigin === 'string' && settings.canonicalOrigin.trim()
+        ? 'configured'
+        : typeof onboarding?.primaryUrl === 'string' && onboarding.primaryUrl.trim()
+          ? 'onboarding'
+          : process.env.APP_URL
+            ? 'app-url'
+            : 'default'
     const canonicalOrigin = String(
       settings?.canonicalOrigin || onboarding?.primaryUrl || fallbackOrigin,
     )
       .trim()
       .replace(/\/$/, '')
+    const parseVerificationTokens = (raw: unknown): SiteVerificationTokens => {
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {}
+      const source = raw as Record<string, unknown>
+      const tokens: SiteVerificationTokens = {}
+      for (const key of ['google', 'bing', 'yandex'] as const) {
+        const value = source[key]
+        if (typeof value === 'string' && /^[A-Za-z0-9_-]{1,128}$/.test(value.trim()))
+          tokens[key] = value.trim()
+      }
+      return tokens
+    }
+    const rawVerification =
+      settings?.siteVerification && typeof settings.siteVerification === 'object'
+        ? (settings.siteVerification as Record<string, unknown>)
+        : {}
+    const siteVerification: ResolvedSiteSettings['siteVerification'] = {
+      tokens: parseVerificationTokens(rawVerification),
+      bySite: Object.fromEntries(
+        Object.entries(
+          rawVerification.bySite && typeof rawVerification.bySite === 'object'
+            ? (rawVerification.bySite as Record<string, unknown>)
+            : {},
+        )
+          .map(([site, value]) => [site, parseVerificationTokens(value)] as const)
+          .filter(([, tokens]) => Object.keys(tokens).length > 0),
+      ),
+    }
     const canonicalOriginsBySite = Object.fromEntries(
       Object.entries(
         settings?.canonicalOriginsBySite && typeof settings.canonicalOriginsBySite === 'object'
@@ -148,6 +196,8 @@ async function resolveSiteSettingsUncached(
       siteDescription,
       canonicalOrigin: canonicalOrigin || fallbackOrigin,
       canonicalOriginsBySite,
+      canonicalOriginSource,
+      siteVerification,
       locale,
       timezone,
       logoId,
@@ -210,6 +260,8 @@ async function resolveSiteSettingsUncached(
       siteDescription: '',
       canonicalOrigin: fallbackOrigin,
       canonicalOriginsBySite: {},
+      canonicalOriginSource: process.env.APP_URL ? 'app-url' : 'default',
+      siteVerification: { tokens: {}, bySite: {} },
       locale: 'en',
       timezone: 'UTC',
       logoId: null,

@@ -44,9 +44,24 @@ export const SiteSettings: GlobalConfig = {
             if (!['http:', 'https:'].includes(parsed.protocol)) {
               throw new Error('Canonical origin must use HTTP or HTTPS protocol.')
             }
+            // F4: a canonical origin is a bare origin — scheme + host only.
+            // A path, query, fragment, or credentials would mint wrong
+            // canonicals for every page on the site, silently.
+            if (
+              parsed.username ||
+              parsed.password ||
+              parsed.search ||
+              parsed.hash ||
+              (parsed.pathname !== '/' && parsed.pathname !== '')
+            ) {
+              throw new Error(
+                'Canonical origin must be a bare origin (e.g. https://example.com) with no path, query, or credentials.',
+              )
+            }
           } catch (err) {
             throw new Error(
-              err instanceof Error && err.message.includes('protocol')
+              err instanceof Error &&
+              (err.message.includes('protocol') || err.message.includes('bare origin'))
                 ? err.message
                 : `Invalid canonical origin URL: "${data.canonicalOrigin}".`,
             )
@@ -65,6 +80,17 @@ export const SiteSettings: GlobalConfig = {
                 if (!['http:', 'https:'].includes(parsed.protocol)) {
                   throw new Error(
                     `Canonical origin for site ${siteKey} must use HTTP or HTTPS protocol.`,
+                  )
+                }
+                if (
+                  parsed.username ||
+                  parsed.password ||
+                  parsed.search ||
+                  parsed.hash ||
+                  (parsed.pathname !== '/' && parsed.pathname !== '')
+                ) {
+                  throw new Error(
+                    `Canonical origin for site ${siteKey} must be a bare origin (e.g. https://example.com) with no path, query, or credentials.`,
                   )
                 }
                 const hostKey = parsed.host.toLowerCase()
@@ -391,8 +417,14 @@ export const SiteSettings: GlobalConfig = {
     { name: 'sameAs', type: 'json' },
     { name: 'contactDefaults', type: 'json' },
     { name: 'socialHandles', type: 'json' },
-    { name: 'siteVerification', type: 'json' },
-    { name: 'robotsDefaults', type: 'json' },
+    {
+      name: 'siteVerification',
+      type: 'json',
+      admin: {
+        description:
+          'Search-engine ownership verification tokens, rendered as meta tags on the homepage only. Shape: {"google": "<token>", "bing": "<token>", "yandex": "<token>"} — for several sites, add "bySite": {"<site id>": {"google": "<token>"}}. Paste only the token value from the provider, not the whole meta tag. The tag proves nothing by itself: verification completes only when the provider checks your live homepage.',
+      },
+    },
     {
       name: 'searchAction',
       type: 'group',
