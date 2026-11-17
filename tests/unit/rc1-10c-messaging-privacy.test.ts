@@ -17,12 +17,6 @@ import {
   NotificationStreamManager,
   notificationStreamManager,
 } from '@/modules/community/notification-stream'
-import {
-  listInbox,
-  markInboxRead,
-  noSnippet,
-  projectInboxEvent,
-} from '@/modules/community/inbox-notifications'
 import * as communityService from '@/modules/community/service'
 import { querySearchProjection } from '@/modules/public/search-projection'
 
@@ -317,58 +311,116 @@ describe('RC1 10C — Messages, Blocks, Notifications and Privacy Invariants', (
   // 3. Notification Suppression on Block and Privacy Protection
   // --------------------------------------------------------------------------
   describe('Notification suppression on block', () => {
+    // DEBT-21 re-pin: the canonical dispatcher (service.ts) owns this
+    // invariant now — a block or mute suppresses the notification
+    // before any activity/notification row is created.
     it('generates zero notifications for a recipient who has blocked the actor', async () => {
-      vi.spyOn(communityService, 'checkBlockBetween').mockResolvedValue({
-        isBlocked: true,
-      })
-      vi.spyOn(communityService, 'checkMuteFrom').mockResolvedValue(false)
+      const create = vi.fn(async () => ({ id: 'should-not-exist' }))
+      const payload = {
+        collections: { 'activity-events': {}, notifications: {} },
+        find: vi.fn(async (args: { collection: string; where?: unknown }) => {
+          if (args.collection === 'relationships') {
+            return JSON.stringify(args.where).includes('"block"')
+              ? { docs: [{ id: 'block-1' }] }
+              : { docs: [] }
+          }
+          return { docs: [] }
+        }),
+        create,
+      } as never
 
-      const query = vi.fn(async (text: string) => {
-        if (text.includes('SELECT status, deleted_at FROM comments')) {
-          return { rows: [{ status: 'visible', deleted_at: null }] }
+      await communityService.dispatchCommunityNotification(payload, {
+        siteId: siteA,
+        recipientMemberId: bob,
+        actorMemberId: alice,
+        type: 'comment.reply',
+        object: { id: 'comment-123' },
+        payloadData: {},
+      })
+
+      expect(create).not.toHaveBeenCalled()
+    })
+
+    // DEBT-21 re-pin: the retired inbox projection stripped message
+    // bodies from snapshots; the canonical path never receives the
+    // body at all — the composer dispatches a fixed placeholder.
+    it('never puts private message content into a notification payload', async () => {
+      const created: Array<{ collection: string; data: Record<string, unknown> }> = []
+      const query = vi.fn(async (text: string, values: unknown[] = []) => {
+        if (['BEGIN', 'COMMIT', 'ROLLBACK'].includes(text) || text.includes('pg_advisory')) {
+          return { rows: [] }
+        }
+        if (
+          text.includes('SELECT c.request_state') ||
+          text.includes('FROM conversation_memberships cm JOIN conversations c')
+        ) {
+          return {
+            rows: [
+              {
+                request_state: 'active',
+                request_recipient_member_id: bob,
+                status: 'active',
+                visible_from_sequence: 1,
+              },
+            ],
+          }
+        }
+        if (
+          text.includes(
+            'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
+          )
+        ) {
+          return { rows: [{ member_id: bob }] }
+        }
+        if (
+          text.startsWith('SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2')
+        ) {
+          return { rows: [] }
+        }
+        if (text.startsWith('UPDATE conversations SET next_message_sequence')) {
+          return { rows: [{ sequence_number: 1 }] }
+        }
+        if (text.startsWith('INSERT INTO messages')) {
+          return {
+            rows: [
+              {
+                id: 'msg-1',
+                conversation_id: values[0],
+                sender_id: values[1],
+                idempotency_key: values[2],
+                sequence_number: values[3],
+                body_html: values[4],
+                created_at: new Date().toISOString(),
+              },
+            ],
+          }
         }
         return { rows: [] }
       })
+      const payload = {
+        db: { pool: { connect: async () => ({ query, release: vi.fn() }), query } },
+        find: vi.fn(async () => ({ docs: [] })),
+        create: vi.fn(async (args: { collection: string; data: Record<string, unknown> }) => {
+          created.push(args)
+          return { id: `created-${created.length}` }
+        }),
+        collections: { 'activity-events': {}, notifications: {} },
+      } as never
 
-      const payload = { db: { pool: { query } } } as never
-
-      const count = await projectInboxEvent(payload, {
-        id: 'evt-blocked',
-        eventType: 'comment.created.v1',
-        payload: {
-          site_id: siteA,
-          author_id: alice,
-          comment_id: 'comment-123',
-          recipient_member_ids: [bob],
-        },
-      })
-
-      expect(count).toBe(0)
-    })
-
-    it('strips private message content from notification snapshots', () => {
-      const sensitivePayload = {
-        kind: 'direct_message.received',
-        sender: 'alice',
+      await sendConversationMessage(payload, {
+        siteId: siteA,
+        conversationId: 'conv-1',
+        senderId: alice,
         body: 'Super secret private discussion',
-        body_html: '<p>Super secret private discussion</p>',
-        snippet: 'Super secret...',
-        preview: 'Super secret preview',
-        message: 'Direct message content',
-        content: 'Confidential inner content',
-      }
-
-      const clean = noSnippet(sensitivePayload)
-      expect(clean).toEqual({
-        kind: 'direct_message.received',
-        sender: 'alice',
+        idempotencyKey: 'dm-secret-1',
       })
-      expect(clean).not.toHaveProperty('body')
-      expect(clean).not.toHaveProperty('body_html')
-      expect(clean).not.toHaveProperty('snippet')
-      expect(clean).not.toHaveProperty('preview')
-      expect(clean).not.toHaveProperty('message')
-      expect(clean).not.toHaveProperty('content')
+
+      const activity = created.find((entry) => entry.collection === 'activity-events')
+      expect(activity).toBeDefined()
+      expect(JSON.stringify(activity?.data)).not.toContain('Super secret')
+      expect((activity?.data as { payload?: { body?: string } }).payload?.body).toBe(
+        'New private message. Sign in to view it.',
+      )
     })
   })
 
