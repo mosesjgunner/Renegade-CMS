@@ -86,7 +86,7 @@ export async function resolveInboxCandidates(
   if (targetType === 'comment' && (p.parent_id ?? p.parentId)) {
     const rows = await executeDbQuery<{ author_id: string }>(
       payload,
-      'SELECT author_id FROM comments WHERE id=$1',
+      'SELECT author_member_id AS author_id FROM discussion_posts WHERE id=$1',
       [String(p.parent_id ?? p.parentId)],
     )
     add(
@@ -111,12 +111,12 @@ export async function targetIsDeliverable(payload: Payload, event: InboxEvent) {
   const site = String(p.site_id ?? p.siteId ?? '')
   if (!site) return false
   if (type === 'comment') {
-    const rows = await executeDbQuery<{ status: string; deleted_at: string | null }>(
+    const rows = await executeDbQuery<{ status: string }>(
       payload,
-      'SELECT status, deleted_at FROM comments WHERE id=$1 AND thread_id IN (SELECT id FROM comment_threads WHERE site_id=$2)',
+      'SELECT status FROM discussion_posts WHERE id=$1 AND discussion_id IN (SELECT id FROM discussions WHERE site_id=$2)',
       [id, site],
     )
-    return rows[0]?.status === 'visible' && !rows[0]?.deleted_at
+    return rows[0]?.status === 'published'
   }
   if (type === 'forum_post') {
     const rows = await executeDbQuery<{ quarantined: boolean }>(
