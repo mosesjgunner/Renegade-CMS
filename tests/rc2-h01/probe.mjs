@@ -8,7 +8,13 @@ import { chromium } from 'playwright'
 import { readFileSync, mkdirSync } from 'node:fs'
 
 const world = JSON.parse(readFileSync('/tmp/b01-world.json', 'utf8'))
-const base = 'http://localhost:39071'
+// The rig's APP_URL is the 127.0.0.1 origin, and the app's
+// cross-origin mutation guard (correctly) refuses authenticated
+// writes whose Origin is anything else — browsing via "localhost"
+// made the error-state scenario die at that guard before validation
+// could run. Browse the app's canonical origin, as a real admin
+// does. (RC2-DEBT-23: no check changed, only the host form.)
+const base = 'http://127.0.0.1:39071'
 // The sandbox proxy must not see the .test hosts (it sinkholes them);
 // Chromium reads no_proxy from its environment at launch.
 process.env.no_proxy = `${process.env.no_proxy ?? ''},a.rc2-a04.test,b.rc2-a04.test`
