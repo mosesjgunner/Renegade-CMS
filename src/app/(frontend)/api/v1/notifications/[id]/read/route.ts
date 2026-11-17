@@ -1,7 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { markInboxRead } from '@/modules/community/inbox-notifications'
-import { resolveCommunityActor } from '@/modules/community/service'
+import { markMemberNotificationsRead, resolveCommunityActor } from '@/modules/community/service'
 import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { verifyCsrf } from '@/modules/identity/member-identity'
 
@@ -31,11 +30,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     )
   return Response.json(
     {
-      data: await markInboxRead(payload, {
-        siteId,
-        memberId: actor.memberId,
-        notificationId: (await context.params).id,
-      }),
+      data: await markMemberNotificationsRead(
+        payload,
+        actor.memberId,
+        { siteId, actor },
+        (await context.params).id,
+      ),
     },
     { headers: { 'cache-control': 'private, no-store', 'x-renegade-api-version': 'v1' } },
   )

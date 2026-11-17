@@ -1,7 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { markInboxRead } from '@/modules/community/inbox-notifications'
-import { resolveCommunityActor } from '@/modules/community/service'
+import { markMemberNotificationsRead, resolveCommunityActor } from '@/modules/community/service'
 import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { verifyCsrf } from '@/modules/identity/member-identity'
 
@@ -30,7 +29,9 @@ export async function POST(request: Request) {
       { status: 401 },
     )
   return Response.json(
-    { data: await markInboxRead(payload, { siteId, memberId: actor.memberId }) },
+    {
+      data: await markMemberNotificationsRead(payload, actor.memberId, { siteId, actor }),
+    },
     { headers: { 'cache-control': 'private, no-store', 'x-renegade-api-version': 'v1' } },
   )
 }

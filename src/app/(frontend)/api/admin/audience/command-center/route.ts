@@ -283,7 +283,7 @@ export async function GET(request: Request) {
             failedExternal: number
           }>(
             payload,
-            `SELECT (SELECT count(*)::int FROM inbox_notifications WHERE site_id=$1 AND channels ? 'in_app') AS "inApp",
+            `SELECT (SELECT count(*)::int FROM notifications n JOIN activity_events a ON a.id=n.activity_event_id WHERE a.site_id=$1 AND n.channels ? 'in_app') AS "inApp",
            (SELECT count(*)::int FROM notifications n JOIN activity_events a ON a.id=n.activity_event_id WHERE a.site_id=$1) AS "activityRecords",
            (SELECT count(*)::int FROM audience_delivery_outbox WHERE site_id=$1 AND envelope->>'kind'='community-notification' AND status='pending') AS "queuedExternal",
            (SELECT count(*)::int FROM audience_delivery_outbox WHERE site_id=$1 AND envelope->>'kind'='community-notification' AND status IN ('failed','unknown')) AS "failedExternal"`,

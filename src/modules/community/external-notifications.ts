@@ -7,7 +7,6 @@ import {
   getMemberNotificationPreference,
   writeAudienceDeliveryOutbox,
 } from './notification-delivery'
-import { targetIsDeliverable, recipientCanRead } from './inbox-notifications'
 import { loadConfig } from '../core/config'
 import { selectEmailDeliveryAdapter } from '../email/delivery'
 import {
@@ -72,7 +71,14 @@ export function readCommunityUnsubscribeToken(token: string) {
   }
 }
 
-/** Use current readable inbox sources, never email a stored content snippet. */
+/**
+ * Use current readable canonical sources, never email a stored content
+ * snippet. RC2-DEBT-21: the inbox projection is retired — the canonical
+ * notifications store is the only source. Kinds admitted: direct
+ * messages (membership re-checked at send time), follows, and comment /
+ * thread replies whose target post is still published (the
+ * deliverability re-check the retired inbox branch applied).
+ */
 export async function deliverableCommunitySources(
   payload: Payload,
   site: string,
@@ -80,49 +86,7 @@ export async function deliverableCommunitySources(
   start: string,
   end: string,
 ) {
-  const rows = await query(
-    payload,
-    `SELECT n.id,n.kind,n.actor_member_id,n.target_type,n.target_id,n.snapshot,n.created_at,e.payload
-    FROM inbox_notifications n JOIN outbox_events e ON e.id=n.source_event_id
-    WHERE n.site_id=$1 AND n.recipient_member_id=$2 AND n.created_at >= $3::timestamptz AND n.created_at < $4::timestamptz AND e.created_at >= $3::timestamptz ORDER BY n.created_at,n.id`,
-    [site, member, start, end],
-  )
   const visible: Doc[] = []
-  for (const row of rows) {
-    const data = row.payload as Doc
-    if (String(data.site_id ?? data.siteId ?? '') !== site) continue
-    if (
-      !(await eventNotificationEnabled(
-        payload,
-        member,
-        String(row.kind),
-        String((row.snapshot as Doc)?.reason ?? ''),
-      ))
-    )
-      continue
-    if (row.actor_member_id) {
-      const actor = String(row.actor_member_id)
-      if (
-        (await checkBlockBetween(payload, member, actor, site)).isBlocked ||
-        (await checkMuteFrom(payload, member, actor, site))
-      )
-        continue
-    }
-    if (
-      !(await targetIsDeliverable(payload, {
-        id: String(row.id),
-        eventType: String(row.kind),
-        payload: data,
-      }))
-    )
-      continue
-    if (
-      !(await recipientCanRead(payload, site, String(data.space_id ?? data.spaceId ?? ''), member))
-    )
-      continue
-    visible.push(row)
-  }
-  // Native direct-message/follow notifications use the same site/recipient boundary.
   for (let page = 1; ; page++) {
     const batch = await payload.find({
       collection: 'notifications',
@@ -160,6 +124,22 @@ export async function deliverableCommunitySources(
           [member, conversation, site],
         )
         if (!allowed.length) continue
+      } else if (
+        kind === 'comment.reply' ||
+        kind === 'thread.reply' ||
+        kind === 'comment.created'
+      ) {
+        // The reply post must still be published and clear on this site
+        // (the deliverability re-check the retired inbox branch applied).
+        const object = activity.object as Doc
+        const postId = String(object?.id ?? '')
+        if (!postId) continue
+        const target = await query(
+          payload,
+          `SELECT p.status, p.moderation_state FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id::text=$1 AND d.site_id=$2`,
+          [postId, site],
+        )
+        if (target[0]?.status !== 'published' || target[0]?.moderation_state !== 'clear') continue
       } else if (kind !== 'relationship.follow') continue
       visible.push({ id: notification.id, kind, created_at: notification.createdAt })
     }

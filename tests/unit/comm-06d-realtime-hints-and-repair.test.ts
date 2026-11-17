@@ -2,26 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   NotificationStreamManager,
   notificationStreamManager,
-  rebuildNotificationCounters,
 } from '@/modules/community/notification-stream'
 
 const siteA = '00000000-0000-7000-8000-000000000001'
 const siteB = '00000000-0000-7000-8000-000000000002'
 const memberId = '00000000-0000-7000-8000-000000000003'
 
-function createMockPayload(queryHandler: (text: string, values?: unknown[]) => Promise<unknown[]>) {
-  return {
-    db: {
-      pool: {
-        query: vi.fn(async (text: string, values: unknown[] = []) => ({
-          rows: await queryHandler(text, values),
-        })),
-      },
-    },
-  } as never
-}
-
-describe('COMM-06D realtime notification hints and counter repair', () => {
+describe('COMM-06D realtime notification hints', () => {
   beforeEach(() => {
     notificationStreamManager.clear()
   })
@@ -134,57 +121,5 @@ describe('COMM-06D realtime notification hints and counter repair', () => {
     // Now 6th can acquire
     expect(notificationStreamManager.acquireLease(memberId, sixthConn)).toBe(true)
     expect(notificationStreamManager.getActiveLeaseCount(memberId)).toBe(5)
-  })
-
-  it('corrupted counters are rebuilt exactly from inbox rows', async () => {
-    // Simulated state:
-    // Member 1 has 3 unread notifications in inbox_notifications, but counter had 99 (corrupted)
-    // Member 2 has 0 unread notifications in inbox_notifications, but counter had 5 (corrupted)
-    const member1 = '00000000-0000-7000-8000-000000000011'
-    const member2 = '00000000-0000-7000-8000-000000000012'
-
-    const counterRows = new Map<string, number>([
-      [`${siteA}:${member1}`, 99],
-      [`${siteA}:${member2}`, 5],
-    ])
-
-    const payload = createMockPayload(async (text, values = []) => {
-      // 1. Group query on inbox_notifications
-      if (
-        text.includes('FROM inbox_notifications') &&
-        text.includes('GROUP BY site_id, recipient_member_id')
-      ) {
-        return [
-          { site_id: siteA, member_id: member1, unread_count: 3 },
-          // Note: member2 has 0 unread rows, so is omitted from GROUP BY
-        ]
-      }
-      // 2. Upsert positive unread counts
-      if (text.includes('INSERT INTO member_notification_counters')) {
-        const sid = values[0] as string
-        const mid = values[1] as string
-        const count = Number(values[2])
-        counterRows.set(`${sid}:${mid}`, count)
-        return []
-      }
-      // 3. Zero out counters for members with 0 unread
-      if (
-        text.includes('UPDATE member_notification_counters') &&
-        text.includes('SET unread_count = 0')
-      ) {
-        counterRows.set(`${siteA}:${member2}`, 0)
-        return [{ count: 1 }]
-      }
-      return []
-    })
-
-    const result = await rebuildNotificationCounters(payload, siteA)
-
-    expect(result.rebuilt).toBe(1)
-    expect(result.zeroed).toBe(1)
-
-    // Verify exactly corrected counter values:
-    expect(counterRows.get(`${siteA}:${member1}`)).toBe(3)
-    expect(counterRows.get(`${siteA}:${member2}`)).toBe(0)
   })
 })
