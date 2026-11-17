@@ -1,4 +1,4 @@
-import { APIError } from 'payload'
+import { APIError, ValidationError } from 'payload'
 /**
  * PUB-02's single editorial URL contract. `content` owns the public identity
  * and editorial body; article-family-content is the workflow/revision index.
@@ -51,7 +51,20 @@ export async function deriveEditorialPath(input: {
   const contentType = String(data.contentType ?? input.originalDoc?.contentType ?? 'article')
   const title = String(data.title ?? input.originalDoc?.title ?? '')
   const slug = editorialSlug(data.slug ?? input.originalDoc?.slug ?? title)
-  if (!slug) throw new Error('A title or URL slug is required.')
+  if (!slug) {
+    // RC2-DEBT-23: a field validation error, not a bare Error. The
+    // bare Error surfaced as a 500 "An unknown error occurred" toast
+    // (measured live) — the author was told nothing. As a
+    // ValidationError on `title` the create now answers 400 and the
+    // toast names the field that must be fixed. (Per-field rendering
+    // of server errors in the admin is a separate, named gap: the
+    // REST error formatter drops the field list in this build, so
+    // errors arrive as toasts, not field messages — see the
+    // RC2-FIXALL-DEBT23 evidence note.)
+    throw new ValidationError({
+      errors: [{ message: 'A title or URL slug is required.', path: 'title' }],
+    })
+  }
   data.slug = slug
 
   // Older canonical records supplied a deliberate path before PUB-02 had an
