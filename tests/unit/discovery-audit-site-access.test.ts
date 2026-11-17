@@ -84,7 +84,10 @@ describe('rendered quality audit tenant authorization', () => {
     expect(mocks.find).toHaveBeenCalledWith(
       expect.objectContaining({ collection: 'sites', overrideAccess: false, user: mocks.user }),
     )
-    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-a', [])
+    // The lifecycle now takes a fourth scope argument; the mocked audit
+    // returns no scope, so the route passes undefined (no re-examination
+    // evidence) rather than letting findings resolve implicitly.
+    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-a', [], undefined)
   })
 
   it('denies an actor whose persisted site grant has been revoked', async () => {
@@ -103,7 +106,7 @@ describe('rendered quality audit tenant authorization', () => {
     mocks.allowed.push('site-b')
     expect((await POST(request({ siteId: 'site-b' }))).status).toBe(200)
     expect(mocks.documents).toHaveBeenCalledWith(expect.anything(), 'site-b')
-    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-b', [])
+    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-b', [], undefined)
   })
 
   it('rejects anonymous callers before site enumeration', async () => {

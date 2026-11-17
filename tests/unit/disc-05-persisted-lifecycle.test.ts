@@ -79,6 +79,134 @@ describe('DISC-05 Persisted Lifecycle Fields & Quality Center Store', () => {
     expect(createdIssues[0].lastSeenAt).toBeTruthy()
   })
 
+  describe('DEBT-14 resolution invariant', () => {
+    const openIssue = (url: string) => ({
+      id: `issue-${url}`,
+      dedupeKey: `disc-05:DISC-05-TITLE-MISSING:${url}`,
+      targetId: url,
+      targetType: 'rendered_audit',
+      status: 'open',
+    })
+    const makePayload = (existing: Array<Record<string, unknown>>) => {
+      const updates: Array<{ id: unknown; data: Record<string, unknown> }> = []
+      const scanCreates: Array<Record<string, unknown>> = []
+      const payload = {
+        create: vi.fn(async ({ collection, data }: any) => {
+          if (collection === 'quality-scans') {
+            scanCreates.push(data)
+            return { id: 'scan-x', ...data }
+          }
+          return { id: 'created-issue', ...data }
+        }),
+        find: vi.fn(async ({ where }: any) => {
+          if (where?.dedupeKey?.equals)
+            return { docs: existing.filter((row) => row.dedupeKey === where.dedupeKey.equals) }
+          return { docs: existing }
+        }),
+        update: vi.fn(async ({ id, data }: any) => {
+          updates.push({ id, data })
+          return { id, ...data }
+        }),
+      } as unknown as Payload
+      return { payload, updates, scanCreates }
+    }
+    const resolvedUpdates = (updates: Array<{ data: Record<string, unknown> }>) =>
+      updates.filter((entry) => entry.data.status === 'resolved')
+
+    it('an empty-scope run persists an incomplete scan and cannot erase findings', async () => {
+      const { payload, updates, scanCreates } = makePayload([openIssue('https://example.test/a')])
+      const result = await persistRenderedAuditLifecycle(payload, 'site-1', [], {
+        state: 'empty',
+        eligible: 2,
+        examined: 0,
+        failed: 2,
+        skipped: 0,
+        examinedUrls: [],
+        complete: false,
+      })
+      expect(scanCreates[0]).toMatchObject({ status: 'incomplete' })
+      expect(resolvedUpdates(updates)).toEqual([])
+      expect(result.resolved).toBe(0)
+      expect(result.unverified).toBe(1)
+      expect(result.scope).toMatchObject({ state: 'empty', complete: false })
+    })
+
+    it('a partial-scope run resolves only re-examined URLs and retains the rest', async () => {
+      const fixed = 'https://example.test/fixed'
+      const stale = 'https://example.test/stale'
+      const { payload, updates, scanCreates } = makePayload([openIssue(fixed), openIssue(stale)])
+      const result = await persistRenderedAuditLifecycle(payload, 'site-1', [], {
+        state: 'partial',
+        eligible: 2,
+        examined: 1,
+        failed: 0,
+        skipped: 1,
+        examinedUrls: [fixed],
+        complete: false,
+      })
+      expect(scanCreates[0]).toMatchObject({ status: 'incomplete' })
+      expect(resolvedUpdates(updates)).toEqual([expect.objectContaining({ id: `issue-${fixed}` })])
+      expect(result.resolved).toBe(1)
+      expect(result.unverified).toBe(1)
+    })
+
+    it('a clean complete run completes the scan and resolves verified-fixed issues', async () => {
+      const fixed = 'https://example.test/fixed'
+      const { payload, updates, scanCreates } = makePayload([openIssue(fixed)])
+      const result = await persistRenderedAuditLifecycle(payload, 'site-1', [], {
+        state: 'complete',
+        eligible: 1,
+        examined: 1,
+        failed: 0,
+        skipped: 0,
+        examinedUrls: [fixed],
+        complete: true,
+      })
+      expect(scanCreates[0]).toMatchObject({
+        status: 'completed',
+        summary: expect.objectContaining({
+          scope: expect.objectContaining({ state: 'complete', eligible: 1, examined: 1 }),
+        }),
+      })
+      expect(resolvedUpdates(updates)).toHaveLength(1)
+      expect(result.resolved).toBe(1)
+      expect(result.unverified).toBe(0)
+    })
+
+    it('without scope evidence, resolution never happens implicitly', async () => {
+      const { payload, updates } = makePayload([openIssue('https://example.test/a')])
+      const result = await persistRenderedAuditLifecycle(payload, 'site-1', [])
+      expect(resolvedUpdates(updates)).toEqual([])
+      expect(result.resolved).toBe(0)
+      expect(result.unverified).toBe(1)
+      expect(result.scope).toBeNull()
+    })
+
+    it('a still-detected issue on an examined URL is refreshed, never resolved', async () => {
+      const url = 'https://example.test/a'
+      const { payload, updates } = makePayload([openIssue(url)])
+      const stillBroken: RenderedAuditIssue = {
+        url,
+        ruleId: 'DISC-05-TITLE-MISSING',
+        ruleVersion: '1.0.0',
+        severity: 'publication_blocking',
+        evidence: 'Rendered HTML has no title element.',
+        repairTarget: 'seoTitle',
+      }
+      const result = await persistRenderedAuditLifecycle(payload, 'site-1', [stillBroken], {
+        state: 'complete',
+        eligible: 1,
+        examined: 1,
+        examinedUrls: [url],
+        complete: true,
+      })
+      expect(resolvedUpdates(updates)).toEqual([])
+      expect(result.resolved).toBe(0)
+      expect(result.unverified).toBe(0)
+      expect(result.updated).toBe(1)
+    })
+  })
+
   it('allows staff to ignore and resolve individual discovery issues', async () => {
     const updateFn = vi.fn(async ({ id, data }) => ({ id, ...data }))
     const mockPayload = { update: updateFn } as unknown as Payload
