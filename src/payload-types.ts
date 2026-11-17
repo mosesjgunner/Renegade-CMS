@@ -8672,7 +8672,7 @@ export interface QualityScan {
   targetType: 'document' | 'book' | 'book-chapter' | 'content-release' | 'publication' | 'space' | 'site';
   targetId: string;
   revisionId?: string | null;
-  status: 'queued' | 'running' | 'completed' | 'failed' | 'stale';
+  status: 'queued' | 'running' | 'completed' | 'incomplete' | 'failed' | 'stale';
   startedAt?: string | null;
   completedAt?: string | null;
   job?: (string | null) | PayloadJob;

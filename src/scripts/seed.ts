@@ -52,7 +52,7 @@ export async function seed(payload: Payload): Promise<void> {
       defaultTitle: 'Demo Publication',
       defaultDescription: 'A neutral fixture proving the portable publishing foundation.',
       sameAs: ['https://example.test/civic-demo'],
-      robotsDefaults: { index: true, follow: true },
+
       inheritancePolicy: 'site-publication-brand',
       structuredDataMode: 'manual',
       structuredDataPrimaryType: 'Organization',
