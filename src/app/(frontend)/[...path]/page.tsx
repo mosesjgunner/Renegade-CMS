@@ -353,7 +353,20 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         overrideAccess: true,
       } as never)
     ).docs as unknown as PublicRecord[]
-    return <BookReader book={book} chapters={chapters} />
+    const discovery = await resolveDiscoveryDocument(payload, {
+      collection: 'books',
+      path,
+      siteId,
+    })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+        />
+        <BookReader book={book} chapters={chapters} />
+      </>
+    )
   }
 
   const hierarchy = await loadPublicHierarchy(payload, siteId)
@@ -552,8 +565,17 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
 
     if (collection === 'timelines') {
       const entries = await publicTimelineEntries(payload, record, siteId)
+      const discovery = await resolveDiscoveryDocument(payload, {
+        collection: 'timelines',
+        path,
+        siteId,
+      })
       return (
         <main className="mx-auto max-w-4xl px-6 py-12 space-y-6">
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+          />
           <h1>{label(record)}</h1>
           {typeof record.summary === 'string' ? <p>{record.summary}</p> : null}
           {entries.length ? (

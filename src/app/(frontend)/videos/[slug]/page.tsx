@@ -48,6 +48,46 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
   } as never)
   const video = found.docs[0] as unknown as Record<string, unknown> | undefined
   if (!video) notFound()
+  // Externally hosted videos (YouTube/Vimeo/etc.) have no native asset; they
+  // render through their provider embed instead of 404ing while the sitemap
+  // advertises them. Only https embed URLs are honored.
+  const embedUrl = typeof video.embedUrl === 'string' ? video.embedUrl.trim() : ''
+  if (embedUrl && /^https:\/\//i.test(embedUrl)) {
+    const embedTitle = String(video.title ?? '')
+    const embedDiscovery = await resolveDiscoveryDocument(payload, {
+      collection: 'videos',
+      slug,
+      path: `/videos/${slug}`,
+      record: video,
+    })
+    if (embedDiscovery.canonicalPath !== `/videos/${slug}`)
+      permanentRedirect(embedDiscovery.canonicalPath)
+    return (
+      <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(embedDiscovery.schema.jsonLd),
+          }}
+        />
+        <h1 className="text-4xl font-bold">{embedTitle}</h1>
+        <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
+          <iframe
+            src={embedUrl}
+            title={embedTitle}
+            className="h-full w-full"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+        {video.body ? (
+          <article className="prose max-w-none whitespace-pre-wrap">{String(video.body)}</article>
+        ) : null}
+      </main>
+    )
+  }
   const asset = video.videoAsset as Record<string, unknown> | undefined
   if (!asset || (!Array.isArray(asset.outputs) && !Array.isArray(asset.lastGoodOutputs))) notFound()
   const outputs =

@@ -50,21 +50,34 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Staff site access required.' }, { status: 403 })
 
   const settings = await resolveSiteSettings(payload)
-  let origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
-  if (process.env.LOCAL_E2E_TEST_MODE === 'true' && process.env.APP_URL) {
-    origin = process.env.APP_URL
-  }
+  const origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
 
   try {
+    // DEBT-14: documents stay addressed by their canonical origin; the
+    // crawl fetches them from the server-configured app origin (APP_URL)
+    // presenting the canonical host, so split-origin, staging, proxy and
+    // local topologies audit the real pages instead of silently auditing
+    // nothing. This subsumes the old LOCAL_E2E_TEST_MODE origin swap.
+    let fetchBase = origin
+    if (process.env.APP_URL) {
+      try {
+        fetchBase = new URL(process.env.APP_URL).origin
+      } catch {
+        fetchBase = origin
+      }
+    }
+    const siteHost = new URL(origin).host
     const documents = await getAllIndexableDiscoveryDocuments(payload, siteId)
     const audit = await runRenderedAudit({
       origin,
       paths: documents.map((document) => document.canonicalUrl),
+      fetchBase,
+      siteHost,
       concurrency:
         typeof body.concurrency === 'number' && Number.isInteger(body.concurrency)
           ? body.concurrency
           : 4,
-      allowPrivate: allowConfiguredSelfAudit(origin, process.env.APP_URL),
+      allowPrivate: allowConfiguredSelfAudit(fetchBase, process.env.APP_URL),
     })
 
     // 1. Sitemap & Feed Cross-checks
@@ -98,8 +111,25 @@ export async function POST(request: Request) {
     // 3. AI Boundary Suggestions
     const aiSuggestions = generateSeoAiSuggestions(audit.pages, allIssues)
 
-    // 4. Persist Findings & Lifecycle Tracking
-    const lifecycle = await persistRenderedAuditLifecycle(payload, siteId, allIssues)
+    // 4. Persist Findings & Lifecycle Tracking. Only URLs this run
+    // actually examined count as re-examination evidence (DEBT-14).
+    const examinedUrls = audit.pages.filter((page) => page.status > 0).map((page) => page.url)
+    const lifecycle = await persistRenderedAuditLifecycle(
+      payload,
+      siteId,
+      allIssues,
+      audit.scope
+        ? {
+            state: audit.scope.state,
+            eligible: audit.scope.eligible,
+            examined: audit.scope.examined,
+            failed: audit.scope.failed,
+            skipped: audit.scope.skipped.length,
+            complete: audit.scope.complete,
+            examinedUrls,
+          }
+        : undefined,
+    )
 
     return Response.json(
       {
