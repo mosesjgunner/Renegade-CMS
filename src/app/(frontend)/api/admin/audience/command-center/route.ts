@@ -10,6 +10,8 @@ import {
   type RawCalendarItemInput,
 } from '@/modules/audience/command-center-service'
 import { AUDIENCE_METRIC_DICTIONARY } from '@/modules/audience/command-center-contracts'
+import { boundaryFrom, boundaryIsolationState } from '@/modules/email/delivery'
+import { verifySenderDns, type SenderDnsReport } from '@/modules/email/dns-verification'
 
 export const runtime = 'nodejs'
 
@@ -188,14 +190,78 @@ export async function GET(request: Request) {
     const totalBounced = outcomes?.find((o) => o.status === 'bounced')?.count ?? 0
     const totalComplaints = outcomes?.find((o) => o.status === 'complained')?.count ?? 0
 
+    // RC3-EMAIL-01: the authentication lights now come from real public DNS
+    // lookups for the audience sender domain — never hardcoded values. When
+    // no sender is configured, the report is null and the lights stay off
+    // with the reason visible in emailDns.
+    const audienceFrom = boundaryFrom('audience', appConfig)
+    const audienceBoundary = appConfig.email.boundaries.audience
+    const emailDns: SenderDnsReport | null = audienceFrom
+      ? await verifySenderDns({
+          from: audienceFrom,
+          dkimSelector: audienceBoundary.dkimSelector,
+          returnPathHost: audienceBoundary.returnPathHost,
+        }).catch(() => null)
+      : null
+
+    // RC3-EMAIL-01 / EMAIL-09: per-boundary readiness and the account outbox
+    // state for this site. "provider accepted; placement unknown" remains
+    // the honest label — nothing here claims inbox placement.
+    const emailBoundaries = {
+      account: {
+        isolation: boundaryIsolationState('account', appConfig),
+        from: boundaryFrom('account', appConfig) || null,
+        provider: appConfig.email.boundaries.account.provider,
+      },
+      audience: {
+        isolation: boundaryIsolationState('audience', appConfig),
+        from: audienceFrom || null,
+        provider: appConfig.email.boundaries.audience.provider,
+      },
+    }
+    let accountQueue: Record<string, unknown> | null = null
+    if (registered('email-intents')) {
+      const countFor = async (submission: string) =>
+        (
+          await payload.find({
+            collection: 'email-intents',
+            where: { and: [{ site: { equals: siteId } }, { submission: { equals: submission } }] },
+            limit: 0,
+            overrideAccess: true,
+          })
+        ).totalDocs
+      const oldest = await payload.find({
+        collection: 'email-intents',
+        where: {
+          and: [
+            { site: { equals: siteId } },
+            { submission: { in: ['queued', 'held', 'retry-scheduled'] } },
+          ],
+        },
+        sort: 'createdAt',
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      accountQueue = {
+        queued: await countFor('queued'),
+        held: await countFor('held'),
+        retryScheduled: await countFor('retry-scheduled'),
+        unknown: await countFor('unknown'),
+        accepted: await countFor('accepted'),
+        oldestActionableAt: oldest.docs[0]?.createdAt ?? null,
+        note: 'Account/operational intents for this site. Accepted means the provider accepted the message; placement is unobserved until provider events or seed checks say otherwise.',
+      }
+    }
+
     // Evaluate deliverability health using canonical records
     const deliverabilityHealth = evaluateAudienceHealth({
       siteId,
       emailProviderStatus,
       emailProviderName,
-      spfVerified: false,
-      dkimVerified: false,
-      dmarcVerified: false,
+      spfVerified: emailDns?.spf.status === 'verified',
+      dkimVerified: emailDns?.dkim.status === 'verified',
+      dmarcVerified: emailDns?.dmarc.status === 'verified' && emailDns.dmarc.aligned === true,
       tlsVerified: false,
       telecomProviderStatus,
       telecomProviderName,
@@ -299,8 +365,11 @@ export async function GET(request: Request) {
         contacts: contacts?.totalDocs ?? 0,
         suppressions: suppressions?.totalDocs ?? 0,
         deliverabilityHealth,
+        emailDns,
+        emailBoundaries,
+        accountQueue,
         reportingLimits:
-          'Lifetime canonical status counts. Provider configuration does not verify DNS, TLS or carrier readiness. Queue age, webhook lag, segment freshness and validation health are not measured by this view.',
+          'Lifetime canonical status counts. SPF/DKIM/DMARC states come from live public DNS lookups for the configured audience sender domain (see emailDns for the observed records and exact missing items). TLS and carrier readiness are not verified by this view. Queue age, webhook lag, segment freshness and validation health are not measured by this view.',
         recentCampaigns,
         notifications: notificationCounts,
         automationExecution:

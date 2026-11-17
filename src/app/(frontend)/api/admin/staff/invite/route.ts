@@ -10,6 +10,8 @@ import {
 } from '@/modules/operations/staff-enrollment'
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { boundaryFrom } from '@/modules/email/delivery'
+import { dispatchEmailIntent, enqueueEmailIntent } from '@/modules/email/outbox'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
@@ -97,7 +99,39 @@ export async function POST(request: Request) {
       validHours: body.validHours,
     })
 
-    return Response.json(result, { status: 201 })
+    // RC3-EMAIL-01: the invitation now also reaches the invitee by email via
+    // the durable account outbox. The operator still receives the enrollment
+    // URL in the response (manual sharing stays possible); an email failure
+    // is recorded on the intent and recovered by the account sweep — it no
+    // longer silently strands the invitation.
+    let emailIntent: { id: string; submission: string } | null = null
+    const accountFrom = boundaryFrom('account', runtimeConfig)
+    if (accountFrom) {
+      try {
+        const intent = await enqueueEmailIntent(payload as never, {
+          purpose: 'staff-invitation',
+          recipientEmail: body.email,
+          subject: `You are invited to join ${String(site.name ?? 'the team')} as ${body.role ?? 'staff'}`,
+          payload: {
+            text: `You have been invited to join the staff team. Set up your passkey to finish enrollment: ${result.enrollmentUrl}\n\nThis link expires at ${result.expiresAt}. If you were not expecting this invitation, you can ignore this email.`,
+          },
+          idempotencyKey: `staff-invite:${result.enrollmentToken.slice(0, 16)}`,
+          expiresAt: new Date(result.expiresAt),
+          siteId: body.siteId,
+          fromIdentity: accountFrom,
+        })
+        const outcome = await dispatchEmailIntent(
+          payload as never,
+          String(intent.id),
+          runtimeConfig,
+        ).catch(() => 'unknown' as const)
+        emailIntent = { id: String(intent.id), submission: outcome }
+      } catch {
+        emailIntent = null
+      }
+    }
+
+    return Response.json({ ...result, emailIntent }, { status: 201 })
   } catch (error) {
     const status = error instanceof StaffEnrollmentError ? 400 : 500
     const message =

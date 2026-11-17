@@ -4,6 +4,7 @@ import * as rc2ProfileSpaceMerge from './20261116_130000_rc2_profile_space_merge
 import * as rc2DiscussionPostMutationId from './20261116_150000_rc2_discussion_post_mutation_id'
 import * as rc2SubscriptionThreadFk from './20261116_160000_rc2_subscription_thread_fk'
 import * as rc3Seo10ScanIncompleteStatus from './20261117_120000_rc3_seo10_scan_incomplete_status'
+import * as rc3Email01IntentsPauses from './20261117_130000_rc3_email01_intents_pauses'
 import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
@@ -803,6 +804,11 @@ export const migrations = [
     up: rc3Seo10ScanIncompleteStatus.up,
     down: rc3Seo10ScanIncompleteStatus.down,
     name: '20261117_120000_rc3_seo10_scan_incomplete_status',
+  },
+  {
+    up: rc3Email01IntentsPauses.up,
+    down: rc3Email01IntentsPauses.down,
+    name: '20261117_130000_rc3_email01_intents_pauses',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

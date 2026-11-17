@@ -2,6 +2,7 @@ import nodemailer, { type Transporter } from 'nodemailer'
 
 import type { AppConfig } from '../core/config'
 import { configuredSecretValues, redact } from '../core/logging'
+import { createPostmarkEmailAdapter } from './postmark'
 
 export type EmailDeliveryRequest = {
   from: string
@@ -18,6 +19,8 @@ export type EmailDeliveryRequest = {
 
 export type EmailDeliveryFailure = {
   kind: 'retryable' | 'permanent' | 'unknown'
+  /** Provider-supplied Retry-After, when one was given (EMAIL-03). */
+  retryAfterMs?: number
   code:
     | 'email_disabled'
     | 'authentication_failed'
@@ -341,6 +344,43 @@ export function selectEmailDeliveryAdapter(config: AppConfig): EmailDeliveryAdap
   if (config.email.mode === 'development') return developmentCaptureEmailAdapter
   if (config.email.mode === 'disabled') return disabledEmailAdapter
   return createSmtpEmailAdapter(config.email)
+}
+
+/**
+ * RC3-EMAIL-01: boundary-aware adapter selection. When a boundary has its own
+ * Postmark server token configured, that boundary dispatches through Postmark
+ * with its own credentials; otherwise it falls back to the legacy global
+ * adapter and the boundary must be reported as NOT isolated (degraded), never
+ * as isolated. Account credentials are never handed to audience dispatch.
+ */
+export function selectEmailAdapterForBoundary(
+  boundary: 'account' | 'audience',
+  config: AppConfig,
+): EmailDeliveryAdapter {
+  const boundaryConfig = config.email.boundaries?.[boundary]
+  if (boundaryConfig?.provider === 'postmark' && boundaryConfig.postmark) {
+    return createPostmarkEmailAdapter(boundary, boundaryConfig.postmark)
+  }
+  return selectEmailDeliveryAdapter(config)
+}
+
+/** Whether a boundary dispatches on its own provider credentials (true
+ * isolation) or shares the legacy global route (degraded). */
+export function boundaryIsolationState(
+  boundary: 'account' | 'audience',
+  config: AppConfig,
+): 'isolated' | 'shared-legacy' | 'disabled' {
+  if (config.email.mode === 'disabled') return 'disabled'
+  const boundaryConfig = config.email.boundaries?.[boundary]
+  return boundaryConfig?.provider === 'postmark' && boundaryConfig.postmark
+    ? 'isolated'
+    : 'shared-legacy'
+}
+
+/** The From identity a boundary sends with: its own configured From when set,
+ * else the legacy global EMAIL_FROM. */
+export function boundaryFrom(boundary: 'account' | 'audience', config: AppConfig): string {
+  return config.email.boundaries?.[boundary]?.from ?? config.email.from ?? ''
 }
 
 export function normalizeEmailError(error: unknown): EmailDeliveryFailure {

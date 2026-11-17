@@ -8,7 +8,7 @@ import {
   writeAudienceDeliveryOutbox,
 } from './notification-delivery'
 import { loadConfig } from '../core/config'
-import { selectEmailDeliveryAdapter } from '../email/delivery'
+import { boundaryFrom, selectEmailAdapterForBoundary } from '../email/delivery'
 import {
   audienceDigest,
   normalizeEmailAddress,
@@ -266,7 +266,9 @@ export async function sendCommunityDelivery(payload: Payload, outboxId: string) 
     const link = new URL('/api/community/notification-unsubscribe', origin)
     link.searchParams.set('token', communityUnsubscribeToken(site, member))
     const text = `You have ${sources.length} community update${sources.length === 1 ? '' : 's'}. Sign in to view your inbox.\n${new URL('/notifications', origin)}\nTurn off community email: ${link}`
-    const adapter = selectEmailDeliveryAdapter(loadConfig())
+    // RC3-EMAIL-01: community notifications are operational mail — they
+    // dispatch on the account boundary, never the audience boundary.
+    const adapter = selectEmailAdapterForBoundary('account', loadConfig())
     await query(
       payload,
       "UPDATE audience_delivery_outbox SET status='sending',attempts=attempts+1 WHERE id=$1",
@@ -275,12 +277,12 @@ export async function sendCommunityDelivery(payload: Payload, outboxId: string) 
     let result
     try {
       result = await adapter.send({
-        from: loadConfig().email.from ?? '',
+        from: boundaryFrom('account', loadConfig()),
         to: address,
         subject: 'Community updates',
         text,
         idempotencyKey: String(row.idempotency_key),
-        category: 'transactional',
+        category: 'operational',
         messageId: `<${createHash('sha256').update(String(row.idempotency_key)).digest('hex').slice(0, 32)}@renegade.local>`,
       })
     } catch {
