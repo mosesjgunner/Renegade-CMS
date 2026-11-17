@@ -30,6 +30,8 @@
 
 ## 🌐 Why Renegade CMoS?
 
+> **Built for someone with ideas and not much else.** SEO, templates, and community — the three things the average builder gets fleeced on, wrapped in hype, scams, and rugpulls — are in the box, on a server you own. The hope is simple: this lands hard enough that a young builder with no budget finds it and makes something really cool with little friction.
+
 > **Release status:** Acceptance remains open. See the [RC1 subpass ledger](docs/rc/RC1-70-SUBPASS-LEDGER.md) for scoped results and blockers. Historical receipts do not certify the current checkout.
 
 Traditional web publishing has degraded into **SaaS sprawl**: a WordPress site tethered to Substack or Mailchimp for newsletters, Discourse or Circle for forums, Cloudinary or S3 for assets, Shopify or Gumroad for commerce, and Zapier to glue them together.
