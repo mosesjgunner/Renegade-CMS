@@ -264,12 +264,27 @@ export async function buildRc2World(payload: Payload): Promise<Rc2World> {
       member: subscriberMember.id,
     }
 
+    // RC2-DEBT-23 slice 1: a real menu on both publications, so the
+    // public shell renders navigation and the H-01 probe can live-prove
+    // aria-current (Home exact-matches '/', Articles prefix-matches the
+    // published article's /articles/ canonical path). Before this, the
+    // fixture configured no menu items and no rendered page could
+    // carry a marker.
+    const fixtureNavigation = {
+      primary: [
+        { label: 'Home', href: '/', children: [] },
+        { label: 'Articles', href: '/articles', children: [] },
+      ],
+      secondary: [],
+      footer: [{ label: 'Home', href: '/', children: [] }],
+    }
     const blog = await create('publications', {
       site: siteId,
       name: `Site ${label} Blog ${suffix}`,
       slug: `blog-${lower}-${suffix}`,
       canonicalBasePath: '/blog/',
       status: 'active',
+      navigation: fixtureNavigation,
     })
     const news = await create('publications', {
       site: siteId,
@@ -277,6 +292,7 @@ export async function buildRc2World(payload: Payload): Promise<Rc2World> {
       slug: `news-${lower}-${suffix}`,
       canonicalBasePath: '/news/',
       status: 'active',
+      navigation: fixtureNavigation,
     })
 
     const media = await create('media-assets', {

@@ -32,6 +32,9 @@ export default buildConfig({
     user: users.slug,
     importMap: { baseDir: dirname },
     components: {
+      // RC2-DEBT-23: annotates the stock chrome with the semantics it
+      // omits (nav aria-current, field-error alerts / aria-invalid).
+      providers: ['./modules/admin/AdminA11yBridge'],
       beforeNavLinks: ['./modules/admin/PublishingLinks', './modules/admin/CapabilityCenterLink'],
       views: {
         dashboard: { Component: './modules/admin/PublisherDashboard', path: '/' },
