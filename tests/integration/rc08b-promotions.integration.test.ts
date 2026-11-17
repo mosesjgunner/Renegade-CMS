@@ -769,8 +769,8 @@ describe('RC08B persisted promotion boundaries', () => {
   })
   it('compiles ten persisted canonical notifications into one deduplicated digest while in-app is off', async () => {
     const { subscribeToThread } = await import('../../src/modules/community/thread-lifecycle')
-    const { projectInboxEvent, listInbox, markInboxRead } = await import(
-      '../../src/modules/community/inbox-notifications'
+    const { listMemberNotificationsPage, markMemberNotificationsRead } = await import(
+      '../../src/modules/community/service'
     )
     const { compileNotificationDigest } = await import(
       '../../src/modules/community/notification-delivery'
@@ -815,6 +815,10 @@ describe('RC08B persisted promotion boundaries', () => {
       ),
     })
     await subscribeToThread(payload, { siteId: site.id, threadId: thread.id, memberId: outsider })
+    // DEBT-21 re-pin: the ten persisted canonical notifications are
+    // produced by the canonical dispatcher (the retired projector was
+    // the previous producer). The outsider's in-app channel is off, so
+    // each notification persists with the email channel only.
     for (let index = 0; index < 10; index++) {
       const created = await persistFixtureComment({
         siteId: site.id,
@@ -823,38 +827,29 @@ describe('RC08B persisted promotion boundaries', () => {
         authorId: alice,
         body: `Private digest source ${suffix} ${index}`,
       })
-      const event = (
-        await executeDbQuery<any>(
-          payload,
-          "SELECT id,event_type,payload FROM outbox_events WHERE payload->>'comment_id'=$1",
-          [created.id],
-        )
-      )[0]
-      expect(
-        await projectInboxEvent(payload, {
-          id: event.id,
-          eventType: event.event_type,
-          payload: event.payload,
-        }),
-      ).toBe(1)
-      expect(
-        await projectInboxEvent(payload, {
-          id: event.id,
-          eventType: event.event_type,
-          payload: event.payload,
-        }),
-      ).toBe(0)
+      await dispatchCommunityNotification(payload, {
+        siteId: site.id,
+        recipientMemberId: outsider,
+        actorMemberId: alice,
+        type: 'comment.created',
+        object: { id: created.id },
+        payloadData: { bodySnippet: `Private digest source ${suffix} ${index}` },
+      })
     }
     const end = new Date(Date.now() + 1000).toISOString(),
       windowRange = { startAt: start, endAt: end }
     expect(await deliverableCommunitySources(payload, site.id, outsider, start, end)).toHaveLength(
       10,
     )
+    const outsiderContext = {
+      siteId: site.id,
+      actor: { kind: 'member' as const, memberId: outsider, isStaff: false, isModerator: false },
+    }
     expect(
-      (await listInbox(payload, { siteId: site.id, memberId: outsider })).notifications,
+      (await listMemberNotificationsPage(payload, outsider, outsiderContext)).notifications,
     ).toEqual([])
     expect(
-      (await markInboxRead(payload, { siteId: site.id, memberId: outsider })).unreadCount,
+      (await markMemberNotificationsRead(payload, outsider, outsiderContext)).unreadCount,
     ).toBe(0)
     const first = await compileNotificationDigest(payload, {
         siteId: site.id,
