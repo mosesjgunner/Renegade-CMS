@@ -5,7 +5,6 @@ import {
   getMemberNotifications,
   CommunityError,
 } from '@/modules/community/service'
-import { listInbox, markInboxRead } from '@/modules/community/inbox-notifications'
 import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { verifyCsrf } from '@/modules/identity/member-identity'
 
@@ -23,18 +22,8 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Check inbox_notifications first
-    let inboxResult: { notifications: any[]; unreadCount: number } = {
-      notifications: [],
-      unreadCount: 0,
-    }
-    try {
-      inboxResult = await listInbox(payload, { siteId, memberId: actor.memberId })
-    } catch {
-      // Fallback if table not queried
-    }
-
-    // Also fetch canonical notifications
+    // RC2-DEBT-21: the canonical notifications collection is the only
+    // store — the inbox projection and its projector are retired.
     const canonicalNotifications = await getMemberNotifications(payload, actor.memberId, {
       siteId,
       actor,
@@ -50,16 +39,8 @@ export async function GET(request: Request) {
         read: item.status === 'read',
       }
     })
-    // RC2-H-03 (RC2-DEBT-21): the canonical notifications collection is the
-    // single primary read. The inbox projection's only writer is an unwired
-    // projector, yet any rows in its table previously SHADOWED the canonical
-    // list here (and switched the unread count to its own counter), which
-    // would hide real notifications. The inbox rows are still returned in
-    // their own field for compatibility; wire-or-remove the projector is
-    // the remaining DEBT-21 decision, owned by RC3.
     return Response.json({
       notifications: projected,
-      inboxNotifications: inboxResult.notifications,
       canonicalNotifications,
       unreadCount: projected.filter((item) => !item.read).length,
     })
@@ -89,19 +70,6 @@ export async function PATCH(request: Request) {
   const notificationId = body.notificationId ? String(body.notificationId) : undefined
 
   try {
-    // The legacy inbox table is still marked read for the v1 surface, but
-    // its counter no longer feeds this response (RC2-H-03 / DEBT-21): the
-    // canonical unread count below is the single source.
-    try {
-      await markInboxRead(payload, {
-        siteId,
-        memberId: actor.memberId,
-        notificationId,
-      })
-    } catch {
-      // Ignored if table not matching
-    }
-
     const owned = await getMemberNotifications(payload, actor.memberId, { siteId, actor })
     for (const item of owned) {
       if (!notificationId || String(item.id) === notificationId) {
