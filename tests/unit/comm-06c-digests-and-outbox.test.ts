@@ -50,7 +50,7 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
         outboxRows.push({ id, values })
         return [{ id }]
       }
-      if (text.includes('FROM comments')) return [{ status: 'visible', deleted_at: null }]
+      if (text.includes('FROM discussion_posts')) return [{ status: 'published' }]
       if (text.includes('SELECT * FROM audience_delivery_outbox')) {
         const row = outboxRows[0] as { id: string; values: unknown[] }
         return [

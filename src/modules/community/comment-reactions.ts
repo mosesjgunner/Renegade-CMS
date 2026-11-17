@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 
-import { executeDbQuery } from './comment-composer'
+import { executeDbQuery } from './db-query'
 
 export const DEFAULT_COMMENT_REACTION_CODES = [
   'thumbs_up',
@@ -44,43 +44,55 @@ export async function getSiteCommentReactionCodes(
   return Array.isArray(codes) ? codes.map(String) : [...DEFAULT_COMMENT_REACTION_CODES]
 }
 
+function relationId(value: unknown): string {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && 'id' in (value as Record<string, unknown>))
+    return String((value as Record<string, unknown>).id ?? '')
+  return ''
+}
+
+/**
+ * RC2-DEBT-20 fold: reaction targets resolve against the live
+ * discussion-posts store. A removed post is the deleted state; a
+ * locked/archived discussion is the frozen state.
+ */
 async function getReactionTarget(
   payload: Payload,
   commentId: string,
 ): Promise<CommentReactionTarget> {
-  const rows = await executeDbQuery<CommentReactionTarget>(
-    payload,
-    `SELECT c.id, c.status, t.site_id AS "siteId", t.is_frozen AS "threadFrozen", t.is_closed AS "threadClosed"
-     FROM comments c JOIN comment_threads t ON t.id = c.thread_id
-     WHERE c.id = $1`,
-    [commentId],
-  )
-  if (!rows[0]) throw new CommentReactionError('Comment not found.', 404, 'COMMENT_NOT_FOUND')
-  return rows[0]
+  const post = (await payload
+    .findByID({ collection: 'discussion-posts', id: commentId, depth: 0, overrideAccess: true })
+    .catch(() => null)) as unknown as Record<string, unknown> | null
+  if (!post) throw new CommentReactionError('Comment not found.', 404, 'COMMENT_NOT_FOUND')
+  const discussion = (await payload
+    .findByID({
+      collection: 'discussions',
+      id: relationId(post.discussion),
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)) as unknown as Record<string, unknown> | null
+  if (!discussion) throw new CommentReactionError('Comment not found.', 404, 'COMMENT_NOT_FOUND')
+  const discussionStatus = String(discussion.status ?? 'open')
+  return {
+    id: String(post.id),
+    status: String(post.status) === 'removed' ? 'deleted' : String(post.status ?? ''),
+    siteId: relationId(discussion.site),
+    threadFrozen: discussionStatus === 'locked' || discussionStatus === 'archived',
+    threadClosed:
+      String(discussion.commentsPolicy ?? 'open') === 'closed' || discussionStatus !== 'open',
+  }
 }
 
-/** Rebuilds the disposable counter projection exclusively from authoritative raw reactions. */
-export async function rebuildCommentReactionCounters(
-  payload: Payload,
-  input: { commentId?: string } = {},
-): Promise<void> {
-  const scope = input.commentId ? 'WHERE comment_id = $1' : ''
-  const values = input.commentId ? [input.commentId] : []
-  await executeDbQuery(
-    payload,
-    `WITH raw AS MATERIALIZED (
-       SELECT comment_id, reaction_code, COUNT(*)::integer AS reaction_count
-       FROM comment_reactions ${scope}
-       GROUP BY comment_id, reaction_code
-     ), wiped AS (
-       DELETE FROM comment_reaction_counters ${scope} RETURNING comment_id
-     )
-     INSERT INTO comment_reaction_counters (comment_id, reaction_code, reaction_count, updated_at)
-     SELECT comment_id, reaction_code, reaction_count, now() FROM raw`,
-    values,
-  )
-}
-
+/**
+ * RC2-DEBT-20 fold: toggles land in the live community_reactions
+ * table (target_type 'post'), the same store the community surface
+ * aggregates. The v1 reaction code is stored as the reaction key, so
+ * counts stay coherent per surface vocabulary. The disposable
+ * comment_reaction_counters projection retired with the v1 store —
+ * counts are aggregated from the raw rows, as the live path does.
+ */
 export async function toggleCommentReaction(
   payload: Payload,
   input: { siteId: string; commentId: string; memberId: string; reactionCode: string },
@@ -110,37 +122,30 @@ export async function toggleCommentReaction(
     )
   }
 
-  // One advisory transaction lock per comment/code serializes both this member's toggle and its
-  // shared counter. The unique constraint remains the durable correctness backstop.
+  // One advisory lock per comment/code serializes the toggle; the
+  // unique index on (site, member, target, emoji) is the backstop.
   const rows = await executeDbQuery<{ added: boolean; count: number }>(
     payload,
     `WITH tuple_lock AS MATERIALIZED (
-       SELECT pg_advisory_xact_lock(hashtextextended($1::text || ':' || $3, 0))
+       SELECT pg_advisory_xact_lock(hashtextextended($2::text || ':' || $4, 0))
      ), removed AS (
-       DELETE FROM comment_reactions
-       WHERE comment_id = $1 AND member_id = $2 AND reaction_code = $3
+       DELETE FROM community_reactions
+       WHERE target_type = 'post' AND target_id = $2 AND member_id = $3 AND emoji = $4
          AND EXISTS (SELECT 1 FROM tuple_lock)
        RETURNING id
      ), inserted AS (
-       INSERT INTO comment_reactions (comment_id, member_id, reaction_code)
-       SELECT $1, $2, $3 FROM tuple_lock WHERE NOT EXISTS (SELECT 1 FROM removed)
-       ON CONFLICT (comment_id, member_id, reaction_code) DO NOTHING
+       INSERT INTO community_reactions (site_id, target_type, target_id, member_id, emoji)
+       SELECT $1, 'post', $2, $3, $4 FROM tuple_lock WHERE NOT EXISTS (SELECT 1 FROM removed)
+       ON CONFLICT (site_id, member_id, target_type, target_id, emoji) DO NOTHING
        RETURNING id
      ), existing_count AS (
-       SELECT COUNT(*)::integer AS count FROM comment_reactions
-       WHERE comment_id = $1 AND reaction_code = $3
-     ), result AS (
-       SELECT EXISTS (SELECT 1 FROM inserted) AS added,
-         count + (SELECT COUNT(*)::integer FROM inserted) - (SELECT COUNT(*)::integer FROM removed) AS count
-       FROM existing_count
-     ), projection AS (
-       INSERT INTO comment_reaction_counters (comment_id, reaction_code, reaction_count, updated_at)
-       SELECT $1, $3, count, now() FROM result
-       ON CONFLICT (comment_id, reaction_code) DO UPDATE
-       SET reaction_count = EXCLUDED.reaction_count, updated_at = EXCLUDED.updated_at
+       SELECT COUNT(*)::integer AS count FROM community_reactions
+       WHERE target_type = 'post' AND target_id = $2 AND emoji = $4
      )
-     SELECT added, count FROM result`,
-    [input.commentId, input.memberId, reactionCode],
+     SELECT EXISTS (SELECT 1 FROM inserted) AS added,
+       count + (SELECT COUNT(*)::integer FROM inserted) - (SELECT COUNT(*)::integer FROM removed) AS count
+     FROM existing_count`,
+    [input.siteId, input.commentId, input.memberId, reactionCode],
   )
   const result = rows[0]
   return { added: Boolean(result?.added), reactionCode, count: Number(result?.count ?? 0) }

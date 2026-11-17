@@ -71,7 +71,7 @@ describe('COMM-05D abuse triage', () => {
       text,
     })
     expect(decision).toMatchObject({ pendingReview: true, priority: 'high', caseId: 'case-1' })
-    expect(calls.some((sql) => sql.includes("status='pending_review'"))).toBe(true)
+    expect(calls.some((sql) => sql.includes("moderation_state='review'"))).toBe(true)
     expect(calls.some((sql) => sql.includes('INSERT INTO moderation_cases'))).toBe(true)
   })
   it('does not contain any autonomous ban disposition in the heuristic decision', () => {

@@ -10,7 +10,7 @@ import { Client } from 'pg'
 import config from '@payload-config'
 import { createPasskeySession } from '../../src/modules/operations/passkey-auth'
 import { createForumThread } from '../../src/modules/community/service'
-import { getOrCreateCommentThread } from '../../src/modules/community/comment-identity'
+import { getOrCreateAttachedDiscussion } from '../../src/modules/community/service'
 import { sink, sockets, messages } from '../rc1-09d/smtp-sink'
 
 const expect = playwrightExpect.configure({ timeout: 60000 })
@@ -1279,9 +1279,13 @@ try {
     'an authorized native operator can create a local post but cannot attach a foreign discussion parent',
     deniedNativeParent.status() === 400 && (await countPosts()) === countBeforeNativeDenial,
   )
-  const versionedThread = await getOrCreateCommentThread(payload, {
+  // RC2-DEBT-20 fold: a v1 thread id is the article's attached discussion id.
+  const versionedThread = await getOrCreateAttachedDiscussion(payload, {
     siteId: alpha.id,
-    canonicalContentId: article.id,
+    attachedToCollection: 'content',
+    attachedToId: article.id,
+    title: article.title,
+    canonicalPath: article.canonicalPath,
   })
   const versionedRoute = `/api/v1/sites/${alpha.id}/threads/${versionedThread.id}/comments`
   const spoofed = await anonymous.request.post(`${base}${versionedRoute}`, {
@@ -1311,12 +1315,13 @@ try {
   assert.equal(versionedResponse.status(), 201, await versionedResponse.text())
   const versionedComment = (await versionedResponse.json()).data
   check(
-    'versioned HTTP comment persists the real session author in its canonical SQL contract',
+    'versioned HTTP comment persists the real session author in the live discussion store',
     (
-      await payload.db.pool.query('SELECT author_id,body_raw FROM comments WHERE id=$1', [
-        versionedComment.id,
-      ])
-    ).rows[0].author_id === alice.memberId,
+      await payload.db.pool.query(
+        'SELECT author_member_id,body FROM discussion_posts WHERE id=$1',
+        [versionedComment.id],
+      )
+    ).rows[0].author_member_id === alice.memberId,
   )
   const versionedReplay = await alice.context.request.post(`${base}${versionedRoute}`, {
     data: { body: 'Versioned authenticated comment' },
@@ -1332,7 +1337,7 @@ try {
       (await versionedReplay.json()).data.id === versionedComment.id &&
       (
         await payload.db.pool.query(
-          'SELECT count(*)::int AS count FROM comments WHERE thread_id=$1',
+          'SELECT count(*)::int AS count FROM discussion_posts WHERE discussion_id=$1',
           [versionedThread.id],
         )
       ).rows[0].count === 1,

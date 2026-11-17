@@ -321,6 +321,15 @@ export const DiscussionPosts: CollectionConfig = {
     { name: 'solution', type: 'checkbox', defaultValue: false },
     { name: 'helpful', type: 'checkbox', defaultValue: false },
     {
+      name: 'clientMutationId',
+      type: 'text',
+      index: true,
+      admin: {
+        description:
+          'Idempotency key (deterministic UUID) stamped by the versioned comment composer; null for posts created through other surfaces.',
+      },
+    },
+    {
       name: 'moderationState',
       type: 'select',
       required: true,

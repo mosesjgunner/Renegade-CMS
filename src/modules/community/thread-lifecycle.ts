@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 
-import { executeDbQuery } from './comment-composer'
+import { executeDbQuery } from './db-query'
 import type { CommunityActor } from './contracts'
 
 export class CommentLifecycleError extends Error {
@@ -54,7 +54,57 @@ export interface ThreadLifecycleRecord {
 }
 
 // ---------------------------------------------------------------------------
-// 1. Staff Lifecycle Controls (closed, frozen, premoderation_enabled)
+// RC2-DEBT-20 fold: the v1 thread surface lives on the live Payload
+// discussions / discussion-posts store. A v1 thread id IS a discussion
+// id. Lifecycle mapping: closed <=> commentsPolicy 'closed' (or a
+// non-open status); frozen <=> status 'locked'/'archived';
+// premoderation has no live-store counterpart (the live store
+// moderates post-hoc and via submission triage) and is reported as
+// false — setting it is rejected rather than silently dropped.
+// ---------------------------------------------------------------------------
+
+type Doc = Record<string, unknown>
+
+function relationId(value: unknown): string {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && 'id' in (value as Doc)) return String((value as Doc).id ?? '')
+  return ''
+}
+
+async function findDiscussion(
+  payload: Payload,
+  siteId: string,
+  threadId: string,
+): Promise<Doc | null> {
+  const found = await payload
+    .findByID({ collection: 'discussions', id: threadId, depth: 1, overrideAccess: true })
+    .catch(() => null)
+  if (!found) return null
+  const doc = found as unknown as Doc
+  if (String(doc.site ? relationId(doc.site) : '') !== siteId) return null
+  return doc
+}
+
+function lifecycleRecord(doc: Doc): ThreadLifecycleRecord {
+  const status = String(doc.status ?? 'open')
+  const attached = doc.attachedTo as Doc | undefined
+  const attachedId = attached ? relationId(attached.value) : ''
+  return {
+    id: String(doc.id),
+    siteId: String(relationId(doc.site)),
+    canonicalContentId: attachedId,
+    contentType: attachedId ? String(attached?.relationTo ?? 'content') : 'discussion',
+    isClosed: String(doc.commentsPolicy ?? 'open') === 'closed' || status !== 'open',
+    isFrozen: status === 'locked' || status === 'archived',
+    premoderationEnabled: false,
+    createdAt: new Date(String(doc.createdAt)).toISOString(),
+    updatedAt: new Date(String(doc.updatedAt)).toISOString(),
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 1. Staff Lifecycle Controls (closed, frozen; premoderation unsupported)
 // ---------------------------------------------------------------------------
 export async function updateThreadLifecycle(
   payload: Payload,
@@ -77,60 +127,49 @@ export async function updateThreadLifecycle(
     )
   }
 
-  const rows = await executeDbQuery<ThreadLifecycleRecord>(
-    payload,
-    `UPDATE comment_threads
-     SET is_closed = COALESCE($3, is_closed),
-         is_frozen = COALESCE($4, is_frozen),
-         premoderation_enabled = COALESCE($5, premoderation_enabled),
-         updated_at = now()
-     WHERE id = $1 AND site_id = $2
-     RETURNING id, site_id AS "siteId", canonical_content_id AS "canonicalContentId",
-               content_type AS "contentType", is_closed AS "isClosed", is_frozen AS "isFrozen",
-               premoderation_enabled AS "premoderationEnabled", created_at AS "createdAt",
-               updated_at AS "updatedAt"`,
-    [
-      input.threadId,
-      input.siteId,
-      input.closed ?? null,
-      input.frozen ?? null,
-      input.premoderationEnabled ?? null,
-    ],
-  )
+  if (input.premoderationEnabled !== undefined) {
+    throw new CommentLifecycleError(
+      'Premoderation is not a control of the live discussion store; submissions are moderated post-hoc and by triage.',
+      422,
+      'UNSUPPORTED_LIFECYCLE_CONTROL',
+    )
+  }
 
-  const updated = rows[0]
-  if (!updated) {
+  const doc = await findDiscussion(payload, input.siteId, input.threadId)
+  if (!doc) {
     throw new CommentLifecycleError('Comment thread not found.', 404, 'THREAD_NOT_FOUND')
   }
 
-  return updated
+  const data: Record<string, unknown> = {}
+  if (input.frozen !== undefined) data.status = input.frozen ? 'locked' : 'open'
+  if (input.closed !== undefined) data.commentsPolicy = input.closed ? 'closed' : 'open'
+  if (Object.keys(data).length > 0) {
+    const updated = await payload.update({
+      collection: 'discussions',
+      id: input.threadId,
+      data,
+      depth: 1,
+      overrideAccess: true,
+    })
+    return lifecycleRecord(updated as unknown as Doc)
+  }
+  return lifecycleRecord(doc)
 }
 
 export async function getThreadLifecycle(
   payload: Payload,
   input: { siteId: string; threadId: string },
 ): Promise<ThreadLifecycleRecord> {
-  const rows = await executeDbQuery<ThreadLifecycleRecord>(
-    payload,
-    `SELECT id, site_id AS "siteId", canonical_content_id AS "canonicalContentId",
-            content_type AS "contentType", is_closed AS "isClosed", is_frozen AS "isFrozen",
-            premoderation_enabled AS "premoderationEnabled", created_at AS "createdAt",
-            updated_at AS "updatedAt"
-     FROM comment_threads
-     WHERE id = $1 AND site_id = $2`,
-    [input.threadId, input.siteId],
-  )
-
-  const thread = rows[0]
-  if (!thread) {
+  const doc = await findDiscussion(payload, input.siteId, input.threadId)
+  if (!doc) {
     throw new CommentLifecycleError('Comment thread not found.', 404, 'THREAD_NOT_FOUND')
   }
-
-  return thread
+  return lifecycleRecord(doc)
 }
 
 // ---------------------------------------------------------------------------
-// 2. Subscriptions (comment_thread_subscriptions)
+// 2. Subscriptions (comment_thread_subscriptions — a subscription list
+// keyed by thread id; after the fold the id is the discussion id)
 // ---------------------------------------------------------------------------
 export async function subscribeToThread(
   payload: Payload,
@@ -188,25 +227,16 @@ export async function getThreadSubscribers(payload: Payload, threadId: string): 
 }
 
 // ---------------------------------------------------------------------------
-// 3. Recursive Comment Retrieval bounded to depth 5
-// Support sort modes: chronological, reverse chronological, reaction volume
+// 3. Recursive Comment Retrieval bounded to depth 5, over the live
+// discussion-posts store. Live statuses map to the v1 vocabulary:
+// published -> visible, hidden -> pending_review, removed -> deleted.
 // ---------------------------------------------------------------------------
-type RawCommentRow = {
-  id: string
-  thread_id: string
-  parent_id: string | null
-  root_id: string | null
-  author_id: string
-  author_type: string
-  status: string
-  depth: number
-  body_raw: string
-  body_html: string
-  created_at: string | Date
-  updated_at: string | Date
-  deleted_at?: string | Date | null
-  reactions?: Record<string, number> | string | null
-  reactionCount?: number | string | null
+
+function mapPostStatus(doc: Doc): string {
+  const status = String(doc.status ?? 'published')
+  if (status === 'published') return 'visible'
+  if (status === 'removed') return 'deleted'
+  return 'pending_review'
 }
 
 export async function getThreadCommentsTree(
@@ -222,83 +252,98 @@ export async function getThreadCommentsTree(
   const maxDepth = Math.min(Math.max(0, input.maxDepth ?? 5), 5)
   const sortMode = (input.sort ?? 'chronological').toLowerCase().replace(/\s+/g, '_')
 
-  let rows: RawCommentRow[] = []
-  try {
-    rows = await executeDbQuery<RawCommentRow>(
-      payload,
-      `SELECT c.id, c.thread_id, c.parent_id, c.root_id, c.author_id, c.author_type,
-              c.status, c.depth, c.body_raw, c.body_html, c.created_at, c.updated_at, c.deleted_at,
-              COALESCE(
-                (SELECT jsonb_object_agg(crc.reaction_code, crc.reaction_count)
-                 FROM comment_reaction_counters crc
-                 WHERE crc.comment_id = c.id),
-                '{}'::jsonb
-              ) AS reactions,
-              COALESCE(
-                (SELECT SUM(crc.reaction_count)::integer
-                 FROM comment_reaction_counters crc
-                 WHERE crc.comment_id = c.id),
-                0
-              ) AS "reactionCount"
-       FROM comments c
-       WHERE c.thread_id = $1 AND c.depth <= $2
-       ORDER BY c.created_at ASC`,
-      [input.threadId, maxDepth],
-    )
-  } catch {
-    // Fallback if counter projection table isn't populated or in test environment
-    rows = await executeDbQuery<RawCommentRow>(
-      payload,
-      `SELECT c.id, c.thread_id, c.parent_id, c.root_id, c.author_id, c.author_type,
-              c.status, c.depth, c.body_raw, c.body_html, c.created_at, c.updated_at, c.deleted_at
-       FROM comments c
-       WHERE c.thread_id = $1 AND c.depth <= $2
-       ORDER BY c.created_at ASC`,
-      [input.threadId, maxDepth],
-    )
+  const docs: Doc[] = []
+  let page = 1
+  for (;;) {
+    const res = await payload.find({
+      collection: 'discussion-posts',
+      where: { discussion: { equals: input.threadId } },
+      sort: 'createdAt',
+      page,
+      limit: 500,
+      depth: 0,
+      overrideAccess: true,
+    })
+    docs.push(...(res.docs as unknown as Doc[]))
+    if (!res.hasNextPage) break
+    page++
   }
 
-  // Filter out non-public comments if requested
-  const filteredRows = input.includeNonPublic ? rows : rows.filter((r) => r.status === 'visible')
+  const reactionsByPost = new Map<string, Record<string, number>>()
+  if (docs.length > 0) {
+    try {
+      const rows = await executeDbQuery<{ target_id: string; emoji: string; count: number }>(
+        payload,
+        `SELECT target_id, emoji, COUNT(*)::int AS count
+         FROM community_reactions
+         WHERE target_type = 'post' AND target_id = ANY($1)
+         GROUP BY target_id, emoji`,
+        [docs.map((d) => String(d.id))],
+      )
+      for (const row of rows) {
+        const entry = reactionsByPost.get(String(row.target_id)) ?? {}
+        entry[String(row.emoji)] = Number(row.count)
+        reactionsByPost.set(String(row.target_id), entry)
+      }
+    } catch {
+      // Reaction counts are a projection; the tree renders without them.
+    }
+  }
+
+  type Flat = { doc: Doc; parentId: string | null }
+  const flats: Flat[] = docs.map((doc) => ({
+    doc,
+    parentId: relationId(doc.parent) || null,
+  }))
+  const byId = new Map(flats.map((f) => [String(f.doc.id), f]))
+  const depthOf = (f: Flat): number => {
+    let depth = 0
+    let current: Flat | undefined = f
+    while (current?.parentId && byId.has(current.parentId) && depth <= 10) {
+      depth++
+      current = byId.get(current.parentId)
+    }
+    return depth
+  }
 
   const nodesMap = new Map<string, CommentNode>()
   const rootNodes: CommentNode[] = []
 
-  for (const r of filteredRows) {
-    let reactionsParsed: Record<string, number> = {}
-    if (typeof r.reactions === 'string') {
-      try {
-        reactionsParsed = JSON.parse(r.reactions)
-      } catch {
-        reactionsParsed = {}
+  for (const flat of flats) {
+    const status = mapPostStatus(flat.doc)
+    if (!input.includeNonPublic && status !== 'visible') continue
+    const depth = depthOf(flat)
+    if (depth > maxDepth) continue
+    const reactions = reactionsByPost.get(String(flat.doc.id)) ?? {}
+    const rootId = ((): string | null => {
+      let current: Flat | undefined = flat
+      let root: string | null = null
+      while (current?.parentId && byId.has(current.parentId)) {
+        root = current.parentId
+        current = byId.get(current.parentId)
       }
-    } else if (r.reactions && typeof r.reactions === 'object') {
-      reactionsParsed = r.reactions as Record<string, number>
-    }
-
-    const node: CommentNode = {
-      id: String(r.id),
-      threadId: String(r.thread_id),
-      parentId: r.parent_id ? String(r.parent_id) : null,
-      rootId: r.root_id ? String(r.root_id) : null,
-      authorId: String(r.author_id),
-      authorType: String(r.author_type),
-      status: String(r.status),
-      depth: Number(r.depth),
-      bodyRaw: String(r.body_raw),
-      bodyHtml: String(r.body_html),
-      reactionCount: Number(r.reactionCount ?? 0),
-      reactions: reactionsParsed,
-      createdAt: new Date(r.created_at).toISOString(),
-      updatedAt: new Date(r.updated_at).toISOString(),
-      deletedAt: r.deleted_at ? new Date(r.deleted_at).toISOString() : null,
+      return root
+    })()
+    nodesMap.set(String(flat.doc.id), {
+      id: String(flat.doc.id),
+      threadId: input.threadId,
+      parentId: flat.parentId,
+      rootId,
+      authorId: relationId(flat.doc.authorMember) || relationId(flat.doc.authorGuest),
+      authorType: flat.doc.authorMember ? 'member' : flat.doc.authorGuest ? 'anonymous' : 'system',
+      status,
+      depth,
+      bodyRaw: String(flat.doc.body ?? ''),
+      bodyHtml: String(flat.doc.body ?? ''),
+      reactionCount: Object.values(reactions).reduce((sum, n) => sum + n, 0),
+      reactions,
+      createdAt: new Date(String(flat.doc.createdAt)).toISOString(),
+      updatedAt: new Date(String(flat.doc.updatedAt)).toISOString(),
+      deletedAt: null,
       children: [],
-    }
-
-    nodesMap.set(node.id, node)
+    })
   }
 
-  // Assemble hierarchy
   for (const node of nodesMap.values()) {
     if (node.parentId && nodesMap.has(node.parentId)) {
       const parent = nodesMap.get(node.parentId)!
@@ -310,7 +355,6 @@ export async function getThreadCommentsTree(
     }
   }
 
-  // Sort children chronologically
   const sortChildren = (nodes: CommentNode[]) => {
     nodes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     for (const n of nodes) {
@@ -325,7 +369,6 @@ export async function getThreadCommentsTree(
     }
   }
 
-  // Sort top-level roots by requested mode
   if (sortMode === 'reverse_chronological') {
     rootNodes.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   } else if (sortMode === 'reaction_volume') {
@@ -335,7 +378,6 @@ export async function getThreadCommentsTree(
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
   } else {
-    // chronological (default)
     rootNodes.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
   }
 
@@ -343,9 +385,7 @@ export async function getThreadCommentsTree(
 }
 
 // ---------------------------------------------------------------------------
-// 4. Public SSR / Rendered HTML Comments Visibility
-// - Only include comments when canonical parent content is published and indexable
-// - Scrub deleted, quarantined, rejected, and pending comments from public SSR
+// 4. Public visibility helpers over the v1 node vocabulary
 // ---------------------------------------------------------------------------
 const NON_PUBLIC_STATUSES = new Set([
   'deleted',
@@ -377,55 +417,4 @@ export function scrubNonPublicComments(nodes: CommentNode[]): CommentNode[] {
     })
   }
   return result
-}
-
-export async function getPublicSsrComments(
-  payload: Payload,
-  input: {
-    canonicalContentId: string
-    siteId: string
-    contentStatus?: string
-    isIndexable?: boolean
-    sort?: CommentSortMode | string
-  },
-): Promise<CommentNode[]> {
-  // 1. Content published check
-  const isPublished = (input.contentStatus ?? 'published').toLowerCase() === 'published'
-  if (!isPublished) {
-    return []
-  }
-
-  // 2. Indexability check
-  const isIndexable = input.isIndexable !== false
-  if (!isIndexable) {
-    return []
-  }
-
-  // 3. Find thread for canonical content
-  let threadId: string | null = null
-  try {
-    const threadRows = await executeDbQuery<{ id: string }>(
-      payload,
-      `SELECT id FROM comment_threads WHERE site_id = $1 AND canonical_content_id = $2`,
-      [input.siteId, input.canonicalContentId],
-    )
-    threadId = threadRows[0]?.id ? String(threadRows[0].id) : null
-  } catch {
-    // ignore
-  }
-
-  if (!threadId) {
-    return []
-  }
-
-  // 4. Retrieve comments tree
-  const tree = await getThreadCommentsTree(payload, {
-    threadId,
-    siteId: input.siteId,
-    sort: input.sort ?? 'chronological',
-    includeNonPublic: false,
-  })
-
-  // 5. Scrub non-public comments
-  return scrubNonPublicComments(tree)
 }
