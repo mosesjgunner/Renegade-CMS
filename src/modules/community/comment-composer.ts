@@ -304,8 +304,10 @@ export async function resolveSiteMentions(
               overrideAccess: true,
             })
             if (roleCheck.docs.length > 0) isScoped = true
-          } catch {
-            // ignore
+          } catch (error) {
+            // RC2-DEBT-10: fail-closed (not scoped) but logged — a database
+            // error must not be indistinguishable from "no role grant".
+            console.error('[comment-composer] mention scope role check failed.', error)
           }
         }
 
@@ -323,8 +325,9 @@ export async function resolveSiteMentions(
               overrideAccess: true,
             })
             if (spaceCheck.docs.length > 0) isScoped = true
-          } catch {
-            // ignore
+          } catch (error) {
+            // RC2-DEBT-10: fail-closed (not scoped) but logged.
+            console.error('[comment-composer] mention scope space check failed.', error)
           }
         }
 
@@ -336,8 +339,9 @@ export async function resolveSiteMentions(
         }
       }
     }
-  } catch {
-    // ignore
+  } catch (error) {
+    // RC2-DEBT-10: mention resolution is best-effort, but failures are logged.
+    console.error('[comment-composer] mention resolution failed.', error)
   }
 
   return result
@@ -519,8 +523,10 @@ export async function persistCommentWithOutbox(
   } catch (err) {
     try {
       await executeDbQuery(payload, 'ROLLBACK')
-    } catch {
-      // ignore
+    } catch (rollbackError) {
+      // RC2-DEBT-10: the original error still propagates; a failed rollback
+      // is logged instead of vanishing.
+      console.error('[comment-composer] transaction rollback failed.', rollbackError)
     }
     throw err
   }
@@ -634,8 +640,10 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
       if (found.docs[0]) {
         thread = found.docs[0] as unknown as CommentThread
       }
-    } catch {
-      // ignore
+    } catch (error) {
+      // RC2-DEBT-10: logged — a failed lookup falls through to thread
+      // creation, and this line is the only trace of why.
+      console.error('[comment-composer] comment thread lookup failed.', error)
     }
   }
 

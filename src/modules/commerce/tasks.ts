@@ -976,8 +976,10 @@ export async function recoverStaleCommerceJobs(
       olderThanMs: maxAgeMs,
     })
     recoveredCount += fulfillmentRecovery.reconciledJobsCount
-  } catch {
-    // Non-fatal during commerce recovery sweep
+  } catch (error) {
+    // Non-fatal during commerce recovery sweep — but RC2-DEBT-10: logged.
+    // This sweep is exactly where a silent failure hid a money bug in RC1.
+    console.error('[commerce-recovery] fulfillment reconciliation failed.', error)
   }
 
   return recoveredCount

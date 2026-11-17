@@ -8,24 +8,6 @@ export type ApiClient = ConnectionScope & {
   tokenHash: string
   expiresAt: string | null
 }
-export type WebhookSubscription = ConnectionScope & {
-  id: string
-  event: string
-  eventVersion: number
-  target: string
-  secretRef: string
-  capabilityGrants: readonly string[]
-  status: 'active' | 'disabled'
-}
-export type WebhookDelivery = {
-  id: string
-  subscriptionId: string
-  eventId: string
-  idempotencyKey: string
-  state: 'queued' | 'delivered' | 'retrying' | 'dead-letter'
-  attempts: number
-  redactedResponse: string | null
-}
 export const PUBLIC_MANIFESTS: readonly ToolManifest[] = [
   {
     name: 'content.read',

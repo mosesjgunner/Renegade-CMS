@@ -48,6 +48,26 @@ describe('progressive module registry', () => {
     for (const slug of ['products', 'books', 'subscribers', 'experiments', 'network-signing-keys'])
       expect(floorSlugs).not.toContain(slug)
 
+    // RC2-DEBT-09: the AI family is floor BY DESIGN (see the disposition in
+    // module-registry.ts) — inert until a provider connection is configured.
+    // If a future change claims these under a module, this test fails on
+    // purpose: that is a product decision, not a registry cleanup.
+    for (const slug of ['ai-connections', 'ai-credentials', 'ai-proposals'])
+      expect(floorSlugs).toContain(slug)
+
+    // RC2-DEBT-08: the donation/subscription family gates WITH commerce —
+    // at floor its payment leg is unregistered and the donate route threw
+    // a donor-facing 500 (proven on the rig, Nov 16 2026).
+    for (const slug of [
+      'donation-campaigns',
+      'donation-intents',
+      'donations',
+      'donation-events',
+      'subscriptions',
+      'subscription-events',
+    ])
+      expect(floorSlugs).not.toContain(slug)
+
     // The floor global survives; an optional-module global does not.
     expect(floor.globals.map((global) => global.slug)).toContain('site-settings')
     expect(floor.globals.map((global) => global.slug)).not.toContain('network-settings')

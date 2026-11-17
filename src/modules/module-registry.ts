@@ -17,6 +17,39 @@ import type { PayloadRegistrations } from './core/payload-domains'
  * that no optional module claims is floor. That guarantees nothing is silently
  * dropped and no collection can belong to two modules (both are validated below).
  *
+ * Layering rule (RC2-DEBT-12, 2026-11-16)
+ * ----------------------------------------------------------------
+ * The import direction between `src/collections` and `src/modules` is:
+ *
+ *   - A collection definition may import LEAF helpers from modules: access
+ *     predicates, hook functions, pure utilities — code that does not itself
+ *     import any collection or registrar.
+ *   - A collection must never import a module's service layer, tasks, or
+ *     registrar; that direction is what turns the pervasive leaf imports into
+ *     an import cycle.
+ *   - The only modules → collections path is each domain's registrar
+ *     (`src/modules/<domain>/payload-domain.ts`), and a registrar registers
+ *     its OWN domain's collections. Recorded exception: the Community
+ *     collections (discussions, forums, calendar entries) are registered by
+ *     the editorial registrar — there is no community registrar — which is a
+ *     standing arrangement, not an oversight to "fix" silently.
+ *
+ * The rule is enforced by `tests/unit/import-cycles.test.ts`, which fails if
+ * any import cycle crosses the collections boundary. (Modules-internal
+ * service cycles exist and are a separate, recorded finding — see the test's
+ * scope note.)
+ *
+ * Deliberate floor residents (RC2-DEBT-09 disposition, 2026-11-16)
+ * ----------------------------------------------------------------
+ * The AI family — `ai-connections`, `ai-credentials`, `ai-proposals` — is floor
+ * BY DESIGN, not by accident of registration. AI in Renegade is bring-your-own-
+ * model: the collections are inert until an operator configures a provider
+ * connection, so the family already has an activation switch (the connection
+ * itself) and needs no module gate. Claiming them under a module would strip
+ * them from every existing install whose RENEGADE_MODULES predates the module
+ * id. If that trade is ever wanted, it is a product decision to make on its
+ * own, not a registry cleanup.
+ *
  * The PostgreSQL guard
  * --------------------
  * PostgreSQL caps a single function call at 100 arguments. Payload's built-in
@@ -433,11 +466,26 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'commerce-reconciliation-cases',
       'supporters',
       'entitlements',
+      // RC2-DEBT-08: the donation/subscription family lived at floor
+      // while the payment core it depends on is commerce-gated — a
+      // floor install with the checkout capability on served donors a
+      // 500 (unregistered merchant-connections find). The surfaces now
+      // gate with the module they cannot function without.
+      'donation-campaigns',
+      'donation-intents',
+      'donations',
+      'donation-events',
+      'subscriptions',
+      'subscription-events',
     ],
     tasks: [
       'commerce-abandon-checkouts',
       'commerce-process-payment-event',
       'commerce-reconcile-payments',
+      // RC2-DEBT-08: both reconcilers run over commerce collections;
+      // at floor they would work a store that is not registered.
+      'commerce-reconcile-subscriptions',
+      'commerce-reconcile-referrals',
     ],
   },
 ] as const
