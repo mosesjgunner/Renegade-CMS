@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { cookies } from 'next/headers'
 import Link from 'next/link'
 
 import { ensureBootstrap, getInstallationReadiness } from '@/modules/operations/installation'
@@ -80,6 +81,24 @@ export default async function SetupPage() {
     )
   }
 
+  if (status.state === 'installing') {
+    // Enrollment started in this browser and was interrupted (for example the
+    // passkey prompt was cancelled). The enrollment-session cookie lets the
+    // same browser finish; without it the window stays locked for CLI
+    // recovery, exactly as before.
+    const cookieStore = await cookies()
+    if (cookieStore.get('renegade-setup')) {
+      return (
+        <SetupForm
+          initialEmail={loadConfig().ownerEmail ?? ''}
+          appUrl={loadConfig().appUrl}
+          installedProfile={runtimeConfig.deploymentProfile}
+          resumeEmail={status.ownerEmail ?? undefined}
+        />
+      )
+    }
+  }
+
   if (status.state !== 'incomplete') {
     return (
       <main className="max-w-md mx-auto px-4 py-20">
@@ -100,7 +119,13 @@ export default async function SetupPage() {
     )
   }
 
-  return <SetupForm initialEmail={loadConfig().ownerEmail ?? ''} appUrl={loadConfig().appUrl} />
+  return (
+    <SetupForm
+      initialEmail={loadConfig().ownerEmail ?? ''}
+      appUrl={loadConfig().appUrl}
+      installedProfile={runtimeConfig.deploymentProfile}
+    />
+  )
 }
 import type { Metadata } from 'next'
 

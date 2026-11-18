@@ -1,0 +1,3 @@
+# UXI-05 — Make browser setup resumable and recoverable
+Goal: cancel/refresh/lost-response can never strand ownership.
+Done (the core of this pass): resumable passkey enrollment via enrollment-session rotation; /setup resume mode gated on the enrollment cookie; cancel-specific form copy preserving all answers; completion recovery kit with copy/download/acknowledgment; in-product owner-only recovery-code rotation (service + route + Security settings UI) invalidating old codes and other sessions. Proven by tests/integration/installation-resume.integration.test.ts (5/5) alongside the existing installation suite (3/3).
