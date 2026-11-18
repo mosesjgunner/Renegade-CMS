@@ -554,7 +554,7 @@ export type RedirectRule = {
 export type RedirectResolution =
   | { target: string; statusCode: 301 | 302 | 307 | 308; ruleIds: string[] }
   | { error: 'loop' | 'hop-limit' | 'missing-target' }
-const normalPath = (value: string) => {
+export const normalPath = (value: string) => {
   if (
     !value.startsWith('/') ||
     value.startsWith('//') ||
@@ -924,7 +924,7 @@ export function auditDiscoveryDocument(doc: DiscoveryDocument): DiscoveryIssue[]
 // UNIFIED DISCOVERY RESOLVER CONTRACT
 // -------------------------------------------------------------------------------------------------
 
-const idOf = (value: unknown): string => {
+export const idOf = (value: unknown): string => {
   if (typeof value === 'string') return value.trim()
   if (value && typeof value === 'object' && 'id' in value) {
     const raw = (value as { id: unknown }).id
@@ -2450,7 +2450,7 @@ async function buildContentDiscoveryDocument(input: {
   return doc
 }
 
-function buildLayoutDiscoveryDocument(input: {
+export function buildLayoutDiscoveryDocument(input: {
   layout: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2604,7 +2604,7 @@ function buildLayoutDiscoveryDocument(input: {
   return doc
 }
 
-function buildPodcastShowDiscoveryDocument(input: {
+export function buildPodcastShowDiscoveryDocument(input: {
   show: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2748,7 +2748,7 @@ function buildPodcastShowDiscoveryDocument(input: {
   return doc
 }
 
-function buildPodcastEpisodeDiscoveryDocument(input: {
+export function buildPodcastEpisodeDiscoveryDocument(input: {
   episode: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2910,7 +2910,7 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
   return doc
 }
 
-function buildVideoDiscoveryDocument(input: {
+export function buildVideoDiscoveryDocument(input: {
   video: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -3055,7 +3055,7 @@ function buildVideoDiscoveryDocument(input: {
   return doc
 }
 
-function buildGenericRecordDiscoveryDocument(input: {
+export function buildGenericRecordDiscoveryDocument(input: {
   record: Record<string, any>
   collection: string
   settings: ResolvedSiteSettings

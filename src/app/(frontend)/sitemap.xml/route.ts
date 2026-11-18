@@ -2,8 +2,8 @@ import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
-import { conditionalXml, crawlerEntries, renderSitemapIndex } from '@/modules/public/crawler'
-import { getAllIndexableDiscoveryDocuments } from '@/modules/public/discovery'
+import { conditionalXml, renderSitemapIndexSummary } from '@/modules/public/crawler'
+import { getSitemapIndexSummary } from '@/modules/public/sitemap-projection'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -14,6 +14,6 @@ export async function GET(request: Request) {
   if (!siteId) return new Response('Not found', { status: 404 })
   const settings = await resolveSiteSettings(payload)
   const origin = settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
-  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload, siteId))
-  return conditionalXml(request, renderSitemapIndex(origin, entries))
+  const summary = await getSitemapIndexSummary(payload, siteId)
+  return conditionalXml(request, renderSitemapIndexSummary(origin, summary.pageLastmods))
 }
