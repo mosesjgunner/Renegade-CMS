@@ -7,6 +7,7 @@ import type {
   NormalizedMenu,
   PresentationReconstruction,
 } from './types'
+import { convertWordpressBlocks } from './wordpress-blocks'
 
 /** Extract hex colors from raw CSS or HTML */
 function extractColorsFromText(text?: string): {
@@ -254,6 +255,7 @@ export function reconstructPresentation(
 
   // 6. Reconstruct Page Layouts (draft status, linked to Page Template)
   const pageLayouts: PresentationReconstruction['pages'] = []
+  const conversionReports: PresentationReconstruction['conversionReports'] = []
   for (const page of pages) {
     if (page.postType !== 'page') continue
     const path = page.slug === 'home' || page.slug === 'index' ? '/' : `/${page.slug}`
@@ -277,20 +279,19 @@ export function reconstructPresentation(
     ]
 
     if (page.rawContent) {
-      blocks.push({
-        id: `content-${randomUUID().slice(0, 8)}`,
-        component: 'publisher.rich-content',
-        componentVersion: 1,
-        props: {
-          title: 'Body',
-          body: page.rawContent.slice(0, 3900), // bounded within field limit
-          alignment: 'left',
-          spacing: 'normal',
-          width: 'standard',
-          background: 'canvas',
-          emphasis: 'normal',
-        },
-        visible: { desktop: true, tablet: true, mobile: true },
+      // Semantic WordPress block conversion with complete per-region
+      // accounting (S2-12). The old path sliced the raw body at 3,900
+      // characters into one generic block — silent truncation. The
+      // converter never truncates: long text splits across blocks, and
+      // every source region lands in the page's conversion report.
+      const conversion = convertWordpressBlocks(page.rawContent)
+      blocks.push(...conversion.blocks)
+      conversionReports.push({
+        path,
+        pageTitle: page.title,
+        sourceId: page.id,
+        report: conversion.report,
+        coverage: conversion.coverage,
       })
     }
 
@@ -320,5 +321,6 @@ export function reconstructPresentation(
     templates,
     patterns,
     pages: pageLayouts,
+    conversionReports,
   }
 }

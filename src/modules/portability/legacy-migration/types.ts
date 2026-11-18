@@ -240,6 +240,14 @@ export type PresentationReconstruction = {
     templateMode: 'inherited' | 'explicit' | 'detached'
     blocks: LayoutBlock[]
   }>
+  /** Per-page WordPress conversion accounting (S2-12). */
+  conversionReports: Array<{
+    path: string
+    pageTitle: string
+    sourceId: string
+    report: import('./wordpress-blocks').SourceRegionReport[]
+    coverage: import('./wordpress-blocks').WordpressConversion['coverage']
+  }>
 }
 
 /** Side-by-side comparison item */

@@ -2,6 +2,58 @@ import type { ReactNode } from 'react'
 import type { LegacyThemeManifest, ThemeSlot } from '../public/contracts'
 import type { ComponentDefinition, LayoutBlock } from '../public/page-builder'
 
+/**
+ * Registered responsive policy ids (S2-09). `core-responsive-v1` is the
+ * policy implemented by responsive.tsx: mobile < 768, tablet 768–1279,
+ * desktop ≥ 1280, expressed publicly as the rg-hide-* classes. Theme
+ * packages may only declare a registered policy id — never raw CSS or
+ * breakpoints of their own.
+ */
+export const RESPONSIVE_POLICIES = ['core-responsive-v1'] as const
+export type ResponsivePolicyId = (typeof RESPONSIVE_POLICIES)[number]
+import type { ResponsiveMediaInput } from '../media/responsive'
+import type { FormField } from '../audience/contracts'
+
+/**
+ * Server-hydrated composition props (S2-06). Renderers stay synchronous and
+ * pure: the public render pipeline resolves canonical records (albums,
+ * published form schemas, approved video embeds) into these bounded
+ * projections before rendering. A block whose dependency cannot be resolved
+ * receives an `*Unavailable` reason instead — never invented content.
+ */
+export type HydratedGalleryItem = {
+  media: ResponsiveMediaInput
+  caption?: string
+  credits?: string
+}
+
+export type HydratedFormDefinition = {
+  id: string
+  title: string
+  fields: readonly FormField[]
+  consentText?: string
+  endpoint: string
+}
+
+export type HydratedEmbed = {
+  url: string
+  title: string
+}
+
+/**
+ * Resolved linked pattern (S2-07). Link policy: a linked instance follows
+ * the pattern's latest PUBLISHED revision — draft edits stay private
+ * until the pattern itself is published. `version` is the published
+ * revision that actually resolved, so output can show operators exactly
+ * which revision rendered. Snapshot-mode instances are detached copies
+ * and never carry a resolution.
+ */
+export type HydratedPattern = {
+  name: string
+  version: number
+  blocks: LayoutBlock[]
+}
+
 export type { ThemeSlot } from '../public/contracts'
 
 export const RENEGADE_PRESENTATION_VERSION = '1.0.0'

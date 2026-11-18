@@ -1,6 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import type { Payload, PayloadRequest } from 'payload'
 
+import { transactionPayload } from '../core/transaction-payload'
+import { checkOperatorSiteAccess } from '../operations/operator-grants'
+import { adapterForContentType, registeredContentTypeKeys } from './domain-templates'
 import { resolveTheme } from './registry'
 import {
   type LayoutBlock,
@@ -247,6 +250,8 @@ export async function createPageFromTemplate(
     name: string
     templateId: string
     templateMode?: TemplateInheritanceMode
+    /** Domain type the page will serve; validated against its adapter (S2-08). */
+    contentTypeKey?: string
   },
 ): Promise<PageLayout> {
   const templateDoc = await payload.findByID({
@@ -260,11 +265,24 @@ export async function createPageFromTemplate(
   if (template.isRetired) {
     throw new Error('Retired templates cannot be used to create new pages.')
   }
+  if (args.contentTypeKey) {
+    const adapter = adapterForContentType(args.contentTypeKey)
+    // A required canonical body slot cannot silently degrade: a template
+    // that lacks it is refused for this type, by name.
+    if (
+      adapter.canonicalBlockComponent &&
+      !template.blocks.some((block) => block.component === adapter.canonicalBlockComponent)
+    )
+      throw new Error(
+        `Template does not provide the canonical ${args.contentTypeKey} body slot (${adapter.canonicalBlockComponent}).`,
+      )
+  }
 
-  const clonedBlocks = template.blocks.map((block) => ({
-    ...block,
-    id: `${block.component.replace(/[^a-z0-9]/gi, '-')}-${randomUUID().slice(0, 8)}`,
-  }))
+  // Block ids are preserved from the template: they are unique within the
+  // new page, and the stable identity is what lets template sync tell an
+  // inherited block from a local one (S2-08). Pattern instantiation keeps
+  // its own fresh ids because many patterns can land on one page.
+  const clonedBlocks = template.blocks.map((block) => structuredClone(block))
 
   const created = await payload.create({
     collection: 'page-layouts',
@@ -300,15 +318,72 @@ export async function createPageFromTemplate(
   return docToLayout(created as unknown as Record<string, unknown>)
 }
 
+export type TemplateSyncConflict = {
+  blockId: string
+  component: string
+  reason:
+    | 'locally-modified'
+    | 'canonical-body-preserved'
+    | 'modified-locally-template-removed'
+    | 'unverifiable-local-state'
+}
+
+export type TemplateSyncReport = {
+  updated: string[]
+  added: string[]
+  removed: string[]
+  kept: string[]
+  conflicts: TemplateSyncConflict[]
+}
+
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null'
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`
+  const entries = Object.entries(value as Record<string, unknown>)
+    .filter(([, entry]) => entry !== undefined)
+    .sort(([a], [b]) => a.localeCompare(b))
+  return `{${entries.map(([key, entry]) => `${JSON.stringify(key)}:${stableStringify(entry)}`).join(',')}}`
+}
+
+const blockFingerprint = (block: LayoutBlock): string =>
+  stableStringify({
+    component: block.component,
+    componentVersion: block.componentVersion,
+    props: block.props,
+    hidden: block.hidden ?? false,
+    visible: block.visible ?? null,
+  })
+
+const CANONICAL_COMPONENTS = new Set(
+  registeredContentTypeKeys()
+    .map((key) => adapterForContentType(key).canonicalBlockComponent)
+    .filter((component): component is string => Boolean(component)),
+)
+
 /**
- * Synchronize template changes to page draft.
- * INVARIANT: Never surprise-update published pages! This updates the DRAFT only.
- * The published presentation snapshot is unchanged until publisher explicitly publishes.
+ * Synchronize template changes to a page draft as a three-way merge
+ * (S2-08): the template revision the page last synced from is the base.
+ * Inherited blocks the page never touched follow the template; blocks
+ * the page modified are kept and reported as conflicts; canonical body
+ * blocks (e.g. the article editorial slot) are always the page's own;
+ * locally added blocks survive. Without a readable base the merge stays
+ * conservative — nothing local is ever dropped.
+ *
+ * INVARIANT: Never surprise-update published pages! This updates the
+ * DRAFT only; the published snapshot and publishedRevision are untouched
+ * until the publisher explicitly publishes.
  */
 export async function syncPageWithTemplate(
   payload: Payload,
   pageId: string,
-): Promise<{ page: PageLayout; updated: boolean; message: string }> {
+): Promise<{
+  page: PageLayout
+  updated: boolean
+  message: string
+  conflicts: TemplateSyncConflict[]
+  changes: TemplateSyncReport
+}> {
+  const empty: TemplateSyncReport = { updated: [], added: [], removed: [], kept: [], conflicts: [] }
   const pageDoc = await payload.findByID({
     collection: 'page-layouts',
     id: pageId,
@@ -316,10 +391,22 @@ export async function syncPageWithTemplate(
   })
   const page = docToLayout(pageDoc as unknown as Record<string, unknown>)
   if (!page.templateId) {
-    return { page, updated: false, message: 'Page is not linked to any template.' }
+    return {
+      page,
+      updated: false,
+      message: 'Page is not linked to any template.',
+      conflicts: empty.conflicts,
+      changes: empty,
+    }
   }
   if (page.templateMode === 'detached') {
-    return { page, updated: false, message: 'Page template is detached; changes are ignored.' }
+    return {
+      page,
+      updated: false,
+      message: 'Page template is detached; changes are ignored.',
+      conflicts: empty.conflicts,
+      changes: empty,
+    }
   }
 
   const templateDoc = await payload.findByID({
@@ -331,11 +418,111 @@ export async function syncPageWithTemplate(
   if (template.siteId !== page.siteId || template.surface !== 'template')
     throw new Error('Template scope mismatch.')
 
-  // Clone template blocks with unique IDs for the page draft
-  const updatedBlocks = template.blocks.map((block) => ({
-    ...block,
-    id: `${block.component.replace(/[^a-z0-9]/gi, '-')}-${randomUUID().slice(0, 8)}`,
-  }))
+  const templateHistory = Array.isArray(
+    (templateDoc as unknown as { revisionHistory?: unknown[] }).revisionHistory,
+  )
+    ? ((
+        templateDoc as unknown as {
+          revisionHistory: Array<{ revision: number; blocks: LayoutBlock[] }>
+        }
+      ).revisionHistory ?? [])
+    : []
+  const baseEntry = templateHistory.find((entry) => entry.revision === (page.templateVersion ?? 1))
+  const baseById = new Map((baseEntry?.blocks ?? []).map((block) => [block.id, block]))
+  const hasBase = Boolean(baseEntry)
+  const pageById = new Map(page.blocks.map((block) => [block.id, block]))
+  const templateIds = new Set(template.blocks.map((block) => block.id))
+
+  const report: TemplateSyncReport = {
+    updated: [],
+    added: [],
+    removed: [],
+    kept: [],
+    conflicts: [],
+  }
+  const merged: LayoutBlock[] = []
+
+  for (const templateBlock of template.blocks) {
+    const pageBlock = pageById.get(templateBlock.id)
+    if (!pageBlock) {
+      merged.push(structuredClone(templateBlock))
+      report.added.push(templateBlock.id)
+      continue
+    }
+    const base = baseById.get(templateBlock.id)
+    const pagePrint = blockFingerprint(pageBlock)
+    if (CANONICAL_COMPONENTS.has(pageBlock.component)) {
+      // The canonical body belongs to the page's content, never the template.
+      merged.push(pageBlock)
+      report.kept.push(pageBlock.id)
+      if (pagePrint !== blockFingerprint(templateBlock))
+        report.conflicts.push({
+          blockId: pageBlock.id,
+          component: pageBlock.component,
+          reason: 'canonical-body-preserved',
+        })
+      continue
+    }
+    if (base && pagePrint === blockFingerprint(base)) {
+      if (pagePrint !== blockFingerprint(templateBlock)) {
+        merged.push(structuredClone(templateBlock))
+        report.updated.push(templateBlock.id)
+      } else {
+        merged.push(pageBlock)
+        report.kept.push(pageBlock.id)
+      }
+      continue
+    }
+    // Locally modified (or unverifiable): the page's version wins.
+    merged.push(pageBlock)
+    report.kept.push(pageBlock.id)
+    if (base) {
+      report.conflicts.push({
+        blockId: pageBlock.id,
+        component: pageBlock.component,
+        reason: 'locally-modified',
+      })
+    } else if (hasBase && pagePrint !== blockFingerprint(templateBlock)) {
+      report.conflicts.push({
+        blockId: pageBlock.id,
+        component: pageBlock.component,
+        reason: 'unverifiable-local-state',
+      })
+    }
+  }
+
+  for (const pageBlock of page.blocks) {
+    if (templateIds.has(pageBlock.id)) continue
+    const base = baseById.get(pageBlock.id)
+    if (base && blockFingerprint(pageBlock) === blockFingerprint(base)) {
+      // Untouched inherited block the template removed: it goes away.
+      report.removed.push(pageBlock.id)
+      continue
+    }
+    merged.push(pageBlock)
+    report.kept.push(pageBlock.id)
+    if (base)
+      report.conflicts.push({
+        blockId: pageBlock.id,
+        component: pageBlock.component,
+        reason: 'modified-locally-template-removed',
+      })
+  }
+
+  const changed =
+    report.updated.length > 0 ||
+    report.added.length > 0 ||
+    report.removed.length > 0 ||
+    (page.templateVersion ?? 1) !== template.revision
+  if (!changed) {
+    return {
+      page,
+      updated: false,
+      message: `Page draft is already synchronized with template v${template.revision}.`,
+      conflicts: report.conflicts,
+      changes: report,
+    }
+  }
 
   const newRevision = page.revision + 1
   const updated = await payload.update({
@@ -343,7 +530,7 @@ export async function syncPageWithTemplate(
     id: pageId,
     overrideAccess: true,
     data: {
-      blocks: updatedBlocks,
+      blocks: merged,
       templateVersion: template.revision,
       revision: newRevision,
       revisionHistory: [
@@ -352,9 +539,10 @@ export async function syncPageWithTemplate(
           : []),
         {
           revision: newRevision,
-          blocks: updatedBlocks,
+          blocks: merged,
           action: 'synced-from-template',
           templateVersion: template.revision,
+          conflicts: report.conflicts,
           savedAt: new Date().toISOString(),
         },
       ],
@@ -364,8 +552,57 @@ export async function syncPageWithTemplate(
   return {
     page: docToLayout(updated as unknown as Record<string, unknown>),
     updated: true,
-    message: `Page draft synchronized with template v${template.revision}. Published output remains unchanged until explicitly published.`,
+    message:
+      `Page draft synchronized with template v${template.revision}: ` +
+      `${report.updated.length} updated, ${report.added.length} added, ${report.removed.length} removed, ` +
+      `${report.conflicts.length} local override(s) kept. ` +
+      'Published output remains unchanged until explicitly published.',
+    conflicts: report.conflicts,
+    changes: report,
   }
+}
+
+/**
+ * Detach a page from its template (S2-08): the page keeps its current
+ * blocks as its own and future template changes no longer apply. The
+ * template link stays on the record as provenance.
+ */
+export async function detachPageFromTemplate(
+  payload: Payload,
+  pageId: string,
+): Promise<PageLayout> {
+  const pageDoc = await payload.findByID({
+    collection: 'page-layouts',
+    id: pageId,
+    overrideAccess: true,
+  })
+  const page = docToLayout(pageDoc as unknown as Record<string, unknown>)
+  if (!page.templateId) throw new Error('Page is not linked to any template.')
+  if (page.templateMode === 'detached') return page
+  const newRevision = page.revision + 1
+  const updated = await payload.update({
+    collection: 'page-layouts',
+    id: pageId,
+    overrideAccess: true,
+    data: {
+      templateMode: 'detached',
+      revision: newRevision,
+      revisionHistory: [
+        ...(Array.isArray((pageDoc as unknown as { revisionHistory?: unknown[] }).revisionHistory)
+          ? (pageDoc as unknown as { revisionHistory: unknown[] }).revisionHistory
+          : []),
+        {
+          revision: newRevision,
+          blocks: page.blocks,
+          action: 'detached-from-template',
+          templateId: page.templateId,
+          templateVersion: page.templateVersion,
+          savedAt: new Date().toISOString(),
+        },
+      ],
+    },
+  } as never)
+  return docToLayout(updated as unknown as Record<string, unknown>)
 }
 
 /** 2. Save selected component tree as a reusable pattern */
@@ -700,7 +937,269 @@ export function validatePresentationImport(
   }
 }
 
-/** 8. Import presentation package transactionally after validation */
+/** Raised when a presentation import targets a site the caller holds no grant for. */
+export class PresentationImportAccessError extends Error {
+  constructor(siteId: string) {
+    super(`Presentation import is not authorized for site "${siteId}".`)
+    this.name = 'PresentationImportAccessError'
+  }
+}
+
+export type PresentationImportConflict = {
+  layoutPath: string
+  targetRevision: number
+  packageRevision: number
+}
+
+export type PresentationImportResult = ImportValidationResult & {
+  importedCount: number
+  conflicts: PresentationImportConflict[]
+}
+
+type PreparedImportLayout = {
+  layout: PageLayout
+  existing?: Record<string, unknown>
+  /** Target-site template id when the reference already exists in the target. */
+  templateTargetId?: string
+  /** Blocks with link/media references already rebound to the target site. */
+  blocks: LayoutBlock[]
+  /** Package layout ids that must be written before this layout. */
+  dependsOn: Set<string>
+}
+
+function isReferenceValue(
+  value: unknown,
+): value is { id: string; siteId: string; label?: string; href?: string } {
+  if (!value || typeof value !== 'object') return false
+  const ref = value as Record<string, unknown>
+  return typeof ref.id === 'string' && typeof ref.siteId === 'string'
+}
+
+async function findTargetLayout(
+  payload: Payload,
+  siteId: string,
+  where: Record<string, unknown>,
+): Promise<Record<string, unknown> | undefined> {
+  const result = await payload.find({
+    collection: 'page-layouts',
+    where: { and: [{ site: { equals: siteId } }, where] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  return (result.docs[0] as unknown as Record<string, unknown>) ?? undefined
+}
+
+/**
+ * Resolve every reference a package layout makes against the authorized target
+ * site. Package-internal template/pattern identities become write-order
+ * dependencies; link/media references are rebound to target records by
+ * canonical path / filename, mirroring starter binding. Anything that cannot
+ * resolve inside the target site is an incompatibility — an import never
+ * writes a reference that points at another site's records.
+ */
+async function prepareImportLayouts(
+  payload: Payload,
+  args: { siteId: string; layouts: PageLayout[] },
+): Promise<{
+  prepared: PreparedImportLayout[]
+  conflicts: PresentationImportConflict[]
+  incompatibilities: ImportValidationResult['incompatibilities']
+}> {
+  const packageIds = new Set(args.layouts.map((layout) => layout.id))
+  const seenPaths = new Set<string>()
+  const prepared: PreparedImportLayout[] = []
+  const conflicts: PresentationImportConflict[] = []
+  const incompatibilities: ImportValidationResult['incompatibilities'] = []
+
+  for (const layout of args.layouts) {
+    if (seenPaths.has(layout.path)) {
+      incompatibilities.push({
+        layoutPath: layout.path,
+        component: '*',
+        reason: `Package contains more than one layout for path "${layout.path}".`,
+      })
+      continue
+    }
+    seenPaths.add(layout.path)
+
+    const existing = await findTargetLayout(payload, args.siteId, {
+      path: { equals: layout.path },
+    })
+    if (existing) {
+      const targetRevision = Number(existing.revision ?? 1)
+      if (targetRevision !== layout.revision) {
+        conflicts.push({
+          layoutPath: layout.path,
+          targetRevision,
+          packageRevision: layout.revision,
+        })
+      }
+    }
+
+    const dependsOn = new Set<string>()
+    let templateTargetId: string | undefined
+    if (layout.templateId) {
+      if (packageIds.has(layout.templateId)) {
+        dependsOn.add(layout.templateId)
+      } else {
+        const target = await findTargetLayout(payload, args.siteId, {
+          id: { equals: layout.templateId },
+        })
+        if (!target) {
+          incompatibilities.push({
+            layoutPath: layout.path,
+            component: '*',
+            reason: `Template "${layout.templateId}" is not part of the package and does not exist in the target site.`,
+          })
+        } else {
+          templateTargetId = String(target.id)
+        }
+      }
+    }
+
+    const blocks = structuredClone(layout.blocks ?? []) as LayoutBlock[]
+    for (const block of blocks) {
+      if (block.component === 'publisher.pattern') {
+        const patternId = block.props?.patternId
+        if (typeof patternId === 'string' && patternId) {
+          if (packageIds.has(patternId)) {
+            dependsOn.add(patternId)
+          } else {
+            const target = await findTargetLayout(payload, args.siteId, {
+              id: { equals: patternId },
+            })
+            if (!target) {
+              incompatibilities.push({
+                layoutPath: layout.path,
+                component: block.component,
+                reason: `Pattern "${patternId}" is not part of the package and does not exist in the target site.`,
+              })
+            }
+          }
+        }
+        continue
+      }
+      for (const field of ['link', 'media'] as const) {
+        const reference = block.props?.[field]
+        if (!isReferenceValue(reference)) continue
+        if (reference.siteId === args.siteId) {
+          const collection = field === 'link' ? 'content' : 'media'
+          const recordId = reference.id.startsWith('content:')
+            ? reference.id.slice('content:'.length)
+            : reference.id
+          const found = await payload.find({
+            collection,
+            where: {
+              and: [{ id: { equals: recordId } }, { site: { equals: args.siteId } }],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          if (found.docs.length === 0) {
+            incompatibilities.push({
+              layoutPath: layout.path,
+              component: block.component,
+              reason: `Referenced ${field} "${reference.id}" does not exist in the target site.`,
+            })
+          }
+          continue
+        }
+        // Foreign reference: rebind to a target record by its stable address.
+        if (field === 'link') {
+          const href = typeof reference.href === 'string' ? reference.href : ''
+          const found = await payload.find({
+            collection: 'content',
+            where: {
+              and: [{ site: { equals: args.siteId } }, { canonicalPath: { equals: href } }],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          const doc = found.docs[0] as unknown as Record<string, unknown> | undefined
+          if (!doc) {
+            incompatibilities.push({
+              layoutPath: layout.path,
+              component: block.component,
+              reason: `Linked content "${href}" is not available in the target site.`,
+            })
+          } else {
+            block.props[field] = {
+              id: `content:${String(doc.id)}`,
+              siteId: args.siteId,
+              label: reference.label ?? String(doc.title ?? href),
+              href,
+            }
+          }
+        } else {
+          const href = typeof reference.href === 'string' ? reference.href : ''
+          const filename = href.split('/').filter(Boolean).pop() ?? href
+          const found = await payload.find({
+            collection: 'media',
+            where: {
+              and: [
+                { site: { equals: args.siteId } },
+                {
+                  or: [
+                    { originalFilename: { equals: filename } },
+                    { filename: { equals: filename } },
+                  ],
+                },
+              ],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          const doc = found.docs[0] as unknown as Record<string, unknown> | undefined
+          if (!doc) {
+            incompatibilities.push({
+              layoutPath: layout.path,
+              component: block.component,
+              reason: `Referenced media "${filename}" is not available in the target site.`,
+            })
+          } else {
+            block.props[field] = {
+              id: String(doc.id),
+              siteId: args.siteId,
+              label: reference.label ?? filename,
+              href,
+            }
+          }
+        }
+      }
+    }
+
+    prepared.push({ layout, existing, templateTargetId, blocks, dependsOn })
+  }
+
+  return { prepared, conflicts, incompatibilities }
+}
+
+function remapPatternReferences(blocks: LayoutBlock[], idMap: Map<string, string>): LayoutBlock[] {
+  return blocks.map((block) => {
+    if (block.component !== 'publisher.pattern') return block
+    const patternId = block.props?.patternId
+    if (typeof patternId !== 'string' || !idMap.has(patternId)) return block
+    return { ...block, props: { ...block.props, patternId: idMap.get(patternId) } }
+  })
+}
+
+/**
+ * 8. Import a presentation package into one authorized site.
+ *
+ * Boundary contract (S2-01): the caller's grant for the target site is
+ * enforced before any validation or write; every write runs inside one
+ * database transaction with the authenticated request context, so a failed
+ * batch leaves no partial graph; imported template/pattern/media identities
+ * are remapped to target identities; results land as drafts — a published
+ * source never publishes the target, and updating a published target record
+ * changes only its draft, leaving the published revision and snapshot in
+ * place; a target record whose revision has moved since the package was
+ * produced is a conflict and is never overwritten.
+ */
 export async function importPresentationPackage(
   payload: Payload,
   args: {
@@ -708,66 +1207,158 @@ export async function importPresentationPackage(
     targetThemeId: string
     packageData: unknown
     dryRun?: boolean
+    user?: Parameters<typeof checkOperatorSiteAccess>[1]
+    req?: PayloadRequest
   },
-): Promise<ImportValidationResult & { importedCount?: number }> {
+): Promise<PresentationImportResult> {
+  if (args.user) {
+    const allowed = await checkOperatorSiteAccess(payload, args.user, args.siteId, args.req)
+    if (!allowed) throw new PresentationImportAccessError(args.siteId)
+  }
+
   const validation = validatePresentationImport(args.packageData, args.targetThemeId)
   if (!validation.valid || !validation.compatible) {
-    return validation
-  }
-  if (args.dryRun) {
-    return { ...validation, importedCount: 0 }
+    return { ...validation, importedCount: 0, conflicts: [] }
   }
 
   const pkg = args.packageData as PresentationPackage
   const allLayouts = [...pkg.templates, ...pkg.patterns, ...pkg.globals, ...pkg.pages]
 
-  let importedCount = 0
-  for (const layout of allLayouts) {
-    const existing = await payload.find({
-      collection: 'page-layouts',
-      where: {
-        and: [{ site: { equals: args.siteId } }, { path: { equals: layout.path } }],
-      },
-      limit: 1,
-      overrideAccess: true,
-    } as never)
-
-    const data = {
-      site: args.siteId,
-      name: layout.name,
-      path: layout.path,
-      themeId: args.targetThemeId,
-      surface: layout.surface ?? 'page',
-      slot: layout.slot ?? 'main',
-      templateId: layout.templateId,
-      templateVersion: layout.templateVersion,
-      templateMode: layout.templateMode,
-      isRetired: layout.isRetired === true,
-      category: layout.category,
-      layoutVersion: layout.version,
-      status: layout.status,
-      blocks: layout.blocks,
-      unknownBlocks: layout.unknownBlocks ?? [],
-      revision: layout.revision,
-      publishedRevision: layout.publishedRevision,
+  if (args.dryRun) {
+    const { conflicts, incompatibilities } = await prepareImportLayouts(payload, {
+      siteId: args.siteId,
+      layouts: allLayouts,
+    })
+    return {
+      ...validation,
+      compatible: incompatibilities.length === 0,
+      incompatibilities: [...validation.incompatibilities, ...incompatibilities],
+      importedCount: 0,
+      conflicts,
     }
-
-    if (existing.docs.length > 0) {
-      await payload.update({
-        collection: 'page-layouts',
-        id: existing.docs[0].id,
-        overrideAccess: true,
-        data,
-      } as never)
-    } else {
-      await payload.create({
-        collection: 'page-layouts',
-        overrideAccess: true,
-        data,
-      } as never)
-    }
-    importedCount++
   }
 
-  return { ...validation, importedCount }
+  const providedTransactionID = args.req?.transactionID
+  let transactionID: string | number | undefined =
+    typeof providedTransactionID === 'string' || typeof providedTransactionID === 'number'
+      ? providedTransactionID
+      : undefined
+  const ownsTransaction = !transactionID
+  if (ownsTransaction) {
+    transactionID = (await payload.db.beginTransaction()) ?? undefined
+    if (!transactionID) {
+      throw new Error('Presentation import requires transactional storage.')
+    }
+  }
+  const req = {
+    ...(args.req ?? {}),
+    ...(transactionID ? { transactionID } : {}),
+    ...(args.user ? { user: args.user } : {}),
+  } as PayloadRequest
+  const tx = transactionPayload(payload, req)
+  // With an authenticated caller, collection access (operator site grants)
+  // evaluates every write as a second, independent enforcement layer.
+  const overrideAccess = !args.user
+
+  try {
+    const { prepared, conflicts, incompatibilities } = await prepareImportLayouts(tx, {
+      siteId: args.siteId,
+      layouts: allLayouts,
+    })
+    if (conflicts.length > 0 || incompatibilities.length > 0) {
+      if (ownsTransaction && transactionID) {
+        await payload.db.rollbackTransaction(transactionID).catch(() => undefined)
+      }
+      return {
+        ...validation,
+        compatible: incompatibilities.length === 0,
+        incompatibilities: [...validation.incompatibilities, ...incompatibilities],
+        importedCount: 0,
+        conflicts,
+      }
+    }
+
+    const idMap = new Map<string, string>()
+    const pending = [...prepared]
+    let importedCount = 0
+    while (pending.length > 0) {
+      let progressed = false
+      for (let index = pending.length - 1; index >= 0; index--) {
+        const item = pending[index]
+        if (![...item.dependsOn].every((id) => idMap.has(id))) continue
+        const { layout } = item
+        const blocks = remapPatternReferences(item.blocks, idMap)
+        const templateId = layout.templateId
+          ? (idMap.get(layout.templateId) ?? item.templateTargetId)
+          : undefined
+        const historyEntry = {
+          revision: layout.revision,
+          blocks,
+          unknownBlocks: layout.unknownBlocks ?? [],
+          action: 'imported',
+          source: 'presentation-import',
+          savedAt: new Date().toISOString(),
+        }
+        const baseData = {
+          site: args.siteId,
+          name: layout.name,
+          path: layout.path,
+          themeId: args.targetThemeId,
+          surface: layout.surface ?? 'page',
+          slot: layout.slot ?? 'main',
+          templateId,
+          templateVersion: layout.templateVersion,
+          templateMode: layout.templateMode,
+          isRetired: layout.isRetired === true,
+          category: layout.category,
+          layoutVersion: layout.version,
+          blocks,
+          unknownBlocks: layout.unknownBlocks ?? [],
+          revision: layout.revision,
+        }
+        let targetId: string
+        if (item.existing) {
+          // Draft-only update: status, publishedRevision and the published
+          // snapshot are omitted on purpose so public output keeps serving
+          // the previously published revision.
+          const priorHistory = Array.isArray(item.existing.revisionHistory)
+            ? (item.existing.revisionHistory as unknown[])
+            : []
+          const updated = await tx.update({
+            collection: 'page-layouts',
+            id: String(item.existing.id),
+            overrideAccess,
+            req,
+            data: { ...baseData, revisionHistory: [...priorHistory, historyEntry] },
+          } as never)
+          targetId = String((updated as unknown as Record<string, unknown>).id)
+        } else {
+          const created = await tx.create({
+            collection: 'page-layouts',
+            overrideAccess,
+            req,
+            data: { ...baseData, status: 'draft', revisionHistory: [historyEntry] },
+          } as never)
+          targetId = String((created as unknown as Record<string, unknown>).id)
+        }
+        idMap.set(layout.id, targetId)
+        pending.splice(index, 1)
+        importedCount++
+        progressed = true
+      }
+      if (!progressed) {
+        throw new Error('Presentation import contains unresolvable layout references.')
+      }
+    }
+
+    if (ownsTransaction && transactionID) {
+      await payload.db.commitTransaction(transactionID)
+    }
+    return { ...validation, importedCount, conflicts: [] }
+  } catch (error) {
+    if (ownsTransaction && transactionID) {
+      await payload.db.rollbackTransaction(transactionID).catch(() => undefined)
+    }
+    throw error
+  }
 }

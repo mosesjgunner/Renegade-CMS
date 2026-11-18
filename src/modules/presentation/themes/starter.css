@@ -424,3 +424,101 @@ body[data-theme] main[aria-labelledby='article-title'] {
   font-weight: 600;
   line-height: 1.4;
 }
+
+/* Responsive block visibility (S2-04): one public HTML stream serves every
+ * viewport; wrappers are layout-transparent until a media query hides them.
+ * Breakpoints match the editor device widths (375 / 768 / 1280). */
+.rg-visibility {
+  display: contents;
+}
+@media (max-width: 767px) {
+  .rg-visibility.rg-hide-mobile {
+    display: none;
+  }
+}
+@media (min-width: 768px) and (max-width: 1279px) {
+  .rg-visibility.rg-hide-tablet {
+    display: none;
+  }
+}
+@media (min-width: 1280px) {
+  .rg-visibility.rg-hide-desktop {
+    display: none;
+  }
+}
+
+/* Two-column container (S2-05): columns sit side by side on tablet and
+ * desktop widths and stack on small phones. */
+.rg-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.rg-columns[data-variant='wide-left'] {
+  grid-template-columns: 2fr 1fr;
+}
+.rg-columns[data-variant='wide-right'] {
+  grid-template-columns: 1fr 2fr;
+}
+@media (max-width: 767px) {
+  .rg-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Composition blocks (S2-06): gallery grid, rendered form, bounded embed. */
+.rg-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.rg-gallery figure {
+  margin: 0;
+}
+.rg-gallery figcaption {
+  font-size: 0.875rem;
+  margin-top: 0.375rem;
+}
+.rg-gallery-credits {
+  display: block;
+  opacity: 0.7;
+}
+.rg-form-field {
+  margin-bottom: 1rem;
+}
+.rg-form-field label {
+  display: grid;
+  gap: 0.375rem;
+  font-weight: 600;
+}
+.rg-form-field input,
+.rg-form-field textarea,
+.rg-form-field select {
+  font-weight: 400;
+  padding: 0.5rem;
+}
+.rg-form-help {
+  font-size: 0.875rem;
+  opacity: 0.75;
+}
+.rg-form-consent {
+  font-size: 0.875rem;
+}
+.rg-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.rg-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+}
+.rg-embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

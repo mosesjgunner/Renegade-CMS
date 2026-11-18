@@ -1,7 +1,10 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { LiveProductShowcase } from '../../commerce/LiveProductShowcase'
 import type { ComponentDefinition, PresentationField } from '../../public/page-builder'
 import { ResponsiveMedia } from '../../media/responsive'
+import type { FormField } from '../../audience/contracts'
+import type { HydratedEmbed, HydratedFormDefinition, HydratedGalleryItem } from '../contracts'
 
 const text = (props: Record<string, unknown>, key: string, fallback: string) =>
   typeof props[key] === 'string' && props[key].trim() ? String(props[key]) : fallback
@@ -166,7 +169,6 @@ const legacy: Array<[string, string, string]> = [
   ['publisher.profile-status-and-links', 'Profile status and links', 'People'],
   ['publisher.friend-and-buddy-list', 'Friend and buddy list', 'Community'],
   ['publisher.personal-post-feed', 'Personal-post feed', 'Community'],
-  ['publisher.album-and-gallery', 'Album and gallery', 'Media'],
   ['publisher.portfolio-and-project', 'Portfolio and project', 'Media'],
   ['publisher.author-card', 'Author card', 'People'],
   ['publisher.author-grid', 'Author grid', 'People'],
@@ -190,7 +192,6 @@ const legacy: Array<[string, string, string]> = [
   ['publisher.source-and-evidence-box', 'Source and evidence box', 'Content'],
   ['publisher.team', 'Team', 'People'],
   ['publisher.contact-form-placeholder', 'Contact form placeholder', 'Actions'],
-  ['publisher.custom-embed', 'Custom embed', 'Advanced'],
 ]
 
 export const starterComponents: Record<string, ComponentDefinition> = Object.fromEntries([
@@ -201,13 +202,268 @@ export const starterComponents: Record<string, ComponentDefinition> = Object.fro
   ]),
 ])
 
-// Embeds are destinations selected from the canonical internal-link chooser; arbitrary URLs/HTML are not accepted.
-starterComponents['publisher.custom-embed'] = simple(
-  'publisher.custom-embed',
-  'Custom embed',
-  'Advanced',
-  { ...common, link, variant },
+const referenceLabel = (value: unknown): string =>
+  value && typeof value === 'object' && typeof (value as { label?: unknown }).label === 'string'
+    ? String((value as { label: string }).label)
+    : ''
+
+const compositionShell = (
+  id: string,
+  props: Record<string, unknown>,
+  children: ReactNode,
+): ReactNode => (
+  <section data-component={id} data-align={text(props, 'alignment', 'left')}>
+    {typeof props.title === 'string' && props.title.trim() ? <h2>{props.title}</h2> : null}
+    {children}
+  </section>
 )
+
+/**
+ * Real gallery (S2-06): renders the media of a canonical album record,
+ * resolved server-side into `galleryItems` with the assets' own alt text
+ * and variants. Without hydration the block shows its configuration state;
+ * a missing, foreign or empty album shows the resolver's reason.
+ */
+starterComponents['publisher.album-and-gallery'] = {
+  id: 'publisher.album-and-gallery',
+  version: 1,
+  label: 'Album and gallery',
+  category: 'Media',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {
+    ...common,
+    album: { type: 'link', label: 'Album' },
+    galleryLayout: {
+      type: 'select',
+      label: 'Gallery layout',
+      options: ['grid', 'featured'],
+    },
+  },
+  validate: () => [],
+  fallback: (block) => (
+    <section data-unavailable-component={block.component}>This section is unavailable.</section>
+  ),
+  render: (props) => {
+    const items = Array.isArray(props.galleryItems)
+      ? (props.galleryItems as HydratedGalleryItem[])
+      : []
+    if (typeof props.galleryUnavailable === 'string')
+      return compositionShell(
+        'publisher.album-and-gallery',
+        props,
+        <p data-gallery-unavailable>{props.galleryUnavailable}</p>,
+      )
+    if (items.length)
+      return compositionShell(
+        'publisher.album-and-gallery',
+        props,
+        <div className="rg-gallery" data-variant={text(props, 'galleryLayout', 'grid')}>
+          {items.map((item) => (
+            <figure key={item.media.id}>
+              <ResponsiveMedia
+                media={item.media}
+                variant="inline"
+                className="max-w-full h-auto rounded-lg"
+              />
+              {item.caption || item.credits ? (
+                <figcaption>
+                  {item.caption}
+                  {item.credits ? <span className="rg-gallery-credits">{item.credits}</span> : null}
+                </figcaption>
+              ) : null}
+            </figure>
+          ))}
+        </div>,
+      )
+    const label = referenceLabel(props.album)
+    return compositionShell(
+      'publisher.album-and-gallery',
+      props,
+      <p data-gallery-configuration>
+        {label
+          ? `Gallery: ${label} — its media load with the published page.`
+          : 'Select an album to build this gallery.'}
+      </p>,
+    )
+  },
+}
+
+function formFieldControl(field: FormField): ReactNode {
+  const options = Array.isArray(field.validation?.options)
+    ? field.validation.options.map(String)
+    : []
+  const shared = { name: field.key, required: Boolean(field.required) }
+  switch (field.type) {
+    case 'textarea':
+      return <textarea {...shared} rows={4} />
+    case 'select':
+      return (
+        <select {...shared} defaultValue="">
+          <option value="" disabled>
+            Choose…
+          </option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      )
+    case 'radio':
+      return (
+        <span className="rg-form-options">
+          {options.map((option) => (
+            <label key={option}>
+              <input type="radio" name={field.key} value={option} required={field.required} />{' '}
+              {option}
+            </label>
+          ))}
+        </span>
+      )
+    case 'checkbox':
+      return <input type="checkbox" name={field.key} value="true" />
+    case 'hidden':
+      return <input type="hidden" name={field.key} />
+    default:
+      return (
+        <input
+          {...shared}
+          type={['email', 'number', 'date'].includes(field.type) ? field.type : 'text'}
+        />
+      )
+  }
+}
+
+/**
+ * Real form block (S2-06): renders the published schema of a canonical
+ * form definition, resolved server-side by the audience form runtime
+ * (site-scoped; draft or foreign forms never resolve). The form posts to
+ * the form's normal public endpoint; consent wording ships with the
+ * schema snapshot and the endpoint's honeypot contract is rendered.
+ */
+starterComponents['publisher.form'] = {
+  id: 'publisher.form',
+  version: 1,
+  label: 'Form',
+  category: 'Actions',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { ...common, form: { type: 'link', label: 'Form' } },
+  validate: () => [],
+  fallback: (block) => (
+    <section data-unavailable-component={block.component}>This section is unavailable.</section>
+  ),
+  render: (props) => {
+    if (typeof props.formUnavailable === 'string')
+      return compositionShell(
+        'publisher.form',
+        props,
+        <p data-form-unavailable>{props.formUnavailable}</p>,
+      )
+    const definition =
+      props.formDefinition && typeof props.formDefinition === 'object'
+        ? (props.formDefinition as HydratedFormDefinition)
+        : null
+    if (!definition) {
+      const label = referenceLabel(props.form)
+      return compositionShell(
+        'publisher.form',
+        props,
+        <p data-form-configuration>
+          {label
+            ? `Form: ${label} — its published fields load with the published page.`
+            : 'Select a form to embed it here.'}
+        </p>,
+      )
+    }
+    return compositionShell(
+      'publisher.form',
+      props,
+      <form method="post" action={definition.endpoint} data-form-id={definition.id}>
+        {definition.fields.map((field) => (
+          <div className="rg-form-field" key={field.key}>
+            <label>
+              {field.label}
+              {field.required ? <span aria-hidden="true"> *</span> : null}
+              {formFieldControl(field)}
+            </label>
+            {field.helpText ? <p className="rg-form-help">{field.helpText}</p> : null}
+          </div>
+        ))}
+        <input
+          type="text"
+          name="honeypot"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="rg-honeypot"
+        />
+        {definition.consentText ? (
+          <p className="rg-form-consent">{definition.consentText}</p>
+        ) : null}
+        <button type="submit">Submit</button>
+      </form>,
+    )
+  },
+}
+
+/**
+ * Bounded embed (S2-06): the block references a canonical video record;
+ * the server resolves it through the media publishing policy, which only
+ * ever yields an approved provider embed URL (or an honest unavailable
+ * message). Arbitrary URLs and HTML are never accepted from props.
+ */
+starterComponents['publisher.custom-embed'] = {
+  id: 'publisher.custom-embed',
+  version: 1,
+  label: 'Custom embed',
+  category: 'Advanced',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { ...common, link, variant },
+  validate: () => [],
+  fallback: (block) => (
+    <section data-unavailable-component={block.component}>This section is unavailable.</section>
+  ),
+  render: (props) => {
+    if (typeof props.embedUnavailable === 'string')
+      return compositionShell(
+        'publisher.custom-embed',
+        props,
+        <p data-embed-unavailable>{props.embedUnavailable}</p>,
+      )
+    const embed =
+      props.embed && typeof props.embed === 'object' ? (props.embed as HydratedEmbed) : null
+    if (!embed) {
+      const label = referenceLabel(props.link)
+      return compositionShell(
+        'publisher.custom-embed',
+        props,
+        <p data-embed-configuration>
+          {label
+            ? `Embed: ${label} — approved embeds load with the published page.`
+            : 'Select a video to embed it here.'}
+        </p>,
+      )
+    }
+    return compositionShell(
+      'publisher.custom-embed',
+      props,
+      <div className="rg-embed">
+        <iframe
+          src={embed.url}
+          title={embed.title}
+          sandbox="allow-scripts allow-same-origin allow-presentation"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allow="encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
+      </div>,
+    )
+  },
+}
 
 starterComponents['publisher.newsletter-cta'] = {
   id: 'publisher.newsletter-cta',
@@ -411,6 +667,9 @@ starterComponents['publisher.pattern'] = {
       data-pattern-instance={String(props.patternId ?? '')}
       data-pattern-name={String(props.patternName ?? '')}
       data-pattern-mode={String(props.mode ?? 'linked')}
+      data-pattern-policy={
+        String(props.mode ?? 'linked') === 'linked' ? 'latest-published' : 'detached-copy'
+      }
       className="pattern-instance border border-dashed border-stone-300 dark:border-stone-700 p-4 rounded-xl my-2"
     >
       <div className="flex items-center gap-2 mb-2 text-xs font-mono text-stone-500">
@@ -420,9 +679,67 @@ starterComponents['publisher.pattern'] = {
         <span>v{String(props.patternVersion ?? 1)}</span>
         <span className="capitalize">({String(props.mode ?? 'linked')})</span>
       </div>
+      <p className="text-xs text-stone-500">
+        {String(props.mode ?? 'linked') === 'linked'
+          ? 'Linked: renders the pattern’s latest published revision. Draft pattern edits stay private until the pattern is published.'
+          : 'Snapshot: a detached copy frozen at insert time.'}
+      </p>
     </div>
   ),
   fallback: () => (
     <div data-unavailable-component="publisher.pattern">Linked pattern unavailable</div>
+  ),
+}
+
+/**
+ * Two-column container (S2-05). Children live in the slot-typed props
+ * `column0`/`column1`. The two render contexts supply those props
+ * differently: the public renderer injects already-rendered child nodes,
+ * while Puck injects SlotComponents (functions returning the zone's
+ * nodes). The render normalizes both. Nesting containers inside containers
+ * is rejected by the layout validator.
+ */
+starterComponents['publisher.columns'] = {
+  id: 'publisher.columns',
+  version: 1,
+  label: 'Columns',
+  category: 'Layout',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {
+    ...common,
+    column0: { type: 'slot', label: 'First column' },
+    column1: { type: 'slot', label: 'Second column' },
+    balance: {
+      type: 'select',
+      label: 'Column balance',
+      options: ['equal', 'wide-left', 'wide-right'],
+    },
+  },
+  validate: () => [],
+  render: (props) => {
+    const renderSlot = (value: unknown) =>
+      typeof value === 'function' ? (value as () => ReactNode)() : (value as ReactNode)
+    const title = typeof props.title === 'string' && props.title.trim() ? props.title : undefined
+    return (
+      <section
+        data-block="Columns"
+        data-variant={text(props, 'balance', 'equal')}
+        data-align={text(props, 'alignment', 'left')}
+        data-spacing={text(props, 'spacing', 'normal')}
+        data-width={text(props, 'width', 'standard')}
+        data-bg={text(props, 'background', 'canvas')}
+        data-emphasis={text(props, 'emphasis', 'normal')}
+      >
+        {title ? <h2>{title}</h2> : null}
+        <div className="rg-columns" data-variant={text(props, 'balance', 'equal')}>
+          <div className="rg-column">{renderSlot(props.column0)}</div>
+          <div className="rg-column">{renderSlot(props.column1)}</div>
+        </div>
+      </section>
+    )
+  },
+  fallback: (block) => (
+    <section data-unavailable-component={block.component}>This section is unavailable.</section>
   ),
 }
