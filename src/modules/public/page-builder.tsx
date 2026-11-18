@@ -81,8 +81,30 @@ export type PresentationField =
   | { type: 'link'; label: string }
   | { type: 'media'; label: string }
   | { type: 'content-query'; label: string }
+  | { type: 'slot'; label: string }
   | { type: 'boolean' | 'number'; label: string; min?: number; max?: number }
   | { type: 'select' | 'alignment' | 'token'; label: string; options: string[] }
+
+/** Nesting bounds for slot (child) blocks: one level of containers, ever. */
+export const MAX_CHILDREN_PER_SLOT = 20
+export const MAX_TOTAL_LAYOUT_BLOCKS = 150
+
+export function slotFieldNames(definition: ComponentDefinition): string[] {
+  return Object.entries(definition.fields)
+    .filter(([, field]) => field.type === 'slot')
+    .map(([name]) => name)
+}
+
+export function isContainerDefinition(definition: ComponentDefinition): boolean {
+  return slotFieldNames(definition).length > 0
+}
+
+/** Components that may never appear as slot children: containers (no nesting) and the canonical editorial body (prose stays in the dedicated editor). */
+export function isAllowedChildComponent(definition: ComponentDefinition | undefined): boolean {
+  if (!definition) return false
+  if (definition.id === 'publisher.editorial') return false
+  return !isContainerDefinition(definition)
+}
 
 export type ComponentDefinition = {
   id: string
@@ -150,6 +172,7 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
   )
   const unknownBlocks: LayoutBlock[] = [...(input.unknownBlocks ?? [])]
   const ids = new Set<string>()
+  const counter = { total: input.blocks.length }
   const blocks = input.blocks.flatMap((block) => {
     if (
       !block ||
@@ -170,24 +193,7 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
       return []
     }
     ids.add(block.id)
-    if (block.visible !== undefined) {
-      if (
-        typeof block.visible !== 'object' ||
-        block.visible === null ||
-        Array.isArray(block.visible)
-      ) {
-        errors.push(`${block.id}: visible must be an object`)
-      } else {
-        const { desktop, tablet, mobile, ...rest } = block.visible as Record<string, unknown>
-        if (Object.keys(rest).length > 0) errors.push(`${block.id}: unknown visibility rule`)
-        if (desktop !== undefined && typeof desktop !== 'boolean')
-          errors.push(`${block.id}: desktop visibility must be boolean`)
-        if (tablet !== undefined && typeof tablet !== 'boolean')
-          errors.push(`${block.id}: tablet visibility must be boolean`)
-        if (mobile !== undefined && typeof mobile !== 'boolean')
-          errors.push(`${block.id}: mobile visibility must be boolean`)
-      }
-    }
+    validateVisibilityRules(block, errors)
     const definition = theme.componentRegistry[block.component]
     if (!definition || definition.version !== block.componentVersion) {
       unknownBlocks.push(block)
@@ -201,9 +207,115 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
     const propErrors = validateComponentProps(definition, block.props, input.siteId)
     errors.push(...propErrors.map((error) => `${block.id}: ${error}`))
     errors.push(...definition.validate(block.props).map((error) => `${block.id}: ${error}`))
-    return [block]
+    return [
+      validateSlotChildren(block, definition, {
+        theme,
+        siteId: input.siteId,
+        ids,
+        errors,
+        counter,
+      }),
+    ]
   })
+  if (counter.total > MAX_TOTAL_LAYOUT_BLOCKS)
+    errors.push(`Layout may contain at most ${MAX_TOTAL_LAYOUT_BLOCKS} components in total.`)
   return { layout: { ...input, blocks, unknownBlocks }, errors }
+}
+
+function validateVisibilityRules(block: LayoutBlock, errors: string[]): void {
+  if (block.visible === undefined) return
+  if (typeof block.visible !== 'object' || block.visible === null || Array.isArray(block.visible)) {
+    errors.push(`${block.id}: visible must be an object`)
+    return
+  }
+  const { desktop, tablet, mobile, ...rest } = block.visible as Record<string, unknown>
+  if (Object.keys(rest).length > 0) errors.push(`${block.id}: unknown visibility rule`)
+  if (desktop !== undefined && typeof desktop !== 'boolean')
+    errors.push(`${block.id}: desktop visibility must be boolean`)
+  if (tablet !== undefined && typeof tablet !== 'boolean')
+    errors.push(`${block.id}: tablet visibility must be boolean`)
+  if (mobile !== undefined && typeof mobile !== 'boolean')
+    errors.push(`${block.id}: mobile visibility must be boolean`)
+}
+
+/**
+ * Validates the child blocks held in a container's slot fields. Children
+ * follow the same schema/id/visibility/prop rules as top-level blocks and
+ * share the layout-wide id set and total budget, with three deliberate
+ * differences: unavailable children are preserved in place (their column
+ * position is content), containers and the editorial body may not be
+ * children (deterministic error, child dropped), and nesting stops here —
+ * a child's own slot fields are never read.
+ */
+function validateSlotChildren(
+  block: LayoutBlock,
+  definition: ComponentDefinition,
+  context: {
+    theme: ReturnType<typeof resolveTheme>
+    siteId: string
+    ids: Set<string>
+    errors: string[]
+    counter: { total: number }
+  },
+): LayoutBlock {
+  const fields = slotFieldNames(definition)
+  if (fields.length === 0) return block
+  const { theme, siteId, ids, errors, counter } = context
+  const props = { ...block.props }
+  for (const field of fields) {
+    const raw = props[field]
+    if (raw === undefined) {
+      props[field] = []
+      continue
+    }
+    if (!Array.isArray(raw)) {
+      errors.push(`${block.id}: ${field} must be an array of components`)
+      props[field] = []
+      continue
+    }
+    if (raw.length > MAX_CHILDREN_PER_SLOT)
+      errors.push(`${block.id}: ${field} may contain at most ${MAX_CHILDREN_PER_SLOT} components`)
+    const children: LayoutBlock[] = []
+    for (const child of raw.slice(0, MAX_CHILDREN_PER_SLOT)) {
+      counter.total += 1
+      if (
+        !child ||
+        typeof child !== 'object' ||
+        Array.isArray(child) ||
+        typeof child.id !== 'string' ||
+        typeof child.component !== 'string' ||
+        !Number.isInteger(child.componentVersion) ||
+        !child.props ||
+        typeof child.props !== 'object' ||
+        Array.isArray(child.props)
+      ) {
+        errors.push(`${block.id}: invalid child component schema`)
+        continue
+      }
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(child.id) || ids.has(child.id)) {
+        errors.push(`${block.id}: invalid or duplicate child component id: ${child.id}`)
+        continue
+      }
+      ids.add(child.id)
+      validateVisibilityRules(child, errors)
+      const childDefinition = theme.componentRegistry[child.component]
+      if (!childDefinition || childDefinition.version !== child.componentVersion) {
+        errors.push(`Unavailable component preserved: ${child.component}@${child.componentVersion}`)
+        children.push(child)
+        continue
+      }
+      if (!isAllowedChildComponent(childDefinition)) {
+        errors.push(`${block.id}: ${child.id} ${child.component} is not allowed in a container`)
+        continue
+      }
+      const propErrors = validateComponentProps(childDefinition, child.props, siteId)
+      errors.push(...propErrors.map((error) => `${child.id}: ${error}`))
+      errors.push(...childDefinition.validate(child.props).map((error) => `${child.id}: ${error}`))
+      children.push(child)
+    }
+    props[field] = children
+  }
+  return { ...block, props }
 }
 
 const unsafeKey = /^(?:__proto__|prototype|constructor)$/
@@ -266,6 +378,10 @@ function validateComponentProps(
         errors.push(`${name} must use an internal path`)
       if (field.type === 'media' && reference?.href && !/^\/(?!\/)/.test(reference.href))
         errors.push(`${name} must use a canonical media path`)
+    } else if (field.type === 'slot') {
+      // Child blocks are validated structurally by validateLayout, which
+      // owns the theme, the layout-wide id set and the size budget.
+      if (!Array.isArray(value)) errors.push(`${name} must be an array of components`)
     } else if (field.type === 'content-query') {
       const query = value as Partial<ContentQueryValue> | null
       if (
@@ -346,11 +462,23 @@ export function publishLayout(layout: PageLayout, permissions: BuilderPermission
 
 export function renderLayout(
   layout: PageLayout,
-  viewport: keyof Required<ResponsiveVisibility> = 'desktop',
+  viewport: keyof Required<ResponsiveVisibility> | 'all' = 'desktop',
 ): ReactNode {
   if (layout.version !== PAGE_LAYOUT_VERSION)
     throw new Error('Unsupported layout version; original preserved.')
   const theme = resolveTheme(layout.themeId)
+  const allBlocks = [...layout.blocks, ...(layout.unknownBlocks ?? [])]
+  // 'all' is the public mode: one HTML stream serves every viewport, so
+  // blocks keep their visibility map and renderPresentation expresses it
+  // as CSS. A named viewport is the authenticated preview's device
+  // emulation: filter server-side and strip the map so the CSS layer does
+  // not re-hide blocks at the browser's real width.
+  const blocks =
+    viewport === 'all'
+      ? allBlocks
+      : allBlocks
+          .filter((block) => block.visible?.[viewport] !== false)
+          .map((block) => (block.visible ? { ...block, visible: undefined } : block))
   return renderPresentation(
     {
       version: 1,
@@ -360,9 +488,7 @@ export function renderLayout(
       surface: 'layout',
       slots: {
         main: [],
-        [layout.slot ?? 'main']: [...layout.blocks, ...(layout.unknownBlocks ?? [])].filter(
-          (block) => block.visible?.[viewport] !== false,
-        ),
+        [layout.slot ?? 'main']: blocks,
       },
     },
     theme,

@@ -6,7 +6,9 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { renderLayout, type PageLayout } from '@/modules/public/page-builder'
+import { hydrateLayoutPatterns } from '@/modules/presentation/public-queries'
 import { resolveTheme } from '@/modules/presentation/registry'
+import { themeStyle } from '@/modules/presentation/runtime'
 
 export const dynamic = 'force-dynamic'
 export const metadata: Metadata = { robots: { index: false, follow: false } }
@@ -67,6 +69,12 @@ export default async function DraftLayoutPreview({
       typeof row.publishedRevision === 'number' ? row.publishedRevision : undefined,
   }
 
+  // Preview follows the same published-only pattern policy as public
+  // output (S2-07): linked patterns render their latest published
+  // revision here too, never a pattern's private draft.
+  const resolvedBlocks = await hydrateLayoutPatterns(payload, layout)
+  const previewLayout: PageLayout = { ...layout, blocks: resolvedBlocks }
+
   const containerClasses =
     targetViewport === 'mobile'
       ? 'max-w-[375px] mx-auto border-x border-stone-300 dark:border-stone-700 shadow-2xl my-6 rounded-2xl overflow-hidden'
@@ -106,9 +114,15 @@ export default async function DraftLayoutPreview({
       <main
         data-authenticated-draft-preview
         data-viewport={targetViewport}
+        data-theme={layout.themeId}
         className={`${containerClasses} bg-white dark:bg-stone-900`}
+        style={{
+          // The frame renders the draft's own theme — fonts, tokens and
+          // focus colors — not the site's currently active configuration.
+          ...themeStyle(resolveTheme(layout.themeId)),
+        }}
       >
-        {renderLayout(layout, targetViewport)}
+        {renderLayout(previewLayout, targetViewport)}
       </main>
     </div>
   )

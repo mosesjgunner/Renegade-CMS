@@ -4,7 +4,7 @@ import path from 'node:path'
 import { valid, validRange, satisfies } from 'semver'
 import { themes, validateManifest } from './registry'
 import { validateTokens, type DesignTokens } from './tokens'
-import { RENEGADE_PRESENTATION_VERSION } from './contracts'
+import { RENEGADE_PRESENTATION_VERSION, RESPONSIVE_POLICIES } from './contracts'
 export type LocalTheme = {
   id: string
   version: string
@@ -14,6 +14,12 @@ export type LocalTheme = {
   tokens: DesignTokens
   assets: { path: string; sha256: string }[]
   migrations: { from: string; to: string; operation: 'defaults'; tokens: DesignTokens }[]
+  /** Registered responsive policy id (S2-09); absent means the core policy. */
+  responsivePolicy?: string
+  /** Content-type key → theme template id defaults (S2-09). */
+  templateDefaults?: Record<string, string>
+  /** Component id → variant names the package approves for it (S2-09). */
+  componentVariants?: Record<string, string[]>
 }
 export type InstalledTheme = {
   package?: LocalTheme
@@ -23,11 +29,17 @@ export type InstalledTheme = {
   compatible: boolean
 }
 const keys = ['id', 'version', 'label', 'renegade', 'renderer', 'tokens', 'assets', 'migrations']
+/** Optional declarative extensions (S2-09). Existing packages that omit
+ * them validate exactly as before; unknown keys remain forbidden. */
+const optionalKeys = ['responsivePolicy', 'templateDefaults', 'componentVariants']
 export function validatePackage(value: unknown): LocalTheme {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Manifest must be a JSON object.')
   const p = value as LocalTheme
-  if (Object.keys(p).some((k) => !keys.includes(k)) || keys.some((k) => !Object.hasOwn(p, k)))
+  if (
+    Object.keys(p).some((k) => ![...keys, ...optionalKeys].includes(k)) ||
+    keys.some((k) => !Object.hasOwn(p, k))
+  )
     throw new Error(
       'Manifest contains unknown or missing fields; executable configuration is forbidden.',
     )
@@ -79,6 +91,58 @@ export function validatePackage(value: unknown): LocalTheme {
       throw new Error('Invalid presentation migration.')
     validateTokens(m.tokens)
     steps.add(m.from)
+  }
+  // Declarative extensions (S2-09): references only — a package may name
+  // a registered responsive policy, the renderer's own templates as
+  // content-type defaults, and variants of the renderer's own components.
+  // Anything else (raw CSS, foreign ids, code) is refused.
+  if (p.responsivePolicy !== undefined) {
+    if (
+      typeof p.responsivePolicy !== 'string' ||
+      !(RESPONSIVE_POLICIES as readonly string[]).includes(p.responsivePolicy)
+    )
+      throw new Error('Responsive policy is not registered.')
+  }
+  const manifest = themes[p.renderer]
+  if (p.templateDefaults !== undefined) {
+    if (
+      !p.templateDefaults ||
+      typeof p.templateDefaults !== 'object' ||
+      Array.isArray(p.templateDefaults) ||
+      Object.keys(p.templateDefaults).length > 32
+    )
+      throw new Error('Invalid template defaults.')
+    for (const [contentType, templateId] of Object.entries(p.templateDefaults)) {
+      if (
+        !/^[a-z][a-z0-9-]{0,63}$/.test(contentType) ||
+        typeof templateId !== 'string' ||
+        !Object.hasOwn(manifest.templateRegistry, templateId)
+      )
+        throw new Error('Template default references an unregistered template.')
+    }
+  }
+  if (p.componentVariants !== undefined) {
+    if (
+      !p.componentVariants ||
+      typeof p.componentVariants !== 'object' ||
+      Array.isArray(p.componentVariants) ||
+      Object.keys(p.componentVariants).length > 128
+    )
+      throw new Error('Invalid component variants.')
+    for (const [componentId, variants] of Object.entries(p.componentVariants)) {
+      if (!Object.hasOwn(manifest.componentRegistry, componentId))
+        throw new Error('Component variant references an unregistered component.')
+      if (
+        !Array.isArray(variants) ||
+        variants.length < 1 ||
+        variants.length > 16 ||
+        variants.some(
+          (variant) => typeof variant !== 'string' || !variant || variant.length > 40,
+        ) ||
+        new Set(variants).size !== variants.length
+      )
+        throw new Error('Invalid component variant list.')
+    }
   }
   return p
 }

@@ -1,6 +1,7 @@
 import type { Data } from '@puckeditor/core'
-import type { ThemeSlot, VisualEditor } from './contracts'
+import type { ThemeManifest, ThemeSlot, VisualEditor } from './contracts'
 import { resolveTemplate, resolveTheme } from './registry'
+import { slotFieldNames, type LayoutBlock } from '../public/page-builder'
 
 export type PaletteCategory = { id: string; label: string; components: string[] }
 
@@ -35,42 +36,97 @@ export function paletteFor(
   }))
 }
 
+type EditorItem = { type: string; props: Record<string, unknown> }
+
+function blockToEditorItem(block: LayoutBlock, theme: ThemeManifest): EditorItem {
+  const props: Record<string, unknown> = { ...block.props, id: block.id }
+  const definition = theme.componentRegistry[block.component]
+  if (definition) {
+    for (const field of slotFieldNames(definition)) {
+      const children = Array.isArray(block.props[field])
+        ? (block.props[field] as LayoutBlock[])
+        : []
+      props[field] = children.map((child) => blockToEditorItem(child, theme))
+    }
+  }
+  return { type: block.component, props }
+}
+
+function editorItemToBlock(
+  item: EditorItem,
+  context: {
+    theme: ThemeManifest
+    previousBlocks: LayoutBlock[]
+    seen: Set<string>
+    topLevel: boolean
+  },
+): LayoutBlock {
+  // Puck prefixes generated ids with namespaced types (publisher.hero).
+  // Portable block ids use underscores; keep the mapping stable across edits.
+  const rawId = String(item.props.id).replaceAll('.', '_')
+  if (!rawId || rawId === 'undefined') throw new Error('Editor block ids must be unique.')
+  let id = rawId
+  if (context.seen.has(id)) {
+    // Top-level duplicates are corrupt editor data and keep the historical
+    // hard failure. Duplicated containers legitimately clone child ids, so
+    // children are uniquified deterministically instead of losing the edit.
+    if (context.topLevel) throw new Error('Editor block ids must be unique.')
+    let suffix = 2
+    while (context.seen.has(`${rawId}-${suffix}`)) suffix += 1
+    id = `${rawId}-${suffix}`
+  }
+  context.seen.add(id)
+  const previous = context.previousBlocks.find((block) => block.id === rawId)
+  const props: Record<string, unknown> = { ...item.props }
+  delete props.id
+  const definition = context.theme.componentRegistry[item.type]
+  if (definition) {
+    for (const field of slotFieldNames(definition)) {
+      const children = Array.isArray(props[field]) ? (props[field] as EditorItem[]) : []
+      const previousChildren =
+        previous && Array.isArray(previous.props[field])
+          ? (previous.props[field] as LayoutBlock[])
+          : []
+      props[field] = children.map((child) =>
+        editorItemToBlock(child, {
+          theme: context.theme,
+          previousBlocks: previousChildren,
+          seen: context.seen,
+          topLevel: false,
+        }),
+      )
+    }
+  }
+  return {
+    ...previous,
+    id,
+    component: item.type,
+    componentVersion: previous?.component === item.type ? previous.componentVersion : 1,
+    props,
+  }
+}
+
 /** Puck edits main; other slots and opaque block metadata remain lossless. */
 export const puckVisualEditor: VisualEditor<Data> = {
   id: 'puck',
   version: '1.0.0',
   toEditor(document) {
     const slot = resolveActiveSlot(document.slots)
+    const theme = resolveTheme(document.theme.id)
     return {
-      content: (document.slots[slot] ?? []).map((block) => ({
-        type: block.component,
-        props: { ...block.props, id: block.id },
-      })),
+      content: (document.slots[slot] ?? []).map((block) => blockToEditorItem(block, theme)),
       root: { props: {} },
     } as Data
   },
   fromEditor(original, data) {
     const document = structuredClone(original)
     const slot = resolveActiveSlot(document.slots)
-    const ids = new Set<string>()
-    document.slots[slot] = data.content.map((item) => {
-      // Puck prefixes generated ids with namespaced types (publisher.hero).
-      // Portable block ids use underscores; keep the mapping stable across edits.
-      const id = String(item.props.id).replaceAll('.', '_')
-      if (!id || id === 'undefined' || ids.has(id))
-        throw new Error('Editor block ids must be unique.')
-      ids.add(id)
-      const previous = original.slots[slot]?.find((block) => block.id === id)
-      const props: Record<string, unknown> = { ...item.props }
-      delete props.id
-      return {
-        ...previous,
-        id,
-        component: item.type,
-        componentVersion: previous?.component === item.type ? previous.componentVersion : 1,
-        props,
-      }
-    })
+    const theme = resolveTheme(document.theme.id)
+    const seen = new Set<string>()
+    const previousBlocks = document.slots[slot] ?? []
+    document.slots[slot] = (data.content as unknown as EditorItem[]).map((item) =>
+      editorItemToBlock(item, { theme, previousBlocks, seen, topLevel: true }),
+    )
     return document
   },
 }

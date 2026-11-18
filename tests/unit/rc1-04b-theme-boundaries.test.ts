@@ -33,6 +33,9 @@ vi.mock('@/modules/presentation/lifecycle', () => ({
   readThemeState: async () => mocks.state,
   createThemePreview: async () => 'preview',
   changeTheme: mocks.change,
+  // S2-09's compatibility gate consumes lifecycle.preflight through the
+  // themes route; the mock keeps its passthrough semantics.
+  preflight: (configuration: unknown) => configuration,
 }))
 vi.mock('@/modules/presentation/composition', () => ({
   createPattern: mocks.createPattern,
