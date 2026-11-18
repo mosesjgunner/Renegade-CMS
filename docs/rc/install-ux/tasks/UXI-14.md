@@ -1,0 +1,3 @@
+# UXI-14 — Test with people who have never used it
+
+Status: BLOCKED — no participants recruited; recruiting is an external action for the product owner. USABILITY_TEST_KIT.md is prepared (criteria, neutral task cards including the cancel/resume and lost-codes stumbles this pass fixed, score sheet, pre-set targets). No completion rates, times, or satisfaction figures exist and none are claimed. Agent runs are not participant evidence.

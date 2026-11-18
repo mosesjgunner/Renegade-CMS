@@ -17,6 +17,9 @@ export default function SecurityCenter() {
   const [name, setName] = useState('')
   const [error, setError] = useState<string>()
   const [busy, setBusy] = useState(false)
+  const [rotatedCodes, setRotatedCodes] = useState<string[]>()
+  const [rotating, setRotating] = useState(false)
+  const [codesCopied, setCodesCopied] = useState(false)
   const load = async () => {
     const response = await fetch('/api/auth/passkeys', { credentials: 'same-origin' })
     const body = (await response.json()) as Passkey[] | { error?: string }
@@ -98,6 +101,59 @@ export default function SecurityCenter() {
       setError(cause instanceof Error ? cause.message : 'Could not remove passkey.')
     }
   }
+  async function rotateRecoveryCodes() {
+    if (
+      !window.confirm(
+        'Generate a new set of recovery codes? Your current unused codes stop working immediately, and other signed-in sessions are signed out. This session stays signed in.',
+      )
+    )
+      return
+    setRotating(true)
+    setError(undefined)
+    try {
+      const response = await fetch('/api/auth/recovery/rotate', {
+        method: 'POST',
+        credentials: 'same-origin',
+      })
+      const body = (await response.json()) as { recoveryCodes?: string[]; error?: string }
+      if (!response.ok || !body.recoveryCodes)
+        throw new Error(body.error ?? 'Could not generate new recovery codes.')
+      setRotatedCodes(body.recoveryCodes)
+      setCodesCopied(false)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not generate new recovery codes.')
+    } finally {
+      setRotating(false)
+    }
+  }
+  async function copyRotatedCodes() {
+    if (!rotatedCodes) return
+    try {
+      await navigator.clipboard.writeText(rotatedCodes.join('\n'))
+      setCodesCopied(true)
+    } catch {
+      setCodesCopied(false)
+    }
+  }
+  function downloadRotatedCodes() {
+    if (!rotatedCodes) return
+    const blob = new Blob(
+      [
+        'Renegade CMoS emergency recovery codes\n',
+        'Each code signs you in once if you lose your passkey device.\n',
+        'Store this file in your password manager. Treat it like a password.\n\n',
+        rotatedCodes.join('\n'),
+        '\n',
+      ],
+      { type: 'text/plain' },
+    )
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'renegade-recovery-codes.txt'
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
   async function logout() {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
     router.push('/login')
@@ -143,6 +199,45 @@ export default function SecurityCenter() {
         <button type="button" onClick={() => void addPasskey()} disabled={busy}>
           {busy ? 'Waiting for passkey…' : 'Add passkey'}
         </button>
+      </section>
+      <section style={{ marginTop: 28 }}>
+        <h2>Recovery codes</h2>
+        <p>
+          Recovery codes are the fallback if you lose every passkey device. If you lost the set
+          shown at setup — or never saved it — generate a fresh set here. The old unused codes stop
+          working immediately, other signed-in sessions are signed out, and the new codes are shown
+          only once.
+        </p>
+        <button type="button" onClick={() => void rotateRecoveryCodes()} disabled={rotating}>
+          {rotating ? 'Generating…' : 'Generate new recovery codes'}
+        </button>
+        {rotatedCodes ? (
+          <div style={{ marginTop: 16 }}>
+            <p role="status">
+              <strong>Save these codes now.</strong> They will not be shown again.
+            </p>
+            <ul
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: 8,
+                fontFamily: 'monospace',
+                listStyle: 'none',
+                padding: 0,
+              }}
+            >
+              {rotatedCodes.map((code) => (
+                <li key={code}>{code}</li>
+              ))}
+            </ul>
+            <button type="button" onClick={() => void copyRotatedCodes()}>
+              {codesCopied ? 'Copied ✓' : 'Copy all codes'}
+            </button>{' '}
+            <button type="button" onClick={downloadRotatedCodes}>
+              Download as file
+            </button>
+          </div>
+        ) : null}
       </section>
       <StaffInvitations />
       <section style={{ marginTop: 28 }}>

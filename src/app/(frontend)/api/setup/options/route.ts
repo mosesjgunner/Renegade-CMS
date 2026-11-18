@@ -9,9 +9,18 @@ export async function POST(request: Request) {
     const input = (await request.json()) as { email?: string; token?: string }
     const payload = await getPayload({ config })
     const runtimeConfig = loadConfig()
+    // A browser that already began enrollment (e.g. before a cancelled passkey
+    // prompt) presents its enrollment session cookie so setup can resume
+    // instead of demanding local operator recovery.
+    const enrollmentToken = request.headers
+      .get('cookie')
+      ?.split(';')
+      .map((part) => part.trim().split('='))
+      .find(([name]) => name === 'renegade-setup')?.[1]
     const result = await beginPasskeyRegistration(payload, runtimeConfig, {
       email: input.email ?? '',
       token: input.token ?? '',
+      enrollmentToken,
     })
     return Response.json(
       { options: result.options },

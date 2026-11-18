@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 import { themes } from '@/modules/presentation/registry'
 import type { OnboardingInput } from '@/modules/operations/onboarding'
+import type { ResourceProfile } from '@/modules/extensions/contracts'
 
 type RegistrationOptions = Omit<
   PublicKeyCredentialCreationOptions,
@@ -27,6 +28,61 @@ type SetupResult = {
   }
 }
 
+type ReadinessResponse = {
+  readiness: {
+    ready: boolean
+    database: 'connected' | 'disconnected'
+    migrationState: 'applied' | 'pending' | 'uninitialized'
+    appliedMigrations: number
+    totalMigrations: number
+    recoveryAction?: string
+  }
+  providers: Record<string, { name: string; status: string; message: string; recovery?: string }>
+}
+
+const localeOptions = [
+  'en-US',
+  'en-GB',
+  'es-ES',
+  'es-MX',
+  'fr-FR',
+  'de-DE',
+  'pt-BR',
+  'pt-PT',
+  'it-IT',
+  'nl-NL',
+  'pl-PL',
+  'sv-SE',
+  'da-DK',
+  'nb-NO',
+  'fi-FI',
+  'cs-CZ',
+  'hu-HU',
+  'ro-RO',
+  'tr-TR',
+  'ru-RU',
+  'uk-UA',
+  'hi-IN',
+  'ar-EG',
+  'ja-JP',
+  'ko-KR',
+  'zh-CN',
+  'zh-TW',
+  'id-ID',
+  'vi-VN',
+  'th-TH',
+]
+
+function deriveSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 64)
+    .replace(/-+$/g, '')
+}
+
 const steps = ['Secure owner', 'Site identity', 'Brand & starter', 'Features', 'Finish']
 const optionalConnections = [
   ['email', 'Email'],
@@ -37,10 +93,23 @@ const optionalConnections = [
   ['networking', 'Networking'],
 ] as const
 
-export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appUrl: string }) {
+export function SetupForm({
+  initialEmail,
+  appUrl,
+  installedProfile,
+  resumeEmail,
+}: {
+  initialEmail: string
+  appUrl: string
+  installedProfile: ResourceProfile
+  resumeEmail?: string
+}) {
+  const resuming = Boolean(resumeEmail)
   const [step, setStep] = useState(0)
-  const [email, setEmail] = useState(initialEmail)
+  const [email, setEmail] = useState(resumeEmail ?? initialEmail)
   const [token, setToken] = useState('')
+  const [slugTouched, setSlugTouched] = useState(false)
+  const [readiness, setReadiness] = useState<ReadinessResponse | 'error' | null>(null)
   const [form, setForm] = useState<OnboardingInput>({
     name: '',
     slug: '',
@@ -53,7 +122,9 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
         : 'UTC',
     themeId: 'neutral-starter',
     starterType: 'creator-publication',
-    featureProfile: 'Standard',
+    // The site feature profile has only two settings; a Lean server install
+    // defaults to Lean features, every larger install to Standard features.
+    featureProfile: installedProfile === 'Lean' ? 'Lean' : 'Standard',
     optionalConnections: [],
     starterContent: true,
     publishingDefaults: {
@@ -66,14 +137,44 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
   const [result, setResult] = useState<SetupResult>()
   const [busy, setBusy] = useState(false)
   const canContinue = useMemo(() => {
-    if (step === 0) return Boolean(token && email)
+    if (step === 0) return resuming || Boolean(token && email)
     if (step === 1)
       return Boolean(form.name && form.slug && form.primaryUrl && form.locale && form.timezone)
     return true
-  }, [email, form, step, token])
+  }, [email, form, resuming, step, token])
+
+  useEffect(() => {
+    if (step !== 3 || readiness !== null) return
+    let cancelled = false
+    fetch('/api/setup/readiness', { credentials: 'same-origin' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('readiness unavailable')
+        return (await response.json()) as ReadinessResponse
+      })
+      .then((body) => {
+        if (!cancelled) setReadiness(body)
+      })
+      .catch(() => {
+        if (!cancelled) setReadiness('error')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [readiness, step])
 
   function update<K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) {
     setForm((current) => ({ ...current, [key]: value }))
+  }
+  function updateName(value: string) {
+    setForm((current) => ({
+      ...current,
+      name: value,
+      slug: slugTouched ? current.slug : deriveSlug(value),
+    }))
+  }
+  function updateSlug(value: string) {
+    setSlugTouched(true)
+    update('slug', value.toLowerCase())
   }
   function updatePublishingDefault<
     K extends keyof NonNullable<OnboardingInput['publishingDefaults']>,
@@ -118,10 +219,23 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
       const optionsBody = await readJson(optionsResponse)
       if (!optionsResponse.ok)
         throw new Error(optionsBody.error ?? 'Could not start passkey enrollment.')
-      const credential = await navigator.credentials.create({
-        publicKey: decodeOptions(optionsBody.options as RegistrationOptions),
-      })
-      if (!credential) throw new Error('Passkey enrollment was cancelled.')
+      let credential: Credential | null = null
+      try {
+        credential = await navigator.credentials.create({
+          publicKey: decodeOptions(optionsBody.options as RegistrationOptions),
+        })
+      } catch {
+        // A cancelled or timed-out device prompt is an ordinary stumble, not
+        // a failure: enrollment resumes from the session cookie on retry and
+        // every answer entered so far is still on this page.
+        throw new Error(
+          'Passkey creation was cancelled. Your answers are still here — press the button again when you are ready.',
+        )
+      }
+      if (!credential)
+        throw new Error(
+          'Passkey creation was cancelled. Your answers are still here — press the button again when you are ready.',
+        )
       const completeResponse = await fetch('/api/setup/complete', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -181,9 +295,22 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
         </header>
         <form className="space-y-5" onSubmit={submit}>
           {step === 0 ? (
-            <OwnerStep email={email} setEmail={setEmail} token={token} setToken={setToken} />
+            <OwnerStep
+              email={email}
+              setEmail={setEmail}
+              token={token}
+              setToken={setToken}
+              resuming={resuming}
+            />
           ) : null}
-          {step === 1 ? <IdentityStep form={form} update={update} /> : null}
+          {step === 1 ? (
+            <IdentityStep
+              form={form}
+              update={update}
+              onNameChange={updateName}
+              onSlugChange={updateSlug}
+            />
+          ) : null}
           {step === 2 ? <BrandStep form={form} update={update} /> : null}
           {step === 3 ? (
             <FeatureStep
@@ -191,9 +318,11 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
               update={update}
               updatePublishingDefault={updatePublishingDefault}
               toggleConnection={toggleConnection}
+              readiness={readiness}
+              installedProfile={installedProfile}
             />
           ) : null}
-          {step === 4 ? <ReviewStep form={form} email={email} /> : null}
+          {step === 4 ? <ReviewStep form={form} email={email} readiness={readiness} /> : null}
           {error ? (
             <div
               role="alert"
@@ -236,16 +365,36 @@ function OwnerStep({
   setEmail,
   token,
   setToken,
+  resuming,
 }: {
   email: string
   setEmail: (value: string) => void
   token: string
   setToken: (value: string) => void
+  resuming: boolean
 }) {
   const [hasPasskeySupport, setHasPasskeySupport] = useState(false)
   useEffect(() => {
     setHasPasskeySupport(Boolean(window.PublicKeyCredential))
   }, [])
+
+  if (resuming) {
+    return (
+      <section className="space-y-4">
+        <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+          <h2 className="font-semibold text-lg">1. Secure owner & admin creation</h2>
+          <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+            In progress
+          </span>
+        </div>
+        <p className="text-sm text-stone-600 dark:text-stone-400">
+          Setup already started for <strong>{email}</strong> in this browser. Continue and finish
+          the passkey step at the end — nothing needs to be recovered, and the one-time token is not
+          needed again.
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section className="space-y-4">
@@ -265,11 +414,11 @@ function OwnerStep({
           <span>Browser Passkey / WebAuthn Support:</span>
           {hasPasskeySupport ? (
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-              ✓ Hardware / Platform Supported
+              ✓ Available in this browser
             </span>
           ) : (
             <span className="text-amber-600 dark:text-amber-400 font-semibold">
-              ⚠ Unproven / Virtual Authenticator Required
+              ⚠ Not detected — enrollment at the final step will confirm
             </span>
           )}
         </div>
@@ -305,10 +454,29 @@ function OwnerStep({
 function IdentityStep({
   form,
   update,
+  onNameChange,
+  onSlugChange,
 }: {
   form: OnboardingInput
   update: <K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) => void
+  onNameChange: (value: string) => void
+  onSlugChange: (value: string) => void
 }) {
+  const timezones = useMemo(() => {
+    try {
+      const values = Intl.supportedValuesOf('timeZone')
+      return form.timezone && !values.includes(form.timezone) ? [form.timezone, ...values] : values
+    } catch {
+      return [form.timezone || 'UTC']
+    }
+  }, [form.timezone])
+  const locales = useMemo(
+    () =>
+      form.locale && !localeOptions.includes(form.locale)
+        ? [form.locale, ...localeOptions]
+        : localeOptions,
+    [form.locale],
+  )
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
@@ -322,7 +490,7 @@ function IdentityStep({
           className="form-input text-sm"
           required
           value={form.name}
-          onChange={(event) => update('name', event.target.value)}
+          onChange={(event) => onNameChange(event.target.value)}
           placeholder="e.g. Renegade Dispatch"
         />
       </Field>
@@ -336,16 +504,21 @@ function IdentityStep({
         />
       </Field>
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Site slug" badge="Required">
-          <input
-            className="form-input text-sm font-mono"
-            required
-            pattern="[a-z0-9]+(-[a-z0-9]+)*"
-            value={form.slug}
-            onChange={(event) => update('slug', event.target.value.toLowerCase())}
-            placeholder="renegade-dispatch"
-          />
-        </Field>
+        <div className="space-y-1">
+          <Field label="Site slug" badge="Required">
+            <input
+              className="form-input text-sm font-mono"
+              required
+              pattern="[a-z0-9]+(-[a-z0-9]+)*"
+              value={form.slug}
+              onChange={(event) => onSlugChange(event.target.value)}
+              placeholder="renegade-dispatch"
+            />
+          </Field>
+          <p className="text-[11px] text-stone-500">
+            Filled in from the site name. Change it only if you need a different short identity.
+          </p>
+        </div>
         <Field label="Primary URL" badge="Required">
           <input
             className="form-input text-sm"
@@ -357,22 +530,32 @@ function IdentityStep({
           />
         </Field>
         <Field label="Locale" badge="Required">
-          <input
+          <select
             className="form-input text-sm"
             required
             value={form.locale}
             onChange={(event) => update('locale', event.target.value)}
-            placeholder="en-US"
-          />
+          >
+            {locales.map((locale) => (
+              <option key={locale} value={locale}>
+                {locale}
+              </option>
+            ))}
+          </select>
         </Field>
         <Field label="Timezone" badge="Required">
-          <input
+          <select
             className="form-input text-sm"
             required
             value={form.timezone}
             onChange={(event) => update('timezone', event.target.value)}
-            placeholder="UTC"
-          />
+          >
+            {timezones.map((timezone) => (
+              <option key={timezone} value={timezone}>
+                {timezone.replace(/_/g, ' ')}
+              </option>
+            ))}
+          </select>
         </Field>
       </div>
     </section>
@@ -458,11 +641,71 @@ function BrandStep({
   )
 }
 
+function ReadinessCards({ readiness }: { readiness: ReadinessResponse | 'error' | null }) {
+  if (readiness === null) {
+    return (
+      <p className="text-xs text-stone-500" role="status">
+        Checking the database and storage now…
+      </p>
+    )
+  }
+  if (readiness === 'error') {
+    return (
+      <p className="text-xs text-amber-700 dark:text-amber-300" role="status">
+        Could not check the database and storage just now — the server did not answer. You can
+        continue; setup checks again when you finish, and nothing here is marked verified until it
+        does.
+      </p>
+    )
+  }
+  const { readiness: state, providers } = readiness
+  const database = providers.database
+  const storage = providers.storage
+  const databaseDetail =
+    state.migrationState === 'applied'
+      ? `Connected. Schema migrations applied (${state.appliedMigrations}/${state.totalMigrations}).`
+      : (state.recoveryAction ?? database?.message ?? 'Not ready.')
+  const cards = [
+    {
+      name: 'PostgreSQL Database',
+      ok: database?.status === 'validated',
+      detail: databaseDetail,
+    },
+    {
+      name: 'Primary Storage',
+      ok: storage?.status === 'validated',
+      detail: storage?.message ?? 'Not checked.',
+    },
+  ]
+  return (
+    <div className="grid sm:grid-cols-2 gap-2 text-xs">
+      {cards.map((card) => (
+        <div
+          key={card.name}
+          className={`p-3 rounded-lg border ${
+            card.ok
+              ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20'
+              : 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20'
+          }`}
+        >
+          <div className="font-semibold flex items-center justify-between">
+            <span>{card.name}</span>
+            <span>{card.ok ? '✓ Verified' : '✗ Needs attention'}</span>
+          </div>
+          <p className="mt-1 text-[11px] text-stone-600 dark:text-stone-400">{card.detail}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function FeatureStep({
   form,
   update,
   updatePublishingDefault,
   toggleConnection,
+  readiness,
+  installedProfile,
 }: {
   form: OnboardingInput
   update: <K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) => void
@@ -471,6 +714,8 @@ function FeatureStep({
     value: NonNullable<OnboardingInput['publishingDefaults']>[K],
   ) => void
   toggleConnection: (key: (typeof optionalConnections)[number][0]) => void
+  readiness: ReadinessResponse | 'error' | null
+  installedProfile: ResourceProfile
 }) {
   return (
     <section className="space-y-5">
@@ -481,10 +726,10 @@ function FeatureStep({
         </span>
       </div>
 
-      {/* Feature Profile */}
+      {/* Site feature profile (not the server's resource profile) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="form-label">Deployment profile</span>
+          <span className="form-label">Site features</span>
           <span className="text-[10px] uppercase font-bold text-red-600 bg-red-50 dark:bg-red-950/60 px-1.5 py-0.5 rounded">
             Required
           </span>
@@ -494,45 +739,31 @@ function FeatureStep({
             checked={form.featureProfile === 'Lean'}
             onChange={() => update('featureProfile', 'Lean')}
             title="Lean"
-            detail="Core publishing with minimal background worker footprint. Ideal for VPS, low memory (<1GB), and sovereign nodes."
+            detail="Core publishing only. Media processing and site quality scanning stay off until you turn them on."
           />
           <Choice
             checked={form.featureProfile === 'Standard'}
             onChange={() => update('featureProfile', 'Standard')}
             title="Standard"
-            detail="Enables the standard operational profile with background queues, full automation, and scheduled workers."
+            detail="Core publishing plus media processing, site quality scanning, and background automation."
           />
         </div>
+        <p className="text-[11px] text-stone-500">
+          This controls site features only. The server itself was installed with the{' '}
+          {installedProfile} resource profile, chosen by the installer for this host — setup does
+          not change it.
+        </p>
       </div>
 
-      {/* Required Providers */}
+      {/* Required Providers — live readiness, never static claims */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="form-label">Required infrastructure providers</span>
-          <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">
-            Validated
+          <span className="text-[10px] uppercase font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/60 px-1.5 py-0.5 rounded">
+            Live check
           </span>
         </div>
-        <div className="grid sm:grid-cols-2 gap-2 text-xs">
-          <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
-              <span>PostgreSQL Database</span>
-              <span>✓ Verified</span>
-            </div>
-            <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
-              Schema migrations fully applied (108/108). Connection pool healthy.
-            </p>
-          </div>
-          <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
-              <span>Primary Storage</span>
-              <span>✓ Verified</span>
-            </div>
-            <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
-              Local media storage directory validated with read/write access.
-            </p>
-          </div>
-        </div>
+        <ReadinessCards readiness={readiness} />
       </div>
 
       {/* Optional Providers */}
@@ -623,7 +854,15 @@ function FeatureStep({
   )
 }
 
-function ReviewStep({ form, email }: { form: OnboardingInput; email: string }) {
+function ReviewStep({
+  form,
+  email,
+  readiness,
+}: {
+  form: OnboardingInput
+  email: string
+  readiness: ReadinessResponse | 'error' | null
+}) {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
@@ -649,7 +888,7 @@ function ReviewStep({ form, email }: { form: OnboardingInput; email: string }) {
           <dd className="font-mono text-stone-900 dark:text-stone-100">{form.primaryUrl}</dd>
         </div>
         <div>
-          <dt className="text-stone-500 font-medium">Profile</dt>
+          <dt className="text-stone-500 font-medium">Site Features</dt>
           <dd className="font-semibold text-stone-900 dark:text-stone-100">
             {form.featureProfile}
           </dd>
@@ -673,8 +912,12 @@ function ReviewStep({ form, email }: { form: OnboardingInput; email: string }) {
         </div>
         <div>
           <dt className="text-stone-500 font-medium">Required Providers</dt>
-          <dd className="text-emerald-600 dark:text-emerald-400 font-medium">
-            PostgreSQL & Storage Validated
+          <dd className="font-medium">
+            {readiness && readiness !== 'error'
+              ? readiness.readiness.ready
+                ? 'Database & storage verified'
+                : 'Needs attention — see previous step'
+              : 'Checked again when you finish'}
           </dd>
         </div>
         <div>
@@ -698,6 +941,37 @@ function Completion({
   }
 }) {
   const { onboarding } = result
+  const [acknowledged, setAcknowledged] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const codesText = result.recoveryCodes.join('\n')
+
+  async function copyCodes() {
+    try {
+      await navigator.clipboard.writeText(codesText)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+  function downloadCodes() {
+    const blob = new Blob(
+      [
+        'Renegade CMoS emergency recovery codes\n',
+        'Each code signs you in once if you lose your passkey device.\n',
+        'Store this file in your password manager. Treat it like a password.\n\n',
+        codesText,
+        '\n',
+      ],
+      { type: 'text/plain' },
+    )
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = 'renegade-recovery-codes.txt'
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <main className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
       <div className="surface-card p-8 sm:p-10 space-y-7 shadow-xl">
@@ -732,7 +1006,10 @@ function Completion({
         <section>
           <h2 className="font-semibold mb-2">Save emergency recovery codes</h2>
           <p className="text-sm text-stone-600 dark:text-stone-400 mb-3">
-            Store these offline. Browser setup is now permanently locked.
+            Store these offline — they are shown only once, and any single code signs you in once if
+            you lose your passkey device. If this screen is lost, sign in and generate a fresh set
+            from Security settings; generating a new set makes these codes stop working. Browser
+            setup is now permanently locked.
           </p>
           <ul className="grid grid-cols-2 gap-2 font-mono text-xs">
             {result.recoveryCodes.map((code) => (
@@ -741,6 +1018,23 @@ function Completion({
               </li>
             ))}
           </ul>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button type="button" onClick={copyCodes} className="btn btn-secondary text-xs">
+              {copied ? 'Copied ✓' : 'Copy all codes'}
+            </button>
+            <button type="button" onClick={downloadCodes} className="btn btn-secondary text-xs">
+              Download as file
+            </button>
+          </div>
+          <label className="mt-3 flex items-start gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={acknowledged}
+              onChange={(event) => setAcknowledged(event.target.checked)}
+              className="mt-0.5"
+            />
+            <span>I saved these codes somewhere safe.</span>
+          </label>
         </section>
         <section>
           <h2 className="font-semibold mb-2">Production HTTPS boundary</h2>
@@ -751,13 +1045,22 @@ function Completion({
             application listener directly to the internet.
           </p>
         </section>
-        <div className="flex gap-3">
-          <Link href="/admin" className="btn btn-primary text-xs">
+        <div className="flex gap-3 items-center">
+          <Link
+            href="/admin"
+            aria-disabled={!acknowledged}
+            className={`btn btn-primary text-xs ${acknowledged ? '' : 'pointer-events-none opacity-50'}`}
+          >
             Open Admin Studio
           </Link>
           <a href={onboarding.publicUrl} className="btn btn-secondary text-xs">
             View your site
           </a>
+          {!acknowledged ? (
+            <span className="text-xs text-stone-500">
+              Confirm you saved the recovery codes to continue.
+            </span>
+          ) : null}
         </div>
       </div>
     </main>

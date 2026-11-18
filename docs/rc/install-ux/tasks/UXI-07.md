@@ -1,0 +1,3 @@
+# UXI-07 — Make navigation and site context coherent
+
+Status: OUT OF EXECUTED SCOPE except the setup spine's own coherence (one vocabulary: "Site features", "Live check", consistent recovery language across installer, form, and Security settings). Admin-shell/dashboard coherence belongs with the admin and System 2 surfaces; no competing changes were made. Recorded as a follow-up input, not claimed.

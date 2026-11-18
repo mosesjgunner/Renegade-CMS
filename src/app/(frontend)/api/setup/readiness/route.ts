@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 import { getInstallationReadiness } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
+import { migrations } from '@/migrations'
 
 export async function GET() {
   try {
@@ -94,7 +95,7 @@ export async function GET() {
           database: 'disconnected',
           migrationState: 'uninitialized',
           appliedMigrations: 0,
-          totalMigrations: 108,
+          totalMigrations: migrations.length,
           pendingMigrations: [],
           installationState: 'uninitialized',
           recoveryAction: 'Start PostgreSQL container and verify DATABASE_URL.',
