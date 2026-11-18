@@ -36,7 +36,7 @@ expired enrollment session, lost cookie):
 npm run installation:recover
 ```
 
-This issues a fresh bootstrap window for the *same* owner email. It does
+This issues a fresh bootstrap window for the _same_ owner email. It does
 not create a second owner and does not reopen setup after completion.
 
 ## Owner lost passkey and recovery codes

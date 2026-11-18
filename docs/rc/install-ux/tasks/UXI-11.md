@@ -1,2 +1,3 @@
 # UXI-11 — Make operating the site survivable
+
 Done: OPERATOR_RECOVERY_RUNBOOK.md (status, safe rerun, owner recovery, rotation, HTTPS boundary, backup/update discipline) written against verified commands only. Installer rerun safety (UXI-03) is the load-bearing piece and is harness-proven. Guided in-product backup/restore UX was not built in this pass; the existing operational engines remain operator-invoked.

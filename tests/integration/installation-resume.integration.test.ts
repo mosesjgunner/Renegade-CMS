@@ -161,13 +161,16 @@ describe('in-product recovery code rotation', () => {
     ])
 
     // A second live session for the same owner (e.g. another device).
-    const other = await createPasskeySession({ email, id: userId }, runtime.payloadSecret, async (id, expiresAt) => {
-      await pool.query(`INSERT INTO admin_sessions (id, user_id, expires_at) VALUES ($1, $2, $3)`, [
-        id,
-        userId,
-        expiresAt,
-      ])
-    })
+    const other = await createPasskeySession(
+      { email, id: userId },
+      runtime.payloadSecret,
+      async (id, expiresAt) => {
+        await pool.query(
+          `INSERT INTO admin_sessions (id, user_id, expires_at) VALUES ($1, $2, $3)`,
+          [id, userId, expiresAt],
+        )
+      },
+    )
 
     const result = await rotateOwnRecoveryCodes(payload, runtime, headers)
     expect(result.recoveryCodes).toHaveLength(10)

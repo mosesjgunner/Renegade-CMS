@@ -21,7 +21,7 @@ recorded with dates, candidate SHA, and environment.
 
 - Give goals, not click instructions. Product-provided inline help is
   allowed and its use is recorded. A facilitator rescue counts as
-  *assisted completion*, never as unaided success.
+  _assisted completion_, never as unaided success.
 - Do not coach during a scored task. Note misunderstandings, not just
   clicks: after each task ask what the person believes is public, saved,
   or published.
@@ -58,11 +58,11 @@ recorded with dates, candidate SHA, and environment.
 
 ## Targets (internal, set before testing)
 
-| Journey | Target |
-| --- | --- |
-| Provisioned setup → usable private starter | ≥9/10 unaided within 5 min |
-| First post with supplied text/image → public view | ≥9/10 unaided within 3 min after setup |
-| Edit homepage; find a previous draft | ≥9/10 unaided each within 2 min |
-| Launch/visibility/save understanding | Zero critical exposure or data-loss errors; every misunderstanding recorded |
-| Recover a removed draft; recover from an injected ordinary error | ≥9/10 unaided each within 3 min |
-| Self-host bootstrap → working HTTPS claim page | ≥4/5 unaided; target 10 min after declared prerequisites on the benchmark host |
+| Journey                                                          | Target                                                                         |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Provisioned setup → usable private starter                       | ≥9/10 unaided within 5 min                                                     |
+| First post with supplied text/image → public view                | ≥9/10 unaided within 3 min after setup                                         |
+| Edit homepage; find a previous draft                             | ≥9/10 unaided each within 2 min                                                |
+| Launch/visibility/save understanding                             | Zero critical exposure or data-loss errors; every misunderstanding recorded    |
+| Recover a removed draft; recover from an injected ordinary error | ≥9/10 unaided each within 3 min                                                |
+| Self-host bootstrap → working HTTPS claim page                   | ≥4/5 unaided; target 10 min after declared prerequisites on the benchmark host |

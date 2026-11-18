@@ -24,12 +24,12 @@ contract predates the pass, it is stated because the UX depends on it.
 
 ## Resource support matrix (one matrix, used everywhere)
 
-| Resource profile | Installer minimum | Recommended floor | Notes |
-| --- | --- | --- | --- |
-| Lean | 1 GB RAM | 2 GB RAM | Fits at 1 GB under measured fixture load; 1 GB is supported, not recommended. |
-| Standard | 2 GB RAM | 2 GB RAM | Installer refuses below 2 GB. |
-| Media | 2 GB RAM (Standard rule) | — | Resource profile only; site features default to Standard. |
-| Scale | 2 GB RAM (Standard rule) | — | Resource profile only; site features default to Standard. |
+| Resource profile | Installer minimum        | Recommended floor | Notes                                                                         |
+| ---------------- | ------------------------ | ----------------- | ----------------------------------------------------------------------------- |
+| Lean             | 1 GB RAM                 | 2 GB RAM          | Fits at 1 GB under measured fixture load; 1 GB is supported, not recommended. |
+| Standard         | 2 GB RAM                 | 2 GB RAM          | Installer refuses below 2 GB.                                                 |
+| Media            | 2 GB RAM (Standard rule) | —                 | Resource profile only; site features default to Standard.                     |
+| Scale            | 2 GB RAM (Standard rule) | —                 | Resource profile only; site features default to Standard.                     |
 
 Disk: ≥10 GB free required by preflight for every profile. The setup form
 makes **no** memory claims; it reports the installed resource profile as an
@@ -65,7 +65,7 @@ States: `incomplete → installing → complete`, unchanged. The change is what
 - **Rotation is an in-product, owner-only operation**
   (`POST /api/auth/recovery/rotate`, Security settings in the admin): in one
   transaction it invalidates all unused codes, inserts a fresh set of 10,
-  revokes the owner's *other* admin sessions (the current session survives),
+  revokes the owner's _other_ admin sessions (the current session survives),
   and writes an audit record (`recovery_codes.rotated`). The fresh set is
   returned exactly once.
 - The completion screen offers copy-all and download, and "Open Admin
