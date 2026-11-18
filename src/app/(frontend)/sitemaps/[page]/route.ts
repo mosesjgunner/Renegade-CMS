@@ -1,14 +1,13 @@
 import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { getAllIndexableDiscoveryDocuments } from '@/modules/public/discovery'
 import {
   conditionalXml,
-  crawlerEntries,
   renderSitemap,
   sitemapPage,
   sitemapPageCount,
 } from '@/modules/public/crawler'
+import { getSitemapEntries } from '@/modules/public/sitemap-projection'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -21,7 +20,7 @@ export async function GET(request: Request, context: { params: Promise<{ page: s
   const payload = await getPayload({ config })
   const siteId = await publicSiteForHost(payload, request.headers.get('host'))
   if (!siteId) return new Response('Not found', { status: 404 })
-  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload, siteId))
+  const entries = await getSitemapEntries(payload, siteId)
   if (!entries.length || page >= sitemapPageCount(entries.length))
     return new Response('Not found', { status: 404 })
   return conditionalXml(request, renderSitemap(sitemapPage(entries, page)))
