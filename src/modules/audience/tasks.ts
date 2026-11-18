@@ -5,7 +5,8 @@ import { formIntakeTask } from './form-tasks'
 import { createHash } from 'node:crypto'
 
 import { loadConfig } from '../core/config'
-import { selectEmailDeliveryAdapter } from '../email/delivery'
+import { boundaryFrom, selectEmailAdapterForBoundary } from '../email/delivery'
+import { matchingEmailPause } from '../email/outbox'
 import { withExecutionLock } from '../operations/execution-lock'
 import { isDeliveryTerminal, isMarketingMessage, type EmailBlock } from './contracts'
 import { renderEmailDesign } from './email-composer'
@@ -115,7 +116,9 @@ export const emailDeliveryTask = {
       }
       // An unknown outcome is never retried against a different transport. Reconcile
       // first when the current provider can prove the stable idempotency key.
-      const adapter = selectEmailDeliveryAdapter(loadConfig())
+      // RC3-EMAIL-01: the audience boundary's own adapter/credentials — never
+      // the account boundary's.
+      const adapter = selectEmailAdapterForBoundary('audience', loadConfig())
       if (delivery.status === 'sending') {
         await req.payload.update({
           collection: 'email-deliveries',
@@ -147,6 +150,34 @@ export const emailDeliveryTask = {
             provider: reconciled.provider,
             providerMessageId: reconciled.providerMessageId,
             outcome: { ...(delivery.outcome ?? {}), reconciledAt: new Date().toISOString() },
+          },
+          overrideAccess: true,
+        })
+        return { output: {} }
+      }
+      // RC3-EMAIL-01: pauses are re-read immediately before dispatch — a
+      // pause committed after queueing (even mid-recovery) blocks new
+      // submissions for its scope while other sites/classes continue.
+      const pause = await matchingEmailPause(req.payload, {
+        siteId,
+        trafficClass: category === 'marketing' ? 'audience' : 'audience_confirmation',
+        boundary: 'audience',
+        campaignId: message?.id ? String(message.id) : undefined,
+      })
+      if (pause) {
+        await req.payload.update({
+          collection: 'email-deliveries',
+          id: delivery.id,
+          data: {
+            status: 'queued',
+            leaseUntil: null,
+            nextAttemptAt: new Date(Date.now() + 60_000).toISOString(),
+            outcome: {
+              ...(delivery.outcome ?? {}),
+              code: 'dispatch-paused',
+              pauseId: String(pause.id),
+              pauseScope: String(pause.scope),
+            },
           },
           overrideAccess: true,
         })
@@ -253,7 +284,7 @@ export const emailDeliveryTask = {
           ? `<footer><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="${preferenceUrl}">Manage preferences</a></footer>`
           : ''
       const result = await adapter.send({
-        from: loadConfig().email.from ?? '',
+        from: boundaryFrom('audience', loadConfig()),
         to: delivery.recipientEmail,
         subject: String(snapshot.subject ?? 'Renegade notification'),
         text: rendered.text + footerText,
@@ -400,7 +431,15 @@ export async function recoverEmailOutbox(payload: any) {
       ],
     },
   })
-  for (const delivery of due.docs) {
+  // RC3-EMAIL-01: within the audience boundary, confirmations and other
+  // transactional deliveries dispatch ahead of marketing in every sweep, so
+  // a campaign backlog cannot delay a signup confirmation behind it.
+  const ordered = [...due.docs].sort((a: Doc, b: Doc) => {
+    const aMarketing = isMarketingMessage(String((a.messageSnapshot as Doc)?.kind ?? '')) ? 1 : 0
+    const bMarketing = isMarketingMessage(String((b.messageSnapshot as Doc)?.kind ?? '')) ? 1 : 0
+    return aMarketing - bMarketing
+  })
+  for (const delivery of ordered) {
     try {
       await (emailDeliveryTask.handler as any)({
         input: { deliveryId: String(delivery.id) },

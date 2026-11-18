@@ -807,6 +807,120 @@ export const EmailDeliveryEvents: CollectionConfig = {
     { name: 'evidence', type: 'json', required: true, defaultValue: {} },
   ],
 }
+/**
+ * RC3-EMAIL-01: durable outbox for account + operational mail. Audience mail
+ * keeps the proven email-deliveries outbox; account mail previously had no
+ * durable record at all (inline sends discarded their results). The rendered
+ * payload is stored encrypted — action tokens never appear in operator views,
+ * logs, or telemetry. See docs/rc/email/EMAIL_CONTRACTS.md §2.
+ */
+export const EmailIntents: CollectionConfig = {
+  ...base('email-intents', 'idempotencyKey', 'Audience'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: staffOnly,
+  },
+  fields: [
+    // Site is optional: account mail is often installation-level (the
+    // sign-in route resolves a site context, not always a site record).
+    ref('site', 'sites'),
+    {
+      name: 'purpose',
+      type: 'select',
+      required: true,
+      index: true,
+      options: [
+        'member-sign-in',
+        'member-email-link',
+        'staff-invitation',
+        'account-recovery',
+        'order-receipt',
+        'community-notification',
+        'form-notification',
+        'telecom-fallback',
+        'admin-alert',
+      ],
+    },
+    status('trafficClass', ['account', 'operational'], 'account'),
+    { name: 'recipientEmail', type: 'email', required: true, access: { read: staffOnly } },
+    { name: 'recipientHash', type: 'text', required: true, index: true },
+    { name: 'idempotencyKey', type: 'text', required: true, unique: true },
+    { name: 'fromIdentity', type: 'text' },
+    { name: 'subject', type: 'text', required: true },
+    {
+      name: 'payloadCiphertext',
+      type: 'textarea',
+      required: true,
+      access: { read: () => false },
+      admin: { description: 'AES-256-GCM encrypted rendered message (text/html/replyTo).' },
+    },
+    status(
+      'submission',
+      [
+        'queued',
+        'held',
+        'leased',
+        'submitting',
+        'accepted',
+        'rejected',
+        'unknown',
+        'expired',
+        'cancelled',
+        'retry-scheduled',
+      ],
+      'queued',
+    ),
+    status(
+      'receiving',
+      ['unobserved', 'deferred', 'remote-accepted', 'bounced', 'provider-failed'],
+      'unobserved',
+    ),
+    status('placement', ['unobserved', 'inbox', 'inbox-tab', 'spam', 'other'], 'unobserved'),
+    status(
+      'actionState',
+      ['not-observed', 'completed', 'expired', 'revoked', 'consumed'],
+      'not-observed',
+    ),
+    { name: 'provider', type: 'text' },
+    { name: 'providerMessageId', type: 'text', index: true },
+    { name: 'attempts', type: 'number', defaultValue: 0 },
+    { name: 'attemptBudget', type: 'number', defaultValue: 4 },
+    { name: 'leaseOwner', type: 'text' },
+    { name: 'leaseUntil', type: 'date', index: true },
+    { name: 'nextAttemptAt', type: 'date', index: true },
+    { name: 'expiresAt', type: 'date', required: true, index: true },
+    { name: 'acceptedAt', type: 'date' },
+    { name: 'events', type: 'json', defaultValue: [] },
+    { name: 'lastError', type: 'json' },
+  ],
+}
+/**
+ * RC3-EMAIL-01: pause controls evaluated immediately before every dispatch
+ * (docs/rc/email/EMAIL_CONTRACTS.md §4). Any matching active pause blocks.
+ */
+export const EmailPauses: CollectionConfig = {
+  ...scopedBase('email-pauses', 'scope', 'Audience'),
+  fields: [
+    // Optional: global-class and provider-boundary pauses have no site.
+    ref('site', 'sites'),
+    status(
+      'scope',
+      ['global-class', 'provider-boundary', 'site', 'site-class', 'campaign'],
+      'site-class',
+    ),
+    {
+      name: 'trafficClass',
+      type: 'select',
+      options: ['account', 'operational', 'audience_confirmation', 'audience'],
+    },
+    { name: 'boundary', type: 'select', options: ['account', 'audience'] },
+    { name: 'campaignId', type: 'text', index: true },
+    { name: 'reason', type: 'text', required: true },
+    { name: 'active', type: 'checkbox', defaultValue: true, index: true },
+  ],
+}
 export const ActivityEvents: CollectionConfig = {
   ...scopedBase('activity-events', 'type', 'Notifications'),
   fields: [

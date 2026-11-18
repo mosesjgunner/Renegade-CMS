@@ -38,6 +38,36 @@ services:
       STORAGE_DRIVER: local
       MEDIA_DIR: /app/media
       EMAIL_MODE: ${EMAIL_MODE:-disabled}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_SECURE: ${SMTP_SECURE:-true}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_CONNECTION_TIMEOUT_MS: ${SMTP_CONNECTION_TIMEOUT_MS:-10000}
+      SMTP_SEND_TIMEOUT_MS: ${SMTP_SEND_TIMEOUT_MS:-30000}
+      # RC3-EMAIL-01: per-boundary Postmark configuration. Account and
+      # audience credentials are passed as separate variables so no worker
+      # profile needs the other boundary's secret in its own config; note
+      # that containers sharing this environment block can still read both —
+      # run the account worker as its own service with only the account
+      # variables for hard secret isolation (see the operator runbook).
+      EMAIL_ACCOUNT_PROVIDER: ${EMAIL_ACCOUNT_PROVIDER:-inherit}
+      EMAIL_ACCOUNT_FROM: ${EMAIL_ACCOUNT_FROM:-}
+      EMAIL_ACCOUNT_POSTMARK_SERVER_TOKEN: ${EMAIL_ACCOUNT_POSTMARK_SERVER_TOKEN:-}
+      EMAIL_ACCOUNT_POSTMARK_TRANSACTIONAL_STREAM: ${EMAIL_ACCOUNT_POSTMARK_TRANSACTIONAL_STREAM:-outbound}
+      EMAIL_ACCOUNT_POSTMARK_BROADCAST_STREAM: ${EMAIL_ACCOUNT_POSTMARK_BROADCAST_STREAM:-broadcast}
+      EMAIL_ACCOUNT_POSTMARK_WEBHOOK_SECRET: ${EMAIL_ACCOUNT_POSTMARK_WEBHOOK_SECRET:-}
+      EMAIL_ACCOUNT_DKIM_SELECTOR: ${EMAIL_ACCOUNT_DKIM_SELECTOR:-}
+      EMAIL_ACCOUNT_RETURN_PATH_HOST: ${EMAIL_ACCOUNT_RETURN_PATH_HOST:-}
+      EMAIL_AUDIENCE_PROVIDER: ${EMAIL_AUDIENCE_PROVIDER:-inherit}
+      EMAIL_AUDIENCE_FROM: ${EMAIL_AUDIENCE_FROM:-}
+      EMAIL_AUDIENCE_POSTMARK_SERVER_TOKEN: ${EMAIL_AUDIENCE_POSTMARK_SERVER_TOKEN:-}
+      EMAIL_AUDIENCE_POSTMARK_TRANSACTIONAL_STREAM: ${EMAIL_AUDIENCE_POSTMARK_TRANSACTIONAL_STREAM:-outbound}
+      EMAIL_AUDIENCE_POSTMARK_BROADCAST_STREAM: ${EMAIL_AUDIENCE_POSTMARK_BROADCAST_STREAM:-broadcast}
+      EMAIL_AUDIENCE_POSTMARK_WEBHOOK_SECRET: ${EMAIL_AUDIENCE_POSTMARK_WEBHOOK_SECRET:-}
+      EMAIL_AUDIENCE_DKIM_SELECTOR: ${EMAIL_AUDIENCE_DKIM_SELECTOR:-}
+      EMAIL_AUDIENCE_RETURN_PATH_HOST: ${EMAIL_AUDIENCE_RETURN_PATH_HOST:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       APP_VERSION: ${APP_VERSION:-0.1.0}
       BUILD_SHA: ${BUILD_SHA}
@@ -87,6 +117,33 @@ services:
       <<: *app_environment
       WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-10000}
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/heartbeat.json
+      WORKER_HEARTBEAT_MAX_AGE_MS: ${WORKER_HEARTBEAT_MAX_AGE_MS:-45000}
+    command: ['npm', 'run', 'jobs:worker']
+    volumes:
+      - renegade_media:/app/media
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', 'docker/worker-healthcheck.mjs']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  # RC3-EMAIL-01: dedicated account-mail worker. Runs ONLY the
+  # account/operational outbox sweep (WORKER_PROFILE=account), so audience
+  # floods, pauses, or revoked audience credentials cannot consume account
+  # dispatch capacity. Enable with: docker compose --profile email-account up -d
+  email-account-worker:
+    profiles: ['email-account']
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *app_environment
+      WORKER_PROFILE: account
+      WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-10000}
+      WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/account-heartbeat.json
       WORKER_HEARTBEAT_MAX_AGE_MS: ${WORKER_HEARTBEAT_MAX_AGE_MS:-45000}
     command: ['npm', 'run', 'jobs:worker']
     volumes:

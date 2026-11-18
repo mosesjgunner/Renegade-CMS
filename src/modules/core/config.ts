@@ -3,6 +3,24 @@ import { readBuildProvenance } from './build-provenance'
 
 import type { ResourceProfile } from '../extensions/contracts'
 
+/** RC3-EMAIL-01: one provider boundary (account or audience). */
+export type EmailBoundaryConfig = {
+  provider: 'inherit' | 'postmark'
+  from?: string
+  /** DKIM selector the provider issued for this boundary's sender domain. */
+  dkimSelector?: string
+  /** Envelope Return-Path hostname (e.g. bounce.news.example.com). */
+  returnPathHost?: string
+  postmark?: {
+    serverToken: string
+    transactionalStream: string
+    broadcastStream: string
+    timeoutMs: number
+    /** Secret the native Postmark webhook must present (HTTP Basic password). */
+    webhookSecret?: string
+  }
+}
+
 export type AppConfig = {
   nodeEnv: 'development' | 'test' | 'production'
   databaseUrl: string
@@ -34,6 +52,13 @@ export type AppConfig = {
     password?: string
     connectionTimeoutMs: number
     sendTimeoutMs: number
+    /** RC3-EMAIL-01 per-boundary provider configuration. A boundary with
+     * provider 'postmark' dispatches on its own server token (isolation);
+     * anything else falls back to the legacy global route (degraded). */
+    boundaries: {
+      account: EmailBoundaryConfig
+      audience: EmailBoundaryConfig
+    }
   }
   secureCookies: boolean
   enableTestRoutes: boolean
@@ -246,6 +271,46 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       invalid.push(env.SMTP_USERNAME ? 'SMTP_PASSWORD' : 'SMTP_USERNAME')
     }
   }
+  // RC3-EMAIL-01: per-boundary Postmark configuration. A boundary that names
+  // Postmark must carry its own server token and From identity; partial
+  // configuration is a hard error, never a silent fall back to shared mail.
+  const parseBoundary = (
+    prefix: 'EMAIL_ACCOUNT' | 'EMAIL_AUDIENCE',
+    defaultBroadcastStream: string,
+  ): EmailBoundaryConfig => {
+    const provider = parseChoice(
+      env[`${prefix}_PROVIDER`] ?? 'inherit',
+      ['inherit', 'postmark'] as const,
+      `${prefix}_PROVIDER`,
+      invalid,
+    )
+    const from = env[`${prefix}_FROM`]?.trim() || undefined
+    if (from && !isEmailSender(from)) invalid.push(`${prefix}_FROM`)
+    const dkimSelector = env[`${prefix}_DKIM_SELECTOR`]?.trim() || undefined
+    const returnPathHost = env[`${prefix}_RETURN_PATH_HOST`]?.trim() || undefined
+    if (provider !== 'postmark') return { provider: 'inherit', from, dkimSelector, returnPathHost }
+    const serverToken = env[`${prefix}_POSTMARK_SERVER_TOKEN`]?.trim()
+    if (!serverToken) invalid.push(`${prefix}_POSTMARK_SERVER_TOKEN`)
+    if (!from) invalid.push(`${prefix}_FROM`)
+    return {
+      provider: 'postmark',
+      from,
+      dkimSelector,
+      returnPathHost,
+      postmark: {
+        serverToken: serverToken ?? '',
+        transactionalStream: env[`${prefix}_POSTMARK_TRANSACTIONAL_STREAM`]?.trim() || 'outbound',
+        broadcastStream:
+          env[`${prefix}_POSTMARK_BROADCAST_STREAM`]?.trim() || defaultBroadcastStream,
+        timeoutMs: smtpSendTimeoutMs,
+        webhookSecret: readEnvSecret(env, `${prefix}_POSTMARK_WEBHOOK_SECRET`),
+      },
+    }
+  }
+  const emailBoundaries = {
+    account: parseBoundary('EMAIL_ACCOUNT', 'broadcast'),
+    audience: parseBoundary('EMAIL_AUDIENCE', 'broadcast'),
+  }
 
   const warnings: string[] = []
   const s3Values = {
@@ -338,6 +403,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       password: env.SMTP_PASSWORD,
       connectionTimeoutMs: smtpConnectionTimeoutMs,
       sendTimeoutMs: smtpSendTimeoutMs,
+      boundaries: emailBoundaries,
     },
     secureCookies,
     enableTestRoutes,
@@ -353,6 +419,12 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     ownerEmail,
     warnings,
   }
+}
+
+/** Reads an env value by name, trimmed; empty becomes undefined. */
+function readEnvSecret(env: Record<string, string | undefined>, key: string): string | undefined {
+  const value = env[key]?.trim()
+  return value ? value : undefined
 }
 
 function required(value: string | undefined, key: string, invalid: string[]): string {

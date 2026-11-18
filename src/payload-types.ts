@@ -200,6 +200,8 @@ export interface Config {
     'delivery-identities': DeliveryIdentity;
     'email-deliveries': EmailDelivery;
     'email-delivery-events': EmailDeliveryEvent;
+    'email-intents': EmailIntent;
+    'email-pauses': EmailPause;
     'telecom-messages': TelecomMessage;
     'telecom-deliveries': TelecomDelivery;
     'telecom-delivery-events': TelecomDeliveryEvent;
@@ -410,6 +412,8 @@ export interface Config {
     'delivery-identities': DeliveryIdentitiesSelect<false> | DeliveryIdentitiesSelect<true>;
     'email-deliveries': EmailDeliveriesSelect<false> | EmailDeliveriesSelect<true>;
     'email-delivery-events': EmailDeliveryEventsSelect<false> | EmailDeliveryEventsSelect<true>;
+    'email-intents': EmailIntentsSelect<false> | EmailIntentsSelect<true>;
+    'email-pauses': EmailPausesSelect<false> | EmailPausesSelect<true>;
     'telecom-messages': TelecomMessagesSelect<false> | TelecomMessagesSelect<true>;
     'telecom-deliveries': TelecomDeliveriesSelect<false> | TelecomDeliveriesSelect<true>;
     'telecom-delivery-events': TelecomDeliveryEventsSelect<false> | TelecomDeliveryEventsSelect<true>;
@@ -724,6 +728,9 @@ export interface PageLayout {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -733,6 +740,9 @@ export interface PageLayout {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1171,6 +1181,9 @@ export interface Tag {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1180,6 +1193,9 @@ export interface Tag {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1283,6 +1299,9 @@ export interface Category {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1292,6 +1311,9 @@ export interface Category {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1339,6 +1361,9 @@ export interface Section {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1348,6 +1373,9 @@ export interface Section {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2080,6 +2108,9 @@ export interface Content {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2089,6 +2120,9 @@ export interface Content {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2255,6 +2289,9 @@ export interface Topic {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2264,6 +2301,9 @@ export interface Topic {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2313,6 +2353,9 @@ export interface Series {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2322,6 +2365,9 @@ export interface Series {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3412,6 +3458,9 @@ export interface Product {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3421,6 +3470,9 @@ export interface Product {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3780,6 +3832,9 @@ export interface Book {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3789,6 +3844,9 @@ export interface Book {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3941,6 +3999,9 @@ export interface PodcastShow {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3950,6 +4011,9 @@ export interface PodcastShow {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4046,6 +4110,9 @@ export interface PodcastEpisode {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4055,6 +4122,9 @@ export interface PodcastEpisode {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4201,6 +4271,9 @@ export interface VideoChannel {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4210,6 +4283,9 @@ export interface VideoChannel {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4287,6 +4363,9 @@ export interface VideoPlaylist {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4296,6 +4375,9 @@ export interface VideoPlaylist {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4371,6 +4453,9 @@ export interface Video {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4380,6 +4465,9 @@ export interface Video {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4592,6 +4680,9 @@ export interface Interview {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4601,6 +4692,9 @@ export interface Interview {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4688,6 +4782,9 @@ export interface Livestream {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4697,6 +4794,9 @@ export interface Livestream {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -5391,6 +5491,9 @@ export interface Event {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -5400,6 +5503,9 @@ export interface Event {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -5726,6 +5832,9 @@ export interface Timeline {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -5735,6 +5844,9 @@ export interface Timeline {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -7459,6 +7571,93 @@ export interface EmailDeliveryEvent {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-intents".
+ */
+export interface EmailIntent {
+  id: string;
+  site?: (string | null) | Site;
+  purpose:
+    | 'member-sign-in'
+    | 'member-email-link'
+    | 'staff-invitation'
+    | 'account-recovery'
+    | 'order-receipt'
+    | 'community-notification'
+    | 'form-notification'
+    | 'telecom-fallback'
+    | 'admin-alert';
+  trafficClass: 'account' | 'operational';
+  recipientEmail: string;
+  recipientHash: string;
+  idempotencyKey: string;
+  fromIdentity?: string | null;
+  subject: string;
+  /**
+   * AES-256-GCM encrypted rendered message (text/html/replyTo).
+   */
+  payloadCiphertext: string;
+  submission:
+    | 'queued'
+    | 'held'
+    | 'leased'
+    | 'submitting'
+    | 'accepted'
+    | 'rejected'
+    | 'unknown'
+    | 'expired'
+    | 'cancelled'
+    | 'retry-scheduled';
+  receiving: 'unobserved' | 'deferred' | 'remote-accepted' | 'bounced' | 'provider-failed';
+  placement: 'unobserved' | 'inbox' | 'inbox-tab' | 'spam' | 'other';
+  actionState: 'not-observed' | 'completed' | 'expired' | 'revoked' | 'consumed';
+  provider?: string | null;
+  providerMessageId?: string | null;
+  attempts?: number | null;
+  attemptBudget?: number | null;
+  leaseOwner?: string | null;
+  leaseUntil?: string | null;
+  nextAttemptAt?: string | null;
+  expiresAt: string;
+  acceptedAt?: string | null;
+  events?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastError?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-pauses".
+ */
+export interface EmailPause {
+  id: string;
+  site?: (string | null) | Site;
+  scope: 'global-class' | 'provider-boundary' | 'site' | 'site-class' | 'campaign';
+  trafficClass?: ('account' | 'operational' | 'audience_confirmation' | 'audience') | null;
+  boundary?: ('account' | 'audience') | null;
+  campaignId?: string | null;
+  reason: string;
+  active?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -10677,6 +10876,14 @@ export interface PayloadLockedDocument {
         value: string | EmailDeliveryEvent;
       } | null)
     | ({
+        relationTo: 'email-intents';
+        value: string | EmailIntent;
+      } | null)
+    | ({
+        relationTo: 'email-pauses';
+        value: string | EmailPause;
+      } | null)
+    | ({
         relationTo: 'recipient-snapshots';
         value: string | RecipientSnapshot;
       } | null)
@@ -13817,6 +14024,53 @@ export interface EmailDeliveryEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-intents_select".
+ */
+export interface EmailIntentsSelect<T extends boolean = true> {
+  site?: T;
+  purpose?: T;
+  trafficClass?: T;
+  recipientEmail?: T;
+  recipientHash?: T;
+  idempotencyKey?: T;
+  fromIdentity?: T;
+  subject?: T;
+  payloadCiphertext?: T;
+  submission?: T;
+  receiving?: T;
+  placement?: T;
+  actionState?: T;
+  provider?: T;
+  providerMessageId?: T;
+  attempts?: T;
+  attemptBudget?: T;
+  leaseOwner?: T;
+  leaseUntil?: T;
+  nextAttemptAt?: T;
+  expiresAt?: T;
+  acceptedAt?: T;
+  events?: T;
+  lastError?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-pauses_select".
+ */
+export interface EmailPausesSelect<T extends boolean = true> {
+  site?: T;
+  scope?: T;
+  trafficClass?: T;
+  boundary?: T;
+  campaignId?: T;
+  reason?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "telecom-messages_select".
  */
 export interface TelecomMessagesSelect<T extends boolean = true> {
@@ -15594,16 +15848,10 @@ export interface SiteSetting {
     | number
     | boolean
     | null;
+  /**
+   * Search-engine ownership verification tokens, rendered as meta tags on the homepage only. Shape: {"google": "<token>", "bing": "<token>", "yandex": "<token>"} — for several sites, add "bySite": {"<site id>": {"google": "<token>"}}. Paste only the token value from the provider, not the whole meta tag. The tag proves nothing by itself: verification completes only when the provider checks your live homepage.
+   */
   siteVerification?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  robotsDefaults?:
     | {
         [k: string]: unknown;
       }
@@ -15651,6 +15899,9 @@ export interface SiteSetting {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -15660,6 +15911,9 @@ export interface SiteSetting {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -15836,7 +16090,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   contactDefaults?: T;
   socialHandles?: T;
   siteVerification?: T;
-  robotsDefaults?: T;
   searchAction?:
     | T
     | {

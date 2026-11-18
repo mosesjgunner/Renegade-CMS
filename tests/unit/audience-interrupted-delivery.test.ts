@@ -11,6 +11,12 @@ vi.mock('../../src/modules/email/delivery', () => ({
     send: state.send,
     reconcile: state.reconcile,
   }),
+  selectEmailAdapterForBoundary: () => ({
+    id: state.adapterId,
+    send: state.send,
+    reconcile: state.reconcile,
+  }),
+  boundaryFrom: () => 'sender@example.test',
 }))
 vi.mock('../../src/modules/community/external-notifications', () => ({ communityEmailTask: {} }))
 vi.mock('../../src/modules/audience/form-tasks', () => ({ formIntakeTask: {} }))

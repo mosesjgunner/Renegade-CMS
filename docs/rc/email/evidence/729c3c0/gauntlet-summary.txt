@@ -1,0 +1,40 @@
+RC3-EMAIL-01 gauntlet evidence — candidate code tree 729c3c0 (branch rc3-email-01, baseline 6c291cf)
+Captured 2026-11-17. Full logs retained at ~/workspace/gui01b-logs/email01-*.log (not in git).
+
+== Unit (email01-unit-final.log) ==
+ Test Files  289 passed (289)
+      Tests  2142 passed (2142)
+unit exit: 0
+
+== Fresh migrations (email01-mig-fresh.log) ==
+Fresh migration acceptance passed.
+fresh exit: 0
+
+== Upgrade migrations (email01-mig-upgrade.log) ==
+Upgrade rehearsal passed: 20260914_110000_med_05_video_workflow -> current.
+
+== Lint / typecheck (resume re-run on final tree) ==
+lint exit: 0
+typecheck exit: 0
+
+== Integration targeted (resume): email isolation + operations-jobs + rc08b ==
+ ❯ tests/integration/rc08b-promotions.integration.test.ts (10 tests | 1 failed) 145685ms
+ ✓ tests/integration/email-rc3-email01-isolation.integration.test.ts (6 tests) 14407ms
+ ✓ tests/integration/operations-jobs.integration.test.ts (3 tests) 32292ms
+ ❯ tests/integration/rc08b-promotions.integration.test.ts:1093:3
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 18 passed (19)
+
+== Integration RC08B export test, solo re-run ==
+   ✓ RC08B persisted promotion boundaries > exports more than one page of contributions and messages, while a removed member gets own sent text but no foreign history  74916ms
+ Test Files  1 passed (1)
+      Tests  1 passed | 9 skipped (10)
+
+== Production build (resume attempts) ==
+Attempt 1 (email01-resume-build.log): launched solo; a ux-install-tree build started
+concurrently mid-flight; the email build died silently at "Creating an optimized
+production build ..." (exit 1, no diagnostics) — the known two-builds-on-this-box failure.
+Attempt 2 (email01-resume-build2.log): solo, reached 4.6 GB RSS in the compile phase;
+killed by a VM replacement (uptime reset to 0) mid-build, exit 1, no diagnostics.
+Verdict: local build DEFERRED TO PR CI (verify:release includes the production build
+and smoke). No build error attributable to this branch's code was observed.
