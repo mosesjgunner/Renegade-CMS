@@ -2,8 +2,10 @@
 
 /**
  * POD-10 guest join client (functional-minimal): preflight (display
- * name, mic device check on the POD-06 cores, headphone declaration),
- * waiting room, then the live view (big mute button, connection state,
+ * name, mic device check on the POD-06 cores, headphone declaration,
+ * and the audio-pass sound check — a measured room/mic diagnostic
+ * that warns in plain language and never blocks the join), waiting
+ * room, then the live view (big mute button, connection state,
  * talkback indicator, diagnostics log).
  *
  * Device check: saved per-participant prefs are resolved FAIL-CLOSED
@@ -26,6 +28,7 @@ import {
   startGuestBrowserRecording,
   type GuestBrowserRecording,
 } from '@/modules/podcast-studio/guests/guest-recording-browser'
+import { SoundCheck } from '../../SoundCheck'
 
 const localStoragePrefs: PrefsStorage = {
   get: (key) => window.localStorage.getItem(key),
@@ -263,6 +266,7 @@ export function GuestJoinClient({ token }: { token: string }) {
               No headphones — use the fallback (keep speakers low; echo risk noted)
             </label>
           </fieldset>
+          <SoundCheck token={token} />
           <button
             type="button"
             className="btn btn-primary"
