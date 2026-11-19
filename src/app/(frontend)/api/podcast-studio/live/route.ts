@@ -13,6 +13,8 @@ import {
   setShowStreamProfile,
 } from '@/modules/podcast-studio/live/live-service'
 import { parseStreamProfile } from '@/modules/podcast-studio/live/stream-profile'
+import { AUDIO_ENGINE_MISSING, AUDIO_ENGINE_MISSING_MESSAGE } from '@/modules/media/ffmpeg'
+import { ensureAudioEngine } from '@/modules/media/audio-engine-guard'
 import {
   episodeContext,
   loadShow,
@@ -95,6 +97,14 @@ export async function POST(request: Request) {
       return privateJson({ id: String(episode.id), liveState: episode.liveState })
     }
     if (action === 'go-live') {
+      // Fail-soft preflight: go-live is the only episode action that
+      // starts the ffmpeg relay, so it is the only one gated here —
+      // schedule / end-show / convert / bind-room spawn nothing.
+      const engineMissing = await ensureAudioEngine()
+        .then(() => false)
+        .catch(() => true)
+      if (engineMissing)
+        return privateJson({ error: AUDIO_ENGINE_MISSING_MESSAGE, code: AUDIO_ENGINE_MISSING }, 503)
       const episode = await goLiveEpisode(payload as never, episodeId)
       return privateJson({ id: String(episode.id), liveState: episode.liveState })
     }

@@ -30,6 +30,29 @@ case "$*" in
 esac
 EOF
 
+cat > "$work/bin/node" <<'EOF'
+#!/usr/bin/env bash
+# Stub for the bundled-ffmpeg installer script only; anything else is
+# delegated to the real node binary.
+case "$*" in
+  *install-bundled-ffmpeg.mjs*)
+    echo "$*" >> "$FAKE_NODE_LOG"
+    case "${FAKE_NODE_MODE:-success}" in
+      checksum)
+        echo "Audio engine install failed [FFMPEG_BUNDLE_CHECKSUM_MISMATCH]: pinned checksum mismatch" >&2
+        exit 1
+        ;;
+      unavailable)
+        echo "Audio engine install failed [FFMPEG_BUNDLE_DOWNLOAD_FAILED]: could not download" >&2
+        exit 1
+        ;;
+      *) exit 0 ;;
+    esac
+    ;;
+  *) exec /usr/bin/node "$@" ;;
+esac
+EOF
+
 cat > "$work/bin/ss" <<'EOF'
 #!/usr/bin/env bash
 if [[ "${FAKE_PORT_LISTENING:-}" == "1" ]]; then
@@ -37,12 +60,12 @@ if [[ "${FAKE_PORT_LISTENING:-}" == "1" ]]; then
 fi
 exit 0
 EOF
-chmod +x "$work/bin/docker" "$work/bin/ss"
+chmod +x "$work/bin/docker" "$work/bin/ss" "$work/bin/node"
 
 run_install() {
   # $@ passed through to install.sh; env controls the stubs.
   (cd "$work/site" && PATH="$work/bin:/usr/bin:/bin" BUILD_SHA=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa \
-    FAKE_DOCKER_LOG="$work/docker.log" ./install.sh "$@")
+    FAKE_DOCKER_LOG="$work/docker.log" FAKE_NODE_LOG="$work/node.log" ./install.sh "$@")
 }
 
 check() {
@@ -98,6 +121,35 @@ check "prebuilt install succeeds" "[[ $rc -eq 0 ]]"
 check "prebuilt install pulls" "grep -q ' pull' '$work/docker.log'"
 check "prebuilt install never builds" "! grep -q 'up --build' '$work/docker.log'"
 check "config records supplied image" "grep -qx 'RENEGADE_IMAGE=registry.example.test/renegade:1.0.0' '$work/site/.env.production'"
+
+# 8. Audio engine: fetch attempted when the bundled binary is absent.
+rm -rf "$work/site/vendor"
+rm -f "$work/docker.log" "$work/node.log"
+out="$(run_install --non-interactive 2>&1)" && rc=0 || rc=$?
+check "audio engine fetch attempted when vendor binary absent" "[[ $rc -eq 0 ]] && grep -q 'install-bundled-ffmpeg.mjs' '$work/node.log'"
+
+# 9. Audio engine: skipped when a present binary passes the version sanity check.
+mkdir -p "$work/site/vendor/ffmpeg"
+cat > "$work/site/vendor/ffmpeg/ffmpeg" <<'EOF'
+#!/usr/bin/env bash
+echo "ffmpeg version 7.0.2"
+exit 0
+EOF
+chmod +x "$work/site/vendor/ffmpeg/ffmpeg"
+rm -f "$work/node.log"
+out="$(run_install --non-interactive 2>&1)" && rc=0 || rc=$?
+check "audio engine fetch skipped when present and valid" "[[ $rc -eq 0 ]] && [[ \"$out\" == *'already present'* ]] && [[ ! -s '$work/node.log' ]]"
+rm -rf "$work/site/vendor"
+
+# 10. Audio engine: a checksum mismatch fails the install closed.
+rm -f "$work/node.log"
+out="$(FAKE_NODE_MODE=checksum run_install --non-interactive 2>&1)" && rc=0 || rc=$?
+check "audio engine checksum mismatch fails closed" "[[ $rc -ne 0 ]] && [[ \"$out\" == *'did not match its pinned checksum'* ]]"
+
+# 11. Audio engine: an unavailable download warns and the install continues.
+rm -f "$work/node.log"
+out="$(FAKE_NODE_MODE=unavailable run_install --non-interactive 2>&1)" && rc=0 || rc=$?
+check "audio engine unavailable warns and continues" "[[ $rc -eq 0 ]] && [[ \"$out\" == *'Capability Center'* ]]"
 
 echo
 if [[ $failures -eq 0 ]]; then echo "install.sh harness: ALL PASS"; else echo "install.sh harness: $failures FAILURE(S)"; exit 1; fi

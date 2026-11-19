@@ -333,6 +333,15 @@ export const BookEditions = collection('book-editions', [
 ])
 export const PodcastShows: CollectionConfig = {
   ...collection('podcast-shows', [
+    {
+      name: 'openStudio',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/modules/admin/OpenStudioField#OpenStudioField',
+        },
+      },
+    },
     ...scoped(),
     { name: 'language', type: 'text', defaultValue: 'en' },
     { name: 'explicit', type: 'checkbox', defaultValue: false },
@@ -486,7 +495,7 @@ export const PodcastShows: CollectionConfig = {
       type: 'json',
       admin: {
         description:
-          'POD-16 Icecast stream profile: { "sourceUrl": "https://icecast…/mount", "bitrateKbps": 128, "title": "…", "enabled": true, "nowPlayingEnabled": true }. NEVER put the source password in this JSON — credentials live in the credential fields below and are refused here.',
+          'POD-16 Icecast stream profile — normally edited in the Studio\u2019s live settings form (use Open Studio above); edit the JSON here only for advanced use. Shape: { "sourceUrl": "https://icecast…/mount", "bitrateKbps": 128, "title": "…", "enabled": true, "nowPlayingEnabled": true }. NEVER put the source password in this JSON — credentials live in the credential fields below and are refused here.',
       },
       validate: (value: unknown) => {
         if (value == null) return true
@@ -503,7 +512,7 @@ export const PodcastShows: CollectionConfig = {
       type: 'text',
       admin: {
         description:
-          'POD-16: name of the environment variable holding the Icecast source password (env-referenced credential — the value itself never enters the database). Takes precedence over the encrypted credential.',
+          'POD-16 ADVANCED override: name of the environment variable holding the Icecast source password (env-referenced credential — the value itself never enters the database). Takes precedence over the encrypted credential. The primary path is the Studio live settings form\u2019s source password, stored encrypted — use this env reference only when the password must stay in the server environment.',
       },
     },
     {

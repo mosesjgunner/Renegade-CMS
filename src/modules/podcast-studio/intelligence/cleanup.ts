@@ -22,6 +22,8 @@
  */
 import { execFile } from 'node:child_process'
 
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../media/ffmpeg'
+
 export type CleanupOptions = {
   humRemoval?: { enabled: boolean; frequencyHz?: 50 | 60 }
   noiseGate?: { enabled: boolean; preset?: 'voice' }
@@ -104,10 +106,10 @@ const defaultRunner: Runner = (command, args) =>
 
 export const probeDurationSec = async (
   filePath: string,
-  ffprobe = 'ffprobe',
+  ffprobe: string | undefined = undefined,
   runner: Runner = defaultRunner,
 ): Promise<number> => {
-  const { stdout } = await runner(ffprobe, [
+  const { stdout } = await runner(resolveFfprobeBinary(ffprobe), [
     '-v',
     'error',
     '-show_entries',
@@ -127,10 +129,10 @@ export const probeDurationSec = async (
 export const measureBandEnergyDb = async (
   filePath: string,
   frequencyHz: number,
-  ffmpeg = 'ffmpeg',
+  ffmpeg: string | undefined = undefined,
   runner: Runner = defaultRunner,
 ): Promise<number> => {
-  const { stderr } = await runner(ffmpeg, [
+  const { stderr } = await runner(resolveFfmpegBinary(ffmpeg), [
     '-hide_banner',
     '-i',
     filePath,
@@ -163,12 +165,12 @@ export type SilenceTrimMeasurement = {
 export const detectSilenceTrim = async (
   filePath: string,
   options: { thresholdDb?: number; minSilenceSec?: number; durationSec: number },
-  ffmpeg = 'ffmpeg',
+  ffmpeg: string | undefined = undefined,
   runner: Runner = defaultRunner,
 ): Promise<SilenceTrimMeasurement> => {
   const thresholdDb = options.thresholdDb ?? -45
   const minSilenceSec = options.minSilenceSec ?? 0.5
-  const { stderr } = await runner(ffmpeg, [
+  const { stderr } = await runner(resolveFfmpegBinary(ffmpeg), [
     '-hide_banner',
     '-i',
     filePath,
@@ -242,8 +244,8 @@ export const applyCleanupToFile = async (input: {
   ffprobe?: string
   runner?: Runner
 }): Promise<CleanupMeasurements> => {
-  const ffmpeg = input.ffmpeg ?? 'ffmpeg'
-  const ffprobe = input.ffprobe ?? 'ffprobe'
+  const ffmpeg = resolveFfmpegBinary(input.ffmpeg)
+  const ffprobe = resolveFfprobeBinary(input.ffprobe)
   const runner = input.runner ?? defaultRunner
   const durationBeforeSec = await probeDurationSec(input.inputPath, ffprobe, runner)
 

@@ -36,6 +36,8 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { loadConfig, type AppConfig } from '../../core/config'
+import { AUDIO_ENGINE_MISSING, AUDIO_ENGINE_MISSING_MESSAGE } from '../../media/ffmpeg'
+import { ensureAudioEngine } from '../../media/audio-engine-guard'
 import type { MediaPublishingStore } from '../../media/publishing'
 import { mediaObjectKey, mediaStorage, type MediaStorage } from '../../media/storage'
 import { edlHash } from '../edit/edl-engine'
@@ -334,6 +336,14 @@ export async function renderProject(
   const storage = mediaStorage(resolvedConfig)
   const workDir = await mkdtemp(path.join(os.tmpdir(), 'renegade-podcast-render-'))
   try {
+    // Fail-soft preflight: no ffmpeg work (source probing included)
+    // starts when the audio engine is missing. Thrown inside the try so
+    // the catch below records it on the render record as the named
+    // deterministic failure AUDIO_ENGINE_MISSING, exactly like
+    // RENDER_SOURCE_MISSING — no spawn error ever surfaces.
+    await ensureAudioEngine().catch(() => {
+      throw new PodcastRenderError(AUDIO_ENGINE_MISSING, AUDIO_ENGINE_MISSING_MESSAGE)
+    })
     // Resolve sources to local files.
     const sources: RenderSourceFile[] = []
     for (const source of project.project.edl.sources) {

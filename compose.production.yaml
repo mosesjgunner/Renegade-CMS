@@ -94,6 +94,7 @@ services:
       - '${RENEGADE_WEB_BIND:-127.0.0.1:3000}:3000'
     volumes:
       - renegade_media:/app/media
+      - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -121,6 +122,7 @@ services:
     command: ['npm', 'run', 'jobs:worker']
     volumes:
       - renegade_media:/app/media
+      - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -179,6 +181,7 @@ services:
     command: ['npm', 'run', 'jobs:worker']
     volumes:
       - renegade_media:/app/media
+      - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro
     depends_on:
       migrate:
         condition: service_completed_successfully

@@ -35,6 +35,7 @@ import { createHash } from 'node:crypto'
 import { access, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../media/ffmpeg'
 import { PodcastRenderError, type PodcastChapter, type RenderedFile } from './render'
 
 export const VIDEO_FRAME = { width: 1280, height: 720 } as const
@@ -81,15 +82,13 @@ const runCommand = (
     })
   })
 
-const ffmpegPath = (request: { ffmpeg?: string }): string =>
-  request.ffmpeg ?? process.env.FFMPEG_PATH ?? 'ffmpeg'
-const ffprobePath = (request: { ffprobe?: string }): string =>
-  request.ffprobe ?? process.env.FFPROBE_PATH ?? 'ffprobe'
+const ffmpegPath = (request: { ffmpeg?: string }): string => resolveFfmpegBinary(request.ffmpeg)
+const ffprobePath = (request: { ffprobe?: string }): string => resolveFfprobeBinary(request.ffprobe)
 
 /** General ffprobe wrapper: container duration/format plus the first video and audio streams. */
 export async function probeMediaFile(
   filePath: string,
-  ffprobe = process.env.FFPROBE_PATH ?? 'ffprobe',
+  ffprobe: string = resolveFfprobeBinary(),
 ): Promise<MediaProbe> {
   const { stdout } = await runCommand(
     ffprobe,

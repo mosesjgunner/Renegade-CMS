@@ -34,6 +34,7 @@ import { SemanticURLPreview as SemanticURLPreview_f958bb1a071e34731e46d51660a678
 import { AiContentActionField as AiContentActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { default as default_6c6551caf884ec9bfe14525f15ba614e } from '../../../modules/admin/FocusModeToggle'
 import { default as default_dd4b4083426af9ecccc1b5cd1fa714de } from '../../../modules/admin/SkipToSave'
+import { OpenStudioField as OpenStudioField_e56841a7c670ba1edde33cbd70e4a033 } from '@/modules/admin/OpenStudioField'
 import { AiDistributionActionField as AiDistributionActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { default as default_540c8fd8e80fc68e99ce7b541e67baa6 } from '../../../modules/admin/PublishingLinks'
 import { default as default_b2e9d352a88622b4016040a046ab3cc7 } from '../../../modules/admin/CapabilityCenterLink'
@@ -95,6 +96,7 @@ export const importMap = {
   "@/modules/admin/AiProposalActionField#AiContentActionField": AiContentActionField_4db112374481e7b6e11792b2a6848818,
   "./modules/admin/FocusModeToggle#default": default_6c6551caf884ec9bfe14525f15ba614e,
   "./modules/admin/SkipToSave#default": default_dd4b4083426af9ecccc1b5cd1fa714de,
+  "@/modules/admin/OpenStudioField#OpenStudioField": OpenStudioField_e56841a7c670ba1edde33cbd70e4a033,
   "@/modules/admin/AiProposalActionField#AiDistributionActionField": AiDistributionActionField_4db112374481e7b6e11792b2a6848818,
   "./modules/admin/PublishingLinks#default": default_540c8fd8e80fc68e99ce7b541e67baa6,
   "./modules/admin/CapabilityCenterLink#default": default_b2e9d352a88622b4016040a046ab3cc7,

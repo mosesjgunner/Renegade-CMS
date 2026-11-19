@@ -8,10 +8,11 @@
 
 import { spawn, type ChildProcess } from 'node:child_process'
 
+import { resolveFfmpegBinary } from '../../media/ffmpeg'
 import type { RelayInput, RelayProcessHandle, RelaySpawner } from './relay'
 
 export const createFfmpegRelaySpawner = (ffmpegPath?: string): RelaySpawner => {
-  const binary = ffmpegPath ?? process.env.FFMPEG_PATH ?? 'ffmpeg'
+  const binary = resolveFfmpegBinary(ffmpegPath)
   return (args: string[], input: RelayInput): RelayProcessHandle => {
     const child: ChildProcess = spawn(binary, args, {
       stdio: [input.kind === 'pipe' ? 'pipe' : 'ignore', 'ignore', 'pipe'],

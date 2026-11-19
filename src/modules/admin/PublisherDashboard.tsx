@@ -72,6 +72,23 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       overrideAccess: false,
     } as never),
   ])
+  // The Studio door: only the shows this user may operate (the
+  // collection's site-scoped access decides, via overrideAccess:false).
+  // A failed shows query must never break the dashboard — no section.
+  let podcastShows: { id: string; title?: string }[] = []
+  try {
+    const showsResult = await payload.find({
+      collection: 'podcast-shows',
+      sort: 'title',
+      limit: 50,
+      depth: 0,
+      req: initPageResult.req,
+      overrideAccess: false,
+    } as never)
+    podcastShows = (showsResult as { docs: { id: string; title?: string }[] }).docs
+  } catch {
+    podcastShows = []
+  }
   const groups = [
     {
       title: `Waiting for review${reviews.totalDocs ? ` (${reviews.totalDocs})` : ''}`,
@@ -134,6 +151,22 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
           </p>
         </section>
       )}
+      {podcastShows.length ? (
+        <section aria-label="Podcast studio" style={{ marginTop: 28 }}>
+          <SectionHeader>Podcast studio</SectionHeader>
+          <ul>
+            {podcastShows.map((show) => (
+              <li key={show.id}>
+                {show.title?.trim() || 'Untitled show'}{' '}
+                <ActionLink href={`/studio/${show.id}`}>Open Studio</ActionLink>
+              </li>
+            ))}
+          </ul>
+          <p>
+            <Link href="/admin/collections/podcast-shows">Manage podcast shows</Link>
+          </p>
+        </section>
+      ) : null}
       {groups.map((group) => (
         <section key={group.title} style={{ marginTop: 28 }}>
           <SectionHeader>{group.title}</SectionHeader>

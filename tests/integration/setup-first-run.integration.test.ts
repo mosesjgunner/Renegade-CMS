@@ -167,6 +167,88 @@ describe('first-run onboarding provisioning', () => {
     expect(second.handle).toBe(first.handle)
   })
 
+  it('media-podcast: creates exactly one default show (even without starter content), reruns create no duplicate, and returns the studio URL', async () => {
+    const instance = await getPayloadInstance()
+    const slug = `pod-${randomUUID().slice(0, 8)}`
+    const ownerEmail = `${slug}@owner.test`
+    // starterContent: false on purpose — choosing the podcast purpose is
+    // the decision; the sample-content checkbox must not gate the show.
+    const input: OnboardingInput = {
+      ...onboardingInput(slug, 'Podcast Setup Show'),
+      starterType: 'media-podcast',
+      starterContent: false,
+    }
+
+    const result = await provisionOnboardingSite(instance, ownerEmail, input)
+    expect(result.podcastShow?.id).toBeTruthy()
+    expect(result.podcastShow?.studioUrl).toBe(`/studio/${result.podcastShow?.id}`)
+
+    const findShows = async () =>
+      (
+        await instance.find({
+          collection: 'podcast-shows',
+          where: { site: { equals: result.site.id } },
+          limit: 10,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+      ).docs as any[]
+
+    const shows = await findShows()
+    expect(shows).toHaveLength(1)
+    expect(String(shows[0].id)).toBe(result.podcastShow?.id)
+    expect(shows[0].slug).toBe(slug)
+    expect(shows[0].title).toBe('Podcast Setup Show')
+    expect(shows[0].language).toBe('en-US')
+    expect(shows[0].description).toBe('First-run installer regression coverage.')
+    // Defaults only: empty profiles mean the POD-13/POD-16 defaults apply.
+    expect(shows[0].exportProfile ?? null).toBeNull()
+    expect(shows[0].streamProfile ?? null).toBeNull()
+    // Feed-live out of the box: the public feed route 404s unless the
+    // show is published with RSS enabled, so the starter show must be
+    // created that way — the owner's first published episode has to
+    // reach the feed without an admin detour.
+    expect(shows[0].status).toBe('published')
+    expect(shows[0].rssEnabled).toBe(true)
+    expect(shows[0].feedVisibility).toBe('public')
+    expect(shows[0].publishedAt).toBeTruthy()
+
+    const rerun = await provisionOnboardingSite(instance, ownerEmail, input)
+    expect(rerun.podcastShow?.id).toBe(result.podcastShow?.id)
+    expect(rerun.podcastShow?.studioUrl).toBe(result.podcastShow?.studioUrl)
+    expect(await findShows()).toHaveLength(1)
+  })
+
+  it('media-podcast: suffixes the show slug when another site already owns the site slug as a show slug', async () => {
+    const instance = await getPayloadInstance()
+    const firstSlug = `pod-${randomUUID().slice(0, 8)}`
+    const first = await provisionOnboardingSite(
+      instance,
+      `${firstSlug}@owner.test`,
+      onboardingInput(firstSlug, 'First Site'),
+    )
+    const slug = `pod-${randomUUID().slice(0, 8)}`
+    await instance.create({
+      collection: 'podcast-shows',
+      data: { site: first.site.id, title: 'Other Site Show', slug },
+      overrideAccess: true,
+    } as never)
+
+    const result = await provisionOnboardingSite(instance, `${slug}@owner.test`, {
+      ...onboardingInput(slug, 'Second Podcast Site'),
+      starterType: 'media-podcast',
+      starterContent: false,
+    })
+    const show = (await instance.findByID({
+      collection: 'podcast-shows',
+      id: result.podcastShow!.id,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as any
+    expect(show.slug).toBe(`${slug}-podcast`)
+    expect(String(show.site?.id ?? show.site)).toBe(String(result.site.id))
+  })
+
   it('exercises full Lean profile lifecycle with publishing defaults', async () => {
     const instance = await getPayloadInstance()
     const slug = `lean-${randomUUID().slice(0, 8)}`

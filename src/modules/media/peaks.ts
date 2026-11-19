@@ -36,6 +36,7 @@ import path from 'node:path'
 import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
+import { resolveFfmpegBinary } from './ffmpeg'
 import { mediaStorage, type MediaStorage } from './storage'
 import { MediaWorkflowError } from './workflow'
 
@@ -169,10 +170,7 @@ export async function generatePeaksForBytes(
   const input = path.join(directory, 'source')
   try {
     await writeFile(input, bytes)
-    const pcm = await runFfmpegDecodeToPcm(
-      input,
-      options.ffmpeg ?? process.env.FFMPEG_PATH ?? 'ffmpeg',
-    )
+    const pcm = await runFfmpegDecodeToPcm(input, resolveFfmpegBinary(options.ffmpeg))
     if (pcm.length === 0) throw new MediaWorkflowError('Audio decoded to zero samples.', 422)
     return computePeaksFromPcm([pcm], PEAKS_SAMPLE_RATE, sourceChecksum)
   } finally {

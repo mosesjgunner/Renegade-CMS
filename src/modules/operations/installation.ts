@@ -468,6 +468,7 @@ export async function completeInstallation(
       onboarding: {
         publicUrl: onboarding.primaryUrl,
         adminUrl: new URL('/admin', onboarding.primaryUrl).toString(),
+        ...(provisioned.podcastShow ? { studioUrl: provisioned.podcastShow.studioUrl } : {}),
         configuredCapabilities: provisioned.configuredCapabilities,
         needsConfiguration: onboarding.optionalConnections,
         availableLater: ['email', 'ai', 'social', 'commerce', 'analytics', 'networking'].filter(
