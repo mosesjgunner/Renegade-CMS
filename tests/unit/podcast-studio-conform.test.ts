@@ -9,6 +9,8 @@
  */
 import { describe, expect, it } from 'vitest'
 
+import { hasFfmpeg } from '../helpers/ffmpeg-availability'
+
 import {
   MemoryChunkStorage,
   recoverRecording,
@@ -245,7 +247,7 @@ describe('POD-11 conform alignment (offset + drift → timeline)', () => {
 // ffmpeg conform of a real (synthetic) drifted WAV
 // ---------------------------------------------------------------------------
 
-describe('POD-11 ffmpeg conform (real ffmpeg, injected rate error)', () => {
+describe.skipIf(!hasFfmpeg)('POD-11 ffmpeg conform (real ffmpeg, injected rate error)', () => {
   it('corrects duration and impulse position within tolerance', async () => {
     const timelineFrames = 2 * SR
     const ppm = 800

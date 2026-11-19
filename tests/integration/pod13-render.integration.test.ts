@@ -34,6 +34,8 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -198,6 +200,7 @@ const singleLaneEdl = (
   } as never)
 
 beforeAll(async () => {
+  if (!hasFfmpegBinaries) return
   payload = await getPayload({ config })
   await seed(payload)
   const siteResult = await payload.find({
@@ -305,7 +308,7 @@ afterAll(async () => {
   // Fixtures stay in the acceptance DB (shared seed pattern of the POD suites).
 })
 
-describe('POD-13 render & export (integration)', () => {
+describe.skipIf(!hasFfmpegBinaries)('POD-13 render & export (integration)', () => {
   it('PT-C: renders the fixture EDL to a loudness-gated master and attaches it through POD-04', async () => {
     const guidBefore = String(episode.guid)
     const result = await renderProject(payload as never, undefined, {

@@ -13,6 +13,8 @@ import { createHash } from 'node:crypto'
 
 import { describe, expect, it } from 'vitest'
 
+import { hasFfmpeg } from '../helpers/ffmpeg-availability'
+
 import {
   computePeaksFromPcm,
   generatePeaksForAsset,
@@ -501,63 +503,69 @@ describe('server peaks', () => {
     expect(computePeaksFromPcm([samples], 48000, 'sha256:x')).toEqual(peaks)
   })
 
-  it('generates peaks from a WAV fixture through the real ffmpeg path, idempotently', async () => {
-    const wav = makeWavBytes(2, 44100, 0.8)
-    const peaks = await generatePeaksForBytes(wav)
-    expect(peaks.durationSec).toBeCloseTo(2, 0)
-    expect(peaks.min.length).toBeGreaterThanOrEqual(198)
-    expect(peaks.min.length).toBeLessThanOrEqual(202)
-    const loudest = Math.max(...peaks.max)
-    expect(loudest).toBeGreaterThan(0.7)
-    expect(loudest).toBeLessThanOrEqual(0.81)
-    const rerun = await generatePeaksForBytes(wav)
-    expect(rerun).toEqual(peaks) // idempotent re-run
-  })
+  it.skipIf(!hasFfmpeg)(
+    'generates peaks from a WAV fixture through the real ffmpeg path, idempotently',
+    async () => {
+      const wav = makeWavBytes(2, 44100, 0.8)
+      const peaks = await generatePeaksForBytes(wav)
+      expect(peaks.durationSec).toBeCloseTo(2, 0)
+      expect(peaks.min.length).toBeGreaterThanOrEqual(198)
+      expect(peaks.min.length).toBeLessThanOrEqual(202)
+      const loudest = Math.max(...peaks.max)
+      expect(loudest).toBeGreaterThan(0.7)
+      expect(loudest).toBeLessThanOrEqual(0.81)
+      const rerun = await generatePeaksForBytes(wav)
+      expect(rerun).toEqual(peaks) // idempotent re-run
+    },
+  )
 
-  it('stores peaks on the asset and skips regeneration for unchanged bytes', async () => {
-    const wav = makeWavBytes(1, 44100, 0.5)
-    const checksum = `sha256:${createHash('sha256').update(wav).digest('hex')}`
-    const asset: Record<string, unknown> = {
-      id: 'asset-1',
-      kind: 'audio',
-      checksum,
-      storageLocation: 'clips/intro.wav',
-    }
-    let updates = 0
-    let gets = 0
-    const fakePayload = {
-      findByID: async () => asset,
-      update: async ({ data }: { data: Record<string, unknown> }) => {
-        updates++
-        Object.assign(asset, data)
-        return asset
-      },
-    }
-    const fakeStorage = {
-      get: async () => {
-        gets++
-        return new Uint8Array(wav)
-      },
-      put: async () => undefined,
-    }
-    const first = await generatePeaksForAsset(
-      fakePayload as never,
-      {} as never,
-      'asset-1',
-      fakeStorage as never,
-    )
-    expect(first.sourceChecksum).toBe(checksum)
-    expect(updates).toBe(1)
-    const second = await generatePeaksForAsset(
-      fakePayload as never,
-      {} as never,
-      'asset-1',
-      fakeStorage as never,
-    )
-    expect(second).toEqual(first)
-    expect(updates).toBe(1) // no rewrite
-    expect(gets).toBe(1) // no re-decode
-  })
+  it.skipIf(!hasFfmpeg)(
+    'stores peaks on the asset and skips regeneration for unchanged bytes',
+    async () => {
+      const wav = makeWavBytes(1, 44100, 0.5)
+      const checksum = `sha256:${createHash('sha256').update(wav).digest('hex')}`
+      const asset: Record<string, unknown> = {
+        id: 'asset-1',
+        kind: 'audio',
+        checksum,
+        storageLocation: 'clips/intro.wav',
+      }
+      let updates = 0
+      let gets = 0
+      const fakePayload = {
+        findByID: async () => asset,
+        update: async ({ data }: { data: Record<string, unknown> }) => {
+          updates++
+          Object.assign(asset, data)
+          return asset
+        },
+      }
+      const fakeStorage = {
+        get: async () => {
+          gets++
+          return new Uint8Array(wav)
+        },
+        put: async () => undefined,
+      }
+      const first = await generatePeaksForAsset(
+        fakePayload as never,
+        {} as never,
+        'asset-1',
+        fakeStorage as never,
+      )
+      expect(first.sourceChecksum).toBe(checksum)
+      expect(updates).toBe(1)
+      const second = await generatePeaksForAsset(
+        fakePayload as never,
+        {} as never,
+        'asset-1',
+        fakeStorage as never,
+      )
+      expect(second).toEqual(first)
+      expect(updates).toBe(1) // no rewrite
+      expect(gets).toBe(1) // no re-decode
+    },
+  )
 })
 
 // ---------------------------------------------------------------------------

@@ -23,6 +23,8 @@ import { createServer, type Server } from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -976,7 +978,7 @@ describe('JP-5 — solo record', () => {
   }, 120_000)
 })
 
-describe('JP-6 — edit & publish', () => {
+describe.skipIf(!hasFfmpegBinaries)('JP-6 — edit & publish', () => {
   it('reopens the session, cuts 30 s mid-episode (chapters/transcript remap), renders −16 LUFS ±0.5 / TP ≤ −1.5, publishes from the studio path; GUID stable; chapters agree across feed/ID3/JSON [browser editor + audible preview UNVERIFIED]', async () => {
     const show = await makeShow('jp6', {
       exportProfile: {
@@ -1150,7 +1152,7 @@ describe('JP-6 — edit & publish', () => {
   }, 300_000)
 })
 
-describe('JP-7 — post-production', () => {
+describe.skipIf(!hasFfmpegBinaries)('JP-7 — post-production', () => {
   it('transcribes (fixture provider — real ASR UNVERIFIED), reviews/edits, drafts chapters + notes + audiogram, publishes with the reviewed transcript [real ASR + AI-key assists UNVERIFIED]', async () => {
     const show = await makeShow('jp7')
     // Run-unique frequency: the transcription job is idempotent on
@@ -1481,7 +1483,7 @@ const decodeHeard = async (bytes: Buffer, dir: string) => {
   }
 }
 
-describe('JP-9 — live show', () => {
+describe.skipIf(!hasFfmpegBinaries)('JP-9 — live show', () => {
   it('streams to the Icecast PROTOCOL FIXTURE while recording; relay killed mid-show → recording continuous, stream recovers; a listener\u2019s received audio is verified; liveItem converts after the show [real Icecast server + browser→ingest byte path UNVERIFIED — POD-16 named gap]', async () => {
     const fixture = await IcecastProtocolFixture.start({
       sourcePassword: LIVE_PASSWORD,
@@ -1819,7 +1821,7 @@ describe('JP-10 — hardware desk', () => {
   }, 120_000)
 })
 
-describe('JP-11 — video episode (bounded)', () => {
+describe.skipIf(!hasFfmpegBinaries)('JP-11 — video episode (bounded)', () => {
   it('camera + slideshow tracks render with the session and publish behind the probe gate; output duration matches the program audio within the 0.5 s gate [real camera capture + ≤40 ms head/tail A/V sync on real devices UNVERIFIED]', async () => {
     const dir = await mkdtemp(path.join(os.tmpdir(), 'pod20-jp11-'))
     try {
@@ -1954,7 +1956,7 @@ describe('JP-11 — video episode (bounded)', () => {
   }, 300_000)
 })
 
-describe('JP-12 — portability & recovery', () => {
+describe.skipIf(!hasFfmpegBinaries)('JP-12 — portability & recovery', () => {
   it('exports a produced show\u2019s bundle → restores into a fresh site → reopened session + edit project, re-render measurements match, publish validates; zero external distribution replayed [fresh-install DB restore + role matrix on the restored install UNVERIFIED here — POD-19 proved the platform restore and the source-install matrix]', async () => {
     const show = await makeShow('jp12')
     // A produced show: recorded session → edit project → render → publish.

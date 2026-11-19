@@ -17,6 +17,8 @@ import path from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
+
 import {
   applyCleanupToFile,
   cleanupProgramFilters,
@@ -69,7 +71,7 @@ describe('POD-14 cleanup filters (construction)', () => {
   })
 })
 
-describe('POD-14 cleanup measurements (real ffmpeg)', () => {
+describe.skipIf(!hasFfmpegBinaries)('POD-14 cleanup measurements (real ffmpeg)', () => {
   it('hum notch measurably reduces 60 Hz band energy', async () => {
     const dir = await mkdtemp(path.join(os.tmpdir(), 'pod14-hum-'))
     const input = path.join(dir, 'hum.wav')

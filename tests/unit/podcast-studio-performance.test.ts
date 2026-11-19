@@ -18,6 +18,8 @@ import os from 'node:os'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
+
 import { renderPodcastFeed } from '../../src/modules/podcast-studio/feed-build'
 import type { EditEdl } from '../../src/modules/podcast-studio/edit/edl-engine'
 import { renderEdlToFiles } from '../../src/modules/podcast-studio/render/render'
@@ -82,7 +84,7 @@ describe('POD-19 performance — feed generation at 1k episodes', () => {
   })
 })
 
-describe('POD-19 performance — POD-13 render throughput re-run', () => {
+describe.skipIf(!hasFfmpegBinaries)('POD-19 performance — POD-13 render throughput re-run', () => {
   const SR = 48000
   const wavBytes = (seconds: number, freq: number): Buffer => {
     const frames = SR * seconds

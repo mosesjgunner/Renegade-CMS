@@ -41,6 +41,8 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -243,20 +245,24 @@ beforeAll(async () => {
     adminPassword: PASSWORD,
   })
   tmpRoot = await mkdtemp(path.join(os.tmpdir(), 'pod16-int-'))
-  toneWav = path.join(tmpRoot, 'tone.wav')
-  await execFileAsync('ffmpeg', [
-    '-hide_banner',
-    '-loglevel',
-    'error',
-    '-y',
-    '-f',
-    'lavfi',
-    '-i',
-    'sine=frequency=440:duration=20',
-    '-ar',
-    '48000',
-    toneWav,
-  ])
+  // The tone file feeds only the real-ffmpeg streaming suite below,
+  // which is skipped when the binaries are absent (CI runners).
+  if (hasFfmpegBinaries) {
+    toneWav = path.join(tmpRoot, 'tone.wav')
+    await execFileAsync('ffmpeg', [
+      '-hide_banner',
+      '-loglevel',
+      'error',
+      '-y',
+      '-f',
+      'lavfi',
+      '-i',
+      'sine=frequency=440:duration=20',
+      '-ar',
+      '48000',
+      toneWav,
+    ])
+  }
 
   show = await payload.create({
     collection: 'podcast-shows',
@@ -375,115 +381,125 @@ describe('POD-16 integration', () => {
     ).rejects.toThrow(/access/)
   })
 
-  it('streams real program audio to a real listener, follows now-playing, and recovers from a mid-show kill', async () => {
-    const relay = new RelaySupervisor({
-      profile: profile(),
-      credential: PASSWORD,
-      input: { kind: 'file', path: toneWav, loop: true },
-      spawner: createFfmpegRelaySpawner(),
-      backoffMs: [500, 1_000],
-      maxRestarts: 5,
-      stableLiveMs: 60_000,
-    })
-    relay.start()
-    await waitFor(() => relay.health.state === 'live', 'relay live')
-    await fixture.waitForBytes(MOUNT, 8_192)
+  it.skipIf(!hasFfmpegBinaries)(
+    'streams real program audio to a real listener, follows now-playing, and recovers from a mid-show kill',
+    async () => {
+      const relay = new RelaySupervisor({
+        profile: profile(),
+        credential: PASSWORD,
+        input: { kind: 'file', path: toneWav, loop: true },
+        spawner: createFfmpegRelaySpawner(),
+        backoffMs: [500, 1_000],
+        maxRestarts: 5,
+        stableLiveMs: 60_000,
+      })
+      relay.start()
+      await waitFor(() => relay.health.state === 'live', 'relay live')
+      await fixture.waitForBytes(MOUNT, 8_192)
 
-    // Listener proof: connect, receive MP3, decode it back to program audio.
-    const heard = await listenBytes(fixture.mountUrl(MOUNT), 24_576)
-    expect(heard.length).toBeGreaterThanOrEqual(24_576)
-    const decoded = await decodeAudio(heard, 'mp3')
-    expect(decoded.codec).toBe('mp3')
-    expect(decoded.durationSec).toBeGreaterThan(1)
-    expect(decoded.meanVolumeDb).not.toBeNull()
-    expect(decoded.meanVolumeDb!).toBeGreaterThan(-40) // the 440 Hz tone is really there
+      // Listener proof: connect, receive MP3, decode it back to program audio.
+      const heard = await listenBytes(fixture.mountUrl(MOUNT), 24_576)
+      expect(heard.length).toBeGreaterThanOrEqual(24_576)
+      const decoded = await decodeAudio(heard, 'mp3')
+      expect(decoded.codec).toBe('mp3')
+      expect(decoded.durationSec).toBeGreaterThan(1)
+      expect(decoded.meanVolumeDb).not.toBeNull()
+      expect(decoded.meanVolumeDb!).toBeGreaterThan(-40) // the 440 Hz tone is really there
 
-    // Now-playing follows the played log through a real admin update.
-    let session = createSession({ showId: String(show.id), showTitle: show.title })
-    session = beginPlayedClip(session, {
-      source: 'cart',
-      clipId: 'sting-1',
-      title: 'Halftime Sting',
-    }).session
-    const update = relay.syncNowPlaying(session)
-    expect(update?.song).toBe('Halftime Sting')
-    const { sendIcecastMetadataUpdate } = await import(
-      '../../src/modules/podcast-studio/live/relay'
-    )
-    const sent = await sendIcecastMetadataUpdate(update!)
-    expect(sent.ok).toBe(true)
-    expect(fixture.mount(MOUNT)?.nowPlaying).toBe('Halftime Sting')
-    expect(fixture.mount(MOUNT)?.iceName).toBe('POD-16 Live Show')
+      // Now-playing follows the played log through a real admin update.
+      let session = createSession({ showId: String(show.id), showTitle: show.title })
+      session = beginPlayedClip(session, {
+        source: 'cart',
+        clipId: 'sting-1',
+        title: 'Halftime Sting',
+      }).session
+      const update = relay.syncNowPlaying(session)
+      expect(update?.song).toBe('Halftime Sting')
+      const { sendIcecastMetadataUpdate } = await import(
+        '../../src/modules/podcast-studio/live/relay'
+      )
+      const sent = await sendIcecastMetadataUpdate(update!)
+      expect(sent.ok).toBe(true)
+      expect(fixture.mount(MOUNT)?.nowPlaying).toBe('Halftime Sting')
+      expect(fixture.mount(MOUNT)?.iceName).toBe('POD-16 Live Show')
 
-    // Relay health lands in the POD-05 session record; recording state untouched (none exists).
-    await recordRelayHealthInSession(payload as never, {
-      sessionRecordId: String(sessionRecord.id),
-      health: relay.health,
-    })
-    const reloaded = await loadStudioSessionRecord(payload as never, String(sessionRecord.id))
-    expect((reloaded?.session as any).liveStream?.relayState).toBe('live')
-    expect(reloaded?.session.log.some((entry: any) => entry.type === 'live-relay-state')).toBe(true)
+      // Relay health lands in the POD-05 session record; recording state untouched (none exists).
+      await recordRelayHealthInSession(payload as never, {
+        sessionRecordId: String(sessionRecord.id),
+        health: relay.health,
+      })
+      const reloaded = await loadStudioSessionRecord(payload as never, String(sessionRecord.id))
+      expect((reloaded?.session as any).liveStream?.relayState).toBe('live')
+      expect(reloaded?.session.log.some((entry: any) => entry.type === 'live-relay-state')).toBe(
+        true,
+      )
 
-    // Kill the relay mid-show: supervisor reconnects, fixture sees a
-    // fresh source, bytes keep flowing, a second listener hears audio.
-    const bytesBeforeKill = fixture.mount(MOUNT)!.bytesReceived
-    relay.killCurrentProcess('SIGKILL')
-    await waitFor(() => relay.health.state === 'reconnecting', 'relay reconnecting after kill')
-    await waitFor(() => relay.health.state === 'live', 'relay live after kill', 30_000)
-    await waitFor(
-      () => fixture.mount(MOUNT)!.bytesReceived > bytesBeforeKill + 4_096,
-      'fixture bytes grow after reconnect',
-    )
-    const heardAgain = await listenBytes(fixture.mountUrl(MOUNT), 16_384)
-    const decodedAgain = await decodeAudio(heardAgain, 'mp3')
-    expect(decodedAgain.codec).toBe('mp3')
-    expect(decodedAgain.durationSec).toBeGreaterThan(0.5)
+      // Kill the relay mid-show: supervisor reconnects, fixture sees a
+      // fresh source, bytes keep flowing, a second listener hears audio.
+      const bytesBeforeKill = fixture.mount(MOUNT)!.bytesReceived
+      relay.killCurrentProcess('SIGKILL')
+      await waitFor(() => relay.health.state === 'reconnecting', 'relay reconnecting after kill')
+      await waitFor(() => relay.health.state === 'live', 'relay live after kill', 30_000)
+      await waitFor(
+        () => fixture.mount(MOUNT)!.bytesReceived > bytesBeforeKill + 4_096,
+        'fixture bytes grow after reconnect',
+      )
+      const heardAgain = await listenBytes(fixture.mountUrl(MOUNT), 16_384)
+      const decodedAgain = await decodeAudio(heardAgain, 'mp3')
+      expect(decodedAgain.codec).toBe('mp3')
+      expect(decodedAgain.durationSec).toBeGreaterThan(0.5)
 
-    relay.stop()
-    expect(relay.health.state).toBe('stopped')
+      relay.stop()
+      expect(relay.health.state).toBe('stopped')
 
-    // Redaction over the whole live session: logs + profile + feed.
-    const feed = await feedForEpisode(String(episode.id))
-    const surfaces = [
-      relay.logLines.join('\n'),
-      JSON.stringify(await getPublicStreamProfile(payload as never, String(show.id))),
-      feed,
-    ].join('\n')
-    expect(surfaces).not.toContain(PASSWORD)
-    expect(surfaces).not.toContain(encodeURIComponent(PASSWORD))
-  }, 120_000)
+      // Redaction over the whole live session: logs + profile + feed.
+      const feed = await feedForEpisode(String(episode.id))
+      const surfaces = [
+        relay.logLines.join('\n'),
+        JSON.stringify(await getPublicStreamProfile(payload as never, String(show.id))),
+        feed,
+      ].join('\n')
+      expect(surfaces).not.toContain(PASSWORD)
+      expect(surfaces).not.toContain(encodeURIComponent(PASSWORD))
+    },
+    120_000,
+  )
 
-  it('pipe ingest: program PCM written to the relay stdin reaches a listener as decodable audio', async () => {
-    const pipeMount = '/pod16-pipe'
-    const relay = new RelaySupervisor({
-      profile: { ...profile(), sourceUrl: fixture.mountUrl(pipeMount) },
-      credential: PASSWORD,
-      input: { kind: 'pipe' },
-      spawner: createFfmpegRelaySpawner(),
-      backoffMs: [500],
-      maxRestarts: 3,
-    })
-    relay.start()
-    await waitFor(() => relay.health.state === 'live', 'pipe relay live')
-    // 3 seconds of 440 Hz stereo s16le PCM at the working rate.
-    const pcm = tone(440, 0.5, SR * 3)
-    const bytes = new Uint8Array(pcm.length * 2 * 2)
-    const view = new DataView(bytes.buffer)
-    for (let i = 0; i < pcm.length; i++) {
-      const sample = Math.max(-1, Math.min(1, pcm[i]!))
-      const int = Math.round(sample * 32_767)
-      view.setInt16(i * 4, int, true)
-      view.setInt16(i * 4 + 2, int, true)
-    }
-    for (let offset = 0; offset < bytes.length; offset += 65_536)
-      relay.writeProgramAudio(bytes.subarray(offset, offset + 65_536))
-    await fixture.waitForBytes(pipeMount, 8_192)
-    const heard = await listenBytes(fixture.mountUrl(pipeMount), 16_384)
-    const decoded = await decodeAudio(heard, 'mp3')
-    expect(decoded.codec).toBe('mp3')
-    expect(decoded.durationSec).toBeGreaterThan(0.5)
-    relay.stop()
-  }, 120_000)
+  it.skipIf(!hasFfmpegBinaries)(
+    'pipe ingest: program PCM written to the relay stdin reaches a listener as decodable audio',
+    async () => {
+      const pipeMount = '/pod16-pipe'
+      const relay = new RelaySupervisor({
+        profile: { ...profile(), sourceUrl: fixture.mountUrl(pipeMount) },
+        credential: PASSWORD,
+        input: { kind: 'pipe' },
+        spawner: createFfmpegRelaySpawner(),
+        backoffMs: [500],
+        maxRestarts: 3,
+      })
+      relay.start()
+      await waitFor(() => relay.health.state === 'live', 'pipe relay live')
+      // 3 seconds of 440 Hz stereo s16le PCM at the working rate.
+      const pcm = tone(440, 0.5, SR * 3)
+      const bytes = new Uint8Array(pcm.length * 2 * 2)
+      const view = new DataView(bytes.buffer)
+      for (let i = 0; i < pcm.length; i++) {
+        const sample = Math.max(-1, Math.min(1, pcm[i]!))
+        const int = Math.round(sample * 32_767)
+        view.setInt16(i * 4, int, true)
+        view.setInt16(i * 4 + 2, int, true)
+      }
+      for (let offset = 0; offset < bytes.length; offset += 65_536)
+        relay.writeProgramAudio(bytes.subarray(offset, offset + 65_536))
+      await fixture.waitForBytes(pipeMount, 8_192)
+      const heard = await listenBytes(fixture.mountUrl(pipeMount), 16_384)
+      const decoded = await decodeAudio(heard, 'mp3')
+      expect(decoded.codec).toBe('mp3')
+      expect(decoded.durationSec).toBeGreaterThan(0.5)
+      relay.stop()
+    },
+    120_000,
+  )
 
   it('ends the show, finalizes the POD-09 recording, and converts to a normal item — idempotently', async () => {
     await endLiveEpisode(payload as never, String(episode.id))

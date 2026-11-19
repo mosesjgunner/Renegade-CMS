@@ -34,6 +34,8 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -506,57 +508,60 @@ describe('POD-14 JP-7: transcribe → review → assists → audiogram → publi
     expect(listed).toHaveLength(4)
   })
 
-  it('audiogram from the accepted highlight renders a real MP4 draft; episode audio untouched', async () => {
-    const drafts = await listAssistDrafts(payload as never, String(episode.id))
-    const highlightDraft = drafts.find((draft) => draft.kind === 'highlight')!
-    const highlights = (highlightDraft.payload as any).highlights as any[]
-    expect(highlights.length).toBeGreaterThan(0)
-    await acceptAssistDraft(payload as never, String(highlightDraft.id), { by: 'pod14-test' })
-    const marked = highlights.find((clip) => clip.source === 'marked-range') ?? highlights[0]
+  it.skipIf(!hasFfmpegBinaries)(
+    'audiogram from the accepted highlight renders a real MP4 draft; episode audio untouched',
+    async () => {
+      const drafts = await listAssistDrafts(payload as never, String(episode.id))
+      const highlightDraft = drafts.find((draft) => draft.kind === 'highlight')!
+      const highlights = (highlightDraft.payload as any).highlights as any[]
+      expect(highlights.length).toBeGreaterThan(0)
+      await acceptAssistDraft(payload as never, String(highlightDraft.id), { by: 'pod14-test' })
+      const marked = highlights.find((clip) => clip.source === 'marked-range') ?? highlights[0]
 
-    const audiogram = await createAudiogramFromHighlight(payload as never, undefined, {
-      episodeId: String(episode.id),
-      projectId: String(project.id),
-      highlight: marked,
-      createdBy: 'pod14-test',
-    })
-    expect(audiogram.kind).toBe('audiogram')
-    expect(audiogram.state).toBe('draft')
-    const mediaAssetId = String((audiogram.payload as any).mediaAssetId)
-    expect(mediaAssetId).toBeTruthy()
+      const audiogram = await createAudiogramFromHighlight(payload as never, undefined, {
+        episodeId: String(episode.id),
+        projectId: String(project.id),
+        highlight: marked,
+        createdBy: 'pod14-test',
+      })
+      expect(audiogram.kind).toBe('audiogram')
+      expect(audiogram.state).toBe('draft')
+      const mediaAssetId = String((audiogram.payload as any).mediaAssetId)
+      expect(mediaAssetId).toBeTruthy()
 
-    const bytes = await assetBytes(mediaAssetId)
-    const dir = await mkdtemp(path.join(os.tmpdir(), 'pod14-audiogram-'))
-    const file = path.join(dir, 'audiogram.mp4')
-    await writeFile(file, bytes)
-    const probe = JSON.parse(
-      execFileSync('ffprobe', [
-        '-v',
-        'error',
-        '-show_entries',
-        'stream=codec_type,codec_name',
-        '-show_entries',
-        'format=duration',
-        '-of',
-        'json',
-        file,
-      ]).toString(),
-    )
-    const video = (probe.streams as any[]).find((stream) => stream.codec_type === 'video')
-    const audio = (probe.streams as any[]).find((stream) => stream.codec_type === 'audio')
-    expect(video?.codec_name).toBe('h264')
-    expect(audio).toBeTruthy()
-    const expectedDuration = marked.endSec - marked.startSec
-    expect(Math.abs(Number(probe.format.duration) - expectedDuration)).toBeLessThanOrEqual(0.6)
+      const bytes = await assetBytes(mediaAssetId)
+      const dir = await mkdtemp(path.join(os.tmpdir(), 'pod14-audiogram-'))
+      const file = path.join(dir, 'audiogram.mp4')
+      await writeFile(file, bytes)
+      const probe = JSON.parse(
+        execFileSync('ffprobe', [
+          '-v',
+          'error',
+          '-show_entries',
+          'stream=codec_type,codec_name',
+          '-show_entries',
+          'format=duration',
+          '-of',
+          'json',
+          file,
+        ]).toString(),
+      )
+      const video = (probe.streams as any[]).find((stream) => stream.codec_type === 'video')
+      const audio = (probe.streams as any[]).find((stream) => stream.codec_type === 'audio')
+      expect(video?.codec_name).toBe('h264')
+      expect(audio).toBeTruthy()
+      const expectedDuration = marked.endSec - marked.startSec
+      expect(Math.abs(Number(probe.format.duration) - expectedDuration)).toBeLessThanOrEqual(0.6)
 
-    const current: any = await payload.findByID({
-      collection: 'podcast-episodes',
-      id: episode.id,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    expect(String(current.audio)).toBe(audioAssetId)
-  })
+      const current: any = await payload.findByID({
+        collection: 'podcast-episodes',
+        id: episode.id,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      expect(String(current.audio)).toBe(audioAssetId)
+    },
+  )
 
   it('publishes through the POD-04 approval gate with the reviewed transcript in place (JP-7 verdict)', async () => {
     await recordEpisodeApproval(payload as never, {

@@ -36,6 +36,8 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import { randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -480,106 +482,110 @@ describe('POD-21 fix 1 — live ingest byte path (route → buffer → pump → 
     expect(statusBody.ingest.totalBytesReceived).toBe(CHUNK_BYTES * 4)
   })
 
-  it('pump + relay deliver the browser-sent program to a listener; stall surfaces; recording untouched; kill/reconnect streams again', async () => {
-    const id = String(sessionFix1.id)
-    // Recording runs through the whole live storm (POD-REQ-35).
-    await applySessionOperationToRecord(payload as never, id, { op: 'recording-start' })
-    const before = await loadStudioSessionRecord(payload as never, id)
-    const recordingBefore = JSON.parse(JSON.stringify(getRecordingState(before!.session)))
+  it.skipIf(!hasFfmpegBinaries)(
+    'pump + relay deliver the browser-sent program to a listener; stall surfaces; recording untouched; kill/reconnect streams again',
+    async () => {
+      const id = String(sessionFix1.id)
+      // Recording runs through the whole live storm (POD-REQ-35).
+      await applySessionOperationToRecord(payload as never, id, { op: 'recording-start' })
+      const before = await loadStudioSessionRecord(payload as never, id)
+      const recordingBefore = JSON.parse(JSON.stringify(getRecordingState(before!.session)))
 
-    const buffer = liveIngestBufferFor(id)
-    const pump = new IngestFifoPump({
-      buffer,
-      stallMs: 1_000,
-      onStall: () => {
-        void recordIngestStallInSession(payload as never, {
-          sessionRecordId: id,
-          stalled: true,
-        }).catch(() => undefined)
-      },
-    })
-    const relay = new RelaySupervisor({
-      profile: {
-        sourceUrl: fixture.mountUrl(MOUNT),
-        bitrateKbps: 64,
-        title: 'POD-21 Live',
-        enabled: true,
-        nowPlayingEnabled: true,
-      },
-      credential: PASSWORD,
-      input: { kind: 'ingest', fifoPath: buffer.fifoPath },
-      spawner: createFfmpegRelaySpawner(),
-      backoffMs: [500, 1_000],
-      maxRestarts: 5,
-      stableLiveMs: 60_000,
-    })
-    await pump.start()
-    relay.start()
-    await pump.waitUntilOpen()
-    await waitFor(() => relay.health.state === 'live', 'ingest relay live')
-    await fixture.waitForBytes(MOUNT, 8_192)
+      const buffer = liveIngestBufferFor(id)
+      const pump = new IngestFifoPump({
+        buffer,
+        stallMs: 1_000,
+        onStall: () => {
+          void recordIngestStallInSession(payload as never, {
+            sessionRecordId: id,
+            stalled: true,
+          }).catch(() => undefined)
+        },
+      })
+      const relay = new RelaySupervisor({
+        profile: {
+          sourceUrl: fixture.mountUrl(MOUNT),
+          bitrateKbps: 64,
+          title: 'POD-21 Live',
+          enabled: true,
+          nowPlayingEnabled: true,
+        },
+        credential: PASSWORD,
+        input: { kind: 'ingest', fifoPath: buffer.fifoPath },
+        spawner: createFfmpegRelaySpawner(),
+        backoffMs: [500, 1_000],
+        maxRestarts: 5,
+        stableLiveMs: 60_000,
+      })
+      await pump.start()
+      relay.start()
+      await pump.waitUntilOpen()
+      await waitFor(() => relay.health.state === 'live', 'ingest relay live')
+      await fixture.waitForBytes(MOUNT, 8_192)
 
-    const heard = await listenBytes(fixture.mountUrl(MOUNT), 24_576)
-    const decoded = await decodeAudio(heard)
-    expect(decoded.codec).toBe('mp3')
-    expect(decoded.durationSec).toBeGreaterThan(0.5)
-    expect(decoded.meanVolumeDb).not.toBeNull()
-    expect(decoded.meanVolumeDb!).toBeGreaterThan(-40)
+      const heard = await listenBytes(fixture.mountUrl(MOUNT), 24_576)
+      const decoded = await decodeAudio(heard)
+      expect(decoded.codec).toBe('mp3')
+      expect(decoded.durationSec).toBeGreaterThan(0.5)
+      expect(decoded.meanVolumeDb).not.toBeNull()
+      expect(decoded.meanVolumeDb!).toBeGreaterThan(-40)
 
-    // The "browser" keeps sending while live.
-    for (const seq of [4, 5, 6, 7]) {
-      const res = await postChunk('staffGranted', chunkBody(id, seq))
-      expect(res.status).toBe(201)
-      await new Promise((resolve) => setTimeout(resolve, 120))
-    }
+      // The "browser" keeps sending while live.
+      for (const seq of [4, 5, 6, 7]) {
+        const res = await postChunk('staffGranted', chunkBody(id, seq))
+        expect(res.status).toBe(201)
+        await new Promise((resolve) => setTimeout(resolve, 120))
+      }
 
-    // Stall: chunks stop; the pump's stall surfaces in the session
-    // log and the liveIngest state. (An earlier stall/resume pair may
-    // already be logged from the listen phase — the flag is what is
-    // asserted here, while no chunk writes can resume it.)
-    await waitFor(
-      async () => {
-        const record = await loadStudioSessionRecord(payload as never, id)
-        return (record?.session as any)?.liveIngest?.stalled === true
-      },
-      'ingest stall flag in session doc',
-      20_000,
-    )
-    const afterStall = await loadStudioSessionRecord(payload as never, id)
-    expect((afterStall?.session as any).liveIngest?.stalled).toBe(true)
-    expect(afterStall?.session.log.some((entry: any) => entry.type === 'live-ingest-stall')).toBe(
-      true,
-    )
-    expect(getRecordingState(afterStall!.session)).toEqual(recordingBefore)
+      // Stall: chunks stop; the pump's stall surfaces in the session
+      // log and the liveIngest state. (An earlier stall/resume pair may
+      // already be logged from the listen phase — the flag is what is
+      // asserted here, while no chunk writes can resume it.)
+      await waitFor(
+        async () => {
+          const record = await loadStudioSessionRecord(payload as never, id)
+          return (record?.session as any)?.liveIngest?.stalled === true
+        },
+        'ingest stall flag in session doc',
+        20_000,
+      )
+      const afterStall = await loadStudioSessionRecord(payload as never, id)
+      expect((afterStall?.session as any).liveIngest?.stalled).toBe(true)
+      expect(afterStall?.session.log.some((entry: any) => entry.type === 'live-ingest-stall')).toBe(
+        true,
+      )
+      expect(getRecordingState(afterStall!.session)).toEqual(recordingBefore)
 
-    // Kill the relay mid-show: supervisor reconnects, pump re-opens,
-    // fresh chunks reach a second listener.
-    const bytesBeforeKill = fixture.mount(MOUNT)!.bytesReceived
-    relay.killCurrentProcess('SIGKILL')
-    await waitFor(() => relay.health.state === 'reconnecting', 'relay reconnecting', 15_000)
-    await waitFor(() => relay.health.state === 'live', 'relay live after kill', 30_000)
-    for (const seq of [8, 9, 10, 11]) {
-      const res = await postChunk('staffGranted', chunkBody(id, seq))
-      expect(res.status).toBe(201)
-      await new Promise((resolve) => setTimeout(resolve, 120))
-    }
-    await waitFor(
-      () => fixture.mount(MOUNT)!.bytesReceived > bytesBeforeKill + 4_096,
-      'fixture bytes grow after reconnect',
-    )
-    const heardAgain = await listenBytes(fixture.mountUrl(MOUNT), 16_384)
-    const decodedAgain = await decodeAudio(heardAgain)
-    expect(decodedAgain.codec).toBe('mp3')
-    expect(decodedAgain.durationSec).toBeGreaterThan(0.3)
+      // Kill the relay mid-show: supervisor reconnects, pump re-opens,
+      // fresh chunks reach a second listener.
+      const bytesBeforeKill = fixture.mount(MOUNT)!.bytesReceived
+      relay.killCurrentProcess('SIGKILL')
+      await waitFor(() => relay.health.state === 'reconnecting', 'relay reconnecting', 15_000)
+      await waitFor(() => relay.health.state === 'live', 'relay live after kill', 30_000)
+      for (const seq of [8, 9, 10, 11]) {
+        const res = await postChunk('staffGranted', chunkBody(id, seq))
+        expect(res.status).toBe(201)
+        await new Promise((resolve) => setTimeout(resolve, 120))
+      }
+      await waitFor(
+        () => fixture.mount(MOUNT)!.bytesReceived > bytesBeforeKill + 4_096,
+        'fixture bytes grow after reconnect',
+      )
+      const heardAgain = await listenBytes(fixture.mountUrl(MOUNT), 16_384)
+      const decodedAgain = await decodeAudio(heardAgain)
+      expect(decodedAgain.codec).toBe('mp3')
+      expect(decodedAgain.durationSec).toBeGreaterThan(0.3)
 
-    relay.stop()
-    await pump.stop()
-    const afterAll = await loadStudioSessionRecord(payload as never, id)
-    expect(getRecordingState(afterAll!.session)).toEqual(recordingBefore)
-  }, 180_000)
+      relay.stop()
+      await pump.stop()
+      const afterAll = await loadStudioSessionRecord(payload as never, id)
+      expect(getRecordingState(afterAll!.session)).toEqual(recordingBefore)
+    },
+    180_000,
+  )
 })
 
-describe('POD-21 fix 3 — audiogram caption burn-in', () => {
+describe.skipIf(!hasFfmpegBinaries)('POD-21 fix 3 — audiogram caption burn-in', () => {
   it('renders the captioned variant from the reviewed transcript; uncaptioned fallback when none', async () => {
     const captioned = await createAudiogramForAcceptedHighlight(payload as never, undefined, {
       draftId: String(highlightDraft.id),
