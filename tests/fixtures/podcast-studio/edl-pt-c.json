@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "sessionRate": 48000,
+  "sources": [
+    {
+      "id": "host",
+      "file": "src-host.wav"
+    },
+    {
+      "id": "guest",
+      "file": "src-guest.wav"
+    },
+    {
+      "id": "music",
+      "file": "src-music.wav"
+    }
+  ],
+  "cut": {
+    "timelineStart": 5,
+    "timelineEnd": 8
+  },
+  "crossfadeSec": 0.5,
+  "crossfadeMode": "complementary-afade-at-junction (duration-preserving)",
+  "tracks": [
+    {
+      "id": "host",
+      "gain": 1,
+      "clips": [
+        {
+          "sourceIn": 0,
+          "sourceOut": 5,
+          "timelineStart": 0
+        },
+        {
+          "sourceIn": 8,
+          "sourceOut": 15,
+          "timelineStart": 5
+        }
+      ]
+    },
+    {
+      "id": "guest",
+      "gain": 0.8,
+      "clips": [
+        {
+          "sourceIn": 0,
+          "sourceOut": 5,
+          "timelineStart": 0
+        },
+        {
+          "sourceIn": 8,
+          "sourceOut": 15,
+          "timelineStart": 5
+        }
+      ]
+    },
+    {
+      "id": "music",
+      "gain": 1,
+      "clips": [
+        {
+          "sourceIn": 0,
+          "sourceOut": 5,
+          "timelineStart": 0
+        },
+        {
+          "sourceIn": 8,
+          "sourceOut": 15,
+          "timelineStart": 5
+        }
+      ]
+    }
+  ],
+  "chapters": [
+    {
+      "start": 0,
+      "title": "Cold open"
+    },
+    {
+      "start": 4,
+      "title": "Topic setup"
+    },
+    {
+      "start": 6.5,
+      "title": "Cut segment"
+    },
+    {
+      "start": 12,
+      "title": "Wrap up"
+    }
+  ],
+  "transcript": [
+    {
+      "start": 0,
+      "end": 4.5,
+      "text": "Welcome and intro"
+    },
+    {
+      "start": 4,
+      "end": 6,
+      "text": "Topic setup begins"
+    },
+    {
+      "start": 5.5,
+      "end": 7.5,
+      "text": "Sponsor read (inside cut)"
+    },
+    {
+      "start": 6,
+      "end": 9,
+      "text": "Story part one"
+    },
+    {
+      "start": 4.5,
+      "end": 8.5,
+      "text": "Bridge discussion (spans whole cut)"
+    },
+    {
+      "start": 9,
+      "end": 11,
+      "text": "Story part two"
+    },
+    {
+      "start": 12,
+      "end": 15,
+      "text": "Wrap up"
+    }
+  ],
+  "loudnessTarget": {
+    "I": -16,
+    "TP": -1.5,
+    "LRA": 11
+  }
+}

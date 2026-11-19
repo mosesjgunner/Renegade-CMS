@@ -9,6 +9,8 @@ import type { Metadata } from 'next'
 
 import { canRenderPodcast } from '@/modules/media/publishing'
 import { PodcastPlayer } from '@/modules/media/PodcastPlayer'
+import { oEmbedDiscoveryLinks } from '@/modules/podcast-studio/embed'
+import { loadConfig } from '@/modules/core/config'
 import {
   discoveryToMetadata,
   resolveDiscoveryDocument,
@@ -153,6 +155,14 @@ export default async function PodcastEpisodePage({
         }}
       />
 
+      {/* POD-18: oEmbed discovery (link tag → /api/oembed JSON → embed iframe) */}
+      <span
+        dangerouslySetInnerHTML={{
+          __html: oEmbedDiscoveryLinks(loadConfig().appUrl, episode),
+        }}
+        hidden
+      />
+
       {/* Authenticated draft / scheduled preview indicator */}
       {allowedInPreview && (
         <div
@@ -254,8 +264,24 @@ export default async function PodcastEpisodePage({
         </div>
       )}
 
-      {/* Web Audio Player */}
-      {audioUrl ? (
+      {/* Web Audio Player. POD-14: members-only episodes (or episodes
+          of a members-visibility show) render the LOCKED player for
+          anonymous visitors — no enclosure URL reaches the page. */}
+      {episode.membersOnly || show?.feedVisibility === 'members' ? (
+        isStaff ? (
+          audioUrl ? (
+            <PodcastPlayer
+              src={audioUrl}
+              type={audioMime}
+              title={episode.title}
+              chapters={chapters}
+              transcript={transcriptSegments}
+            />
+          ) : null
+        ) : (
+          <PodcastPlayer locked title={episode.title} />
+        )
+      ) : audioUrl ? (
         <PodcastPlayer
           src={audioUrl}
           type={audioMime}

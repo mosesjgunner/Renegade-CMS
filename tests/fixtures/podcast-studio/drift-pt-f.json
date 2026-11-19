@@ -1,0 +1,50 @@
+{
+  "simulated": true,
+  "deviceMeasurement": false,
+  "rateAHz": 48000,
+  "rateBHz": 48003.84,
+  "trueDriftPpm": 80,
+  "durationSec": 3600,
+  "impulseEverySec": 10,
+  "impulseCount": 361,
+  "expectedEndDriftMs": 288,
+  "uncorrectedEndMisalignmentMs": 288,
+  "uncorrectedMidMisalignmentMs": 144,
+  "measuredRatioFromHeadTailSync": 1.00008,
+  "measuredDriftPpm": 80,
+  "maxResidualMsAfterCorrection": 0.008333,
+  "residualAtEndMs": 0,
+  "edlCorrection": {
+    "trackB": {
+      "nominalRate": 48000,
+      "measuredRateHz": 48003.84,
+      "resampleFactor": 0.9999200064,
+      "rateCorrectionPpm": 80,
+      "offsetSamplesAtHead": 0
+    },
+    "note": "resampleFactor + offset are what the EDL stores per source (tech-research SS2.6/SS3.4 rule 5)"
+  },
+  "assertions": [
+    {
+      "id": "F1-end-drift-matches-expectation",
+      "pass": true,
+      "detail": "288.000 ms vs expected 288 ms (tolerance 1 ms = quantisation)"
+    },
+    {
+      "id": "F2-ppm-recovered-from-head+tail",
+      "pass": true,
+      "detail": "measured 80.000 ppm vs true 80 ppm"
+    },
+    {
+      "id": "F3-residual-under-5ms",
+      "pass": true,
+      "detail": "max residual 0.008333 ms across all 361 impulses"
+    },
+    {
+      "id": "F4-head-only-offset-would-NOT-fix-tail",
+      "pass": true,
+      "detail": "with head offset only, tail still off by ~288 ms — proves rate correction is required, not just a head clap"
+    }
+  ],
+  "allPass": true
+}

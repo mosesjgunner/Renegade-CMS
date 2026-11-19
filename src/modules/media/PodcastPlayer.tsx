@@ -2,6 +2,19 @@
 
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 
+import {
+  activeChapterIndexAt,
+  activeSegmentIndexAt,
+  buildShareUrl,
+  nextChapterStart,
+  parseShareTimestamp,
+  previousChapterStart,
+  sleepTimerExpired,
+  sleepTimerRemainingSec,
+  SLEEP_TIMER_MINUTE_OPTIONS,
+  type SleepTimerSetting,
+} from './podcast-player-model'
+
 export type Chapter = {
   title?: string
   startSeconds?: number
@@ -35,12 +48,20 @@ export function PodcastPlayer({
   title,
   chapters = [],
   transcript = [],
+  locked = false,
+  lockedMessage = 'This episode is for members. Members can listen through their private member feed.',
+  compact = false,
 }: {
-  src: string
+  src?: string
   type?: string
   title: string
   chapters?: Chapter[]
   transcript?: TranscriptSegment[]
+  /** POD-14: members-only locked state — renders NO audio element and NO enclosure URL anywhere. */
+  locked?: boolean
+  lockedMessage?: string
+  /** POD-18: compact mode for iframe embeds — transport only, no chapter/transcript panels. */
+  compact?: boolean
 }) {
   const audio = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -48,6 +69,10 @@ export function PodcastPlayer({
   const [duration, setDuration] = useState(0)
   const [speed, setSpeed] = useState(1)
   const [copied, setCopied] = useState(false)
+  const [muted, setMuted] = useState(false)
+  const [sleepSetting, setSleepSetting] = useState<SleepTimerSetting>({ kind: 'off' })
+  const [sleepSetAt, setSleepSetAt] = useState(0)
+  const [sleepRemaining, setSleepRemaining] = useState<number | null>(null)
 
   const normalizedChapters = useMemo(() => {
     return (chapters || []).map((ch) => ({
@@ -77,19 +102,41 @@ export function PodcastPlayer({
     }
   }
 
+  // Share-at-timestamp consumption: canonical ?t= first, legacy #t= second.
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.location.hash.startsWith('#t=')) return
-    const seconds = Number(window.location.hash.slice(3))
-    if (Number.isFinite(seconds) && seconds >= 0) {
+    if (typeof window === 'undefined') return
+    const seconds = parseShareTimestamp({
+      search: window.location.search,
+      hash: window.location.hash,
+    })
+    if (seconds !== null && seconds >= 0) {
       seek(seconds)
     }
   }, [duration, seek])
 
+  // Sleep timer: a minutes timer pauses playback at expiry; the
+  // episode-end setting pauses on the audio element's ended event.
+  useEffect(() => {
+    if (sleepSetting.kind !== 'minutes') {
+      setSleepRemaining(null)
+      return
+    }
+    const tick = () => {
+      const now = Date.now()
+      setSleepRemaining(sleepTimerRemainingSec(sleepSetting, sleepSetAt, now))
+      if (sleepTimerExpired(sleepSetting, sleepSetAt, now)) {
+        audio.current?.pause()
+        setSleepSetting({ kind: 'off' })
+      }
+    }
+    tick()
+    const interval = setInterval(tick, 1000)
+    return () => clearInterval(interval)
+  }, [sleepSetting, sleepSetAt])
+
   const copyAtTime = async () => {
     try {
-      const url = new URL(window.location.href)
-      url.hash = `t=${Math.floor(time)}`
-      await navigator.clipboard?.writeText(url.toString())
+      await navigator.clipboard?.writeText(buildShareUrl(window.location.href, time))
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
@@ -97,34 +144,74 @@ export function PodcastPlayer({
     }
   }
 
-  // Active chapter tracking
-  const activeChapterIndex = useMemo(() => {
-    if (!normalizedChapters.length) return -1
-    for (let i = normalizedChapters.length - 1; i >= 0; i--) {
-      if (time >= normalizedChapters[i].startTime) {
-        return i
-      }
-    }
-    return 0
-  }, [normalizedChapters, time])
+  // Active chapter + transcript segment tracking (player model).
+  const activeChapterIndex = useMemo(
+    () => activeChapterIndexAt(normalizedChapters, time),
+    [normalizedChapters, time],
+  )
+  const activeSegmentIndex = useMemo(
+    () =>
+      activeSegmentIndexAt(
+        transcript.map((segment) => ({
+          startSeconds: Number(segment.startSeconds || 0),
+          endSeconds: segment.endSeconds,
+        })),
+        time,
+      ),
+    [transcript, time],
+  )
 
-  // Active transcript segment tracking
-  const activeSegmentIndex = useMemo(() => {
-    if (!transcript.length) return -1
-    for (let i = transcript.length - 1; i >= 0; i--) {
-      const start = Number(transcript[i].startSeconds || 0)
-      const end =
-        transcript[i].endSeconds !== undefined ? Number(transcript[i].endSeconds) : Infinity
-      if (time >= start && time <= end) {
-        return i
-      }
+  // Keyboard control: space/K play-pause, J/L ∓10 s, arrows ∓5 s,
+  // M mute, [ / ] chapter navigation. Form fields keep their keys.
+  const onPlayerKeyDown = (event: React.KeyboardEvent) => {
+    const target = event.target as HTMLElement
+    if (target.closest('input, select, textarea')) return
+    const key = event.key
+    if (key === ' ' || key.toLowerCase() === 'k') {
+      event.preventDefault()
+      togglePlay()
+    } else if (key.toLowerCase() === 'j') seek(time - 10)
+    else if (key.toLowerCase() === 'l') seek(time + 10)
+    else if (key === 'ArrowLeft') seek(time - 5)
+    else if (key === 'ArrowRight') seek(time + 5)
+    else if (key.toLowerCase() === 'm') {
+      const next = !muted
+      setMuted(next)
+      if (audio.current) audio.current.muted = next
+    } else if (key === '[') seek(previousChapterStart(normalizedChapters, time))
+    else if (key === ']') {
+      const next = nextChapterStart(normalizedChapters, time)
+      if (next !== null) seek(next)
     }
-    return -1
-  }, [transcript, time])
+  }
+
+  if (locked || !src) {
+    return (
+      <section
+        aria-label={`Audio player: ${title}`}
+        data-locked="true"
+        data-compact={compact ? 'true' : undefined}
+        className="p-6 rounded-2xl bg-neutral-900/90 text-neutral-100 border border-neutral-800 shadow-xl space-y-4"
+      >
+        <div>
+          <span className="text-xs font-semibold tracking-wider text-amber-400 uppercase">
+            Members only
+          </span>
+          <h2 className="text-lg font-bold text-white truncate max-w-xl">{title}</h2>
+        </div>
+        <p role="status" className="text-sm text-neutral-300">
+          {lockedMessage}
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section
       aria-label={`Audio player: ${title}`}
+      data-compact={compact ? 'true' : undefined}
+      tabIndex={0}
+      onKeyDown={onPlayerKeyDown}
       className="p-6 rounded-2xl bg-neutral-900/90 text-neutral-100 border border-neutral-800 shadow-xl space-y-6"
     >
       <div className="flex items-center justify-between border-b border-neutral-800 pb-4">
@@ -153,6 +240,9 @@ export function PodcastPlayer({
         preload="metadata"
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
+        onEnded={() => {
+          if (sleepSetting.kind === 'episode-end') setSleepSetting({ kind: 'off' })
+        }}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
         className="w-full sr-only"
@@ -243,12 +333,62 @@ export function PodcastPlayer({
             >
               {copied ? 'Copied link!' : `Share at ${clock(time)}`}
             </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const next = !muted
+                setMuted(next)
+                if (audio.current) audio.current.muted = next
+              }}
+              aria-label={muted ? 'Unmute audio' : 'Mute audio'}
+              aria-pressed={muted}
+              className="text-xs px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 transition"
+            >
+              {muted ? 'Unmute' : 'Mute'}
+            </button>
+
+            <label className="flex items-center gap-2 text-xs font-medium text-neutral-300">
+              Sleep:
+              <select
+                aria-label="Sleep timer"
+                value={
+                  sleepSetting.kind === 'minutes' ? String(sleepSetting.minutes) : sleepSetting.kind
+                }
+                onChange={(event) => {
+                  const value = event.target.value
+                  if (value === 'off') setSleepSetting({ kind: 'off' })
+                  else if (value === 'episode-end') setSleepSetting({ kind: 'episode-end' })
+                  else {
+                    setSleepSetting({ kind: 'minutes', minutes: Number(value) })
+                    setSleepSetAt(Date.now())
+                  }
+                }}
+                className="bg-neutral-800 border border-neutral-700 text-neutral-200 text-xs rounded-lg px-2 py-1 outline-none"
+              >
+                <option value="off">Off</option>
+                {SLEEP_TIMER_MINUTE_OPTIONS.map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    {minutes} min
+                  </option>
+                ))}
+                <option value="episode-end">End of episode</option>
+              </select>
+              {sleepRemaining !== null && sleepSetting.kind === 'minutes' && (
+                <span aria-live="polite" className="font-mono text-neutral-400">
+                  {clock(sleepRemaining)}
+                </span>
+              )}
+            </label>
           </div>
         </div>
+        <p className="text-[11px] text-neutral-500">
+          Keyboard: Space play/pause · J/L back/forward 10s · ←/→ 5s · [ / ] chapters · M mute
+        </p>
       </div>
 
-      {/* Chapters list */}
-      {normalizedChapters.length > 0 && (
+      {/* Chapters list (full mode only; embeds are transport-only) */}
+      {!compact && normalizedChapters.length > 0 && (
         <section
           aria-label="Episode chapters"
           className="border-t border-neutral-800 pt-4 space-y-3"
@@ -268,7 +408,17 @@ export function PodcastPlayer({
                         : 'bg-neutral-800/60 hover:bg-neutral-800 text-neutral-300'
                     }`}
                   >
-                    <span className="truncate">{chapter.title || `Chapter ${index + 1}`}</span>
+                    <span className="flex items-center gap-2 truncate">
+                      {chapter.image && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={`/media/${chapter.image}`}
+                          alt=""
+                          className="w-8 h-8 rounded object-cover"
+                        />
+                      )}
+                      <span className="truncate">{chapter.title || `Chapter ${index + 1}`}</span>
+                    </span>
                     <span className="font-mono text-neutral-400 ml-4">
                       {clock(chapter.startTime)}
                     </span>
@@ -280,8 +430,8 @@ export function PodcastPlayer({
         </section>
       )}
 
-      {/* Interactive transcript navigation */}
-      {transcript.length > 0 && (
+      {/* Interactive transcript navigation (full mode only) */}
+      {!compact && transcript.length > 0 && (
         <section
           aria-label="Episode transcript"
           className="border-t border-neutral-800 pt-4 space-y-3"

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { canRenderPodcast } from '@/modules/media/publishing'
+import { isEpisodeMembersOnly } from '@/modules/podcast-studio/embed'
 import { loadConfig } from '@/modules/core/config'
 
 export const runtime = 'nodejs'
@@ -23,6 +24,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
   } as never)
 
   const episode = found.docs[0] as unknown as Record<string, unknown> | undefined
+  // POD-19 security fix: a members-only episode's transcript is not
+  // public (POD-03 absence rule) — 404, exactly like the JSON/SRT
+  // serialisations behind loadEpisodeTranscript.
+  if (episode && isEpisodeMembersOnly(episode as never, (episode as any).show)) {
+    return new Response('Not found', { status: 404 })
+  }
   if (!episode || !canRenderPodcast(episode as never)) {
     // Check for public redirects
     const currentPath = `/podcasts/episodes/${slug}/transcript`
