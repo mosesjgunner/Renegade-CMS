@@ -26,6 +26,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
+import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { MemoryChunkStorage } from '../../src/modules/podcast-studio/capture/journal'
 import {
   completeGuestChunkUpload,
@@ -199,7 +200,7 @@ afterAll(async () => {
   await payload?.db.destroy?.()
 })
 
-describe('POD-11 guest chunk upload + conform (rung 1)', () => {
+describe.skipIf(!hasFfmpegBinaries)('POD-11 guest chunk upload + conform (rung 1)', () => {
   it('kill at ~50% → resume → no duplicates → verified completion → conform job updates the manifest', async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), 'pod11-chunks-'))
     try {
