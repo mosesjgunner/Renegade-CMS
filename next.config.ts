@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   // include the repository docs tree — 797 MB of the 1,209 MB artifact at
   // the Prompt 00 baseline. Docs are never read at runtime; exclude them
   // from tracing so the shipped artifact carries only runnable files.
-  outputFileTracingExcludes: { '*': ['./docs/**/*'] },
+  outputFileTracingExcludes: { '/*': ['./docs/**/*'] },
   env: { RENEGADE_ARTIFACT_SHA: process.env.RENEGADE_ARTIFACT_SHA ?? '' },
   generateBuildId: async () => process.env.RENEGADE_ARTIFACT_SHA || null,
   // Default Turbopack builds do not use the development-only Webpack watcher rules.
