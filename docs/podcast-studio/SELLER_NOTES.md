@@ -111,7 +111,10 @@ Everything above, plus:
 - **Renegade CMS** with the media-studio module enabled (PostgreSQL;
   the studio needs no community or social modules and no third-party
   accounts).
-- **ffmpeg** on the app host (renders, peaks, relay, video).
+- **ffmpeg** — bundled by the installer and readiness-verified (renders,
+  peaks, relay, video): the installer downloads the pinned build and setup
+  checks it is ready; a manual `FFMPEG_PATH` override is still supported
+  for operators who prefer their own ffmpeg.
 - **coturn** — only for remote guests on hostile NATs. Without it,
   guests on friendly networks work via STUN; the limitation is surfaced
   in the guest's diagnostics, never silent. See COTURN.md for realm,

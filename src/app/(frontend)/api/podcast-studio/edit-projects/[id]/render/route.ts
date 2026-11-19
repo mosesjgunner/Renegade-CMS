@@ -9,6 +9,8 @@ import {
   renderProject,
 } from '@/modules/podcast-studio/render/render-service'
 import { PodcastEditProjectError } from '@/modules/podcast-studio/edit/projects-service'
+import { AUDIO_ENGINE_MISSING, AUDIO_ENGINE_MISSING_MESSAGE } from '@/modules/media/ffmpeg'
+import { ensureAudioEngine } from '@/modules/media/audio-engine-guard'
 import { editProjectErrorResponse, privateJson, projectContext, readJson } from '../../shared'
 
 export const runtime = 'nodejs'
@@ -52,6 +54,13 @@ export async function POST(request: Request, { params }: RouteContext) {
   const { id } = await params
   const context = await projectContext(payload, request, id)
   if ('error' in context) return context.error
+  // Fail-soft preflight: refuse up front, before any render work is
+  // queued or run, when the server has no audio engine.
+  const engineMissing = await ensureAudioEngine()
+    .then(() => false)
+    .catch(() => true)
+  if (engineMissing)
+    return privateJson({ error: AUDIO_ENGINE_MISSING_MESSAGE, code: AUDIO_ENGINE_MISSING }, 503)
   const body = await readJson(request)
   const profile = typeof body.profile === 'string' ? body.profile : 'master'
   const range =
@@ -95,6 +104,8 @@ export async function POST(request: Request, { params }: RouteContext) {
       idempotencyKey: queued.idempotencyKey,
     })
   } catch (error) {
+    if (error instanceof PodcastRenderError && error.code === AUDIO_ENGINE_MISSING)
+      return privateJson({ error: error.message, code: error.code }, 503)
     if (error instanceof PodcastRenderError)
       return privateJson({ error: error.message, code: error.code }, 409)
     if (error instanceof PodcastEditProjectError) return editProjectErrorResponse(error)

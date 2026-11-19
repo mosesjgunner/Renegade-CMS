@@ -227,6 +227,49 @@ if $existing_config && $network_subnet_supplied && [[ -z "$configured_network_su
   printf 'RENEGADE_NETWORK_SUBNET=%s\n' "$network_subnet" >> "$config_file"
 fi
 
+# --- Bundled audio engine (ffmpeg) -------------------------------------
+# Podcast recording, rendering and live streaming need ffmpeg. The
+# installer bundles a pinned build (scripts/ffmpeg-bundle.json) into
+# vendor/ffmpeg/, which compose.production.yaml mounts read-only into the
+# app containers.
+#
+# Failure policy — two different cases, kept distinct on purpose:
+#   * Tampering: a download was attempted and its SHA-256 did NOT match
+#     the pin. That fails closed: the whole install stops and no
+#     unverified binary is ever used.
+#   * Unavailability: no way to run the installer script, or the download
+#     simply could not be reached. That warns and continues — the engine
+#     is optional at install time and an owner can install it later from
+#     the Capability Center.
+#
+# One implementation only: scripts/install-bundled-ffmpeg.mjs. Host node
+# is preferred when present. Docker is already required by this script,
+# so without host node we run the same script in a node container: the
+# checkout is mounted at /bundle and the script resolves the repo root
+# from its own path, so inside the container its root is /bundle and its
+# default target (/bundle/vendor/ffmpeg) is this checkout's
+# vendor/ffmpeg on the host — no --dir override is needed.
+if [[ -x "$root/vendor/ffmpeg/ffmpeg" ]] && "$root/vendor/ffmpeg/ffmpeg" -version >/dev/null 2>&1; then
+  echo 'Audio engine: bundled ffmpeg is already present.'
+else
+  echo 'Audio engine: installing the bundled ffmpeg…'
+  audio_engine_output=''
+  audio_engine_status=0
+  if command -v node >/dev/null 2>&1; then
+    audio_engine_output="$(node "$root/scripts/install-bundled-ffmpeg.mjs" 2>&1)" || audio_engine_status=$?
+  else
+    audio_engine_output="$(docker run --rm -v "$root:/bundle" -w /bundle node:24-alpine node scripts/install-bundled-ffmpeg.mjs 2>&1)" || audio_engine_status=$?
+  fi
+  [[ -z "$audio_engine_output" ]] || printf '%s\n' "$audio_engine_output"
+  if [[ $audio_engine_status -ne 0 ]]; then
+    if [[ "$audio_engine_output" == *FFMPEG_BUNDLE_CHECKSUM_MISMATCH* ]]; then
+      fail 'the audio engine download did not match its pinned checksum; refusing to continue with an unverified binary.'
+    fi
+    echo 'Warning: the audio engine could not be installed now. Podcast recording, rendering and live streaming will stay off until it is installed; an owner can install it later from the Capability Center.' >&2
+  fi
+  unset audio_engine_output audio_engine_status
+fi
+
 "${compose[@]}" config --quiet || fail 'production compose configuration is invalid.'
 echo "Preflight passed: ${ram_mb} MB RAM, ${disk_mb} MB disk, ${profile} profile. Starting PostgreSQL, migrations, web, and worker..."
 if $prebuilt; then

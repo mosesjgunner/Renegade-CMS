@@ -67,6 +67,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.js
 COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/install-bundled-ffmpeg.mjs ./scripts/install-bundled-ffmpeg.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/scripts/ffmpeg-bundle.json ./scripts/ffmpeg-bundle.json
 COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
 COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
 COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild

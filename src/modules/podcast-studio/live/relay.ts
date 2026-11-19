@@ -134,10 +134,42 @@ export function buildFfmpegArgs(request: {
   const args: string[] = ['-hide_banner', '-loglevel', 'warning']
   if (input.kind === 'pipe') {
     // Raw s16le stereo at the POD-00 working rate — the ingest buffer's format.
-    args.push('-f', 's16le', '-ar', '48000', '-ac', '2', '-i', 'pipe:0')
+    // The format is fully specified, so stream analysis has nothing to
+    // discover: cap it. ffmpeg 7.0 (the bundled engine) otherwise spends
+    // its default 5 s analysis window on a real-time-paced pipe before
+    // opening the output, which stalls the live relay past its startup
+    // budget; newer ffmpeg opens immediately either way.
+    args.push(
+      '-analyzeduration',
+      '0',
+      '-probesize',
+      '32768',
+      '-f',
+      's16le',
+      '-ar',
+      '48000',
+      '-ac',
+      '2',
+      '-i',
+      'pipe:0',
+    )
   } else if (input.kind === 'ingest') {
-    // Same raw format, read from the ingest buffer's named pipe.
-    args.push('-f', 's16le', '-ar', '48000', '-ac', '2', '-i', input.fifoPath)
+    // Same raw format, read from the ingest buffer's named pipe (same
+    // analysis cap as the pipe input — the fifo is real-time-paced too).
+    args.push(
+      '-analyzeduration',
+      '0',
+      '-probesize',
+      '32768',
+      '-f',
+      's16le',
+      '-ar',
+      '48000',
+      '-ac',
+      '2',
+      '-i',
+      input.fifoPath,
+    )
   } else if (input.kind === 'file') {
     if (input.loop) args.push('-stream_loop', '-1')
     args.push('-re', '-i', input.path)

@@ -44,6 +44,7 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { loadConfig, type AppConfig } from '../../core/config'
+import { resolveFfmpegBinary } from '../../media/ffmpeg'
 import type { MediaPublishingStore } from '../../media/publishing'
 import {
   int16BytesToFloat,
@@ -143,7 +144,7 @@ export async function runFfmpegRateCorrection(
     await writeFile(inputPath, wavBytes)
     const args = buildConformFfmpegArgs({ inputPath, outputPath, plan, channels })
     await new Promise<void>((resolve, reject) => {
-      const child = spawn(options.ffmpeg ?? process.env.FFMPEG_PATH ?? 'ffmpeg', args, {
+      const child = spawn(resolveFfmpegBinary(options.ffmpeg), args, {
         stdio: ['ignore', 'ignore', 'pipe'],
       })
       let stderr = ''

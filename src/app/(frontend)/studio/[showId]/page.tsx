@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
+import { probeAudioEngine } from '@/modules/media/ffmpeg'
 import {
   listStudioSessionRecords,
   type StudioSessionRecord,
@@ -61,12 +62,28 @@ export default async function StudioPage({ params }: { params: Promise<{ showId:
     () => [] as StudioSessionRecord[],
   )
 
+  const audioEngineMissing = await probeAudioEngine()
+    .then((engine) => engine.status === 'missing')
+    .catch(() => true)
+
   return (
-    <StudioWorkspace
-      participantId={user?.id ? String(user.id) : 'host'}
-      showId={showId}
-      showTitle={String(showDoc.title ?? 'Untitled show')}
-      initialSessions={JSON.parse(JSON.stringify(records))}
-    />
+    <>
+      {audioEngineMissing ? (
+        <div
+          role="alert"
+          className="mx-auto mt-6 max-w-4xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200"
+        >
+          Audio processing isn&apos;t set up on this server yet — recording in the browser and
+          editing still work, but rendering, cleanup, live streaming and guest-track conforming are
+          paused until an owner installs the audio engine from the Capability Center.
+        </div>
+      ) : null}
+      <StudioWorkspace
+        participantId={user?.id ? String(user.id) : 'host'}
+        showId={showId}
+        showTitle={String(showDoc.title ?? 'Untitled show')}
+        initialSessions={JSON.parse(JSON.stringify(records))}
+      />
+    </>
   )
 }

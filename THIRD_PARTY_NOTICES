@@ -125,3 +125,19 @@ CurryCaster II statement:
   what the product does, used as a design target for clean-room
   reimplementation. No CurryCaster II code, assets, or text appear anywhere
   in Renegade CMS.
+
+----------------------------------------------------------------------
+(d) ffmpeg — bundled audio engine
+----------------------------------------------------------------------
+
+Name: ffmpeg (with ffprobe)
+Version: 7.0.2
+Source: https://johnvansickle.com/ffmpeg/
+License: GPL-3.0
+
+Distribution note: ffmpeg is distributed as a separate standalone binary
+fetched at install time by scripts/install-bundled-ffmpeg.mjs (pinned by
+version and SHA-256 in scripts/ffmpeg-bundle.json). It is not linked into
+the application; Renegade runs it as an external program. The full license
+text ships inside the download tarball (GPLv3.txt) and the installer
+preserves it next to the installed binaries (vendor/ffmpeg/GPLv3.txt).

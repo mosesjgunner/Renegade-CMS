@@ -42,6 +42,7 @@ import { ControlSurfacePanel } from './ControlSurfacePanel'
 import { EditProjectPanel } from './EditProjectPanel'
 import { GuestLobbyPanel } from './GuestLobbyPanel'
 import { LiveIngestPanel } from './LiveIngestPanel'
+import { LiveSettingsPanel } from './LiveSettingsPanel'
 
 type SessionDoc = {
   id: string
@@ -998,6 +999,9 @@ export function StudioWorkspace({
 
           {/* POD-21 live ingest (program bus → ingest endpoint → relay) */}
           {activeId && <LiveIngestPanel sessionRecordId={activeId} />}
+
+          {/* Live-stream settings (per-show profile + source credential form) */}
+          <LiveSettingsPanel showId={showId} />
 
           {/* POD-12 EDL timeline editor (pure engine consumer; server peaks) */}
           <EditProjectPanel showId={showId} />

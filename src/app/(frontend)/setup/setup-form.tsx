@@ -21,6 +21,7 @@ type SetupResult = {
   onboarding?: {
     publicUrl: string
     adminUrl: string
+    studioUrl?: string
     configuredCapabilities: string[]
     needsConfiguration: string[]
     availableLater: string[]
@@ -612,6 +613,7 @@ function BrandStep({
           <option value="campaign-commerce">
             ★ Campaign / Commerce Starter (Forward for the People)
           </option>
+          <option value="media-podcast">Podcast / media</option>
           <option value="creator-publication">Creator / publication</option>
           <option value="business">Business</option>
           <option value="nonprofit-community">Nonprofit / community</option>
@@ -661,6 +663,7 @@ function ReadinessCards({ readiness }: { readiness: ReadinessResponse | 'error' 
   const { readiness: state, providers } = readiness
   const database = providers.database
   const storage = providers.storage
+  const audioEngine = providers.audioEngine
   const databaseDetail =
     state.migrationState === 'applied'
       ? `Connected. Schema migrations applied (${state.appliedMigrations}/${state.totalMigrations}).`
@@ -675,6 +678,11 @@ function ReadinessCards({ readiness }: { readiness: ReadinessResponse | 'error' 
       name: 'Primary Storage',
       ok: storage?.status === 'validated',
       detail: storage?.message ?? 'Not checked.',
+    },
+    {
+      name: 'Audio engine',
+      ok: audioEngine?.status === 'validated',
+      detail: audioEngine?.message ?? 'Not checked.',
     },
   ]
   return (
@@ -1045,6 +1053,17 @@ function Completion({
             application listener directly to the internet.
           </p>
         </section>
+        {onboarding.studioUrl ? (
+          <div className="flex gap-3 items-center">
+            <Link
+              href={onboarding.studioUrl}
+              aria-disabled={!acknowledged}
+              className={`btn btn-primary text-xs ${acknowledged ? '' : 'pointer-events-none opacity-50'}`}
+            >
+              Open your Studio
+            </Link>
+          </div>
+        ) : null}
         <div className="flex gap-3 items-center">
           <Link
             href="/admin"

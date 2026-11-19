@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 import { getInstallationReadiness } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
+import { probeAudioEngine } from '@/modules/media/ffmpeg'
 import { migrations } from '@/migrations'
 
 export async function GET() {
@@ -29,7 +30,27 @@ export async function GET() {
       storageDetails = `Storage write error: ${msg}`
     }
 
+    const audioEngineStatus = await probeAudioEngine()
+    const audioEngineSourceLabel =
+      audioEngineStatus.ffmpeg.source === 'bundled'
+        ? 'bundled'
+        : audioEngineStatus.ffmpeg.source === 'env'
+          ? 'from server setting'
+          : audioEngineStatus.ffmpeg.source === 'explicit'
+            ? 'custom path'
+            : 'system'
+
     const providers = {
+      audioEngine: {
+        name: 'Audio Engine (ffmpeg)',
+        type: 'optional' as const,
+        status:
+          audioEngineStatus.status === 'ready' ? ('validated' as const) : ('unconfigured' as const),
+        message:
+          audioEngineStatus.status === 'ready'
+            ? `Ready — ffmpeg ${audioEngineStatus.ffmpeg.version ?? 'unknown version'} (${audioEngineSourceLabel})`
+            : 'Not set up yet — podcast recording, rendering and live streaming need the audio engine. It installs automatically with the installer, or an owner can install it from the Capability Center.',
+      },
       database: {
         name: 'PostgreSQL Database',
         type: 'required' as const,
@@ -113,6 +134,13 @@ export async function GET() {
             type: 'required',
             status: 'failed',
             message: 'Storage validation deferred until database is connected.',
+          },
+          audioEngine: {
+            name: 'Audio Engine (ffmpeg)',
+            type: 'optional',
+            status: 'unconfigured',
+            message:
+              'Not set up yet — podcast recording, rendering and live streaming need the audio engine. It installs automatically with the installer, or an owner can install it from the Capability Center.',
           },
         },
         error: errorMsg,

@@ -4,6 +4,8 @@ import type { AdminViewServerProps } from 'payload'
 
 import { CapabilityLifecycleService } from '../core/capabilities'
 import { loadConfig } from '../core/config'
+import { probeAudioEngine } from '../media/ffmpeg'
+import AudioEngineFixButton from './AudioEngineFixButton'
 import { migrations } from '../../migrations'
 import { buildOperationsDiagnostics, isOperator } from '../operations/diagnostics'
 import { capabilityPresentationState, operationalOverview } from './progressive-disclosure'
@@ -78,6 +80,15 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
   }
 
   const config = loadConfig()
+  const audioEngine = await probeAudioEngine()
+  const audioEngineSource =
+    audioEngine.ffmpeg.source === 'bundled'
+      ? 'bundled with Renegade'
+      : audioEngine.ffmpeg.source === 'env'
+        ? 'from a server setting'
+        : audioEngine.ffmpeg.source === 'explicit'
+          ? 'from a custom path'
+          : 'installed on the server'
   const diagnostics = await buildOperationsDiagnostics(req.payload, config, {
     expectedMigrations: migrations.map((migration) => migration.name),
   })
@@ -219,6 +230,24 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
               <span className={`status ${statusClass(status)}`}>{status}</span>
             </div>
           ))}
+          <div className="card" style={{ padding: 14 }}>
+            <strong>Audio engine</strong>
+            <br />
+            {audioEngine.status === 'ready' ? (
+              <span className={`status ${statusClass('healthy')}`}>
+                Ready — ffmpeg {audioEngine.ffmpeg.version ?? 'unknown version'} (
+                {audioEngineSource})
+              </span>
+            ) : (
+              <>
+                <span className={`status ${statusClass('degraded')}`}>Not set up yet</span>
+                <p>
+                  Podcast recording, rendering and live streaming need the audio engine (ffmpeg).
+                </p>
+                <AudioEngineFixButton />
+              </>
+            )}
+          </div>
         </div>
       </section>
     </main>

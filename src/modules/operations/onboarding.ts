@@ -54,6 +54,7 @@ export const onboardingProfiles = ['Lean', 'Standard'] as const
 export const starterSiteTypes = [
   'publication-community',
   'campaign-commerce',
+  'media-podcast',
   'creator-publication',
   'business',
   'nonprofit-community',
@@ -470,7 +471,85 @@ async function provisionOnboardingSiteRecords(
   } as never)
   if (input.starterContent)
     await provisionStarterContent(payload, { input, site, publication, space, member })
-  return { site, publication, space, member, configuredCapabilities: enabledCapabilities }
+  // Choosing the podcast purpose is itself the decision: the first show
+  // exists even when the sample-content checkbox was left off (that
+  // checkbox governs starter pages/drafts only).
+  const podcastShow =
+    input.starterType === 'media-podcast'
+      ? await ensurePodcastStarterShow(payload, { input, site })
+      : undefined
+  return {
+    site,
+    publication,
+    space,
+    member,
+    configuredCapabilities: enabledCapabilities,
+    podcastShow,
+  }
+}
+
+/**
+ * The media-podcast starter's first show: one show for the site, created
+ * with defaults only (no exportProfile / streamProfile — empty means the
+ * POD-13/POD-16 defaults apply, so the owner makes no decisions here).
+ * Idempotency key is (site, slug): a re-run finds the same show and
+ * creates nothing. The preferred slug is the site slug; when another
+ * site's show already owns it, `-podcast` is suffixed (then `-2`, …).
+ * podcast-shows carries no importSource-style provenance fields, so none
+ * are written.
+ */
+async function ensurePodcastStarterShow(
+  payload: Payload,
+  context: { input: OnboardingInput; site: { id: string } },
+): Promise<{ id: string; studioUrl: string }> {
+  const { input, site } = context
+  const findShow = async (where: Record<string, unknown>) =>
+    (
+      await payload.find({
+        collection: 'podcast-shows',
+        where,
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+    ).docs[0] as { id: string } | undefined
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const slug =
+      attempt === 0
+        ? input.slug
+        : attempt === 1
+          ? `${input.slug}-podcast`
+          : `${input.slug}-podcast-${attempt}`
+    const own = await findShow({
+      and: [{ site: { equals: site.id } }, { slug: { equals: slug } }],
+    })
+    if (own) return { id: String(own.id), studioUrl: `/studio/${String(own.id)}` }
+    const elsewhere = await findShow({ slug: { equals: slug } })
+    if (elsewhere) continue
+    const created = (await payload.create({
+      collection: 'podcast-shows',
+      data: {
+        site: site.id,
+        title: input.name,
+        slug,
+        description: input.description || undefined,
+        language: input.locale,
+        // The easy install's promise is a working podcast out of the
+        // box: the first show starts feed-live (published, RSS on), so
+        // the owner's first published episode reaches the public feed
+        // without an admin detour through show settings they have never
+        // seen. The owner can unpublish the show or disable RSS in the
+        // admin at any time.
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+        rssEnabled: true,
+        feedVisibility: 'public',
+      },
+      overrideAccess: true,
+    } as never)) as unknown as { id: string }
+    return { id: String(created.id), studioUrl: `/studio/${String(created.id)}` }
+  }
+  throw new Error('Could not find a free slug for the starter podcast show.')
 }
 
 /**

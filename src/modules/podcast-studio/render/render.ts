@@ -59,6 +59,7 @@ import { access, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { measurePcmLoudness } from '../../media/audio'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../media/ffmpeg'
 import { parseEdl, type EdlChapter } from '../contracts/edl'
 import { cleanupProgramFilters, type CleanupOptions } from '../intelligence/cleanup'
 import { editDurationSec, type EditClip, type EditEdl, type EditTrack } from '../edit/edl-engine'
@@ -232,10 +233,8 @@ const runCommand = (
     })
   })
 
-const ffmpegPath = (request: RenderRequest): string =>
-  request.ffmpeg ?? process.env.FFMPEG_PATH ?? 'ffmpeg'
-const ffprobePath = (request: RenderRequest): string =>
-  request.ffprobe ?? process.env.FFPROBE_PATH ?? 'ffprobe'
+const ffmpegPath = (request: RenderRequest): string => resolveFfmpegBinary(request.ffmpeg)
+const ffprobePath = (request: RenderRequest): string => resolveFfprobeBinary(request.ffprobe)
 
 export type ProbedAudio = {
   durationSec: number
@@ -251,7 +250,7 @@ export type ProbedAudio = {
 /** ffprobe wrapper: duration/frames/channels plus ID3 tags and embedded chapters. */
 export async function probeAudioFile(
   filePath: string,
-  ffprobe = process.env.FFPROBE_PATH ?? 'ffprobe',
+  ffprobe: string = resolveFfprobeBinary(),
 ): Promise<ProbedAudio> {
   const { stdout } = await runCommand(
     ffprobe,
