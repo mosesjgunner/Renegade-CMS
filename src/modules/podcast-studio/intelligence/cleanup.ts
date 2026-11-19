@@ -14,15 +14,40 @@
  *   the timeline under the EDL's chapters/cues; the render graph
  *   takes the other three filters via `cleanupProgramFilters`.
  *
- * `applyCleanupToFile` is the measurable file-level chain (all four
- * options) used for pre-render cleanup of a finished master or a
- * single track; it reports before/after measurements: duration and
- * the hum-band energy (band-passed RMS at the notch frequency), so
- * tests assert real reductions, not filter-string presence.
+ * Audio pass (pre-RC3) — two more file-level stages, applied by
+ * `applyCleanupToFile` ahead of the bus filters (they are per-source
+ * treatments, so they do NOT join `cleanupProgramFilters`; the render
+ * graph applies denoise per lane instead — see render.ts):
+ *
+ * - broadband denoise: ffmpeg `afftdn` spectral reduction with a
+ *   TRACKED noise floor — the steady fan/HVAC/room tone that sits
+ *   UNDER speech, which the gate cannot touch (it only mutes between
+ *   phrases). Conservative by design: modest strength and gain
+ *   smoothing against musical noise. The filter's floor is set from
+ *   the MEASURED room floor (a guessed floor silently disables the
+ *   stage — see `denoiseFilter`). Strength is a control, not a fixed
+ *   value, and the stage has an off switch like every other.
+ * - de-click: ffmpeg `adeclick` impulsive-noise removal. OFF by
+ *   default — it is a repair tool for damaged sources, not a
+ *   mastering stage. (Its sibling `adeclip` is deliberately NOT
+ *   offered anywhere: clipped audio is flagged in the health
+ *   report, never silently "repaired".)
+ * - de-reverb: NOT AVAILABLE with local tooling at a quality bar we
+ *   would ship — named as a limitation in the seller docs rather
+ *   than faked with a gate trick.
+ *
+ * `applyCleanupToFile` is the measurable file-level chain used for
+ * pre-render cleanup of a finished master or a single track; it
+ * reports before/after measurements: duration, the hum-band energy
+ * (band-passed RMS at the notch frequency), and — when denoise is
+ * enabled — the PCM noise floor / speech level and any clipped
+ * ranges, so tests assert real reductions, not filter-string
+ * presence.
  */
 import { execFile } from 'node:child_process'
 
 import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../media/ffmpeg'
+import { measureFileHealth, type ClippedRange } from './audio-health'
 
 export type CleanupOptions = {
   humRemoval?: { enabled: boolean; frequencyHz?: 50 | 60 }
@@ -35,6 +60,18 @@ export type CleanupOptions = {
     /** Minimum silence duration to count, seconds. Default 0.5. */
     minSilenceSec?: number
   }
+  denoise?: {
+    enabled: boolean
+    /**
+     * Noise reduction strength in dB (afftdn `nr`). Default 9 —
+     * deliberately under afftdn's own 12 dB default: the owner is an
+     * audiophile and artifacts are a failure, not a trade-off.
+     */
+    strengthDb?: number
+    /** Starting noise-floor estimate in dBFS (afftdn `nf`); the floor is tracked from there. Default −55. */
+    floorDb?: number
+  }
+  deClick?: { enabled: boolean }
 }
 
 export const VOICE_CLEANUP_PRESET: Required<CleanupOptions> = {
@@ -42,7 +79,46 @@ export const VOICE_CLEANUP_PRESET: Required<CleanupOptions> = {
   noiseGate: { enabled: true, preset: 'voice' },
   deEsser: { enabled: true, preset: 'voice' },
   silenceTrim: { enabled: true, thresholdDb: -45, minSilenceSec: 0.5 },
+  denoise: { enabled: true, strengthDb: 9, floorDb: -55 },
+  deClick: { enabled: false },
 }
+
+/**
+ * The afftdn filter for the denoise stage. Two parameters are
+ * load-bearing, both measured on this chain's bad-session fixture:
+ *
+ * - `nf`: afftdn only reduces noise ABOVE its floor estimate, so a
+ *   floor set far under the real room (the −50 default against a
+ *   −36 dBFS fan) silently does nothing. Callers therefore pass the
+ *   MEASURED floor (`denoiseFloorForMeasurement`); the static
+ *   `floorDb` option is only the fallback when no measurement
+ *   exists.
+ * - `ad` (adaptivity) stays LOW (0.2): at ad=1 the tracker
+ *   converges onto steady program material itself and the filter
+ *   degenerates into a uniform −nr dB cut across EVERYTHING —
+ *   speech included (measured: fan, speech and sibilance all down
+ *   exactly the strength value). At 0.2 the estimate stays with
+ *   the room: the fixture's fan drops ~4–5 dB in fan-only segments
+ *   while speech segments move ≤ 0.5 dB. Conservative by design —
+ *   the owner's bar is that artifacts are a failure, not a
+ *   trade-off.
+ */
+export const denoiseFilter = (options: NonNullable<CleanupOptions['denoise']>): string => {
+  const strength = options.strengthDb ?? 9
+  const floor = options.floorDb ?? -55
+  return `afftdn=nr=${fmt(strength)}:nf=${fmt(floor)}:tn=1:ad=0.2:gs=4`
+}
+
+/**
+ * The afftdn floor for a measured noise floor: a few dB above the
+ * measurement (afftdn reduces what sits above its floor; the
+ * tracker converges from there), clamped to the filter's range.
+ */
+export const denoiseFloorForMeasurement = (measuredNoiseFloorDbfs: number): number =>
+  Math.round(Math.min(-20, Math.max(-70, measuredNoiseFloorDbfs + 6)) * 10) / 10
+
+/** The adeclick filter for the (off-by-default) de-click stage. */
+export const deClickFilter = (): string => 'adeclick=w=55:o=75:t=2'
 
 export class CleanupError extends Error {
   code: string
@@ -229,6 +305,17 @@ export type CleanupMeasurements = {
   humEnergyAfterDb: number | null
   trim: SilenceTrimMeasurement | null
   appliedFilters: string[]
+  /**
+   * PCM health, measured only when the denoise stage is enabled
+   * (the decode is the expensive part): noise floor and speech
+   * level before/after, plus the input's clipped ranges — flagged,
+   * never repaired.
+   */
+  noiseFloorBeforeDb: number | null
+  noiseFloorAfterDb: number | null
+  speechLevelBeforeDb: number | null
+  speechLevelAfterDb: number | null
+  clippedRanges: ClippedRange[]
 }
 
 /**
@@ -257,8 +344,30 @@ export const applyCleanupToFile = async (input: {
       ? await measureBandEnergyDb(input.inputPath, humFrequencyHz, ffmpeg, runner)
       : null
 
+  // Audio pass: PCM health before (only when denoise is enabled —
+  // the decode is the expensive part). Clipped ranges ride along:
+  // flagged in the measurements, never repaired by any stage.
+  const healthBefore = input.options.denoise?.enabled
+    ? await measureFileHealth(input.inputPath, { ffmpeg, ffprobe }).catch(() => null)
+    : null
+
   let trim: SilenceTrimMeasurement | null = null
   const chain: string[] = []
+  const preNames: string[] = []
+  if (input.options.deClick?.enabled) {
+    chain.push(deClickFilter())
+    preNames.push('de-click')
+  }
+  if (input.options.denoise?.enabled) {
+    // The measured floor drives afftdn (see denoiseFilter); the
+    // configured floorDb is only the no-measurement fallback.
+    const floorDb =
+      healthBefore != null
+        ? denoiseFloorForMeasurement(healthBefore.noiseFloorDbfs)
+        : input.options.denoise.floorDb
+    chain.push(denoiseFilter({ ...input.options.denoise, floorDb }))
+    preNames.push('denoise-afftdn')
+  }
   if (input.options.silenceTrim?.enabled) {
     trim = await detectSilenceTrim(
       input.inputPath,
@@ -298,6 +407,9 @@ export const applyCleanupToFile = async (input: {
     humFrequencyHz !== null
       ? await measureBandEnergyDb(input.outputPath, humFrequencyHz, ffmpeg, runner)
       : null
+  const healthAfter = healthBefore
+    ? await measureFileHealth(input.outputPath, { ffmpeg, ffprobe }).catch(() => null)
+    : null
   return {
     durationBeforeSec,
     durationAfterSec,
@@ -305,6 +417,11 @@ export const applyCleanupToFile = async (input: {
     humEnergyBeforeDb,
     humEnergyAfterDb,
     trim,
-    appliedFilters: program.names,
+    appliedFilters: [...preNames, ...program.names],
+    noiseFloorBeforeDb: healthBefore?.noiseFloorDbfs ?? null,
+    noiseFloorAfterDb: healthAfter?.noiseFloorDbfs ?? null,
+    speechLevelBeforeDb: healthBefore?.speechLevelDbfs ?? null,
+    speechLevelAfterDb: healthAfter?.speechLevelDbfs ?? null,
+    clippedRanges: healthBefore?.clippedRanges ?? [],
   }
 }

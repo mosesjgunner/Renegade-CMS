@@ -32,6 +32,7 @@ import {
   requestPermissionAndEnumerate,
   watchDeviceChanges,
 } from '@/modules/podcast-studio/capture/devices-browser'
+import { SoundCheck } from '../SoundCheck'
 
 const localStoragePrefs = (): PrefsStorage => ({
   get: (key) => window.localStorage.getItem(key),
@@ -185,6 +186,7 @@ export function CaptureDevicePanel({ participantId }: { participantId: string })
         </p>
       ) : null}
       {status ? <p className="text-sm">{status}</p> : null}
+      <SoundCheck />
     </section>
   )
 }

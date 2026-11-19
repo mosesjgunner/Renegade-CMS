@@ -250,21 +250,20 @@ describe('MED-01 durable upload sessions PostgreSQL integration', () => {
     // 9. ATTACH TO CONTENT & VERIFY PUBLIC ACCESS
     const articles = await payload.find({
       collection: 'content',
-      where: { and: [{ site: { equals: site.id } }, { status: { equals: 'published' } }] },
+      where: { and: [{ site: { equals: site.id } }, { slug: { equals: 'demo-field-report' } }] },
       limit: 1,
       overrideAccess: true,
     })
-    if (articles.docs.length > 0) {
-      const article = articles.docs[0] as any
-      await attachMediaToContent(payload, user, {
-        scope: { kind: 'site', siteId: site.id },
-        mediaId: asset.id,
-        contentId: article.id,
-      })
+    expect(articles.docs).toHaveLength(1)
+    const article = articles.docs[0] as any
+    await attachMediaToContent(payload, user, {
+      scope: { kind: 'site', siteId: site.id },
+      mediaId: asset.id,
+      contentId: article.id,
+    })
 
-      const resolved = await publicMedia(payload, asset.id)
-      expect(resolved).toBeTruthy()
-      expect(resolved?.id).toBe(asset.id)
-    }
+    const resolved = await publicMedia(payload, asset.id)
+    expect(resolved).toBeTruthy()
+    expect(resolved?.id).toBe(asset.id)
   }, 45_000)
 })

@@ -52,6 +52,17 @@
  * outputs are written inside a caller-owned work directory; the
  * service layer registers media assets only after this core returns
  * a gate-passing result, so a failed render registers nothing.
+ *
+ * Audio pass (pre-RC3) additions, all opt-in at this layer and
+ * defaulted on for master renders by the service:
+ * - per-lane broadband denoise (afftdn, floor set from the MEASURED
+ *   per-source noise floor — see intelligence/cleanup.ts),
+ * - per-speaker leveling (leveling.ts): lanes are measured and
+ *   gained toward a reference before the graph is built; the plan
+ *   rides in the result and the loudness gate still has the final
+ *   word,
+ * - source health: every audible source is PCM-measured before the
+ *   chain; clipped ranges are FLAGGED in the result, never repaired.
  */
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
@@ -61,9 +72,23 @@ import path from 'node:path'
 import { measurePcmLoudness } from '../../media/audio'
 import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../media/ffmpeg'
 import { parseEdl, type EdlChapter } from '../contracts/edl'
-import { cleanupProgramFilters, type CleanupOptions } from '../intelligence/cleanup'
+import { measureFileHealth, type ClippedRange } from '../intelligence/audio-health'
+import {
+  cleanupProgramFilters,
+  denoiseFilter,
+  denoiseFloorForMeasurement,
+  type CleanupOptions,
+} from '../intelligence/cleanup'
 import { editDurationSec, type EditClip, type EditEdl, type EditTrack } from '../edit/edl-engine'
 import { dbToLinear } from '../mixer/processing'
+import {
+  applyLevelingToEdl,
+  deferredLevelingReport,
+  measureAllLanesDetailed,
+  planLeveling,
+  type LevelingOptions,
+  type LevelingReport,
+} from './leveling'
 
 export const PODCAST_RENDER_RECIPE = 'podcast-standard-lufs16'
 export const LOUDNESS_GATE_TOLERANCE_LU = 0.5
@@ -164,10 +189,36 @@ export type RenderRequest = {
    * intelligence/cleanup.ts.
    */
   cleanup?: CleanupOptions
+  /**
+   * Audio pass — per-lane broadband denoise default (ffmpeg afftdn,
+   * tracked noise floor): applied to every audible lane whose own
+   * processing params do not set `denoiseNrDb` (a lane param of 0
+   * turns it off for that lane). Same conservative preset as the
+   * file chain in intelligence/cleanup.ts.
+   */
+  denoise?: { enabled: boolean; strengthDb?: number; floorDb?: number }
+  /**
+   * Audio pass — automatic per-speaker leveling: each audible lane
+   * is measured and gained toward a reference before the graph is
+   * built (see leveling.ts). The plan rides in the result; the
+   * program loudness gate still has the final word.
+   */
+  leveling?: LevelingOptions
   ffmpeg?: string
   ffprobe?: string
   /** Test seam: invoked at named stages; throwing simulates a worker killed mid-render. */
   faultHook?: (stage: string) => Promise<void> | void
+}
+
+/** Per-source PCM health, measured on the raw source files before the chain. */
+export type SourceHealth = {
+  sourceId: string
+  origin: string
+  peakDbfs: number
+  noiseFloorDbfs: number
+  speechLevelDbfs: number
+  /** Clipped (flat-topped) ranges in the SOURCE — flagged, never repaired. */
+  clippedRanges: ClippedRange[]
 }
 
 export type RenderResult = {
@@ -176,6 +227,20 @@ export type RenderResult = {
   frames: number
   sampleRate: number
   channels: number
+  /**
+   * Audio pass: the leveling report when leveling was enabled,
+   * else null. `status` says whether gains were applied, applied
+   * with some lanes deferred, or deferred entirely (silent/empty
+   * lanes — the deferral and its reasons ride in the report).
+   */
+  leveling: LevelingReport | null
+  /**
+   * Audio pass: per-source health measured before the chain, or
+   * null when no source could be measured. `anyClipping` is the
+   * headline: a clipped source is named here, never silently
+   * "fixed" by the chain.
+   */
+  audioHealth: { sources: SourceHealth[]; anyClipping: boolean } | null
   loudnessTarget: { I: number; TP: number; LRA: number }
   pass1: LoudnormMeasurement
   measurements: RenderMeasurements
@@ -582,6 +647,22 @@ export function laneProcessingFilters(
   const approximations: string[] = []
   void sampleRate
 
+  // Audio pass: per-lane broadband denoise runs FIRST — the gate and
+  // compressor downstream should work on the cleaned signal, not on
+  // fan noise. afftdn with a tracked floor (see cleanup.ts for the
+  // preset rationale); a param of 0 (or absent) leaves the lane dry.
+  if (typeof params.denoiseNrDb === 'number' && params.denoiseNrDb > 0) {
+    filters.push(
+      denoiseFilter({
+        enabled: true,
+        strengthDb: params.denoiseNrDb,
+        floorDb: typeof params.denoiseFloorDb === 'number' ? params.denoiseFloorDb : undefined,
+      }),
+    )
+    approximations.push(
+      'denoise: ffmpeg afftdn spectral reduction with a tracked noise floor set from the measured room floor; conservative strength — on very noisy sources listen for watery artifacts and lower denoiseNrDb if speech sounds affected.',
+    )
+  }
   if (typeof params.gateThresholdDb === 'number') {
     const threshold = dbToLinear(params.gateThresholdDb)
     const range = num('gateRange', 0.1)
@@ -645,10 +726,19 @@ export type GraphSource = {
  * Builds the render filter graph for an EDL over resolved sources.
  * Pure (no I/O): the caller guarantees the source files exist.
  */
+export type GraphDenoiseOptions = {
+  enabled: boolean
+  strengthDb?: number
+  /** Fallback afftdn floor when a lane's source has no measured floor. */
+  floorDb?: number
+  /** Measured afftdn floor per source id (see denoiseFloorForMeasurement). */
+  floorBySourceId?: Record<string, number>
+}
+
 export function buildRenderGraph(
   edl: EditEdl,
   sources: GraphSource[],
-  options: { channels: 1 | 2; cleanup?: CleanupOptions },
+  options: { channels: 1 | 2; cleanup?: CleanupOptions; denoise?: GraphDenoiseOptions },
 ): RenderGraph {
   const sampleRate = edl.sessionRate
   const sourceById = new Map(sources.map((source) => [source.sourceId, source]))
@@ -784,11 +874,46 @@ export function buildRenderGraph(
       parts.push(`[${inLabel}]${chain.join(',')}[${label}]`)
       clipLabels.push(`[${label}]`)
     })
+    // Audio pass: the afftdn floor for this lane — the measured
+    // floor of the lane's first source when the caller measured it,
+    // else the configured fallback.
+    const laneSourceId = lane.clips[0]?.sourceId ?? lane.track.id
+    const laneFloorDb = options.denoise?.floorBySourceId?.[laneSourceId] ?? options.denoise?.floorDb
     const laneChain: string[] = []
     if (clipLabels.length > 1)
       laneChain.push(`amix=inputs=${clipLabels.length}:duration=longest:normalize=0`)
+    // Audio pass: request-level denoise default for lanes whose own
+    // params do not mention denoiseNrDb (a lane param — including 0
+    // for off — always wins over the request default).
+    if (
+      options.denoise?.enabled &&
+      typeof lane.track.processing?.params?.denoiseNrDb !== 'number'
+    ) {
+      laneChain.push(
+        denoiseFilter({
+          enabled: true,
+          strengthDb: options.denoise.strengthDb,
+          floorDb: laneFloorDb,
+        }),
+      )
+      approximations.push(
+        'denoise: ffmpeg afftdn spectral reduction with a tracked noise floor set from the measured room floor (request-level default; a lane can override with denoiseNrDb or disable with denoiseNrDb=0).',
+      )
+    }
     if (lane.track.gain !== 1) laneChain.push(`volume=${fmt(lane.track.gain)}`)
-    const processing = laneProcessingFilters(lane.track.processing, sampleRate)
+    // A lane that sets denoiseNrDb without a floor inherits the
+    // measured floor too — a guessed floor silently disables afftdn.
+    const effectiveProcessing =
+      lane.track.processing &&
+      typeof lane.track.processing.params?.denoiseNrDb === 'number' &&
+      typeof lane.track.processing.params?.denoiseFloorDb !== 'number' &&
+      laneFloorDb !== undefined
+        ? {
+            ...lane.track.processing,
+            params: { ...lane.track.processing.params, denoiseFloorDb: laneFloorDb },
+          }
+        : lane.track.processing
+    const processing = laneProcessingFilters(effectiveProcessing, sampleRate)
     laneChain.push(...processing.filters)
     approximations.push(...processing.approximations)
     const laneLabel = `lane${laneIndex}`
@@ -931,7 +1056,7 @@ export async function renderEdlToFiles(request: RenderRequest): Promise<RenderRe
   const ffprobe = ffprobePath(request)
   parseEdl(request.edl)
 
-  const edl = request.range
+  let edl = request.range
     ? windowEdl(request.edl, request.range.startSec, request.range.durationSec)
     : request.edl
   const chapters = edlChaptersToPodcast(edl.chapters)
@@ -972,6 +1097,62 @@ export async function renderEdlToFiles(request: RenderRequest): Promise<RenderRe
   }
 
   const sourceMeta = new Map(edl.sources.map((source) => [source.id, source]))
+
+  // Audio pass — source health: measure every audible source's PCM
+  // BEFORE the chain touches it. Diagnostic only: a source that
+  // cannot be measured is skipped rather than failing the render,
+  // but a measured clipped source is flagged in the result —
+  // clipping is named, never silently repaired away.
+  const healthSources: SourceHealth[] = []
+  for (const source of audibleSources) {
+    const health = await measureFileHealth(source.path, { ffmpeg, ffprobe }).catch(() => null)
+    if (health)
+      healthSources.push({
+        sourceId: source.sourceId,
+        origin: source.origin,
+        peakDbfs: health.peakDbfs,
+        noiseFloorDbfs: health.noiseFloorDbfs,
+        speechLevelDbfs: health.speechLevelDbfs,
+        clippedRanges: health.clippedRanges,
+      })
+  }
+  const audioHealth =
+    healthSources.length > 0
+      ? {
+          sources: healthSources,
+          anyClipping: healthSources.some((source) => source.clippedRanges.length > 0),
+        }
+      : null
+
+  // Audio pass — per-speaker leveling: measure each audible lane,
+  // plan gains against the reference, and apply them to a clone of
+  // the EDL (the caller's EDL is never mutated). The program
+  // loudnorm gate below still has the final word — leveling defers
+  // to it: a lane that cannot be measured because it is silent or
+  // empty is skipped and recorded on the report, never an error,
+  // and when EVERY lane defers the stage steps aside entirely so
+  // the gate produces its contract verdict (e.g. a silent program
+  // fails as RENDER_LOUDNESS_GATE, not as a leveling error).
+  let levelingReport: LevelingReport | null = null
+  if (request.leveling?.enabled) {
+    const measurement = await measureAllLanesDetailed(
+      edl,
+      audibleSources.map((source) => ({
+        sourceId: source.sourceId,
+        path: source.path,
+        channels: source.channels,
+        rateCorrection: sourceMeta.get(source.sourceId)?.rateCorrection,
+      })),
+      { channels, ffmpeg },
+    )
+    if (measurement.measured.length > 0) {
+      levelingReport = planLeveling(measurement.measured, request.leveling, measurement.deferred)
+      edl = applyLevelingToEdl(edl, levelingReport)
+    } else if (measurement.deferred.length > 0) {
+      levelingReport = deferredLevelingReport(request.leveling, measurement.deferred)
+    }
+  }
+
   const graph = buildRenderGraph(
     edl,
     audibleSources.map((source) => ({
@@ -979,7 +1160,23 @@ export async function renderEdlToFiles(request: RenderRequest): Promise<RenderRe
       channels: source.channels,
       rateCorrection: sourceMeta.get(source.sourceId)?.rateCorrection,
     })),
-    { channels, cleanup: request.cleanup },
+    {
+      channels,
+      cleanup: request.cleanup,
+      // The measured per-source floors drive afftdn per lane — a
+      // guessed floor silently disables the stage (see cleanup.ts).
+      denoise: request.denoise
+        ? {
+            ...request.denoise,
+            floorBySourceId: Object.fromEntries(
+              healthSources.map((source) => [
+                source.sourceId,
+                denoiseFloorForMeasurement(source.noiseFloorDbfs),
+              ]),
+            ),
+          }
+        : undefined,
+    },
   )
 
   const { mkdir } = await import('node:fs/promises')
@@ -1288,6 +1485,8 @@ export async function renderEdlToFiles(request: RenderRequest): Promise<RenderRe
     frames: graph.frames,
     sampleRate: edl.sessionRate,
     channels,
+    leveling: levelingReport,
+    audioHealth,
     loudnessTarget: target,
     pass1,
     measurements,

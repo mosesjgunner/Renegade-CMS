@@ -75,6 +75,10 @@ export type RenderProjectInput = {
   faultHook?: (stage: string) => Promise<void> | void
   /** POD-14 cleanup chain options forwarded to the render graph. */
   cleanup?: import('../intelligence/cleanup').CleanupOptions
+  /** Audio pass — per-lane denoise default forwarded to the render graph. */
+  denoise?: { enabled: boolean; strengthDb?: number; floorDb?: number }
+  /** Audio pass — per-speaker leveling forwarded to the render core. */
+  leveling?: import('./leveling').LevelingOptions
   /**
    * POD-21: range-retimed SRT burned into an audiogram render (see
    * render.ts `captionsSrt`). Part of the idempotency key — a
@@ -443,6 +447,14 @@ export async function renderProject(
       mp3BitrateKbps: exportProfile.mp3BitrateKbps,
       opusBitrateKbps: exportProfile.opusBitrateKbps,
       cleanup: input.cleanup,
+      // Audio pass defaults: a master render a user touches nothing
+      // on gets per-lane denoise (conservative preset) and per-speaker
+      // leveling. Callers can disable or tune both per render; other
+      // profiles keep the previous behaviour unless asked.
+      denoise:
+        input.denoise ??
+        (profile === 'master' ? { enabled: true, strengthDb: 9, floorDb: -55 } : undefined),
+      leveling: input.leveling ?? (profile === 'master' ? { enabled: true } : undefined),
       captionsSrt: input.captionsSrt ?? null,
       faultHook,
     })
@@ -496,6 +508,8 @@ export async function renderProject(
       gate: result.gate,
       chapters: result.chapters,
       captionsBurnedIn: result.captionsBurnedIn,
+      leveling: result.leveling,
+      audioHealth: result.audioHealth,
       filterGraph: result.filterGraph,
       approximations: result.approximations,
       loudnormLinearFallback: result.loudnormLinearFallback,

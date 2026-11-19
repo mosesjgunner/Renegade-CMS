@@ -84,6 +84,24 @@ Everything above, plus:
   ebur128-verified, or the render fails by name and nothing is
   promoted. MP3/Opus/WAV + chapters that agree across ID3, the Podcast
   JSON sidecar and the feed. GUID stable end to end.
+- Automatic per-speaker leveling: every lane is loudness-measured
+  before the render and gained toward the loudest speaker, so a quiet
+  guest meets the host before the bus. The render report shows each
+  lane's measured loudness and applied gain — and the loudness gate
+  above still has the final word.
+- Broadband denoise for steady room noise (fan, HVAC, room tone) —
+  the noise that sits UNDER speech, which a gate cannot touch. Local
+  spectral reduction (ffmpeg afftdn), conservative by design: on the
+  synthetic bad-session fixture the fan segment drops ≈ 4.4 dB while
+  speech segments move ≈ 0.4 dB. Strength is adjustable and the stage
+  can be switched off per lane. All processing is local — no cloud
+  "enhance" uploads, no per-minute fees.
+- A sound check before anyone records: a few seconds of mic, then a
+  plain-language verdict — background noise, clipping, mic level —
+  with the specific fix ("turn off fans…", "lower the input level").
+  It warns; it never blocks a session. And when a source IS clipped,
+  the render report flags the exact seconds — clipped audio is
+  flagged, never silently "repaired".
 - Full keyboard operation through one action registry, and MIDI learn
   on any action with per-machine persisted maps.
 
@@ -171,3 +189,12 @@ These are open gates and unbuilt pieces. Do not sell past them.
   SFU, which is a named future revisit, not a setting.
 - **Human listening quality is unmeasured** — every audio claim above
   rests on measurements (loudness, energies, checksums), not ears.
+- **De-reverb is not included.** No local, open-source engine removes
+  room echo at a quality bar we would ship, so the feature is named
+  here as absent rather than faked with a gate trick. A de-click
+  repair for damaged sources exists but ships OFF by default.
+- **The sound check's browser leg is untested** — its verdicts are
+  proven on synthetic audio files through the same measurement core;
+  no real microphone or real room has been recorded through it on the
+  test rig. Denoise and leveling numbers likewise come from a
+  synthetic fixture, not a real session.
