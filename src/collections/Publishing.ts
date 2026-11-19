@@ -438,6 +438,9 @@ export const MediaAssets: CollectionConfig = {
     { name: 'height', type: 'number', min: 0 },
     { name: 'durationSeconds', type: 'number', min: 0 },
     { name: 'audioMetadata', type: 'json', admin: { readOnly: true } },
+    // POD-08: server-generated waveform peaks (media/peaks.ts format v1),
+    // written only by the media-peaks task; read by the studio players.
+    { name: 'waveformPeaks', type: 'json', admin: { readOnly: true } },
     { name: 'videoMetadata', type: 'json', admin: { readOnly: true } },
     { name: 'altText', type: 'text' },
     {

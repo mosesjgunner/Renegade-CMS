@@ -1,0 +1,127 @@
+{
+  "id": "sess-pt-e-001",
+  "showTitle": "PT-E Fixture Show",
+  "state": "live",
+  "elapsedSec": 0,
+  "chapters": [],
+  "rundown": [
+    {
+      "id": "rd-1",
+      "type": "segment",
+      "title": "Cold open + headlines",
+      "plannedSec": 300,
+      "status": "pending",
+      "actualSec": null
+    },
+    {
+      "id": "rd-2",
+      "type": "clip",
+      "title": "Clip: mayor soundbite",
+      "plannedSec": 45,
+      "status": "pending",
+      "actualSec": null,
+      "clipId": "cart-a1"
+    },
+    {
+      "id": "rd-3",
+      "type": "guest",
+      "title": "Guest interview",
+      "plannedSec": 600,
+      "status": "pending",
+      "actualSec": null
+    },
+    {
+      "id": "rd-4",
+      "type": "link",
+      "title": "Link read: show notes URL",
+      "plannedSec": 30,
+      "status": "pending",
+      "actualSec": null,
+      "url": "https://example.com/notes"
+    },
+    {
+      "id": "rd-5",
+      "type": "segment",
+      "title": "Wrap + credits",
+      "plannedSec": 240,
+      "status": "pending",
+      "actualSec": null
+    }
+  ],
+  "cartwall": {
+    "banks": [
+      {
+        "id": "bank-a",
+        "name": "Openers",
+        "clips": [
+          {
+            "id": "cart-a1",
+            "title": "Mayor soundbite",
+            "cueInSec": 0.5,
+            "cueOutSec": 44,
+            "fadeInSec": 0.1,
+            "fadeOutSec": 0.5,
+            "loop": false,
+            "armed": false,
+            "state": "idle"
+          },
+          {
+            "id": "cart-a2",
+            "title": "Theme sting",
+            "cueInSec": 0,
+            "cueOutSec": 8,
+            "fadeInSec": 0,
+            "fadeOutSec": 1,
+            "loop": false,
+            "armed": false,
+            "state": "idle"
+          }
+        ]
+      },
+      {
+        "id": "bank-b",
+        "name": "Beds",
+        "clips": [
+          {
+            "id": "cart-b1",
+            "title": "News bed (loop)",
+            "cueInSec": 0,
+            "cueOutSec": 60,
+            "fadeInSec": 2,
+            "fadeOutSec": 2,
+            "loop": true,
+            "armed": false,
+            "state": "idle"
+          }
+        ]
+      },
+      {
+        "id": "guest-slots",
+        "name": "Guest slots",
+        "clips": []
+      }
+    ]
+  },
+  "mixer": {
+    "channels": [
+      {
+        "id": "host",
+        "gainDb": -3,
+        "muted": false
+      },
+      {
+        "id": "clips",
+        "gainDb": -6,
+        "muted": false
+      },
+      {
+        "id": "guests",
+        "gainDb": -4,
+        "muted": false
+      }
+    ],
+    "masterGainDb": -1,
+    "limiterCeilingDb": -0.3
+  },
+  "log": []
+}

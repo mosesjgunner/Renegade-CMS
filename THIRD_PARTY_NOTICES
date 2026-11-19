@@ -1,0 +1,127 @@
+THIRD PARTY NOTICES — Renegade CMS / Podcast Studio
+====================================================
+
+This file records third-party copyright and permission notices for material
+whose patterns or code the Podcast Studio program adapts, plus the provenance
+register for the studio program as a whole. It was created by POD-00 and must
+be updated by any later prompt that adapts additional third-party material.
+
+----------------------------------------------------------------------
+(a) CurryCaster v1
+----------------------------------------------------------------------
+
+Copyright (c) 2024 Adam Curry
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Adaptation note: pattern-level adaptation from CurryCaster v1 applies from
+POD-08 / POD-15 onward — specifically the file library indexing model, the
+cartwall model, the waveform/cue interaction model, and the MIDI mapper.
+POD-08 (2026-11-18) landed the first four of these as adapted-pattern
+components: the player engine (PlayerModule behaviour: 8 players, LRU
+non-playing reuse, already-loaded flash, IN/OUT cues, STOP→IN, log fader,
+played-dimming), the cartwall audio binding (CartWallWindow/CartButton
+behaviour: click play/stop, per-cart fader, countdown, STOP ALL), the
+waveform/cue interaction model (WaveformWidget behaviour on server peaks:
+zoom/pan/click-seek, cue markers, dimming outside the cue region), and the
+clip browser's library model. POD-15 (2026-11-18) landed the MIDI mapper
+as an adapted-pattern component: the v1 MidiMapper/MidiWorker learn
+behaviour (arm a control, move a knob / press a pad, the next message
+binds; mappings persisted as JSON) rebuilt natively in TypeScript on
+Web MIDI semantics in src/modules/podcast-studio/control/midi.ts, with
+the keyboard action map alongside it in the same module family.
+All are pattern-level adaptations — behaviour and interaction models
+rebuilt natively in TypeScript; no CurryCaster v1 code is copied.
+Earlier prompts (POD-00 … POD-07) do not adapt CurryCaster v1 code or
+patterns; where their designs resemble CurryCaster behaviour, that behaviour
+comes from the clean-room behavioural reference described in the provenance
+register below.
+
+----------------------------------------------------------------------
+(b) opml-outliner
+----------------------------------------------------------------------
+
+Copyright (c) 2024 Adam Curry
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Adaptation note: OPML read/write for the rundown landed in POD-05, written
+fresh from the OPML 2.0 format — no opml-outliner code or behaviour was
+adapted, so this entry records NO applied adaptation. (Corrected in POD-20:
+this entry previously described the adaptation as a pending candidate; the
+register below is updated to match. The MIT notice above is retained
+verbatim for completeness.)
+
+----------------------------------------------------------------------
+(c) Provenance register — Podcast Studio program
+----------------------------------------------------------------------
+
+MIT-derived (pattern-level adaptation of MIT-licensed CurryCaster v1 /
+opml-outliner, under the notices above):
+
+  Component                                   Source                  Applies from
+  ------------------------------------------  ----------------------  ------------
+  Player engine (PlayerModule behaviour)      CurryCaster v1 (MIT)    POD-08 (adapted)
+  File library indexing model                 CurryCaster v1 (MIT)    POD-08 (adapted)
+  Cartwall model                              CurryCaster v1 (MIT)    POD-08 (adapted)
+  Waveform / cue interaction model            CurryCaster v1 (MIT)    POD-08 (adapted)
+  MIDI mapper                                 CurryCaster v1 (MIT)    POD-15 (adapted)
+  OPML read/write (written fresh from the     opml-outliner (MIT)     POD-05
+  OPML 2.0 format; NOT adapted — see (b))
+
+Clean-room components (Renegade's own implementation, no third-party code,
+assets or text):
+
+  Everything else in the studio program, including — without limitation —
+  the session / EDL / track-manifest / project-bundle contracts (POD-00),
+  feed completion and validation, import, private feeds, production
+  management, the browser capture engine, the mixer and routing engine,
+  multitrack recording, the guest system, drift conform, the edit engine,
+  the render and export pipeline, post-production intelligence, live
+  output, video podcast support, promotion integration, and portability /
+  security / operations hardening.
+
+CurryCaster II statement:
+
+  CurryCaster II is unlicensed and source-less: no source code, assets or
+  text from CurryCaster II are available to this project or used by it.
+  CurryCaster II contributed behavioural reference only — observations of
+  what the product does, used as a design target for clean-room
+  reimplementation. No CurryCaster II code, assets, or text appear anywhere
+  in Renegade CMS.

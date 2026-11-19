@@ -5,6 +5,21 @@ import * as rc2DiscussionPostMutationId from './20261116_150000_rc2_discussion_p
 import * as rc2SubscriptionThreadFk from './20261116_160000_rc2_subscription_thread_fk'
 import * as rc3Seo10ScanIncompleteStatus from './20261117_120000_rc3_seo10_scan_incomplete_status'
 import * as rc3Email01IntentsPauses from './20261117_130000_rc3_email01_intents_pauses'
+import * as rc3Pod01FeedNamespace from './20261118_120000_rc3_pod01_feed_namespace'
+import * as rc3Pod02ImportMedia from './20261118_130000_rc3_pod02_import_media'
+import * as rc3Pod03MemberFeeds from './20261118_140000_rc3_pod03_member_feeds'
+import * as rc3Pod04Production from './20261118_150000_rc3_pod04_production'
+import * as rc3Pod05StudioSessions from './20261118_160000_rc3_pod05_studio_sessions'
+import * as rc3Pod08Peaks from './20261118_170000_rc3_pod08_peaks'
+import * as rc3Pod09Recordings from './20261118_180000_rc3_pod09_recordings'
+import * as rc3Pod10Guests from './20261118_190000_rc3_pod10_guests'
+import * as rc3Pod11Conform from './20261118_200000_rc3_pod11_conform'
+import * as rc3Pod12EditProjects from './20261118_210000_rc3_pod12_edit_projects'
+import * as rc3Pod13Renders from './20261118_220000_rc3_pod13_renders'
+import * as rc3Pod14Assists from './20261118_230000_rc3_pod14_assists'
+import * as rc3Pod16Live from './20261118_240000_rc3_pod16_live'
+import * as rc3Pod17Video from './20261118_250000_rc3_pod17_video'
+import * as rc3Pod18Promotion from './20261118_260000_rc3_pod18_promotion'
 import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
@@ -809,6 +824,81 @@ export const migrations = [
     up: rc3Email01IntentsPauses.up,
     down: rc3Email01IntentsPauses.down,
     name: '20261117_130000_rc3_email01_intents_pauses',
+  },
+  {
+    up: rc3Pod01FeedNamespace.up,
+    down: rc3Pod01FeedNamespace.down,
+    name: '20261118_120000_rc3_pod01_feed_namespace',
+  },
+  {
+    up: rc3Pod02ImportMedia.up,
+    down: rc3Pod02ImportMedia.down,
+    name: '20261118_130000_rc3_pod02_import_media',
+  },
+  {
+    up: rc3Pod03MemberFeeds.up,
+    down: rc3Pod03MemberFeeds.down,
+    name: '20261118_140000_rc3_pod03_member_feeds',
+  },
+  {
+    up: rc3Pod04Production.up,
+    down: rc3Pod04Production.down,
+    name: '20261118_150000_rc3_pod04_production',
+  },
+  {
+    up: rc3Pod05StudioSessions.up,
+    down: rc3Pod05StudioSessions.down,
+    name: '20261118_160000_rc3_pod05_studio_sessions',
+  },
+  {
+    up: rc3Pod08Peaks.up,
+    down: rc3Pod08Peaks.down,
+    name: '20261118_170000_rc3_pod08_peaks',
+  },
+  {
+    up: rc3Pod09Recordings.up,
+    down: rc3Pod09Recordings.down,
+    name: '20261118_180000_rc3_pod09_recordings',
+  },
+  {
+    up: rc3Pod10Guests.up,
+    down: rc3Pod10Guests.down,
+    name: '20261118_190000_rc3_pod10_guests',
+  },
+  {
+    up: rc3Pod11Conform.up,
+    down: rc3Pod11Conform.down,
+    name: '20261118_200000_rc3_pod11_conform',
+  },
+  {
+    up: rc3Pod12EditProjects.up,
+    down: rc3Pod12EditProjects.down,
+    name: '20261118_210000_rc3_pod12_edit_projects',
+  },
+  {
+    up: rc3Pod13Renders.up,
+    down: rc3Pod13Renders.down,
+    name: '20261118_220000_rc3_pod13_renders',
+  },
+  {
+    up: rc3Pod14Assists.up,
+    down: rc3Pod14Assists.down,
+    name: '20261118_230000_rc3_pod14_assists',
+  },
+  {
+    up: rc3Pod16Live.up,
+    down: rc3Pod16Live.down,
+    name: '20261118_240000_rc3_pod16_live',
+  },
+  {
+    up: rc3Pod17Video.up,
+    down: rc3Pod17Video.down,
+    name: '20261118_250000_rc3_pod17_video',
+  },
+  {
+    up: rc3Pod18Promotion.up,
+    down: rc3Pod18Promotion.down,
+    name: '20261118_260000_rc3_pod18_promotion',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

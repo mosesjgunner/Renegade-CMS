@@ -1,0 +1,549 @@
+/**
+ * POD-17 — video podcast (bounded): camera tracks + consent, the
+ * POD-13-pipeline video render (camera mux + slideshow), and feed
+ * honesty.
+ *
+ * Fixture honesty: every media fixture here is GENERATED in-suite by
+ * ffmpeg (lavfi colour/sine sources) — the "camera" WebM is an
+ * ffmpeg-generated test pattern, NOT browser-recorded, and no real
+ * camera, browser, or MediaRecorder was exercised. Browser camera
+ * capture and lip-sync remain UNVERIFIED (docs/podcast-studio/VIDEO.md).
+ */
+import { execFile } from 'node:child_process'
+import { createHash } from 'node:crypto'
+import { mkdtemp, readFile } from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
+import { promisify } from 'node:util'
+
+import { beforeAll, describe, expect, it } from 'vitest'
+
+import {
+  cameraTrackConsentGranted,
+  parseTrackManifest,
+  serializeTrackManifest,
+  type TrackManifest,
+} from '../../src/modules/podcast-studio/contracts'
+import {
+  CameraTrackRecorder,
+  cameraTrackDefinition,
+  withCameraTracks,
+} from '../../src/modules/podcast-studio/recording/camera-tracks'
+import {
+  buildSlideshowSlides,
+  probeMediaFile,
+  renderVideoEpisode,
+} from '../../src/modules/podcast-studio/render/video'
+import { buildVideoProvenance } from '../../src/modules/podcast-studio/render/video-service'
+import {
+  episodeVideoFeedFields,
+  renderPodcastFeed,
+} from '../../src/modules/podcast-studio/feed-build'
+import { inspectPodcastFeed } from '../../src/modules/podcast-studio/feed-validate'
+
+const execFileAsync = promisify(execFile)
+const ffmpeg = process.env.FFMPEG_PATH ?? 'ffmpeg'
+
+const run = (args: string[]) => execFileAsync(ffmpeg, args, { maxBuffer: 16 * 1024 * 1024 })
+
+const SHA_A = 'a'.repeat(64)
+
+// ---------------------------------------------------------------------------
+// Generated fixtures (ffmpeg lavfi — labelled generated, never recorded)
+// ---------------------------------------------------------------------------
+
+let dir = ''
+let artworkPath = ''
+let chapterImagePath = ''
+let audioPath = ''
+let cameraPath = ''
+
+beforeAll(async () => {
+  dir = await mkdtemp(path.join(os.tmpdir(), 'pod17-video-'))
+  artworkPath = path.join(dir, 'artwork.png')
+  chapterImagePath = path.join(dir, 'chapter-two.png')
+  audioPath = path.join(dir, 'program.wav')
+  cameraPath = path.join(dir, 'camera-GENERATED.webm')
+  await run([
+    '-hide_banner',
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=0x2255aa:s=640x640',
+    '-frames:v',
+    '1',
+    artworkPath,
+  ])
+  await run([
+    '-hide_banner',
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'color=c=0xaa5522:s=640x640',
+    '-frames:v',
+    '1',
+    chapterImagePath,
+  ])
+  // 6 s program audio (the "POD-13 master" stand-in).
+  await run([
+    '-hide_banner',
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'sine=frequency=440:sample_rate=48000',
+    '-t',
+    '6',
+    audioPath,
+  ])
+  // GENERATED camera fixture: 4 s of testsrc2 as VP8 WebM — shorter
+  // than the program on purpose, so the render must freeze-extend it.
+  await run([
+    '-hide_banner',
+    '-y',
+    '-f',
+    'lavfi',
+    '-i',
+    'testsrc2=size=640x360:rate=30',
+    '-t',
+    '4',
+    '-c:v',
+    'libvpx',
+    '-b:v',
+    '400k',
+    cameraPath,
+  ])
+}, 120_000)
+
+// ---------------------------------------------------------------------------
+// Contracts: camera tracks + consent default (POD-00 v1, additive)
+// ---------------------------------------------------------------------------
+
+describe('POD-17 contracts — camera tracks in the track manifest', () => {
+  const manifestWithCamera = (cameraTrack: Record<string, unknown>): TrackManifest =>
+    ({
+      version: 1,
+      sessionId: 'sess-17',
+      createdAt: '2026-11-18T15:00:00.000Z',
+      sampleRate: 48000,
+      tracks: [
+        {
+          trackId: 'track-host',
+          role: 'host',
+          channels: 1,
+          channelLayout: 'mono',
+          durationSec: 6,
+          checksumSha256: SHA_A,
+          syncEvents: [{ type: 'head', trackSamples: 0, timelineSamples: 0 }],
+        },
+        cameraTrack,
+      ],
+    }) as unknown as TrackManifest
+
+  const cameraTrack = {
+    trackId: 'camera-host',
+    role: 'camera',
+    channels: 1,
+    channelLayout: 'video',
+    durationSec: 6,
+    checksumSha256: 'b'.repeat(64),
+    syncEvents: [
+      { type: 'head', trackSamples: 0, timelineSamples: 0 },
+      { type: 'tail', trackSamples: 288000, timelineSamples: 288000 },
+    ],
+    consent: true,
+  }
+
+  it('round-trips a manifest carrying a consented camera track', () => {
+    const input = manifestWithCamera(cameraTrack)
+    const parsed = parseTrackManifest(input)
+    expect(JSON.parse(serializeTrackManifest(parsed))).toEqual(input)
+    const camera = parsed.tracks.find((track) => track.role === 'camera')
+    expect(cameraTrackConsentGranted(camera!)).toBe(true)
+  })
+
+  it('consent defaults OFF: an absent flag is not a grant', () => {
+    const { consent: _dropped, ...withoutConsent } = cameraTrack
+    const parsed = parseTrackManifest(manifestWithCamera(withoutConsent))
+    const camera = parsed.tracks.find((track) => track.role === 'camera')
+    expect(camera?.consent).toBeUndefined()
+    expect(cameraTrackConsentGranted(camera!)).toBe(false)
+    expect(cameraTrackConsentGranted({ role: 'camera', consent: false })).toBe(false)
+    expect(cameraTrackConsentGranted({ role: 'host', consent: true })).toBe(false)
+  })
+
+  it('rejects a non-boolean consent flag', () => {
+    expect(() =>
+      parseTrackManifest(manifestWithCamera({ ...cameraTrack, consent: 'yes' })),
+    ).toThrow(/consent must be a boolean/)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Camera core: consent gate, chunk bookkeeping, sync, manifest
+// ---------------------------------------------------------------------------
+
+describe('POD-17 camera track core', () => {
+  it('refuses to start a camera track without explicit consent (default OFF)', () => {
+    const unconsented = cameraTrackDefinition({ participantId: 'host' })
+    expect(unconsented.consent).toBe(false)
+    let caught: unknown
+    try {
+      CameraTrackRecorder.start(unconsented)
+    } catch (error) {
+      caught = error
+    }
+    expect((caught as { code?: string }).code).toBe('CAMERA_CONSENT_REQUIRED')
+    const explicitNo = cameraTrackDefinition({ participantId: 'guest-9', consent: false })
+    expect(() => CameraTrackRecorder.start(explicitNo)).toThrow(/no recorded participant consent/)
+  })
+
+  it('books chunks on the session clock and emits a parse-valid manifest entry', () => {
+    const definition = cameraTrackDefinition({
+      participantId: 'guest-9',
+      guestId: 'guest-9',
+      consent: true,
+      joinedAtSample: 48000,
+    })
+    expect(definition.trackId).toBe('camera-guest-guest-9')
+    const recorder = CameraTrackRecorder.start(definition, { sampleRate: 48000 })
+    const partA = new Uint8Array([1, 2, 3, 4])
+    const partB = new Uint8Array([5, 6, 7])
+    recorder.appendChunk(partA, 48000)
+    recorder.appendChunk(partB, 96000)
+    const summary = recorder.stop(48000 + 5 * 48000)
+    expect(summary.totalBytes).toBe(7)
+    expect(summary.totalChunks).toBe(2)
+    expect(summary.durationSec).toBe(5)
+    expect(summary.checksumSha256).toBe(
+      createHash('sha256')
+        .update(Buffer.concat([partA, partB]))
+        .digest('hex'),
+    )
+    expect(summary.syncEvents).toEqual([
+      { type: 'head', trackSamples: 0, timelineSamples: 48000 },
+      { type: 'tail', trackSamples: 240000, timelineSamples: 288000 },
+    ])
+    expect(summary.chunks[0]?.checksumSha256).toBe(createHash('sha256').update(partA).digest('hex'))
+
+    const entry = recorder.manifestTrack('asset-cam-1')
+    expect(entry).toMatchObject({
+      trackId: 'camera-guest-guest-9',
+      role: 'camera',
+      guestId: 'guest-9',
+      consent: true,
+      mediaAssetId: 'asset-cam-1',
+    })
+    const base: TrackManifest = {
+      version: 1,
+      sessionId: 'sess-17',
+      createdAt: '2026-11-18T15:00:00.000Z',
+      sampleRate: 48000,
+      tracks: [
+        {
+          trackId: 'track-host',
+          role: 'host',
+          channels: 1,
+          channelLayout: 'mono',
+          durationSec: 6,
+          checksumSha256: SHA_A,
+          syncEvents: [],
+        },
+      ],
+    }
+    const merged = withCameraTracks(base, [entry])
+    expect(merged.tracks).toHaveLength(2)
+    expect(() => withCameraTracks(merged, [entry])).toThrow(/already carries/)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Slideshow slide timing (pure)
+// ---------------------------------------------------------------------------
+
+describe('POD-17 slideshow timing', () => {
+  it('times slides to chapters with artwork fallback and a lead-in', () => {
+    const slides = buildSlideshowSlides({
+      chapters: [
+        { startTime: 2, title: 'Intro' },
+        { startTime: 5, title: 'Topic' },
+      ],
+      chapterImages: [{ startSec: 5, imagePath: '/img/topic.png' }],
+      artworkPath: '/img/art.png',
+      durationSec: 8,
+    })
+    expect(slides).toEqual([
+      { imagePath: '/img/art.png', startSec: 0, endSec: 2 },
+      { imagePath: '/img/art.png', startSec: 2, endSec: 5 },
+      { imagePath: '/img/topic.png', startSec: 5, endSec: 8 },
+    ])
+  })
+
+  it('a chapterless episode is one artwork slide for the full duration', () => {
+    expect(
+      buildSlideshowSlides({ chapters: [], artworkPath: '/img/art.png', durationSec: 42 }),
+    ).toEqual([{ imagePath: '/img/art.png', startSec: 0, endSec: 42 }])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Video renders (real ffmpeg, generated fixtures)
+// ---------------------------------------------------------------------------
+
+describe('POD-17 video render (real ffmpeg)', () => {
+  it('slideshow render: artwork + chapter images timed to chapters, ffprobe-verified', async () => {
+    const result = await renderVideoEpisode({
+      mode: 'slideshow',
+      audioPath,
+      artworkPath,
+      chapters: [
+        { startTime: 0, title: 'Intro' },
+        { startTime: 3, title: 'Topic' },
+      ],
+      chapterImages: [{ startSec: 3, imagePath: chapterImagePath }],
+      workDir: path.join(dir, 'render-slideshow'),
+      outputName: 'episode-video',
+    })
+    expect(result.mode).toBe('slideshow')
+    expect(result.slides).toHaveLength(2)
+    expect(result.probe.passed).toBe(true)
+    expect(result.probe.videoCodec).toBe('h264')
+    expect(result.probe.audioCodec).toBe('aac')
+    expect(result.probe.width).toBe(1280)
+    expect(result.probe.height).toBe(720)
+    expect(result.audioDurationSec).toBeCloseTo(6, 0)
+    expect(result.durationDeltaSec).toBeLessThanOrEqual(0.5)
+    expect(result.file.mimeType).toBe('video/mp4')
+    const bytes = await readFile(result.file.path)
+    expect(result.file.checksumSha256).toBe(createHash('sha256').update(bytes).digest('hex'))
+    // Independent re-probe of the file on disk.
+    const reprobe = await probeMediaFile(result.file.path)
+    expect(reprobe.videoCodec).toBe('h264')
+    expect(Math.abs(reprobe.durationSec - 6)).toBeLessThanOrEqual(0.5)
+  }, 180_000)
+
+  it('camera render: GENERATED WebM (ffmpeg testsrc2, not browser-recorded) muxed with the program audio', async () => {
+    const result = await renderVideoEpisode({
+      mode: 'camera',
+      audioPath,
+      cameraPath,
+      workDir: path.join(dir, 'render-camera'),
+      outputName: 'episode-video',
+    })
+    expect(result.mode).toBe('camera')
+    expect(result.probe.passed).toBe(true)
+    expect(result.probe.videoCodec).toBe('h264')
+    expect(result.probe.width).toBe(1280)
+    expect(result.probe.height).toBe(720)
+    // The 4 s camera was freeze-extended to the 6 s program.
+    expect(result.durationDeltaSec).toBeLessThanOrEqual(0.5)
+    expect(result.probe.durationSec).toBeCloseTo(6, 0)
+  }, 180_000)
+
+  it('refuses a missing camera file and a camera file with no video stream, by name', async () => {
+    const codeOf = async (promise: Promise<unknown>): Promise<string> => {
+      try {
+        await promise
+      } catch (error) {
+        return (error as { code?: string }).code ?? ''
+      }
+      return ''
+    }
+    expect(
+      await codeOf(
+        renderVideoEpisode({
+          mode: 'camera',
+          audioPath,
+          cameraPath: path.join(dir, 'does-not-exist.webm'),
+          workDir: path.join(dir, 'render-missing'),
+        }),
+      ),
+    ).toBe('VIDEO_SOURCE_MISSING')
+    expect(
+      await codeOf(
+        renderVideoEpisode({
+          mode: 'camera',
+          audioPath,
+          cameraPath: audioPath, // audio-only WAV presented as a camera track
+          workDir: path.join(dir, 'render-nostream'),
+        }),
+      ),
+    ).toBe('VIDEO_NO_VIDEO_STREAM')
+    expect(
+      await codeOf(
+        renderVideoEpisode({
+          mode: 'slideshow',
+          audioPath,
+          workDir: path.join(dir, 'render-noart'),
+        }),
+      ),
+    ).toBe('VIDEO_SOURCE_MISSING')
+  }, 60_000)
+})
+
+// ---------------------------------------------------------------------------
+// Feed honesty: video only after a probed render; audio feed byte-stable
+// ---------------------------------------------------------------------------
+
+describe('POD-17 feed honesty', () => {
+  const show = {
+    id: 'show-1',
+    title: 'The Show',
+    slug: 'the-show',
+    description: 'A show.',
+    status: 'published',
+    publishedAt: '2026-11-01T00:00:00.000Z',
+    rssEnabled: true,
+  }
+  const audioAsset = { id: 'aud-1', mimeType: 'audio/mpeg', sizeBytes: 192000 }
+  const baseEpisode = {
+    id: 'ep-1',
+    title: 'Episode One',
+    slug: 'episode-one',
+    description: 'An episode.',
+    status: 'published',
+    publishedAt: '2026-11-18T00:00:00.000Z',
+    audio: audioAsset,
+  }
+  const VIDEO_CHECKSUM = 'c'.repeat(64)
+  const videoAsset = {
+    id: 'vid-1',
+    mimeType: 'video/mp4',
+    sizeBytes: 54321,
+    checksum: `sha256:${VIDEO_CHECKSUM}`,
+  }
+  const goodProvenance = {
+    kind: 'podcast-video-render',
+    mode: 'slideshow',
+    assetId: 'vid-1',
+    probe: {
+      passed: true,
+      durationSec: 6.02,
+      width: 1280,
+      height: 720,
+      videoCodec: 'h264',
+      audioCodec: 'aac',
+      checksumSha256: VIDEO_CHECKSUM,
+    },
+    audioDurationSec: 6,
+    durationDeltaSec: 0.02,
+    renderedAt: '2026-11-18T12:00:00.000Z',
+  }
+  const feedFor = (episode: Record<string, unknown>, memberFeed = false) =>
+    renderPodcastFeed(show as never, [episode] as never, {
+      origin: 'https://example.test',
+      feedPath: '/podcasts/the-show/feed.xml',
+      showPath: '/podcasts/the-show',
+      includeMembersOnly: false,
+      ...(memberFeed
+        ? {
+            enclosureUrl: (ep: { id: string }) =>
+              `https://example.test/member-feed/token/episode/${ep.id}/audio`,
+          }
+        : {}),
+    })
+
+  it('audio-only episode: no video enclosure anywhere in the feed', () => {
+    const feed = feedFor(baseEpisode)
+    expect(feed).not.toContain('alternateEnclosure')
+    expect(feed).not.toContain('video/mp4')
+    expect(feed).toContain('<enclosure url="https://example.test/media/aud-1"')
+    expect(inspectPodcastFeed(feed).valid).toBe(true)
+  })
+
+  it('video asset without a passed probe changes NO feed bytes', () => {
+    const audioOnly = feedFor(baseEpisode)
+    // Asset attached, no provenance at all.
+    expect(feedFor({ ...baseEpisode, video: videoAsset })).toBe(audioOnly)
+    // Provenance present but the probe did not pass.
+    expect(
+      feedFor({
+        ...baseEpisode,
+        video: videoAsset,
+        videoProvenance: {
+          ...goodProvenance,
+          probe: { ...goodProvenance.probe, passed: false },
+        },
+      }),
+    ).toBe(audioOnly)
+    // Probe passed for DIFFERENT bytes (checksum mismatch).
+    expect(
+      feedFor({
+        ...baseEpisode,
+        video: videoAsset,
+        videoProvenance: {
+          ...goodProvenance,
+          probe: { ...goodProvenance.probe, checksumSha256: 'd'.repeat(64) },
+        },
+      }),
+    ).toBe(audioOnly)
+    // Provenance names a different asset.
+    expect(
+      feedFor({
+        ...baseEpisode,
+        video: videoAsset,
+        videoProvenance: { ...goodProvenance, assetId: 'vid-other' },
+      }),
+    ).toBe(audioOnly)
+    expect(episodeVideoFeedFields({ ...baseEpisode, video: videoAsset }, 'https://x.test')).toBe(
+      undefined,
+    )
+  })
+
+  it('probed video render: alternateEnclosure published alongside the audio enclosure', () => {
+    const feed = feedFor({ ...baseEpisode, video: videoAsset, videoProvenance: goodProvenance })
+    expect(feed).toContain('<enclosure url="https://example.test/media/aud-1"')
+    expect(feed).toContain(
+      '<podcast:alternateEnclosure type="video/mp4" length="54321" title="Video version" width="1280" height="720">',
+    )
+    expect(feed).toContain('<podcast:source uri="https://example.test/media/vid-1"/>')
+    expect(inspectPodcastFeed(feed).valid).toBe(true)
+  })
+
+  it('member feeds carry no video enclosure in v1 (token enclosures serve audio bytes)', () => {
+    const feed = feedFor(
+      { ...baseEpisode, video: videoAsset, videoProvenance: goodProvenance },
+      true,
+    )
+    expect(feed).not.toContain('alternateEnclosure')
+  })
+
+  it('buildVideoProvenance carries the probe + checksum of the rendered file', () => {
+    const provenance = buildVideoProvenance(
+      {
+        mode: 'camera',
+        file: {
+          path: '/tmp/x.mp4',
+          filename: 'x.mp4',
+          mimeType: 'video/mp4',
+          sizeBytes: 10,
+          checksumSha256: VIDEO_CHECKSUM,
+          durationSec: 6.02,
+        },
+        probe: {
+          durationSec: 6.02,
+          format: 'mov,mp4',
+          videoCodec: 'h264',
+          audioCodec: 'aac',
+          width: 1280,
+          height: 720,
+          passed: true,
+        },
+        audioDurationSec: 6,
+        durationDeltaSec: 0.02,
+        width: 1280,
+        height: 720,
+      },
+      'vid-1',
+      '2026-11-18T12:00:00.000Z',
+    )
+    expect(provenance).toMatchObject({
+      kind: 'podcast-video-render',
+      mode: 'camera',
+      assetId: 'vid-1',
+      probe: { passed: true, checksumSha256: VIDEO_CHECKSUM, width: 1280, height: 720 },
+    })
+  })
+})

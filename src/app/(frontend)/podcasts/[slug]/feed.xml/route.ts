@@ -3,14 +3,12 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
 
-import { canRenderPodcast, podcastGuid, podcastRss } from '@/modules/media/publishing'
+import { canRenderPodcast } from '@/modules/media/publishing'
+import { renderPodcastFeed } from '@/modules/podcast-studio/feed-build'
 import { loadConfig } from '@/modules/core/config'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-const value = (item: unknown) =>
-  typeof item === 'string' ? item : String((item as { id?: unknown } | null)?.id ?? '')
 
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
@@ -68,81 +66,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     overrideAccess: true,
   } as never)
 
-  const visible = (episodes.docs as any[])
-    .filter((episode) => canRenderPodcast(episode))
-    .flatMap((episode) => {
-      const audio = episode.audio as any
-      if (
-        !audio ||
-        !['audio/mpeg', 'audio/mp4', 'audio/ogg', 'audio/wav'].includes(String(audio.mimeType)) ||
-        !Number.isFinite(Number(audio.sizeBytes)) ||
-        Number(audio.sizeBytes) < 1
-      )
-        return []
-
-      const authorName =
-        Array.isArray(episode.authors) && episode.authors[0]
-          ? episode.authors[0].displayName || episode.authors[0].name || episode.authors[0].title
-          : Array.isArray(show.hosts) && show.hosts[0]
-            ? show.hosts[0].displayName || show.hosts[0].name || show.hosts[0].title
-            : Array.isArray(show.authors) && show.authors[0]
-              ? show.authors[0].displayName || show.authors[0].name || show.authors[0].title
-              : undefined
-
-      return [
-        {
-          id: String(episode.id),
-          guid: String(episode.guid || podcastGuid(String(show.id), String(episode.id))),
-          title: String(episode.title),
-          slug: String(episode.slug),
-          description: episode.description,
-          publishedAt: String(episode.publishedAt),
-          audioUrl: new URL(`/media/${audio.id}`, origin).toString(),
-          bytes: Number(audio.sizeBytes),
-          mimeType: String(audio.mimeType),
-          durationSeconds: Number(audio.durationSeconds) || undefined,
-          episodeNumber: Number(episode.episodeNumber) || undefined,
-          seasonNumber: Number(episode.seasonNumber) || undefined,
-          transcriptUrl: episode.transcript
-            ? new URL(`/podcasts/episodes/${episode.slug}/transcript`, origin).toString()
-            : undefined,
-          chapters: episode.chapters,
-          explicit: Boolean(episode.explicit ?? show.explicit),
-          artworkUrl: episode.artwork
-            ? new URL(`/media/${value(episode.artwork)}`, origin).toString()
-            : undefined,
-          author: authorName,
-        },
-      ]
+  // POD-03: the public feed never carries members-only content. A
+  // members show's episodes are all private, so the public feed is
+  // simply not found; on a public show, members-only episodes are
+  // absent from the feed entirely (PT-D rule, applied in the builder).
+  if (show.feedVisibility === 'members') {
+    return new Response('Not found', {
+      status: 404,
+      headers: { 'Cache-Control': 'private, no-store' },
     })
+  }
 
-  const artwork = show.artwork
-    ? new URL(`/media/${value(show.artwork)}`, origin).toString()
-    : undefined
-
-  const showAuthor =
-    Array.isArray(show.hosts) && show.hosts[0]
-      ? show.hosts[0].displayName || show.hosts[0].name || show.hosts[0].title
-      : Array.isArray(show.authors) && show.authors[0]
-        ? show.authors[0].displayName || show.authors[0].name || show.authors[0].title
-        : undefined
-
-  const categories = Array.isArray(show.categories)
-    ? show.categories.map((cat: any) => String(cat.name || cat.title || cat))
-    : undefined
-
-  const body = podcastRss({
-    title: String(show.title),
-    description: show.description,
-    siteUrl: origin,
-    path: `/podcasts/${slug}/feed.xml`,
+  const body = renderPodcastFeed(show, episodes.docs as any[], {
+    origin,
+    feedPath: `/podcasts/${slug}/feed.xml`,
     showPath: `/podcasts/${slug}`,
-    artworkUrl: artwork,
-    language: show.language,
-    explicit: Boolean(show.explicit),
-    author: showAuthor,
-    categories,
-    episodes: visible,
+    includeMembersOnly: false,
   })
 
   const etag = `\"${createHash('sha256').update(body).digest('hex')}\"`
