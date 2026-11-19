@@ -587,6 +587,22 @@ export async function evaluateSegmentRecipients(
     overrideAccess: true,
   })
 
+  // RC2-DEBT-13: suppression was checked with one query per subscriber
+  // inside the evaluation loop below — at 25k subscribers that N+1 cost
+  // ~20 s of a measured 22.5 s evaluation. The site's suppression hashes
+  // load once here, like every other fact in this function.
+  const suppressionsRes = await payload.find({
+    collection: 'suppressions',
+    where: { site: { equals: input.siteId } },
+    limit: 0,
+    pagination: false,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const suppressedHashes = new Set(
+    (suppressionsRes.docs as Doc[]).map((row) => String(row.emailHash)),
+  )
+
   const totalSubscribers = subscribersRes.docs.length
   let matchedSubscribers = 0
   let unconsentedOrPending = 0
@@ -915,21 +931,39 @@ export async function evaluateSegmentRecipients(
         addFact(communityBySubscriber, subId, 'profile')
     }
     if (payload.collections?.['spaces']) {
+      // RC2-DEBT-01: spaces no longer carry a member field — a space is
+      // a profile's per-site presence, so the fact resolves through
+      // the space's profile to the profile's member.
       const spaces = await payload.find({
         collection: 'spaces',
-        where: {
-          and: [{ member: { in: memberIds } }, { site: { equals: input.siteId } }],
-        },
+        where: { site: { equals: input.siteId } },
         limit: 0,
         pagination: false,
         depth: 0,
         overrideAccess: true,
       })
-      for (const space of spaces.docs as Doc[]) {
-        const memberId = relationId(space.member)
-        if (!memberId) continue
-        for (const subId of subscriberByMember.get(memberId) ?? [])
-          addFact(communityBySubscriber, subId, 'space')
+      const spaceProfileIds = [
+        ...new Set(
+          (spaces.docs as Doc[])
+            .map((space) => relationId(space.profile))
+            .filter((id): id is string => Boolean(id)),
+        ),
+      ]
+      if (spaceProfileIds.length) {
+        const spaceProfiles = await payload.find({
+          collection: 'profiles',
+          where: { id: { in: spaceProfileIds } },
+          limit: 0,
+          pagination: false,
+          depth: 0,
+          overrideAccess: true,
+        })
+        for (const profile of spaceProfiles.docs as Doc[]) {
+          const memberId = relationId(profile.member)
+          if (!memberId || !memberIds.includes(memberId)) continue
+          for (const subId of subscriberByMember.get(memberId) ?? [])
+            addFact(communityBySubscriber, subId, 'space')
+        }
       }
     }
   }
@@ -943,7 +977,7 @@ export async function evaluateSegmentRecipients(
     }
 
     const subId = String(sub.id)
-    const isSuppressed = await isSubscriberSuppressed(payload, input.siteId, String(sub.emailHash))
+    const isSuppressed = suppressedHashes.has(String(sub.emailHash))
     const isActive = sub.status === 'active' && !sub.globalUnsubscribedAt && !sub.erasedAt
     const lists = membershipsBySubscriber.get(subId) ?? []
 

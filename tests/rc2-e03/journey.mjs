@@ -252,11 +252,11 @@ stage(
   `prefPatch=${prefOff.status} count ${beforePrefCount}->${projectedOfKind(afterPref, 'thread.reply').length}`,
 )
 
-// ---------- stage 5: the inbox projection is a seam with no live caller ----------
-// The v1 comment path writes outbox events (comment.created.v1). The
-// community GET merges a projected inbox store with the canonical one —
-// but nothing in production runs the projector. Measure that first,
-// then run the projector through its own module and re-read.
+// ---------- stage 5: a v1 reply notifies the parent author canonically ----------
+// DEBT-21: the inbox projection and its projector are retired. The v1
+// comment path notifies the parent author through the canonical
+// dispatcher (comment.reply), and the notifications list is served by
+// the canonical store alone — no inbox field exists anymore.
 runSpec('tests/rc2-e03/provision-thread.spec.ts', {
   E03_SITE_ID: siteA,
   E03_CONTENT_ID: world.siteA.publishedArticleId,
@@ -277,19 +277,14 @@ const v1Reply = await api(hostA, `/api/v1/sites/${siteA}/threads/${v1ThreadId}/c
   extraHeaders: { 'idempotency-key': `e03-reply-${stamp}` },
   body: { body: `V1 reply comment ${stamp}`, parentId: v1RootId },
 })
-const inboxBefore = await notifList(members.author)
-const inboxRowsBefore = inboxBefore.data?.inboxNotifications ?? []
-runSpec('tests/rc2-e03/project-inbox.spec.ts', {})
-const projection = JSON.parse(readFileSync('/tmp/e03-projection.json', 'utf8'))
-const inboxAfter = await notifList(members.author)
-const inboxRowsAfter = inboxAfter.data?.inboxNotifications ?? []
+const authorAfterReply = await notifList(members.author)
+const replyNotifs = projectedOfKind(authorAfterReply, 'comment.reply')
 stage(
-  'the outbox->inbox projector has no production caller (measured), and works when run',
+  'a v1 reply notifies the parent author through the canonical store alone',
   v1Reply.status === 201 &&
-    inboxRowsBefore.length === 0 &&
-    projection.delivered >= 1 &&
-    inboxRowsAfter.length >= 1,
-  `v1=${v1Root.status}/${v1Reply.status} inboxBefore=${inboxRowsBefore.length} projected=${JSON.stringify(projection)} inboxAfter=${inboxRowsAfter.length}`,
+    replyNotifs.length >= 1 &&
+    authorAfterReply.data?.inboxNotifications === undefined,
+  `v1=${v1Root.status}/${v1Reply.status} comment.reply=${replyNotifs.length} inboxField=${authorAfterReply.data?.inboxNotifications !== undefined}`,
 )
 
 // ---------- stage 6: direct messaging honors the request gate ----------

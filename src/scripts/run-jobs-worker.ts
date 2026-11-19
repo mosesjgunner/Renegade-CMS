@@ -39,6 +39,22 @@ let timer: NodeJS.Timeout | undefined
 
 async function cycle(): Promise<void> {
   try {
+    // RC3-EMAIL-01: dedicated account-mail profile. An account worker runs
+    // ONLY the account/operational outbox sweep — it never loads audience
+    // credentials, queues, or recovery, so an audience incident (flood,
+    // revoked credentials, quota exhaustion) cannot consume its capacity.
+    if (workerProfile === 'account') {
+      if (payload.collections['email-intents']) {
+        const { recoverAccountEmailOutbox } = await import('../modules/email/outbox')
+        await recoverAccountEmailOutbox(payload as never)
+      }
+      await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
+      await writeFile(
+        heartbeatFile,
+        JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),
+      )
+      return
+    }
     if (workerProfile !== 'commerce-only') {
       await payload.jobs.handleSchedules({ queue: 'operations' })
       // Execute a bounded batch serially: side-effect tasks retain spare database
@@ -56,6 +72,12 @@ async function cycle(): Promise<void> {
       if (payload.collections['email-deliveries']) {
         const { recoverEmailOutbox } = await import('../modules/audience/tasks')
         await recoverEmailOutbox(payload)
+      }
+      // The audience-profile worker never touches the account outbox; the
+      // default profile runs both sweeps for small single-worker installs.
+      if (workerProfile !== 'audience' && payload.collections['email-intents']) {
+        const { recoverAccountEmailOutbox } = await import('../modules/email/outbox')
+        await recoverAccountEmailOutbox(payload as never)
       }
       if (payload.collections['social-queue-items']) {
         const { recoverSocialOutbox } = await import('../modules/social/tasks')

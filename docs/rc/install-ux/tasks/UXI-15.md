@@ -1,0 +1,3 @@
+# UXI-15 — Finish every shipped surface
+
+Partial: the install/setup/recovery spine was audited end to end and its dishonest or placeholder states were removed (static "Verified" claims, mislabeled profile, log-dump handoff). The complete shipped-surface audit (every operator route incl. raw collection views and deep links) was NOT completed in this pass and remains open for the RC3 surface program. Repository gates run for this pass: format, lint, typecheck, unit, integration, production build, smoke — see ACCEPTANCE_RESULTS.md for the candidate's actual numbers.

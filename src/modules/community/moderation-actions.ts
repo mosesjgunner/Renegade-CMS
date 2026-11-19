@@ -117,11 +117,7 @@ async function target(query: Query, input: Input): Promise<Target> {
     post: 'SELECT p.author_member_id AS "authorId" FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id=$1 AND d.site_id=$2',
     discussion: 'SELECT owner_id AS "authorId" FROM discussions WHERE id=$1 AND site_id=$2',
     comment:
-      'SELECT c.author_id AS "authorId", c.thread_id AS "threadId" FROM comments c JOIN comment_threads t ON t.id=c.thread_id WHERE c.id=$1 AND t.site_id=$2',
-    forum_post:
-      'SELECT p.author_id AS "authorId", t.space_id AS "spaceId" FROM forum_posts p JOIN forum_topics t ON t.id=p.topic_id WHERE p.id=$1 AND t.site_id=$2',
-    forum_topic:
-      'SELECT author_id AS "authorId", space_id AS "spaceId" FROM forum_topics WHERE id=$1 AND site_id=$2',
+      'SELECT p.author_member_id AS "authorId", p.discussion_id AS "threadId" FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id=$1 AND d.site_id=$2',
     member_profile:
       'SELECT p.member_id AS "authorId" FROM profiles p JOIN member_site_roles r ON r.member_id=p.member_id WHERE p.id=$1 AND r.site_id=$2',
   }
@@ -202,17 +198,13 @@ export async function applyModerationAction(payload: Payload, input: Input) {
           [input.targetId, input.siteId],
         )
       else if (input.targetType === 'comment')
-        await query('UPDATE comment_threads SET is_closed=true, updated_at=now() WHERE id=$1', [
-          item.threadId,
-        ])
-      else if (input.targetType === 'forum_topic')
         await query(
-          'UPDATE forum_topics SET is_locked=true, updated_at=now() WHERE id=$1 AND site_id=$2',
-          [input.targetId, input.siteId],
+          "UPDATE discussions SET status='locked', updated_at=now() WHERE id=$1 AND site_id=$2",
+          [item.threadId, input.siteId],
         )
       else
         throw new ModerationActionError(
-          'lock_thread applies to comments or forum topics.',
+          'lock_thread applies to discussions or comments.',
           422,
           'INVALID_ACTION_TARGET',
         )
@@ -233,18 +225,13 @@ export async function applyModerationAction(payload: Payload, input: Input) {
           [input.action === 'remove' ? 'removed' : 'restricted', input.targetId, input.siteId],
         )
       else if (input.targetType === 'comment')
-        await query('UPDATE comments SET status=$1, updated_at=now() WHERE id=$2', [
-          input.action === 'remove' ? 'deleted' : 'rejected',
-          input.targetId,
-        ])
-      else if (input.targetType === 'forum_post')
-        await query('UPDATE forum_posts SET is_quarantined=true, updated_at=now() WHERE id=$1', [
-          input.targetId,
-        ])
-      else if (input.targetType === 'forum_topic')
         await query(
-          'UPDATE forum_topics SET is_quarantined=true, updated_at=now() WHERE id=$1 AND site_id=$2',
-          [input.targetId, input.siteId],
+          'UPDATE discussion_posts SET status=$1, moderation_state=$2, updated_at=now() WHERE id=$3',
+          [
+            input.action === 'remove' ? 'removed' : 'hidden',
+            input.action === 'remove' ? 'removed' : 'restricted',
+            input.targetId,
+          ],
         )
       else
         throw new ModerationActionError(
@@ -269,18 +256,9 @@ export async function applyModerationAction(payload: Payload, input: Input) {
           [input.targetId, input.siteId],
         )
       else if (input.targetType === 'comment')
-        await query("UPDATE comments SET status='visible', updated_at=now() WHERE id=$1", [
-          input.targetId,
-        ])
-      else if (input.targetType === 'forum_post')
         await query(
-          "UPDATE forum_posts SET is_quarantined=false, review_status='clear', updated_at=now() WHERE id=$1",
+          "UPDATE discussion_posts SET status='published', moderation_state='clear', updated_at=now() WHERE id=$1",
           [input.targetId],
-        )
-      else if (input.targetType === 'forum_topic')
-        await query(
-          'UPDATE forum_topics SET is_quarantined=false, is_locked=false, updated_at=now() WHERE id=$1 AND site_id=$2',
-          [input.targetId, input.siteId],
         )
       if (item.authorId) {
         await query(
@@ -451,15 +429,9 @@ export async function createModerationAppeal(
 async function restoreReversedEffect(query: Query, action: StoredAction) {
   if (action.action === 'quarantine' || action.action === 'remove') {
     if (action.targetType === 'comment')
-      await query("UPDATE comments SET status='visible', updated_at=now() WHERE id=$1", [
-        action.targetId,
-      ])
-    if (action.targetType === 'forum_post')
-      await query('UPDATE forum_posts SET is_quarantined=false WHERE id=$1', [action.targetId])
-    if (action.targetType === 'forum_topic')
       await query(
-        'UPDATE forum_topics SET is_quarantined=false, updated_at=now() WHERE id=$1 AND site_id=$2',
-        [action.targetId, action.siteId],
+        "UPDATE discussion_posts SET status='published', moderation_state='clear', updated_at=now() WHERE id=$1",
+        [action.targetId],
       )
   }
   if (action.action === 'lock_thread') {
@@ -475,13 +447,9 @@ async function restoreReversedEffect(query: Query, action: StoredAction) {
       reason: action.reason,
     })
     if (action.targetType === 'comment')
-      await query('UPDATE comment_threads SET is_closed=false, updated_at=now() WHERE id=$1', [
-        item.threadId,
-      ])
-    if (action.targetType === 'forum_topic')
       await query(
-        'UPDATE forum_topics SET is_locked=false, updated_at=now() WHERE id=$1 AND site_id=$2',
-        [action.targetId, action.siteId],
+        "UPDATE discussions SET status='open', updated_at=now() WHERE id=$1 AND site_id=$2",
+        [item.threadId, action.siteId],
       )
   }
   if (action.action === 'suspend_posting' || action.action === 'ban_member')

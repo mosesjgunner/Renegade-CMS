@@ -245,20 +245,16 @@ export async function ensureBootstrap(
 export async function beginPasskeyRegistration(
   payload: Payload,
   config: AppConfig,
-  input: { email: string; token: string },
+  input: { email: string; token: string; enrollmentToken?: string },
 ) {
   const email = validateOwnerEmail(input.email, config.ownerEmail)
   const pool = getPool(payload)
+  const existing = await getState(pool)
+  if (existing?.state === 'installing') {
+    return resumePasskeyRegistration(pool, config, existing, email, input.enrollmentToken)
+  }
   const state = await getRequiredOpenState(pool, config, input.token)
-  const origin = new URL(config.appUrl)
-  const options = await generateRegistrationOptions({
-    rpID: origin.hostname,
-    rpName: 'Renegade CMS',
-    userID: Buffer.from(randomUUID()),
-    userName: email,
-    userDisplayName: email,
-    authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
-  })
+  const options = await registrationOptions(config, email)
 
   const enrollmentToken = createBootstrapToken()
   const updated = await pool.query(
@@ -280,6 +276,81 @@ export async function beginPasskeyRegistration(
     )
   }
   return { enrollmentToken, options }
+}
+
+/**
+ * Resume an enrollment that already consumed its bootstrap token.
+ *
+ * The browser that began enrollment holds the enrollment session in an
+ * HttpOnly cookie. Presenting it proves this is the same operator returning —
+ * most often after cancelling the passkey prompt, which must never strand
+ * setup (acceptance contract: a cancelled prompt cannot permanently strand
+ * ownership). The challenge and enrollment session rotate on every resume;
+ * the bootstrap token is never restored, and a completed installation can
+ * never be reached from here.
+ */
+async function resumePasskeyRegistration(
+  pool: SqlPool,
+  config: AppConfig,
+  state: InstallationRow,
+  email: string,
+  enrollmentToken: string | undefined,
+) {
+  if (
+    !enrollmentToken ||
+    !state.registration_session_hash ||
+    !safeEqual(hashValue(enrollmentToken, config.payloadSecret), state.registration_session_hash)
+  ) {
+    throw new InstallationError(
+      'INSTALLATION_IN_PROGRESS',
+      'Setup is already in progress in another browser session. If that session is lost, run local operator recovery.',
+    )
+  }
+  if (!state.bootstrap_expires_at || state.bootstrap_expires_at.getTime() <= Date.now()) {
+    throw new InstallationError(
+      'INSTALLATION_EXPIRED',
+      'The enrollment session expired. Run local recovery.',
+    )
+  }
+  if (state.registration_email !== email) {
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'The owner email does not match the enrollment in progress.',
+    )
+  }
+  const options = await registrationOptions(config, email)
+  const nextEnrollmentToken = createBootstrapToken()
+  const updated = await pool.query(
+    `UPDATE installation_state
+     SET registration_challenge = $1, registration_session_hash = $2,
+         bootstrap_expires_at = $3, updated_at = now()
+     WHERE singleton = true AND state = 'installing' AND registration_session_hash = $4`,
+    [
+      options.challenge,
+      hashValue(nextEnrollmentToken, config.payloadSecret),
+      new Date(Date.now() + bootstrapLifetimeMs),
+      state.registration_session_hash,
+    ],
+  )
+  if (!updated.rowCount) {
+    throw new InstallationError(
+      'INSTALLATION_IN_PROGRESS',
+      'Setup is already in progress in another browser session. If that session is lost, run local operator recovery.',
+    )
+  }
+  return { enrollmentToken: nextEnrollmentToken, options }
+}
+
+async function registrationOptions(config: AppConfig, email: string) {
+  const origin = new URL(config.appUrl)
+  return generateRegistrationOptions({
+    rpID: origin.hostname,
+    rpName: 'Renegade CMS',
+    userID: Buffer.from(randomUUID()),
+    userName: email,
+    userDisplayName: email,
+    authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
+  })
 }
 
 export async function completeInstallation(
@@ -349,7 +420,7 @@ export async function completeInstallation(
     }
 
     const owner = await client.query<{ id: string }>(
-      `INSERT INTO users (email, role, member_id) VALUES ($1, 'owner', $2) RETURNING id`,
+      `INSERT INTO users (email, role, member_id, is_global_owner) VALUES ($1, 'owner', $2, true) RETURNING id`,
       [current.registration_email, provisioned.member?.id ?? null],
     )
     const ownerId = owner.rows[0]?.id
@@ -397,6 +468,7 @@ export async function completeInstallation(
       onboarding: {
         publicUrl: onboarding.primaryUrl,
         adminUrl: new URL('/admin', onboarding.primaryUrl).toString(),
+        ...(provisioned.podcastShow ? { studioUrl: provisioned.podcastShow.studioUrl } : {}),
         configuredCapabilities: provisioned.configuredCapabilities,
         needsConfiguration: onboarding.optionalConnections,
         availableLater: ['email', 'ai', 'social', 'commerce', 'analytics', 'networking'].filter(
@@ -442,6 +514,71 @@ export async function rotateBootstrapToken(payload: Payload, config: AppConfig):
     [hashValue(token, config.payloadSecret), new Date(Date.now() + bootstrapLifetimeMs)],
   )
   announceBootstrapToken(token)
+}
+
+/**
+ * In-product recovery-kit rotation for the signed-in installation owner.
+ *
+ * Setup completion returns recovery codes exactly once; an owner who loses
+ * that response (refresh, closed tab, lost network) must be able to obtain a
+ * fresh set without server access and without reopening public setup. The
+ * previous unused codes are invalidated in the same transaction, other admin
+ * sessions are revoked, and the current session survives so the owner can
+ * save the new kit. The local CLI rotation in owner-recovery.ts remains the
+ * path for an owner who cannot sign in at all.
+ */
+export async function rotateOwnRecoveryCodes(
+  payload: Payload,
+  config: AppConfig,
+  headers: Headers,
+): Promise<{ recoveryCodes: string[] }> {
+  const user = await requireAdminUser(payload, config.payloadSecret, headers)
+  if (user.role !== 'owner') {
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'Only the installation owner can rotate recovery codes.',
+    )
+  }
+  const pool = getPool(payload)
+  const sessionId = await sessionIdFromHeaders(headers, config.payloadSecret)
+  const recoveryCodes = createRecoveryCodes()
+  const client = await pool.connect()
+  try {
+    await client.query('BEGIN')
+    const owner = await client.query<{ id: string }>(
+      `SELECT id FROM users WHERE id = $1 AND role = 'owner' FOR UPDATE`,
+      [user.id],
+    )
+    if (!owner.rows[0]) {
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'Only the installation owner can rotate recovery codes.',
+      )
+    }
+    await client.query(
+      `UPDATE recovery_codes SET used_at = now() WHERE user_id = $1 AND used_at IS NULL`,
+      [user.id],
+    )
+    for (const recoveryCode of recoveryCodes) {
+      await client.query(`INSERT INTO recovery_codes (user_id, code_hash) VALUES ($1, $2)`, [
+        user.id,
+        hashValue(recoveryCode, config.payloadSecret),
+      ])
+    }
+    await client.query(
+      `UPDATE admin_sessions SET revoked_at = now()
+       WHERE user_id = $1 AND id <> $2 AND revoked_at IS NULL`,
+      [user.id, sessionId],
+    )
+    await client.query('COMMIT')
+  } catch (error) {
+    await client.query('ROLLBACK')
+    throw error
+  } finally {
+    client.release()
+  }
+  await audit(payload, user.id, 'recovery_codes.rotated')
+  return { recoveryCodes }
 }
 
 export async function beginPasskeyAuthentication(payload: Payload, email: string) {

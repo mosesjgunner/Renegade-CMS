@@ -20,6 +20,8 @@ const baseSettings: ResolvedSiteSettings = {
   siteDescription: 'Independent investigative journal',
   canonicalOrigin: 'https://renegade.test',
   canonicalOriginsBySite: {},
+  canonicalOriginSource: 'configured',
+  siteVerification: { tokens: {}, bySite: {} },
   locale: 'en',
   timezone: 'UTC',
   logoId: 'media-logo-1',

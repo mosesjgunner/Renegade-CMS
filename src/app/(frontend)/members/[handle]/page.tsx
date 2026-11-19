@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import { loadProfileProjection, ProfileAccessError } from '@/modules/community/profile-projection'
 import { ProfileRelationshipActions } from '@/modules/community/ProfileRelationshipActions'
@@ -36,11 +37,19 @@ export async function generateMetadata({
   params: Promise<{ handle: string }>
 }): Promise<Metadata> {
   const { handle } = await params
-  const { profile } = await profileForRequest(handle)
+  const { profile, siteId } = await profileForRequest(handle)
+  const payload = await getPayload({ config })
+  const settings = await resolveSiteSettings(payload as never).catch(() => null)
+  const origin = settings
+    ? settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
+    : null
   return {
     title: `${profile.displayName} · Community`,
     description: profile.bio?.slice(0, 160),
     robots: { index: profile.discoverable, follow: profile.discoverable },
+    ...(profile.discoverable && origin
+      ? { alternates: { canonical: `${origin}/members/${profile.handle}` } }
+      : {}),
   }
 }
 

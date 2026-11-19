@@ -20,12 +20,14 @@ import {
 import {
   resolveCommunityActor,
   createForumThread,
+  getOrCreateAttachedDiscussion,
   replyToForumThread,
   toggleCommunityReaction,
   blockMember,
   updateMemberProfile,
   getMemberNotifications,
   getMemberActivityHistory,
+  dispatchCommunityNotification,
   queryDb,
 } from '../../src/modules/community/service'
 import type { CommunityActor, CommunityPolicyContext } from '../../src/modules/community/contracts'
@@ -43,13 +45,8 @@ import {
   sendConversationMessage,
   ConversationError,
 } from '../../src/modules/community/conversation-composer'
+import { postThreadComment } from '../../src/modules/community/comment-composer'
 import { linkMessageAttachments } from '../../src/modules/community/message-attachments'
-import {
-  noSnippet,
-  projectInboxEvent,
-  projectPendingInboxEvents,
-  listInbox,
-} from '../../src/modules/community/inbox-notifications'
 import { notificationStreamManager } from '../../src/modules/community/notification-stream'
 import {
   createOperationalBackupManifest,
@@ -311,7 +308,7 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
     expect(Array.isArray(aliceNotifs)).toBe(true)
   })
 
-  it('2. Blocked Relationships: Enforces strict isolation on messaging, projection, and notifications', async () => {
+  it('2. Blocked Relationships: Enforces strict isolation on messaging and notifications', async () => {
     // Alice blocks Bob on Site A
     await blockMember(payload, {
       siteId: siteAId,
@@ -333,23 +330,33 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       }),
     ).rejects.toThrow()
 
-    // C. Notification Isolation: Events created by Bob are not delivered to Alice
-    const inboxCountBefore = await listInbox(payload, { siteId: siteAId, memberId: aliceMemberId })
+    // C. Notification Isolation: a blocked actor's dispatch creates no
+    // canonical notification for Alice (DEBT-21: the dispatcher owns
+    // this invariant now that the inbox projector is retired).
+    const countAliceNotifications = async () =>
+      (
+        await payload.find({
+          collection: 'notifications',
+          where: { recipientMember: { equals: aliceMemberId } },
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+        } as never)
+      ).totalDocs
+    const notifCountBefore = await countAliceNotifications()
 
-    await projectInboxEvent(payload, {
-      id: randomUUID(),
-      eventType: 'comment.created.v1',
-      payload: {
-        siteId: siteAId,
-        actorId: bobMemberId,
-        recipientMemberIds: [aliceMemberId],
-        body: 'Unsolicited ping from blocked user Bob',
-      },
+    await dispatchCommunityNotification(payload, {
+      siteId: siteAId,
+      recipientMemberId: aliceMemberId,
+      actorMemberId: bobMemberId,
+      type: 'comment.reply',
+      object: { id: randomUUID() },
+      payloadData: { bodySnippet: 'Unsolicited ping from blocked user Bob' },
     })
 
-    const inboxCountAfter = await listInbox(payload, { siteId: siteAId, memberId: aliceMemberId })
+    const notifCountAfter = await countAliceNotifications()
     // Alice should receive 0 notifications from the blocked Bob
-    expect(inboxCountAfter.unreadCount).toBe(inboxCountBefore.unreadCount)
+    expect(notifCountAfter).toBe(notifCountBefore)
   })
 
   it('3. Search and Notification Leakage: Respects discovery opt-out and scrubs sensitive snippets', async () => {
@@ -385,27 +392,60 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
     } as never)
     expect(directoryQuery.docs).toHaveLength(0)
 
-    // Test notification snippet scrubbing (noSnippet contract)
-    const rawSensitiveSnapshot = {
-      kind: 'comment.created.v1',
-      actorName: 'Bob',
-      body: 'Highly confidential comment payload',
-      body_html: '<p>HTML payload</p>',
-      body_raw: 'Raw unscrubbed content',
-      snippet: 'Secret snippet preview',
-      preview: 'Sneak preview',
-      message: 'Sensitive message body',
-    }
-    const sanitizedSnapshot = noSnippet(rawSensitiveSnapshot)
-    expect(sanitizedSnapshot).toEqual({
-      kind: 'comment.created.v1',
-      actorName: 'Bob',
+    // Notification payload contract (DEBT-21 re-pin of the retired
+    // noSnippet contract): a comment.reply notification carries only a
+    // bounded excerpt — never the full body or any HTML/raw variant.
+    const scrubContent = await payload.create({
+      collection: 'content',
+      data: {
+        site: siteAId,
+        contentType: 'article',
+        body: fixtureRichText(),
+        title: `Snippet Contract Article ${suffix} ${randomUUID().slice(0, 6)}`,
+        slug: `snippet-contract-${suffix}-${randomUUID().slice(0, 8)}`,
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+      },
+      overrideAccess: true,
+    } as never)
+    const scrubDiscussion = await getOrCreateAttachedDiscussion(payload, {
+      siteId: siteAId,
+      attachedToCollection: 'content',
+      attachedToId: String(scrubContent.id),
+      title: `Snippet Contract ${suffix}`,
+      canonicalPath: `/articles/snippet-contract-${suffix}`,
     })
-    expect(sanitizedSnapshot).not.toHaveProperty('body')
-    expect(sanitizedSnapshot).not.toHaveProperty('body_html')
-    expect(sanitizedSnapshot).not.toHaveProperty('snippet')
-    expect(sanitizedSnapshot).not.toHaveProperty('preview')
-    expect(sanitizedSnapshot).not.toHaveProperty('message')
+    const scrubRoot = await postThreadComment(payload, {
+      siteId: siteAId,
+      threadId: String(scrubDiscussion.id),
+      authorId: aliceMemberId,
+      body: 'Root comment for the snippet contract.',
+      idempotencyKey: `scrub-root-${suffix}`,
+    })
+    const longBody = `Opening words ${'x'.repeat(200)} TAIL-SECRET-WORDS`
+    await postThreadComment(payload, {
+      siteId: siteAId,
+      threadId: String(scrubDiscussion.id),
+      parentId: String(scrubRoot.comment.id),
+      authorId: charlieMemberId,
+      body: longBody,
+      idempotencyKey: `scrub-reply-${suffix}`,
+    })
+    const aliceNotifs = await getMemberNotifications(payload, aliceMemberId, {
+      siteId: siteAId,
+      actor: aliceActor,
+    })
+    const replyNotif = aliceNotifs.find(
+      (n) => (n.activityEvent as { type?: string } | undefined)?.type === 'comment.reply',
+    )
+    expect(replyNotif).toBeDefined()
+    const notifPayload = (replyNotif!.activityEvent as { payload: Record<string, unknown> }).payload
+    expect(notifPayload).not.toHaveProperty('body')
+    expect(notifPayload).not.toHaveProperty('body_html')
+    expect(notifPayload).not.toHaveProperty('snippet')
+    expect(notifPayload).not.toHaveProperty('message')
+    expect(String(notifPayload.bodySnippet).length).toBeLessThanOrEqual(120)
+    expect(String(notifPayload.bodySnippet)).not.toContain('TAIL-SECRET-WORDS')
   })
 
   it('4. Realtime Reconnect: Manages event leases, reconnects with Last-Event-ID, isolates sites', () => {
@@ -443,35 +483,74 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
     expect(missedHints.map((h) => h.unreadCount)).toEqual([2, 3])
   })
 
-  it('5. Worker Restart & Idempotency: Outbox projection delivers at-least-once with zero duplicate inboxes', async () => {
-    // Insert a test outbox event directly into outbox_events
-    const eventId = randomUUID()
-    const idempotencyKey = `idemp-${suffix}-1`
-    await queryDb(
-      payload,
-      `INSERT INTO outbox_events (id, event_type, payload, idempotency_key, created_at)
-       VALUES ($1, 'comment.created.v1', $2::jsonb, $3, now())`,
-      [
-        eventId,
-        JSON.stringify({
-          siteId: siteAId,
-          targetType: 'comment',
-          targetId: randomUUID(),
-          recipientMemberIds: [aliceMemberId],
-          actorId: charlieMemberId,
-        }),
-        idempotencyKey,
-      ],
+  it('5. Idempotent v1 comment submission: a replayed submission creates one post and one notification', async () => {
+    // DEBT-21: the outbox->inbox projector is retired, so its
+    // at-least-once idempotency test is replaced by the canonical
+    // guarantee on the live path — replaying a v1 comment submission
+    // with the same Idempotency-Key creates exactly one post and
+    // exactly one comment.reply notification.
+    const idemContent = await payload.create({
+      collection: 'content',
+      data: {
+        site: siteAId,
+        contentType: 'article',
+        body: fixtureRichText(),
+        title: `Idempotency Article ${suffix} ${randomUUID().slice(0, 6)}`,
+        slug: `idem-${suffix}-${randomUUID().slice(0, 8)}`,
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+      },
+      overrideAccess: true,
+    } as never)
+    const idemDiscussion = await getOrCreateAttachedDiscussion(payload, {
+      siteId: siteAId,
+      attachedToCollection: 'content',
+      attachedToId: String(idemContent.id),
+      title: `Idempotency ${suffix}`,
+      canonicalPath: `/articles/idem-${suffix}`,
+    })
+    const idemThreadId = String(idemDiscussion.id)
+    const idemRoot = await postThreadComment(payload, {
+      siteId: siteAId,
+      threadId: idemThreadId,
+      authorId: aliceMemberId,
+      body: 'Root comment for the idempotency journey.',
+      idempotencyKey: `idem-root-${suffix}`,
+    })
+
+    const replyInput = {
+      siteId: siteAId,
+      threadId: idemThreadId,
+      parentId: String(idemRoot.comment.id),
+      authorId: charlieMemberId,
+      body: 'A reply submitted twice by a retrying client.',
+      idempotencyKey: `idem-reply-${suffix}`,
+    }
+    const first = await postThreadComment(payload, replyInput)
+    const replay = await postThreadComment(payload, replyInput)
+    expect(replay.replayed).toBe(true)
+    expect(String(replay.comment.id)).toBe(String(first.comment.id))
+
+    const posts = await payload.find({
+      collection: 'discussion-posts',
+      where: { discussion: { equals: idemThreadId } },
+      limit: 0,
+      pagination: false,
+      overrideAccess: true,
+    } as never)
+    expect(posts.totalDocs).toBe(2)
+
+    const aliceNotifs = await getMemberNotifications(payload, aliceMemberId, {
+      siteId: siteAId,
+      actor: aliceActor,
+    })
+    const replyNotifs = aliceNotifs.filter(
+      (n) =>
+        (n.activityEvent as { type?: string } | undefined)?.type === 'comment.reply' &&
+        String((n.activityEvent as { object?: { id?: string } } | undefined)?.object?.id ?? '') ===
+          String(first.comment.id),
     )
-
-    // Worker pass 1
-    const run1 = await projectPendingInboxEvents(payload, 50)
-    expect(run1.processed).toBeGreaterThanOrEqual(1)
-
-    // Simulate worker restart / crash replay: Worker runs the exact same pending event again
-    const run2 = await projectPendingInboxEvents(payload, 50)
-    // Idempotent delivery: delivered count for this event is 0 because recipient unique key prevented duplicate
-    expect(run2.delivered).toBe(0)
+    expect(replyNotifs).toHaveLength(1)
   })
 
   it('6. Full Journey & Moderator Audit Trail: Report, inspect, resolve, and verify tamper-evident audit chain', async () => {
@@ -516,26 +595,33 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       },
       overrideAccess: true,
     } as never)
-    const testThreadId = randomUUID()
-    const testCommentId = randomUUID()
     const canonicalContentId = String(modContent.id)
-    await queryDb(
-      payload,
-      `INSERT INTO comment_threads (id, site_id, canonical_content_id, content_type) VALUES ($1, $2, $3, $4)`,
-      [testThreadId, siteAId, canonicalContentId, 'article'],
-    )
-    await queryDb(
-      payload,
-      `INSERT INTO comments (id, thread_id, author_id, author_type, body_raw, body_html, status)
-       VALUES ($1, $2, $3, 'member', $4, $5, 'visible')`,
-      [
-        testCommentId,
-        testThreadId,
-        bobMemberId,
-        'Disruptive comment content that violates standards',
-        '<p>Disruptive comment content that violates standards</p>',
-      ],
-    )
+    // DEBT-20 fold: a comment lives in the live discussion store — the
+    // article's attached discussion plus a discussion post by Bob.
+    const modDiscussion = await getOrCreateAttachedDiscussion(payload, {
+      siteId: siteAId,
+      attachedToCollection: 'content',
+      attachedToId: canonicalContentId,
+      title: `Test Moderation Article ${suffix}`,
+      canonicalPath: `/articles/test-mod-${suffix}`,
+    })
+    const testThreadId = String(modDiscussion.id)
+    const objectionablePost = (await payload.create({
+      collection: 'discussion-posts',
+      data: {
+        discussion: testThreadId,
+        authorMember: bobMemberId,
+        body: 'Disruptive comment content that violates standards',
+        displayOrder: 1,
+        permalink: `/articles/test-mod-${suffix}#comment-1`,
+        paginationAnchor: 'comment-1',
+        status: 'published',
+        visibility: 'public',
+        moderationState: 'clear',
+      },
+      overrideAccess: true,
+    } as never)) as unknown as { id: string }
+    const testCommentId = String(objectionablePost.id)
 
     // Step 3: Alice reports Bob's objectionable comment
     const reportRes = await ingestModerationReport(payload, {
@@ -572,13 +658,16 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
       reason: 'Violates civility policy; quarantined pending full review',
     })
 
-    // Step 6: Verify comment is quarantined (status = 'rejected') in persisted database
-    const quarantinedComment = await queryDb<{ status: string }>(
+    // Step 6: Verify the comment is quarantined in the live store
+    // (DEBT-20 fold: a comment quarantine hides the discussion post and
+    // marks its moderation state restricted)
+    const quarantinedComment = await queryDb<{ status: string; moderation_state: string }>(
       payload,
-      `SELECT status FROM "comments" WHERE id = $1`,
+      `SELECT status, moderation_state FROM "discussion_posts" WHERE id = $1`,
       [testCommentId],
     )
-    expect(quarantinedComment.rows[0].status).toBe('rejected')
+    expect(quarantinedComment.rows[0].status).toBe('hidden')
+    expect(quarantinedComment.rows[0].moderation_state).toBe('restricted')
 
     // Step 7: Verify moderation action recorded with Charlie as actor
     const recordedAction = await queryDb<{ action: string; actor: string }>(

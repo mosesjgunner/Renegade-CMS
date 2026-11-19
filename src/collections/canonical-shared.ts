@@ -92,8 +92,22 @@ export const seoFields = (): Field[] => [
     type: 'text',
     admin: { description: 'Leave blank to use the selected media’s resolved alt text.' },
   },
-  { name: 'seoKeywords', type: 'json' },
-  { name: 'seoFocusKeyphrase', type: 'text' },
+  {
+    name: 'seoKeywords',
+    type: 'json',
+    admin: {
+      description:
+        'Editorial aid only — not emitted as a meta tag and not used as a ranking signal.',
+    },
+  },
+  {
+    name: 'seoFocusKeyphrase',
+    type: 'text',
+    admin: {
+      description:
+        'Editorial aid only — not emitted as a meta tag and not used as a ranking signal.',
+    },
+  },
   { name: 'seoNoIndex', type: 'checkbox', defaultValue: false },
   {
     name: 'discoveryOverrides',

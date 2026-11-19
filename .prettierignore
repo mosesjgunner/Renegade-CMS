@@ -29,3 +29,8 @@ docs/rc/evidence/rc1/stage-01/
 # Retained audit records and RC acceptance receipts are immutable evidence.
 docs/audits/pass-09/
 docs/rc/evidence/
+
+# RC3 podcast prototype fixtures, copied verbatim from the R&D evidence pack;
+# preserve original evidence bytes (see tests/fixtures/podcast-studio/PROVENANCE.md).
+tests/fixtures/podcast-studio/edl-pt-c.json
+tests/fixtures/podcast-studio/drift-pt-f.json

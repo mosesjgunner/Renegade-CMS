@@ -438,6 +438,9 @@ export const MediaAssets: CollectionConfig = {
     { name: 'height', type: 'number', min: 0 },
     { name: 'durationSeconds', type: 'number', min: 0 },
     { name: 'audioMetadata', type: 'json', admin: { readOnly: true } },
+    // POD-08: server-generated waveform peaks (media/peaks.ts format v1),
+    // written only by the media-peaks task; read by the studio players.
+    { name: 'waveformPeaks', type: 'json', admin: { readOnly: true } },
     { name: 'videoMetadata', type: 'json', admin: { readOnly: true } },
     { name: 'altText', type: 'text' },
     {
@@ -1027,7 +1030,11 @@ export const Content: CollectionConfig = {
     defaultColumns: ['title', 'contentType', 'status', 'canonicalPath', 'updatedAt'],
     description:
       'Posts and Pages share one editorial record. Use the Posts and Pages links for focused work.',
-    components: { edit: { beforeDocumentControls: ['./modules/admin/FocusModeToggle'] } },
+    components: {
+      edit: {
+        beforeDocumentControls: ['./modules/admin/FocusModeToggle', './modules/admin/SkipToSave'],
+      },
+    },
   },
   access: {
     create: tenantCreateAccess,

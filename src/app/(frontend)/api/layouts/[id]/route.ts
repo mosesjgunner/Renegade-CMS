@@ -12,6 +12,7 @@ import {
 } from '@/modules/public/page-builder'
 import { resolveTheme } from '@/modules/presentation/registry'
 import { checkLayoutDeletionSafeguards } from '@/modules/presentation/composition'
+import { conversionPublicationBlockers } from '@/modules/portability/legacy-migration/conversion-review'
 
 type Args = { params: Promise<{ id: string }> }
 const staff = (user: { role?: string } | null | undefined) =>
@@ -175,6 +176,20 @@ export async function PATCH(request: Request, { params }: Args) {
             { status: 422 },
           )
       }
+    }
+    if (body.publish) {
+      // Conversion review gate (S2-14): a converted draft with unresolved
+      // required items — unaccepted approximations, unreplaced quarantined
+      // regions, unresolved re-import conflicts — cannot publish.
+      const blockers = conversionPublicationBlockers({
+        blocks: candidate.blocks,
+        revisionHistory: (existing as unknown as { revisionHistory?: unknown }).revisionHistory,
+      })
+      if (blockers.length)
+        return NextResponse.json(
+          { error: 'Conversion review has unresolved items.', conversionBlockers: blockers },
+          { status: 422 },
+        )
     }
     const layout = body.publish
       ? publishLayout(checked.layout, ['layout:edit', 'layout:publish'])

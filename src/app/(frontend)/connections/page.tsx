@@ -126,7 +126,9 @@ export default async function ConnectionsPage() {
           // No live probe exists for merchant connections: health is
           // unverified and no success is derived from record timestamps.
           healthState: status === 'active' ? 'unknown' : 'warning',
-          encryptedSecretRef: doc.credentialReference ?? null,
+          // SOC-SEC-1: credential material never crosses to the client
+          // component — configured state is carried by unconfiguredFeatures.
+          encryptedSecretRef: null,
           scopes: ['payments.checkout.one_time', 'payments.subscription.recurring'],
           expiresAt: null,
           refreshMetadata: null,
@@ -179,7 +181,7 @@ export default async function ConnectionsPage() {
           label: String(doc.displayName || doc.network || 'Social Account'),
           status,
           healthState: status === 'active' ? 'healthy' : 'warning',
-          encryptedSecretRef: doc.connectionReference ?? null,
+          encryptedSecretRef: null,
           scopes: ['social.publish.text'],
           expiresAt: doc.credentialExpiresAt ? String(doc.credentialExpiresAt) : null,
           refreshMetadata: null,
@@ -281,7 +283,7 @@ export default async function ConnectionsPage() {
           status,
           healthState:
             status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
-          encryptedSecretRef: doc.secretRef ?? null,
+          encryptedSecretRef: null,
           scopes: Array.isArray(doc.events) ? doc.events.map(String) : [],
           expiresAt: null,
           refreshMetadata: null,
@@ -333,7 +335,7 @@ export default async function ConnectionsPage() {
           label: String(doc.label || 'Print On Demand'),
           status,
           healthState: status === 'active' ? 'healthy' : 'warning',
-          encryptedSecretRef: doc.encryptedApiKey ?? null,
+          encryptedSecretRef: null,
           scopes: ['commerce.orders', 'fulfillment.sync'],
           expiresAt: null,
           refreshMetadata: null,

@@ -4,7 +4,11 @@ import type { Payload } from 'payload'
 import { publicContentHierarchyTrail } from './hierarchy'
 
 import { canDiscoverPublic, canRenderPublic, type PublicState } from './contracts'
-import { resolveSiteSettings, type ResolvedSiteSettings } from '../core/site-settings'
+import {
+  resolveSiteSettings,
+  type ResolvedSiteSettings,
+  type SiteVerificationTokens,
+} from '../core/site-settings'
 import { mediaVariantUrl } from '../media/variant-contracts'
 import { eventSchemaNodes } from '../events/schema'
 import { isPublicPageLayout } from './layout-visibility'
@@ -136,6 +140,8 @@ export type DiscoveryDocument = {
   canonicalUrl: string
   canonicalPath: string
   alternateLocales: Record<string, string>
+  /** Search-engine site verification tokens; set only on the site-root document (F3). */
+  verification?: SiteVerificationTokens
   indexability: {
     indexable: boolean
     reason: DiscoveryIndexabilityReason
@@ -297,6 +303,33 @@ export function safeCanonicalUrl(candidate: unknown, publicUrl: string, origin: 
   } catch {
     return publicUrl
   }
+}
+
+/**
+ * Snippet target for body-derived descriptions (F2). A readability bound
+ * for the fallback, not a ranking rule: search engines truncate or
+ * replace snippets as they see fit.
+ */
+export const DESCRIPTION_BODY_SNIPPET_TARGET = 160
+
+/**
+ * Deterministic description fallback from a published body's plain-text
+ * projection. Strips any residual markup, collapses whitespace, and cuts
+ * at a word boundary. Returns null when no meaningful text exists, so the
+ * caller's chain can fall through to site/template defaults.
+ */
+export function deriveBodyDescription(plainText: unknown): string | null {
+  if (typeof plainText !== 'string') return null
+  const cleaned = plainText
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!cleaned) return null
+  if (cleaned.length <= DESCRIPTION_BODY_SNIPPET_TARGET + 10) return cleaned
+  const cut = cleaned.slice(0, DESCRIPTION_BODY_SNIPPET_TARGET)
+  const lastSpace = cut.lastIndexOf(' ')
+  const head = lastSpace >= 80 ? cut.slice(0, lastSpace) : cut
+  return `${head.replace(/[\s,;:]+$/, '')}…`
 }
 
 const warningFor = (field: string, value: string | null): string | null => {
@@ -521,7 +554,7 @@ export type RedirectRule = {
 export type RedirectResolution =
   | { target: string; statusCode: 301 | 302 | 307 | 308; ruleIds: string[] }
   | { error: 'loop' | 'hop-limit' | 'missing-target' }
-const normalPath = (value: string) => {
+export const normalPath = (value: string) => {
   if (
     !value.startsWith('/') ||
     value.startsWith('//') ||
@@ -860,6 +893,30 @@ export function auditDiscoveryDocument(doc: DiscoveryDocument): DiscoveryIssue[]
     })
   }
 
+  // DISC-10-CANONICAL-ORIGIN (F4): an indexable document must not
+  // canonicalize to a loopback address. That is the unconfigured-origin
+  // fallback; left in place it hands search engines a localhost identity
+  // for the entire site while every other signal looks healthy.
+  if (doc.indexability.indexable && doc.canonicalUrl) {
+    try {
+      const host = new URL(doc.canonicalUrl).hostname.toLowerCase()
+      if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
+        issues.push({
+          ruleId: 'DISC-RULE-10-CANONICAL-ORIGIN',
+          ruleVersion: '1.0.0',
+          severity: 'warning',
+          evidence: `Canonical origin host "${host}" is a loopback address, so the site is discoverable only under a local identity.`,
+          affectedEntity: entity,
+          affectedUrl: doc.publicUrl,
+          repairTarget:
+            'Set the site canonical origin in Site Settings to the production domain before launch.',
+        })
+      }
+    } catch {
+      // A malformed canonical URL is DISC-RULE-03's finding, not this one.
+    }
+  }
+
   return issues
 }
 
@@ -867,7 +924,7 @@ export function auditDiscoveryDocument(doc: DiscoveryDocument): DiscoveryIssue[]
 // UNIFIED DISCOVERY RESOLVER CONTRACT
 // -------------------------------------------------------------------------------------------------
 
-const idOf = (value: unknown): string => {
+export const idOf = (value: unknown): string => {
   if (typeof value === 'string') return value.trim()
   if (value && typeof value === 'object' && 'id' in value) {
     const raw = (value as { id: unknown }).id
@@ -1168,11 +1225,16 @@ export async function resolveDiscoveryDocument(
       image: schemaImgUrl ? { url: schemaImgUrl, alt: socialAlt || settings.siteName } : null,
     })
 
+    const verificationTokens: SiteVerificationTokens = {
+      ...settings.siteVerification.tokens,
+      ...(siteId ? settings.siteVerification.bySite[siteId] : undefined),
+    }
     const homeDoc: DiscoveryDocument = {
       publicUrl,
       canonicalUrl,
       canonicalPath: '/',
       alternateLocales: {},
+      verification: Object.keys(verificationTokens).length ? verificationTokens : undefined,
       indexability: {
         indexable: isSiteIndexable,
         reason: isSiteIndexable ? 'canonical' : nonIndexReason(settings, 'site_noindex'),
@@ -1937,6 +1999,7 @@ async function buildContentDiscoveryDocument(input: {
 
   let descValue: string | null = null
   let descSource: DiscoverySourceProvenance = 'content_derived'
+  const bodyDerivedDescription = deriveBodyDescription(plainTextBody)
   if (typeof content.seoDescription === 'string' && content.seoDescription.trim()) {
     descValue = content.seoDescription.trim()
     descSource = 'explicit_override'
@@ -1948,6 +2011,11 @@ async function buildContentDiscoveryDocument(input: {
     descSource = 'content_derived'
   } else if (typeof content.excerpt === 'string' && content.excerpt.trim()) {
     descValue = content.excerpt.trim()
+    descSource = 'content_derived'
+  } else if (bodyDerivedDescription) {
+    // F2: a body-only article still earns a description, derived
+    // deterministically from the published revision's plain-text body.
+    descValue = bodyDerivedDescription
     descSource = 'content_derived'
   } else if (settings.siteDescription) {
     descValue = settings.siteDescription
@@ -2382,7 +2450,7 @@ async function buildContentDiscoveryDocument(input: {
   return doc
 }
 
-function buildLayoutDiscoveryDocument(input: {
+export function buildLayoutDiscoveryDocument(input: {
   layout: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2536,7 +2604,7 @@ function buildLayoutDiscoveryDocument(input: {
   return doc
 }
 
-function buildPodcastShowDiscoveryDocument(input: {
+export function buildPodcastShowDiscoveryDocument(input: {
   show: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2680,7 +2748,7 @@ function buildPodcastShowDiscoveryDocument(input: {
   return doc
 }
 
-function buildPodcastEpisodeDiscoveryDocument(input: {
+export function buildPodcastEpisodeDiscoveryDocument(input: {
   episode: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2842,7 +2910,7 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
   return doc
 }
 
-function buildVideoDiscoveryDocument(input: {
+export function buildVideoDiscoveryDocument(input: {
   video: Record<string, any>
   settings: ResolvedSiteSettings
   base: string
@@ -2987,7 +3055,7 @@ function buildVideoDiscoveryDocument(input: {
   return doc
 }
 
-function buildGenericRecordDiscoveryDocument(input: {
+export function buildGenericRecordDiscoveryDocument(input: {
   record: Record<string, any>
   collection: string
   settings: ResolvedSiteSettings
@@ -3287,6 +3355,13 @@ export function discoveryToMetadata(doc: DiscoveryDocument): Metadata {
       index: doc.indexability.robotsDirectives.index,
       follow: doc.indexability.robotsDirectives.follow,
     },
+    verification: doc.verification
+      ? {
+          google: doc.verification.google,
+          yandex: doc.verification.yandex,
+          other: doc.verification.bing ? { 'msvalidate.01': doc.verification.bing } : undefined,
+        }
+      : undefined,
     openGraph: {
       title: socialTitle,
       description: socialDescription,

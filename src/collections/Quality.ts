@@ -81,7 +81,7 @@ export const QualityScans: CollectionConfig = {
     ),
     { name: 'targetId', type: 'text', required: true },
     { name: 'revisionId', type: 'text' },
-    select('status', ['queued', 'running', 'completed', 'failed', 'stale'], 'queued'),
+    select('status', ['queued', 'running', 'completed', 'incomplete', 'failed', 'stale'], 'queued'),
     { name: 'startedAt', type: 'date' },
     { name: 'completedAt', type: 'date' },
     { name: 'job', type: 'relationship', relationTo: 'payload-jobs' as never, index: true },

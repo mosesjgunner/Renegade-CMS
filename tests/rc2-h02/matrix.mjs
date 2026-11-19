@@ -67,6 +67,10 @@ const APP_ORIGIN = `http://127.0.0.1:${PORT}`
 const adminA = { cookie: staffCookie(world.staff.adminA), headers: { origin: APP_ORIGIN } }
 const editorA = { cookie: staffCookie(world.staff.editorA), headers: { origin: APP_ORIGIN } }
 const ownerA = { cookie: staffCookie(world.staff.ownerA), headers: { origin: APP_ORIGIN } }
+const installOwner = {
+  cookie: staffCookie(world.staff.installationOwner),
+  headers: { origin: APP_ORIGIN },
+}
 const outsiderB = { cookie: staffCookie(world.staff.outsiderB), headers: { origin: APP_ORIGIN } }
 const memberA = memberActor(world.members.memberA, `ca-${stamp}`)
 const memberB = memberActor(world.members.memberB, `cb-${stamp}`)
@@ -285,7 +289,10 @@ if (wfId) {
   )
 }
 
-// ---------- B. settings (RC2-DEBT-16 expected failure) ----------
+// ---------- B. settings (RC2-DEBT-16, repaired in RC2-I-02) ----------
+// The register's acceptance: the designated global (installation) owner
+// updates site settings (200); site-scoped operators — including the
+// per-site owner principal — stay refused (403).
 const settingsAdmin = await raw({
   host: 'localhost',
   method: 'POST',
@@ -296,10 +303,10 @@ const settingsAdmin = await raw({
 })
 record(
   'B1',
-  'measure',
-  'site-settings save as site admin (DEBT-16: known P1)',
-  settingsAdmin.status === 403 ? 'as-expected' : 'measured',
-  `status=${settingsAdmin.status} (403 = the filed DEBT-16 state)`,
+  'boundary',
+  'site-settings save as site admin is refused',
+  settingsAdmin.status === 403 ? 'hold' : 'breach',
+  `status=${settingsAdmin.status}`,
 )
 const settingsOwner = await raw({
   host: 'localhost',
@@ -311,10 +318,53 @@ const settingsOwner = await raw({
 })
 record(
   'B2',
-  'measure',
-  'site-settings save as global owner (DEBT-16)',
-  settingsOwner.status === 403 ? 'as-expected' : 'measured',
+  'boundary',
+  'site-settings save as per-site owner is refused (site-scoped, not global)',
+  settingsOwner.status === 403 ? 'hold' : 'breach',
   `status=${settingsOwner.status}`,
+)
+const settingsBefore = await raw({
+  host: 'localhost',
+  path: '/api/globals/site-settings',
+  cookie: installOwner.cookie,
+  headers: installOwner.headers,
+})
+const privacyBefore = settingsBefore.json?.privacy ?? {}
+const settingsInstall = await raw({
+  host: 'localhost',
+  method: 'POST',
+  path: '/api/globals/site-settings',
+  cookie: installOwner.cookie,
+  headers: installOwner.headers,
+  body: { siteName: 'H02 probe', privacy: { ...privacyBefore, analyticsEnabled: true } },
+})
+const settingsVerify = await raw({
+  host: 'localhost',
+  path: '/api/globals/site-settings',
+  cookie: installOwner.cookie,
+  headers: installOwner.headers,
+})
+const settingsRestore = await raw({
+  host: 'localhost',
+  method: 'POST',
+  path: '/api/globals/site-settings',
+  cookie: installOwner.cookie,
+  headers: installOwner.headers,
+  body: {
+    siteName: settingsBefore.json?.siteName ?? '',
+    privacy: privacyBefore,
+  },
+})
+record(
+  'B3',
+  'boundary',
+  'site-settings save as installation owner succeeds (DEBT-16 repaired), analytics enabled, then restores',
+  settingsInstall.status === 200 &&
+    settingsRestore.status === 200 &&
+    settingsVerify.json?.privacy?.analyticsEnabled === true
+    ? 'hold'
+    : 'breach',
+  `save=${settingsInstall.status} analyticsEnabledAfterSave=${settingsVerify.json?.privacy?.analyticsEnabled} restore=${settingsRestore.status}`,
 )
 
 // ---------- C. media ----------
@@ -555,10 +605,41 @@ const repFresh = freshProfileId
   : { status: 0 }
 record(
   'G7',
-  'measure',
-  'report fresh member profile on A (DEBT-19: no standing row)',
-  repFresh.status === 404 ? 'as-expected' : 'measured',
-  `status=${repFresh.status} (404 = the filed DEBT-19 state; 201 = provisioning fix has landed)`,
+  'boundary',
+  'report fresh member profile on A before joining is refused (model C: no standing, no target)',
+  repFresh.status === 404 ? 'hold' : 'breach',
+  `status=${repFresh.status}`,
+)
+// RC2-DEBT-19 repaired in RC2-I-02: the member provisions their own
+// standing by joining the site; from then on they are reportable there —
+// and only there.
+const freshJoin = await raw({
+  host: A.host,
+  method: 'POST',
+  path: '/api/community/join',
+  cookie: fresh.cookie,
+  headers: { ...fresh.headers, ...originA },
+  body: { siteId: A.siteId },
+})
+const repFreshJoined = freshProfileId
+  ? await report(subscriberA, originA, A.siteId, freshProfileId)
+  : { status: 0 }
+record(
+  'G7b',
+  'boundary',
+  'fresh member joins A, then a profile report on A opens a case (DEBT-19 repaired)',
+  freshJoin.status === 201 && repFreshJoined.status === 201 ? 'hold' : 'breach',
+  `join=${freshJoin.status} report=${repFreshJoined.status}`,
+)
+const repFreshOnB = freshProfileId
+  ? await report(memberB, originB, B.siteId, freshProfileId)
+  : { status: 0 }
+record(
+  'G7c',
+  'boundary',
+  'fresh member (joined A only) is not reportable on B',
+  refused(repFreshOnB.status) ? 'hold' : 'breach',
+  `status=${repFreshOnB.status} (standing on A creates nothing on B)`,
 )
 const repB = await report(memberB, originB, B.siteId, world.principals.memberAProfileId)
 record(

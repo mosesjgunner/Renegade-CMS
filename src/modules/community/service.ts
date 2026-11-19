@@ -2265,6 +2265,121 @@ export async function getMemberNotifications(
 }
 
 /**
+ * RC2-DEBT-21: the v1 notifications surface reads the canonical store.
+ * Pages over the same visible set as getMemberNotifications (identical
+ * policy, channel, site and block/mute filtering) and projects each
+ * notification into the v1 row shape the inbox projection used to
+ * serve: { id, kind, targetType, targetId, snapshot, readAt,
+ * createdAt } inside a { notifications, nextCursor, unreadCount }
+ * envelope. The cursor is a keyset over the visible set.
+ */
+export async function listMemberNotificationsPage(
+  payload: Payload,
+  memberId: string,
+  context: CommunityPolicyContext,
+  input: { cursor?: string | null; limit?: number } = {},
+): Promise<{
+  notifications: Array<Record<string, unknown>>
+  nextCursor: string | null
+  unreadCount: number
+}> {
+  const visible = await getMemberNotifications(payload, memberId, context)
+  const limit = Math.min(100, Math.max(1, input.limit ?? 30))
+  let start = 0
+  if (input.cursor) {
+    try {
+      const decoded = JSON.parse(Buffer.from(input.cursor, 'base64url').toString()) as {
+        createdAt?: string
+        id?: string
+      }
+      const index = visible.findIndex(
+        (item) => String(item.createdAt) === decoded.createdAt && String(item.id) === decoded.id,
+      )
+      if (index >= 0) start = index + 1
+    } catch {
+      // A malformed cursor reads from the top.
+    }
+  }
+  const page = visible.slice(start, start + limit)
+  const rows = page.map((item) => {
+    const event = (item.activityEvent ?? {}) as {
+      type?: string
+      payload?: Record<string, unknown>
+      object?: Record<string, unknown>
+    }
+    const kind = typeof event.type === 'string' ? event.type : ''
+    const object = event.object ?? {}
+    return {
+      id: item.id,
+      kind,
+      targetType: kind.startsWith('comment.')
+        ? 'comment'
+        : kind.startsWith('thread.')
+          ? 'post'
+          : kind.startsWith('direct_message')
+            ? 'conversation'
+            : kind === 'relationship.follow'
+              ? 'member'
+              : null,
+      targetId:
+        typeof object.id === 'string'
+          ? object.id
+          : typeof object.conversationId === 'string'
+            ? object.conversationId
+            : null,
+      snapshot: event.payload ?? {},
+      readAt:
+        item.status === 'read'
+          ? ((item.readAt as string | undefined) ?? (item.updatedAt as string | undefined) ?? null)
+          : null,
+      createdAt: item.createdAt,
+    }
+  })
+  const last = page[page.length - 1]
+  return {
+    notifications: rows,
+    nextCursor:
+      last && start + limit < visible.length
+        ? Buffer.from(
+            JSON.stringify({ createdAt: String(last.createdAt), id: String(last.id) }),
+          ).toString('base64url')
+        : null,
+    unreadCount: visible.filter((item) => item.status !== 'read').length,
+  }
+}
+
+/**
+ * RC2-DEBT-21: marks canonical notifications read for the v1 surface
+ * (one notification, or all of the member's visible set). Returns the
+ * number marked and the remaining unread count.
+ */
+export async function markMemberNotificationsRead(
+  payload: Payload,
+  memberId: string,
+  context: CommunityPolicyContext,
+  notificationId?: string,
+): Promise<{ marked: number; unreadCount: number }> {
+  const owned = await getMemberNotifications(payload, memberId, context)
+  let marked = 0
+  for (const item of owned) {
+    if (item.status === 'read') continue
+    if (notificationId && String(item.id) !== notificationId) continue
+    await payload.update({
+      collection: 'notifications' as never,
+      id: String(item.id),
+      data: { status: 'read', readAt: new Date().toISOString() },
+      overrideAccess: true,
+    } as never)
+    marked++
+  }
+  const remaining = await getMemberNotifications(payload, memberId, context)
+  return {
+    marked,
+    unreadCount: remaining.filter((item) => item.status !== 'read').length,
+  }
+}
+
+/**
  * Returns member history: comments, discussions, and conversations.
  */
 export async function getMemberActivityHistory(

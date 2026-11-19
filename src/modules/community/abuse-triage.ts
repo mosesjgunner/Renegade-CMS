@@ -137,7 +137,7 @@ export async function triageSubmission(
   payload: Payload,
   input: {
     siteId: string
-    targetType: 'comment' | 'forum_post' | 'forum_topic' | 'message'
+    targetType: 'comment' | 'message'
     targetId: string
     authorId: string
     text: string
@@ -196,12 +196,8 @@ export async function triageSubmission(
     )
     if (!decision.pendingReview) return decision
     if (input.targetType === 'comment')
-      await query("UPDATE comments SET status='pending_review', updated_at=now() WHERE id=$1", [
-        input.targetId,
-      ])
-    if (input.targetType === 'forum_post')
       await query(
-        "UPDATE forum_posts SET is_quarantined=true, review_status='pending_review', updated_at=now() WHERE id=$1",
+        "UPDATE discussion_posts SET status='hidden', moderation_state='review', updated_at=now() WHERE id=$1",
         [input.targetId],
       )
     const row = (

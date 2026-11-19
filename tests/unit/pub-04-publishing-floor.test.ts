@@ -7,10 +7,12 @@ import {
   validateMenuItem,
   validateNavigation,
 } from '../../src/modules/public/navigation'
-import { buildJsonLd, buildMetadata } from '../../src/modules/public/seo'
 import {
+  discoveryToJsonLd,
+  discoveryToMetadata,
   highlightExcerpt,
   queryLocalSearch,
+  type DiscoveryDocument,
   type SearchDocument,
 } from '../../src/modules/public/discovery'
 
@@ -116,14 +118,122 @@ describe('PUB-04 publishing floor unit contracts', () => {
   })
 
   describe('SEO metadata & JSON-LD inheritance', () => {
+    // Live path (SEO 1.0 §8): metadata and JSON-LD are projections of the
+    // resolved DiscoveryDocument via discoveryToMetadata/discoveryToJsonLd.
+    // The local buildMetadata/buildJsonLd composers that used to live in
+    // public/seo were removed as dead code; resolver-side graph construction
+    // is covered by tests/unit/disc-02-schema-graph.test.ts.
+    const demoDoc = (overrides: Partial<DiscoveryDocument> = {}): DiscoveryDocument => ({
+      publicUrl: 'https://renegadeparty.org/articles/demo',
+      canonicalUrl: 'https://renegadeparty.org/articles/demo',
+      canonicalPath: '/articles/demo',
+      alternateLocales: {},
+      indexability: {
+        indexable: true,
+        reason: 'canonical',
+        robotsDirectives: { index: true, follow: true },
+      },
+      title: { value: 'Demo Title', source: 'explicit_override' },
+      description: { value: 'Demo Summary', source: 'content_derived' },
+      socialImage: {
+        url: null,
+        alt: null,
+        source: null,
+        variantEligible: false,
+        variantUrl: null,
+      },
+      contentType: 'article',
+      author: { name: 'Demo Author', url: 'https://renegadeparty.org/authors/demo' },
+      publisher: { name: 'Renegade Party', url: 'https://renegadeparty.org', logoUrl: null },
+      dates: { publishedAt: '2026-09-01T12:00:00Z', modifiedAt: '2026-09-01T12:00:00Z' },
+      taxonomy: { topics: [], categories: [], tags: [] },
+      breadcrumbs: [
+        { name: 'Home', path: '/', url: 'https://renegadeparty.org/' },
+        { name: 'Articles', path: '/articles', url: 'https://renegadeparty.org/articles' },
+        {
+          name: 'Demo Title',
+          path: '/articles/demo',
+          url: 'https://renegadeparty.org/articles/demo',
+        },
+      ],
+      media: {},
+      revisions: {
+        entityId: 'art-1',
+        collection: 'content',
+        publishedRevisionId: 'rev-1',
+        presentationRevisionId: 'art-1',
+      },
+      search: { eligible: true, bodyProjection: 'Demo body.', visibility: 'public' },
+      redirect: { isRedirect: false, targetUrl: null, statusCode: null, isTombstone: false },
+      schema: {
+        eligible: true,
+        schemaType: 'Article',
+        jsonLd: {
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'WebSite',
+              '@id': 'https://renegadeparty.org#website',
+              url: 'https://renegadeparty.org',
+              name: 'Renegade Party',
+            },
+            {
+              '@type': 'Organization',
+              '@id': 'https://renegadeparty.org#identity',
+              name: 'Renegade Party',
+            },
+            {
+              '@type': 'BreadcrumbList',
+              '@id': 'https://renegadeparty.org/articles/demo-post#breadcrumb',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: 'Home',
+                  item: 'https://renegadeparty.org/',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: 'Articles',
+                  item: 'https://renegadeparty.org/articles',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: 'Demo Post',
+                  item: 'https://renegadeparty.org/articles/demo-post',
+                },
+              ],
+            },
+            {
+              '@type': 'Article',
+              '@id': 'https://renegadeparty.org/articles/demo-post#article-art-1',
+              headline: 'Demo Post',
+              url: 'https://renegadeparty.org/articles/demo-post',
+              description: 'A test dispatch',
+              datePublished: '2026-09-01T12:00:00Z',
+            },
+          ],
+        },
+      },
+      issues: [],
+      ...overrides,
+    })
+
     it('builds canonical, title, description, and respects siteNoIndex', () => {
-      const meta = buildMetadata({
-        title: 'Demo Title',
-        description: 'Demo Summary',
-        canonicalPath: '/articles/demo',
-        siteUrl: 'https://renegadeparty.org',
-        siteNoIndex: true,
-      })
+      // Site-level noindex resolves to reason 'site_noindex' with noindex
+      // robots directives on the document; the metadata projection must
+      // carry the inherited title/description/canonical AND the noindex.
+      const meta = discoveryToMetadata(
+        demoDoc({
+          indexability: {
+            indexable: false,
+            reason: 'site_noindex',
+            robotsDirectives: { index: false, follow: false },
+          },
+        }),
+      )
       expect(meta.title).toBe('Demo Title')
       expect(meta.description).toBe('Demo Summary')
       expect(meta.alternates?.canonical).toBe('https://renegadeparty.org/articles/demo')
@@ -131,32 +241,16 @@ describe('PUB-04 publishing floor unit contracts', () => {
     })
 
     it('generates valid minimal JSON-LD schema', () => {
-      const jsonLd = buildJsonLd({
-        siteUrl: 'https://renegadeparty.org',
-        path: '/articles/demo-post',
-        site: { ownerKind: 'organization', name: 'Renegade Party' },
-        breadcrumb: [
-          { name: 'Home', path: '/' },
-          { name: 'Articles', path: '/articles' },
-          { name: 'Demo Post', path: '/articles/demo-post' },
-        ],
-        entity: {
-          kind: 'article',
-          id: 'art-1',
-          name: 'Demo Post',
-          description: 'A test dispatch',
-          datePublished: '2026-09-01T12:00:00Z',
-        },
-      })
+      const jsonLd = discoveryToJsonLd(demoDoc()) as {
+        '@context': string
+        '@graph': Array<Record<string, unknown>>
+      }
       expect(jsonLd['@context']).toBe('https://schema.org')
       expect(jsonLd['@graph'].length).toBeGreaterThanOrEqual(3)
-      const articleSchema = jsonLd['@graph'].find((s) => s['@type'] === 'Article') as Record<
-        string,
-        unknown
-      >
+      const articleSchema = jsonLd['@graph'].find((s) => s['@type'] === 'Article')
       expect(articleSchema).toBeDefined()
-      expect(articleSchema.headline).toBe('Demo Post')
-      expect(articleSchema.datePublished).toBe('2026-09-01T12:00:00Z')
+      expect(articleSchema?.headline).toBe('Demo Post')
+      expect(articleSchema?.datePublished).toBe('2026-09-01T12:00:00Z')
     })
   })
 

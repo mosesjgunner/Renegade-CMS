@@ -1,6 +1,3 @@
-import type { Payload } from 'payload'
-import { executeDbQuery } from './comment-composer'
-
 export type NotificationHint = {
   id: string
   siteId: string
@@ -119,65 +116,3 @@ export class NotificationStreamManager {
 }
 
 export const notificationStreamManager = new NotificationStreamManager()
-
-/**
- * Admin / ops repair utility: recalculates member_notification_counters
- * exactly from inbox_notifications rows.
- */
-export async function rebuildNotificationCounters(
-  payload: Payload,
-  siteId?: string,
-): Promise<{ rebuilt: number; zeroed: number }> {
-  const whereSite = siteId ? 'WHERE site_id = $1' : ''
-  const values = siteId ? [siteId] : []
-
-  // 1. Calculate and upsert positive unread counts
-  const computed = await executeDbQuery<{
-    site_id: string
-    member_id: string
-    unread_count: number
-  }>(
-    payload,
-    `SELECT site_id, recipient_member_id AS member_id, COUNT(*)::int AS unread_count
-     FROM inbox_notifications
-     WHERE read_at IS NULL ${siteId ? 'AND site_id = $1' : ''}
-     GROUP BY site_id, recipient_member_id`,
-    values,
-  )
-
-  let rebuilt = 0
-  for (const row of computed) {
-    await executeDbQuery(
-      payload,
-      `INSERT INTO member_notification_counters (site_id, member_id, unread_count, updated_at)
-       VALUES ($1, $2, $3, now())
-       ON CONFLICT (site_id, member_id)
-       DO UPDATE SET unread_count = EXCLUDED.unread_count, updated_at = now()`,
-      [row.site_id, row.member_id, row.unread_count],
-    )
-    rebuilt++
-  }
-
-  // 2. Zero out counters for members who have no unread notifications
-  const zeroed = await executeDbQuery<{ count: number }>(
-    payload,
-    `WITH zeroed_rows AS (
-       UPDATE member_notification_counters
-       SET unread_count = 0, updated_at = now()
-       ${whereSite}
-       ${whereSite ? 'AND' : 'WHERE'} (site_id, member_id) NOT IN (
-         SELECT site_id, recipient_member_id
-         FROM inbox_notifications
-         WHERE read_at IS NULL ${siteId ? 'AND site_id = $1' : ''}
-       )
-       AND unread_count > 0
-       RETURNING 1
-     ) SELECT COUNT(*)::int AS count FROM zeroed_rows`,
-    values,
-  )
-
-  return {
-    rebuilt,
-    zeroed: Number(zeroed[0]?.count ?? 0),
-  }
-}

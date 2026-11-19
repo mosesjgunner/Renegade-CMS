@@ -29,14 +29,18 @@ function createMockPayload(queryHandler: (text: string, values?: unknown[]) => P
 describe('COMM-06C notification preferences, digests & audience outbox', () => {
   it('daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run', async () => {
     const outboxRows: unknown[] = []
-    const inboxRows = Array.from({ length: 10 }, (_, i) => ({
+    // DEBT-21 re-pin: digest sources are canonical notifications now —
+    // ten comment.reply notifications whose target posts are published.
+    const canonicalDocs = Array.from({ length: 10 }, (_, i) => ({
       id: `notif-${i + 1}`,
-      kind: 'comment.created.v1',
-      target_type: 'comment',
-      target_id: `comment-${i + 1}`,
-      payload: { site_id: siteId, target_type: 'comment', target_id: `comment-${i + 1}` },
-      snapshot: {},
-      created_at: new Date(Date.now() - (10 - i) * 60000).toISOString(),
+      createdAt: new Date(Date.now() - (10 - i) * 60000).toISOString(),
+      activityEvent: {
+        type: 'comment.reply',
+        site: siteId,
+        actor: { memberId: '00000000-0000-7000-8000-000000000099' },
+        object: { id: `comment-${i + 1}` },
+        payload: {},
+      },
     }))
 
     const payload = createMockPayload(async (text, values = []) => {
@@ -50,7 +54,8 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
         outboxRows.push({ id, values })
         return [{ id }]
       }
-      if (text.includes('FROM comments')) return [{ status: 'visible', deleted_at: null }]
+      if (text.includes('FROM discussion_posts'))
+        return [{ status: 'published', moderation_state: 'clear' }]
       if (text.includes('SELECT * FROM audience_delivery_outbox')) {
         const row = outboxRows[0] as { id: string; values: unknown[] }
         return [
@@ -64,12 +69,14 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
           },
         ]
       }
-      // Inbox notifications in digest window
-      if (text.includes('FROM inbox_notifications')) {
-        return inboxRows
-      }
       return []
     })
+    // Canonical notifications in the digest window
+    ;(payload as { find: unknown }).find = vi.fn(async (args: { collection: string }) =>
+      args.collection === 'notifications'
+        ? { docs: canonicalDocs, hasNextPage: false }
+        : { docs: [], hasNextPage: false },
+    )
 
     // Simulate 10 incoming comments routed for this recipient
     for (let i = 1; i <= 10; i++) {

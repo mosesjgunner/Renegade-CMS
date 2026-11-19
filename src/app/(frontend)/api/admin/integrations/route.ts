@@ -554,9 +554,15 @@ export async function POST(request: Request) {
           })
           .catch(() => null)
 
+        // SOC-SEC-1: the issuance response deliberately carries the
+        // one-time plaintext token, but the stored token hash is
+        // credential material and is not returned with the record.
+        const publicClient = { ...(created as Record<string, unknown>) }
+        delete publicClient.tokenHash
+
         return NextResponse.json(
           {
-            client: created,
+            client: publicClient,
             token: issued.token,
             tokenPrefix: issued.credential.tokenPrefix,
             message:

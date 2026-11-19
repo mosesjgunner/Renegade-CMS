@@ -151,6 +151,37 @@ export function planLegacyMigration(
       })
     }
   }
+  // Quarantined conversion regions (S2-12) join the same store: plugin
+  // blocks, scripts, unacquired media and unsupported core blocks are
+  // preserved outside public output with their conversion provenance.
+  for (const conversionReport of presentation.conversionReports) {
+    for (const region of conversionReport.report) {
+      if (region.outcome !== 'quarantined') continue
+      quarantineRecords.push({
+        id: randomUUID(),
+        runId,
+        siteId: '', // populated on import
+        sourceId: conversionReport.sourceId,
+        itemType: 'page',
+        title: conversionReport.pageTitle,
+        kind:
+          region.quarantineKind === 'script'
+            ? 'script'
+            : region.quarantineKind === 'style'
+              ? 'style'
+              : region.quarantineKind === 'php-code'
+                ? 'php-code'
+                : region.quarantineKind === 'plugin-block'
+                  ? 'plugin-block'
+                  : 'widget',
+        name: region.blockName ?? 'freeform',
+        rawSource: region.rawSource ?? '',
+        location: `${conversionReport.path} ${region.location}`,
+        reason: region.reason ?? 'Quarantined during WordPress block conversion.',
+        createdAt: new Date().toISOString(),
+      })
+    }
+  }
 
   return {
     normalized,

@@ -17,6 +17,9 @@ import {
 // consolidation, any row in the inbox_notifications table (written only by
 // an unwired projector) SHADOWED the canonical list and switched the
 // response's unread count to the inbox counter, hiding real notifications.
+// DEBT-21 completion: the inbox store is retired entirely — the route no
+// longer reads those tables at all, so the shadowing setup below is kept
+// as regression bait: rows in the retired tables must have zero effect.
 describe('community notifications route serves the canonical read (RC2-H-03)', () => {
   let world: Rc2World
   let payload: Awaited<ReturnType<typeof getPayload>>
@@ -112,9 +115,9 @@ describe('community notifications route serves the canonical read (RC2-H-03)', (
     expect(String(body.notifications[0].id)).toBe(canonicalNotificationId)
     expect(String(body.notifications[0].id)).not.toBe(inboxRowId)
     expect(body.notifications[0].snapshot?.note).toBe('canonical-notification')
-    // The inbox rows remain visible in their own compatibility field.
-    expect(body.inboxNotifications).toHaveLength(1)
-    expect(String(body.inboxNotifications[0].id)).toBe(inboxRowId)
+    // DEBT-21: the inbox compatibility field is gone — the retired
+    // tables have no effect on the response at all.
+    expect(body.inboxNotifications).toBeUndefined()
     // The unread count is the canonical count (1), never the inbox counter (7).
     expect(body.unreadCount).toBe(1)
   }, 120_000)

@@ -37,10 +37,72 @@ import {
 import { eventNotificationEnabled } from '../../src/modules/community/event-notification-preferences'
 import { saveMemberProfile } from '../../src/modules/community/profile-service'
 import { dispatchCommunityNotification } from '../../src/modules/community/service'
-import {
-  getOrCreateCommentThread,
-  createCanonicalComment,
-} from '../../src/modules/community/comment-identity'
+import { getOrCreateAttachedDiscussion } from '../../src/modules/community/service'
+
+/**
+ * RC2-DEBT-20: fixture comment writer at the persistence level — the
+ * folded equivalent of the retired persistCommentWithOutbox. Creates
+ * the discussion post and emits comment.created.v1, without the
+ * guarded entry point's rate limit / triage (those are product
+ * behaviors under test elsewhere, not fixture concerns).
+ */
+async function persistFixtureComment(input: {
+  siteId: string
+  threadId: string
+  canonicalContentId: string
+  authorId: string
+  body: string
+}) {
+  const discussion = (await payload.findByID({
+    collection: 'discussions',
+    id: input.threadId,
+    depth: 0,
+    overrideAccess: true,
+  })) as unknown as { canonicalPath?: string }
+  const count = await payload.find({
+    collection: 'discussion-posts',
+    where: { discussion: { equals: input.threadId } },
+    limit: 0,
+    overrideAccess: true,
+  })
+  const order = count.totalDocs + 1
+  const post = (await payload.create({
+    collection: 'discussion-posts',
+    data: {
+      discussion: input.threadId,
+      authorMember: input.authorId,
+      body: input.body,
+      displayOrder: order,
+      permalink: `${discussion.canonicalPath ?? '/discussion'}#comment-${order}-${randomUUID().slice(0, 8)}`,
+      paginationAnchor: `comment-${order}-${randomUUID().slice(0, 8)}`,
+      status: 'published',
+      visibility: 'public',
+      moderationState: 'clear',
+    },
+    depth: 0,
+    overrideAccess: true,
+    // discussion-posts has drafts enabled; the fixture writes a
+    // published post directly, like the live comment path does.
+  } as never)) as unknown as { id: string }
+  await executeDbQuery(
+    payload,
+    'INSERT INTO outbox_events (event_type, payload, created_at) VALUES ($1, $2, now())',
+    [
+      'comment.created.v1',
+      JSON.stringify({
+        site_id: input.siteId,
+        comment_id: String(post.id),
+        thread_id: input.threadId,
+        canonical_content_id: input.canonicalContentId,
+        author_id: input.authorId,
+        parent_id: null,
+        mentioned_handles: [],
+        timestamp: new Date().toISOString(),
+      }),
+    ],
+  )
+  return post
+}
 import {
   startDirectConversation,
   sendConversationMessage,
@@ -706,12 +768,9 @@ describe('RC08B persisted promotion boundaries', () => {
     })
   })
   it('compiles ten persisted canonical notifications into one deduplicated digest while in-app is off', async () => {
-    const { persistCommentWithOutbox } = await import(
-      '../../src/modules/community/comment-composer'
-    )
     const { subscribeToThread } = await import('../../src/modules/community/thread-lifecycle')
-    const { projectInboxEvent, listInbox, markInboxRead } = await import(
-      '../../src/modules/community/inbox-notifications'
+    const { listMemberNotificationsPage, markMemberNotificationsRead } = await import(
+      '../../src/modules/community/service'
     )
     const { compileNotificationDigest } = await import(
       '../../src/modules/community/notification-delivery'
@@ -746,57 +805,51 @@ describe('RC08B persisted promotion boundaries', () => {
         overrideAccess: true,
       })
     ).docs[0]
-    const thread = await getOrCreateCommentThread(payload as never, {
+    const thread = await getOrCreateAttachedDiscussion(payload, {
       siteId: site.id,
-      canonicalContentId: String(content.id),
+      attachedToCollection: 'content',
+      attachedToId: String(content.id),
+      title: String((content as { title?: string }).title ?? 'Comments'),
+      canonicalPath: String(
+        (content as { canonicalPath?: string }).canonicalPath ?? `/content/${content.id}`,
+      ),
     })
     await subscribeToThread(payload, { siteId: site.id, threadId: thread.id, memberId: outsider })
+    // DEBT-21 re-pin: the ten persisted canonical notifications are
+    // produced by the canonical dispatcher (the retired projector was
+    // the previous producer). The outsider's in-app channel is off, so
+    // each notification persists with the email channel only.
     for (let index = 0; index < 10; index++) {
-      const created = await persistCommentWithOutbox(payload, {
+      const created = await persistFixtureComment({
         siteId: site.id,
         threadId: thread.id,
         canonicalContentId: String(content.id),
         authorId: alice,
-        authorType: 'member',
-        status: 'visible',
-        bodyRaw: `Private digest source ${suffix} ${index}`,
-        bodyHtml: '<p>Digest source</p>',
-        clientMutationId: randomUUID(),
-        mentionedHandles: [],
-        timestamp: new Date().toISOString(),
+        body: `Private digest source ${suffix} ${index}`,
       })
-      const event = (
-        await executeDbQuery<any>(
-          payload,
-          "SELECT id,event_type,payload FROM outbox_events WHERE payload->>'comment_id'=$1",
-          [created.id],
-        )
-      )[0]
-      expect(
-        await projectInboxEvent(payload, {
-          id: event.id,
-          eventType: event.event_type,
-          payload: event.payload,
-        }),
-      ).toBe(1)
-      expect(
-        await projectInboxEvent(payload, {
-          id: event.id,
-          eventType: event.event_type,
-          payload: event.payload,
-        }),
-      ).toBe(0)
+      await dispatchCommunityNotification(payload, {
+        siteId: site.id,
+        recipientMemberId: outsider,
+        actorMemberId: alice,
+        type: 'comment.created',
+        object: { id: created.id },
+        payloadData: { bodySnippet: `Private digest source ${suffix} ${index}` },
+      })
     }
     const end = new Date(Date.now() + 1000).toISOString(),
       windowRange = { startAt: start, endAt: end }
     expect(await deliverableCommunitySources(payload, site.id, outsider, start, end)).toHaveLength(
       10,
     )
+    const outsiderContext = {
+      siteId: site.id,
+      actor: { kind: 'member' as const, memberId: outsider, isStaff: false, isModerator: false },
+    }
     expect(
-      (await listInbox(payload, { siteId: site.id, memberId: outsider })).notifications,
+      (await listMemberNotificationsPage(payload, outsider, outsiderContext)).notifications,
     ).toEqual([])
     expect(
-      (await markInboxRead(payload, { siteId: site.id, memberId: outsider })).unreadCount,
+      (await markMemberNotificationsRead(payload, outsider, outsiderContext)).unreadCount,
     ).toBe(0)
     const first = await compileNotificationDigest(payload, {
         siteId: site.id,
@@ -987,23 +1040,28 @@ describe('RC08B persisted promotion boundaries', () => {
         overrideAccess: true,
       })
     ).docs[0]
-    const thread = await getOrCreateCommentThread(payload as never, {
+    const thread = await getOrCreateAttachedDiscussion(payload, {
       siteId: site.id,
+      attachedToCollection: 'content',
+      attachedToId: String(content.id),
+      title: String((content as { title?: string }).title ?? 'Comments'),
+      canonicalPath: String(
+        (content as { canonicalPath?: string }).canonicalPath ?? `/content/${content.id}`,
+      ),
+    })
+    await persistFixtureComment({
+      siteId: site.id,
+      threadId: thread.id,
       canonicalContentId: String(content.id),
-    })
-    await createCanonicalComment(payload as never, {
-      threadId: thread.id,
       authorId: alice,
-      authorType: 'member',
-      bodyRaw: `Owned ${suffix}`,
-      bodyHtml: '<p>Owned</p>',
+      body: `Owned ${suffix}`,
     })
-    await createCanonicalComment(payload as never, {
+    await persistFixtureComment({
+      siteId: site.id,
       threadId: thread.id,
+      canonicalContentId: String(content.id),
       authorId: outsider,
-      authorType: 'member',
-      bodyRaw: `Foreign ${suffix}`,
-      bodyHtml: '<p>Foreign</p>',
+      body: `Foreign ${suffix}`,
     })
     const conversation = await startDirectConversation(payload, {
       siteId: site.id,
@@ -1041,9 +1099,14 @@ describe('RC08B persisted promotion boundaries', () => {
         overrideAccess: true,
       })
     ).docs[0]
-    const thread = await getOrCreateCommentThread(payload as never, {
+    const thread = await getOrCreateAttachedDiscussion(payload, {
       siteId: site.id,
-      canonicalContentId: String(content.id),
+      attachedToCollection: 'content',
+      attachedToId: String(content.id),
+      title: String((content as { title?: string }).title ?? 'Comments'),
+      canonicalPath: String(
+        (content as { canonicalPath?: string }).canonicalPath ?? `/content/${content.id}`,
+      ),
     })
     const group = (await (
       await import('../../src/modules/community/conversation-composer')
@@ -1054,12 +1117,12 @@ describe('RC08B persisted promotion boundaries', () => {
       title: `Large export ${suffix}`,
     })) as any
     for (let index = 0; index < 501; index++) {
-      await createCanonicalComment(payload as never, {
+      await persistFixtureComment({
+        siteId: site.id,
         threadId: thread.id,
+        canonicalContentId: String(content.id),
         authorId: alice,
-        authorType: 'member',
-        bodyRaw: `Bulk own ${suffix} ${index}`,
-        bodyHtml: '<p>Own</p>',
+        body: `Bulk own ${suffix} ${index}`,
       })
       await sendConversationMessage(payload, {
         siteId: site.id,

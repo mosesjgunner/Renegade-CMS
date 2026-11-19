@@ -267,6 +267,12 @@ describe('RC1 09B: Campaigns, Templates and Recipient Selection', () => {
           }
           if (collection === 'suppressions') {
             const emailHash = (where?.emailHash as { equals?: string })?.equals
+            // RC2-DEBT-13 bulk load (no emailHash condition) returns all
+            // of the site's suppressed hashes.
+            if (!emailHash)
+              return {
+                docs: suppressions.map((hash, index) => ({ id: `supp-${index}`, emailHash: hash })),
+              }
             const isSuppressed = suppressions.includes(String(emailHash))
             return { docs: isSuppressed ? [{ id: 'supp-1', emailHash }] : [] }
           }

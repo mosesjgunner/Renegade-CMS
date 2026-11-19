@@ -3,25 +3,13 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { mediaStorage } from '@/modules/media/storage'
+import { parseByteRange } from '@/modules/media/range-serving'
 import { mediaStorageKey, publicMedia } from '@/modules/media/workflow'
 import { loadConfig } from '@/modules/core/config'
 import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import { formatMimeTypes, standardRecipes, type VariantFormat } from '@/modules/media/variants'
 
 export const runtime = 'nodejs'
-
-const byteRange = (header: string | null, length: number) => {
-  if (!header?.startsWith('bytes=')) return undefined
-  const match = /^bytes=(\d*)-(\d*)$/.exec(header)
-  if (!match) return null
-  const start = match[1] ? Number(match[1]) : undefined
-  const end = match[2] ? Number(match[2]) : undefined
-  const from = start ?? (end === undefined ? 0 : Math.max(0, length - end))
-  const to = start === undefined ? length - 1 : Math.min(end ?? length - 1, length - 1)
-  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || from > to || from >= length)
-    return null
-  return { from, to }
-}
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const appConfig = loadConfig()
@@ -226,7 +214,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     ETag: checksum,
     'X-Content-Type-Options': 'nosniff',
   }
-  const range = byteRange(request.headers.get('range'), bytes.byteLength)
+  const range = parseByteRange(request.headers.get('range'), bytes.byteLength)
   if (range === null)
     return new NextResponse(null, {
       status: 416,

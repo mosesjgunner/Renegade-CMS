@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import { VisualEditor } from '../presentation/VisualEditor'
+import { ConversionReviewPanel } from '../presentation/ConversionReviewPanel'
 import { type LayoutBlock, type PageLayout, type TemplateInheritanceMode } from './page-builder'
 
 type StudioOverview = {
@@ -596,6 +597,19 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           </button>
         </div>
       ) : null}
+
+      <ConversionReviewPanel
+        layoutId={layoutId}
+        blocks={(layout.blocks ?? []).map((block) => ({
+          id: block.id,
+          component: block.component,
+        }))}
+        onLocate={(item) =>
+          setMessage(
+            `Conversion region ${item.location} (${item.blockName ?? 'freeform'}) maps to block ${item.targetIds.join(', ') || '—'} in this draft.`,
+          )
+        }
+      />
 
       {(layout.unknownBlocks?.length ?? 0) > 0 ? (
         <div

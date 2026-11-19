@@ -41,7 +41,7 @@ describe('COMM-05A moderation policy registry and report evidence', () => {
         state.waiters.shift()?.()
         return { rows: [] }
       }
-      if (text.includes('FROM comments'))
+      if (text.includes('FROM discussion_posts'))
         return { rows: [{ id: '00000000-0000-7000-8000-000000000003', body: 'reported' }] }
       if (text.includes('pg_advisory_xact_lock')) {
         if (state.locked) await new Promise<void>((resolve) => state.waiters.push(resolve))
@@ -99,8 +99,6 @@ describe('COMM-05A moderation policy registry and report evidence', () => {
       'post',
       'discussion',
       'comment',
-      'forum_post',
-      'forum_topic',
       'member_profile',
       'message',
     ])

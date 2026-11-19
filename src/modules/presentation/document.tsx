@@ -1,6 +1,17 @@
-import { Fragment } from 'react'
+import { Fragment, type ReactNode } from 'react'
 import type { PresentationDocument, ThemeManifest } from './contracts'
+import { BlockVisibility } from './responsive'
 import { resolveTemplate } from './registry'
+import {
+  isAllowedChildComponent,
+  isContainerDefinition,
+  slotFieldNames,
+  type LayoutBlock,
+} from '../public/page-builder'
+
+function unavailableSection(component: string): ReactNode {
+  return <section data-unavailable-component={component}>This section is unavailable.</section>
+}
 
 /** Never edits the input or upgrades a missing component implicitly. */
 export function renderPresentation(document: PresentationDocument, theme: ThemeManifest) {
@@ -13,6 +24,94 @@ export function renderPresentation(document: PresentationDocument, theme: ThemeM
   const template = resolveTemplate(theme, document.surface, document.template.id)
   if (template.id === document.template.id && template.version !== document.template.version)
     throw new Error('Template migration required; original preserved.')
+
+  const renderChild = (child: LayoutBlock): ReactNode => {
+    const definition = Object.hasOwn(theme.componentRegistry, child.component)
+      ? theme.componentRegistry[child.component]
+      : undefined
+    const available =
+      definition &&
+      isAllowedChildComponent(definition) &&
+      definition.version === child.componentVersion &&
+      !definition.validate(child.props).length
+    if (!available || !definition) return unavailableSection(child.component)
+    // A resolved pattern renders its body wherever it sits, columns included.
+    if (
+      child.component === 'publisher.pattern' &&
+      (child.props.patternResolution || typeof child.props.patternUnavailable === 'string')
+    )
+      return renderBlock(child, null)
+    return definition.render(child.props)
+  }
+
+  const renderBlock = (block: LayoutBlock, allowedComponents: string[] | null): ReactNode => {
+    const component = Object.hasOwn(theme.componentRegistry, block.component)
+      ? theme.componentRegistry[block.component]
+      : undefined
+    const available =
+      component &&
+      (allowedComponents === null || allowedComponents.includes(block.component)) &&
+      component.version === block.componentVersion &&
+      !component.validate(block.props).length
+    if (!available || !component) return unavailableSection(block.component)
+    if (block.component === 'publisher.pattern') {
+      // Linked patterns render their resolved published body (S2-07);
+      // without a resolution the component's reference card is the
+      // editor-facing state, and an explicit resolver reason wins.
+      const resolution = block.props.patternResolution as
+        | { name: string; version: number; blocks: LayoutBlock[] }
+        | undefined
+      if (resolution) {
+        return (
+          <div
+            data-pattern-instance={String(block.props.patternId ?? '')}
+            data-pattern-name={resolution.name}
+            data-pattern-mode="linked"
+            data-pattern-version={resolution.version}
+            data-pattern-policy="latest-published"
+            className="pattern-instance"
+          >
+            {resolution.blocks
+              .filter((child) => !child.hidden)
+              .map((child) => (
+                <Fragment key={child.id}>
+                  <BlockVisibility block={child}>{renderBlock(child, null)}</BlockVisibility>
+                </Fragment>
+              ))}
+          </div>
+        )
+      }
+      if (typeof block.props.patternUnavailable === 'string') {
+        return (
+          <div
+            data-pattern-instance={String(block.props.patternId ?? '')}
+            data-pattern-unavailable={block.props.patternUnavailable}
+            className="pattern-instance"
+          >
+            <p>{block.props.patternUnavailable}</p>
+          </div>
+        )
+      }
+    }
+    if (!isContainerDefinition(component)) return component.render(block.props)
+    // Container: pre-render each slot's children with the same availability
+    // and visibility policy, then hand the container rendered nodes.
+    const renderedProps: Record<string, unknown> = { ...block.props }
+    for (const field of slotFieldNames(component)) {
+      const children = Array.isArray(block.props[field])
+        ? (block.props[field] as LayoutBlock[])
+        : []
+      renderedProps[field] = children
+        .filter((child) => !child.hidden)
+        .map((child) => (
+          <Fragment key={child.id}>
+            <BlockVisibility block={child}>{renderChild(child)}</BlockVisibility>
+          </Fragment>
+        ))
+    }
+    return component.render(renderedProps)
+  }
+
   const slots = Object.fromEntries(
     Object.entries(template.slots).map(([name, definition]) => {
       if (definition.required && !Object.hasOwn(document.slots, name))
@@ -22,27 +121,13 @@ export function renderPresentation(document: PresentationDocument, theme: ThemeM
         name,
         blocks
           .filter((block) => !block.hidden)
-          .map((block) => {
-            const component = Object.hasOwn(theme.componentRegistry, block.component)
-              ? theme.componentRegistry[block.component]
-              : undefined
-            const available =
-              component &&
-              definition.allowedComponents.includes(block.component) &&
-              component.version === block.componentVersion &&
-              !component.validate(block.props).length
-            return (
-              <Fragment key={block.id}>
-                {available ? (
-                  component.render(block.props)
-                ) : (
-                  <section data-unavailable-component={block.component}>
-                    This section is unavailable.
-                  </section>
-                )}
-              </Fragment>
-            )
-          }),
+          .map((block) => (
+            <Fragment key={block.id}>
+              <BlockVisibility block={block}>
+                {renderBlock(block, definition.allowedComponents)}
+              </BlockVisibility>
+            </Fragment>
+          )),
       ]
     }),
   )

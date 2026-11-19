@@ -200,6 +200,8 @@ export interface Config {
     'delivery-identities': DeliveryIdentity;
     'email-deliveries': EmailDelivery;
     'email-delivery-events': EmailDeliveryEvent;
+    'email-intents': EmailIntent;
+    'email-pauses': EmailPause;
     'telecom-messages': TelecomMessage;
     'telecom-deliveries': TelecomDelivery;
     'telecom-delivery-events': TelecomDeliveryEvent;
@@ -410,6 +412,8 @@ export interface Config {
     'delivery-identities': DeliveryIdentitiesSelect<false> | DeliveryIdentitiesSelect<true>;
     'email-deliveries': EmailDeliveriesSelect<false> | EmailDeliveriesSelect<true>;
     'email-delivery-events': EmailDeliveryEventsSelect<false> | EmailDeliveryEventsSelect<true>;
+    'email-intents': EmailIntentsSelect<false> | EmailIntentsSelect<true>;
+    'email-pauses': EmailPausesSelect<false> | EmailPausesSelect<true>;
     'telecom-messages': TelecomMessagesSelect<false> | TelecomMessagesSelect<true>;
     'telecom-deliveries': TelecomDeliveriesSelect<false> | TelecomDeliveriesSelect<true>;
     'telecom-delivery-events': TelecomDeliveryEventsSelect<false> | TelecomDeliveryEventsSelect<true>;
@@ -574,6 +578,10 @@ export interface User {
   email: string;
   role: 'owner' | 'administrator' | 'staff';
   member?: (string | null) | Member;
+  /**
+   * Installation owner: authority over every site, including site settings. Set by the installer; changeable only by a global owner.
+   */
+  isGlobalOwner?: boolean | null;
   updatedAt: string;
   createdAt: string;
   collection: 'users';
@@ -648,7 +656,13 @@ export interface PageLayout {
     | boolean
     | null;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   /**
    * Human-readable title or template/pattern name
@@ -714,6 +728,9 @@ export interface PageLayout {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -723,6 +740,9 @@ export interface PageLayout {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -854,33 +874,8 @@ export interface Publication {
 export interface Space {
   id: string;
   site: string | Site;
-  member: string | Member;
-  profile?: (string | null) | Profile;
-  handle: string;
+  profile: string | Profile;
   canonicalPath: string;
-  displayName: string;
-  avatar?: (string | null) | MediaAsset;
-  cover?: (string | null) | MediaAsset;
-  bio?: string | null;
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  fieldAudience?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  layoutTheme?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
   capabilities?:
     | {
         key: string;
@@ -1002,7 +997,13 @@ export interface Profile {
 export interface MediaAsset {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -1131,7 +1132,13 @@ export interface MediaAsset {
 export interface MediaBlob {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   checksum: string;
   storageKey: string;
@@ -1174,6 +1181,9 @@ export interface Tag {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1183,6 +1193,9 @@ export interface Tag {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1209,7 +1222,13 @@ export interface Tag {
 export interface Album {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   category?: (string | null) | Category;
@@ -1280,6 +1299,9 @@ export interface Category {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1289,6 +1311,9 @@ export interface Category {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1336,6 +1361,9 @@ export interface Section {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1345,6 +1373,9 @@ export interface Section {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -1973,13 +2004,17 @@ export interface Relationship {
 export interface Content {
   id: string;
   site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
   contentType: 'article' | 'page' | 'book' | 'podcast' | 'video' | 'product' | 'event' | 'campaign';
-  title: string;
+  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
   /**
-   * Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.
+   * Only public content is served to anonymous visitors and discovery.
+   */
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  publishedAt?: string | null;
+  title: string;
+  subtitle?: string | null;
+  /**
+   * Write it like you’d say it. The controls above give you headings, links, lists, and quotes.
    */
   body?: {
     root: {
@@ -1996,47 +2031,30 @@ export interface Content {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
   summary?: string | null;
-  subtitle?: string | null;
   excerpt?: string | null;
-  authors?:
-    | {
-        author: string | Author;
-        displayOrder: number;
-        role?: string | null;
-        id?: string | null;
-      }[]
-    | null;
   sections?: (string | Section)[] | null;
   categories?: (string | Category)[] | null;
   /**
    * Ordered membership in editorial or media collections.
    */
   collections?: (string | Album)[] | null;
-  /**
-   * Stable order within hierarchy listings; ties use the record ID.
-   */
-  sortOrder?: number | null;
   topics?: (string | Topic)[] | null;
   tags?: (string | Tag)[] | null;
   series?: (string | Series)[] | null;
   /**
-   * Generated from the title until you choose a different URL slug.
+   * Stable order within hierarchy listings; ties use the record ID.
    */
-  slug: string;
-  /**
-   * Keep a manually chosen canonical path instead of deriving it from the slug.
-   */
-  pathOverride?: boolean | null;
-  canonicalPath: string;
-  /**
-   * Optional parent Page. Its path becomes the prefix for this page.
-   */
-  parentPage?: (string | null) | Content;
-  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
-  featured?: boolean | null;
-  pinned?: boolean | null;
-  readingTimeMinutes?: number | null;
+  sortOrder?: number | null;
+  relatedContent?: (string | Content)[] | null;
   tableOfContents?:
     | {
         [k: string]: unknown;
@@ -2046,7 +2064,7 @@ export interface Content {
     | number
     | boolean
     | null;
-  relatedContent?: (string | Content)[] | null;
+  readingTimeMinutes?: number | null;
   correctionNotices?:
     | {
         label: string;
@@ -2062,28 +2080,18 @@ export interface Content {
         id?: string | null;
       }[]
     | null;
-  heroMedia?: (string | null) | MediaAsset;
-  /**
-   * Optional site-scoped resource and capability required to read this published page. Restricted pages are excluded from public SEO output.
-   */
-  requiredEntitlement?:
+  owner?: (string | null) | Member;
+  authors?:
     | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
+        author: string | Author;
+        displayOrder: number;
+        role?: string | null;
+        id?: string | null;
+      }[]
     | null;
-  /**
-   * Only public content is served to anonymous visitors and discovery.
-   */
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
-  publishedAt?: string | null;
-  updatedAtEditorial?: string | null;
-  commentsPolicy: 'open' | 'members' | 'closed';
-  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
+  heroMedia?: (string | null) | MediaAsset;
+  featured?: boolean | null;
+  pinned?: boolean | null;
   /**
    * Leave blank to use the resolved title from this content.
    */
@@ -2100,6 +2108,9 @@ export interface Content {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2109,6 +2120,9 @@ export interface Content {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2123,8 +2137,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  publicModifiedAt?: string | null;
-  relationships?: (string | Relationship)[] | null;
   seoOverride?:
     | {
         [k: string]: unknown;
@@ -2143,6 +2155,36 @@ export interface Content {
     | number
     | boolean
     | null;
+  /**
+   * Generated from the title until you choose a different URL slug.
+   */
+  slug: string;
+  /**
+   * Keep a manually chosen canonical path instead of deriving it from the slug.
+   */
+  pathOverride?: boolean | null;
+  canonicalPath: string;
+  /**
+   * Optional parent Page. Its path becomes the prefix for this page.
+   */
+  parentPage?: (string | null) | Content;
+  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
+  /**
+   * Optional site-scoped resource and capability required to read this published page. Restricted pages are excluded from public SEO output.
+   */
+  requiredEntitlement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  commentsPolicy: 'open' | 'members' | 'closed';
+  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
+  updatedAtEditorial?: string | null;
+  relationships?: (string | Relationship)[] | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -2210,6 +2252,7 @@ export interface Content {
    */
   removeFromDiscovery?: boolean | null;
   tombstoneLabel?: string | null;
+  publicModifiedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2246,6 +2289,9 @@ export interface Topic {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2255,6 +2301,9 @@ export interface Topic {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2304,6 +2353,9 @@ export interface Series {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -2313,6 +2365,9 @@ export interface Series {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -2636,7 +2691,13 @@ export interface RevisionRecord {
 export interface Source {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   title: string;
   publisher?: string | null;
@@ -2831,7 +2892,13 @@ export interface RealtimePresence {
 export interface MediaAssetVersion {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   asset: string | MediaAsset;
   replacesAsset: string | MediaAsset;
@@ -2858,7 +2925,13 @@ export interface MediaAssetVersion {
 export interface MediaGovernanceIncident {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   asset: string | MediaAsset;
   summary: string;
@@ -2895,7 +2968,13 @@ export interface MediaGovernanceIncident {
 export interface MediaVariant {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   asset: string | MediaAsset;
   blob: string | MediaBlob;
@@ -2934,7 +3013,13 @@ export interface MediaVariant {
 export interface MediaUploadSession {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner: string | Member;
   filename: string;
@@ -3000,7 +3085,13 @@ export interface PublicRedirect {
 export interface ContentRelease {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -3140,7 +3231,13 @@ export interface ContentRelease {
 export interface Product {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   merchantConnection?: (string | null) | MerchantConnection;
@@ -3361,6 +3458,9 @@ export interface Product {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3370,6 +3470,9 @@ export interface Product {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3402,7 +3505,13 @@ export interface Product {
 export interface MerchantConnection {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   label: string;
@@ -3688,7 +3797,13 @@ export interface ScheduledPublishJob {
 export interface Book {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -3717,6 +3832,9 @@ export interface Book {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3726,6 +3844,9 @@ export interface Book {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3843,7 +3964,13 @@ export interface BookEdition {
 export interface PodcastShow {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -3872,6 +3999,9 @@ export interface PodcastShow {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3881,6 +4011,9 @@ export interface PodcastShow {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -3942,7 +4075,13 @@ export interface PodcastSeason {
 export interface PodcastEpisode {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -3971,6 +4110,9 @@ export interface PodcastEpisode {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -3980,6 +4122,9 @@ export interface PodcastEpisode {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4091,7 +4236,13 @@ export interface TranscriptRevision {
 export interface VideoChannel {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4120,6 +4271,9 @@ export interface VideoChannel {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4129,6 +4283,9 @@ export interface VideoChannel {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4171,7 +4328,13 @@ export interface VideoChannel {
 export interface VideoPlaylist {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4200,6 +4363,9 @@ export interface VideoPlaylist {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4209,6 +4375,9 @@ export interface VideoPlaylist {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4249,7 +4418,13 @@ export interface VideoPlaylist {
 export interface Video {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4278,6 +4453,9 @@ export interface Video {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4287,6 +4465,9 @@ export interface Video {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4374,7 +4555,13 @@ export interface Video {
 export interface VideoAsset {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4458,7 +4645,13 @@ export interface VideoCaption {
 export interface Interview {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4487,6 +4680,9 @@ export interface Interview {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4496,6 +4692,9 @@ export interface Interview {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4548,7 +4747,13 @@ export interface Interview {
 export interface Livestream {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4577,6 +4782,9 @@ export interface Livestream {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -4586,6 +4794,9 @@ export interface Livestream {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -4712,7 +4923,13 @@ export interface TtsOutput {
 export interface GraphicDocument {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4813,7 +5030,13 @@ export interface QuickCaptureDraft {
 export interface SocialAccount {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   displayName: string;
@@ -4873,7 +5096,13 @@ export interface SocialAccount {
 export interface SocialDraft {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -4915,7 +5144,13 @@ export interface SocialDraft {
 export interface Campaign {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -5032,7 +5267,13 @@ export interface Campaign {
 export interface CalendarEntry {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -5137,7 +5378,13 @@ export interface CalendarEntry {
 export interface Event {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   /**
@@ -5244,6 +5491,9 @@ export interface Event {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -5253,6 +5503,9 @@ export interface Event {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -5534,7 +5787,13 @@ export interface CalendarEntryAudit {
 export interface Timeline {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -5573,6 +5832,9 @@ export interface Timeline {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -5582,6 +5844,9 @@ export interface Timeline {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -5779,7 +6044,13 @@ export interface MediaUsage {
 export interface Discussion {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   kind: 'attached' | 'thread';
@@ -5823,7 +6094,13 @@ export interface Discussion {
 export interface Forum {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   section: string | ForumSection;
   parent?: (string | null) | Forum;
@@ -5841,7 +6118,13 @@ export interface Forum {
 export interface ForumSection {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   name: string;
   slug: string;
@@ -5874,6 +6157,10 @@ export interface DiscussionPost {
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
   solution?: boolean | null;
   helpful?: boolean | null;
+  /**
+   * Idempotency key (deterministic UUID) stamped by the versioned comment composer; null for posts created through other surfaces.
+   */
+  clientMutationId?: string | null;
   moderationState: 'clear' | 'review' | 'restricted' | 'removed';
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
@@ -5893,7 +6180,13 @@ export interface DiscussionPost {
 export interface EmailMessage {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subject: string;
@@ -6000,7 +6293,13 @@ export interface EmailMessage {
 export interface EmailTemplate {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6045,7 +6344,13 @@ export interface EmailTemplate {
 export interface RecipientSnapshot {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   message: string | EmailMessage;
@@ -6090,7 +6395,13 @@ export interface RecipientSnapshot {
 export interface AudienceSegment {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6337,7 +6648,13 @@ export interface NetworkAuditEvent {
 export interface FormDefinition {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6459,7 +6776,13 @@ export interface FormSchema {
 export interface FormSubmission {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   form: string | FormDefinition;
@@ -6535,7 +6858,13 @@ export interface FormSubmission {
 export interface Contact {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   displayName: string;
@@ -6573,7 +6902,13 @@ export interface Contact {
 export interface Organization {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6606,7 +6941,13 @@ export interface Organization {
 export interface WorkflowItem {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -6703,7 +7044,13 @@ export interface SubmissionAttachment {
 export interface RelationshipRecord {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   contact: string | Contact;
@@ -6737,7 +7084,13 @@ export interface RelationshipRecord {
 export interface ContactTag {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6764,7 +7117,13 @@ export interface ContactTagging {
 export interface InteractionRecord {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   contact?: (string | null) | Contact;
@@ -6791,7 +7150,13 @@ export interface InteractionRecord {
 export interface RelationshipNote {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   contact?: (string | null) | Contact;
@@ -6808,7 +7173,13 @@ export interface RelationshipNote {
 export interface DealsOpportunity {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   contact?: (string | null) | Contact;
@@ -6830,7 +7201,13 @@ export interface DealsOpportunity {
 export interface OwnerAssignment {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   assignee?: (string | null) | User;
@@ -6854,7 +7231,13 @@ export interface OwnerAssignment {
 export interface NextAction {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -6879,7 +7262,13 @@ export interface NextAction {
 export interface AudienceList {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -6922,7 +7311,13 @@ export interface AudienceMembership {
 export interface Subscriber {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   email: string;
@@ -6961,7 +7356,13 @@ export interface SubscriberConfirmationToken {
 export interface ConsentEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subscriber?: (string | null) | Subscriber;
@@ -7033,7 +7434,13 @@ export interface Preference {
 export interface Suppression {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   emailHash: string;
@@ -7062,7 +7469,13 @@ export interface Suppression {
 export interface DeliveryIdentity {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   emailHash: string;
@@ -7163,12 +7576,105 @@ export interface EmailDeliveryEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-intents".
+ */
+export interface EmailIntent {
+  id: string;
+  site?: (string | null) | Site;
+  purpose:
+    | 'member-sign-in'
+    | 'member-email-link'
+    | 'staff-invitation'
+    | 'account-recovery'
+    | 'order-receipt'
+    | 'community-notification'
+    | 'form-notification'
+    | 'telecom-fallback'
+    | 'admin-alert';
+  trafficClass: 'account' | 'operational';
+  recipientEmail: string;
+  recipientHash: string;
+  idempotencyKey: string;
+  fromIdentity?: string | null;
+  subject: string;
+  /**
+   * AES-256-GCM encrypted rendered message (text/html/replyTo).
+   */
+  payloadCiphertext: string;
+  submission:
+    | 'queued'
+    | 'held'
+    | 'leased'
+    | 'submitting'
+    | 'accepted'
+    | 'rejected'
+    | 'unknown'
+    | 'expired'
+    | 'cancelled'
+    | 'retry-scheduled';
+  receiving: 'unobserved' | 'deferred' | 'remote-accepted' | 'bounced' | 'provider-failed';
+  placement: 'unobserved' | 'inbox' | 'inbox-tab' | 'spam' | 'other';
+  actionState: 'not-observed' | 'completed' | 'expired' | 'revoked' | 'consumed';
+  provider?: string | null;
+  providerMessageId?: string | null;
+  attempts?: number | null;
+  attemptBudget?: number | null;
+  leaseOwner?: string | null;
+  leaseUntil?: string | null;
+  nextAttemptAt?: string | null;
+  expiresAt: string;
+  acceptedAt?: string | null;
+  events?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastError?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-pauses".
+ */
+export interface EmailPause {
+  id: string;
+  site?: (string | null) | Site;
+  scope: 'global-class' | 'provider-boundary' | 'site' | 'site-class' | 'campaign';
+  trafficClass?: ('account' | 'operational' | 'audience_confirmation' | 'audience') | null;
+  boundary?: ('account' | 'audience') | null;
+  campaignId?: string | null;
+  reason: string;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "telecom-messages".
  */
 export interface TelecomMessage {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -7227,7 +7733,13 @@ export interface TelecomMessage {
 export interface TelecomDelivery {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   message: string | TelecomMessage;
@@ -7315,7 +7827,13 @@ export interface TelecomDeliveryEvent {
 export interface ActivityEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   type: string;
@@ -7431,7 +7949,13 @@ export interface NotificationChannel {
 export interface DigestDefinition {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   member?: (string | null) | Member;
@@ -7527,7 +8051,13 @@ export interface DeliveryReceipt {
 export interface AutomationDefinition {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -7647,7 +8177,13 @@ export interface AutomationFailure {
 export interface AudienceFrequencyPolicy {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   purpose: string;
@@ -7665,7 +8201,13 @@ export interface AudienceFrequencyPolicy {
 export interface AudienceExperiment {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
@@ -7715,7 +8257,13 @@ export interface AudienceExperiment {
 export interface AnalyticsEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   eventId: string;
@@ -7765,7 +8313,13 @@ export interface AnalyticsEvent {
 export interface AnalyticsConsentRecord {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subjectHash: string;
@@ -7792,7 +8346,13 @@ export interface AnalyticsConsentRecord {
 export interface AnalyticsRollup {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   metric: string;
@@ -7831,7 +8391,13 @@ export interface AnalyticsRollup {
 export interface MetricSnapshot {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   metric: string;
@@ -7870,7 +8436,13 @@ export interface MetricSnapshot {
 export interface AnalyticsGoal {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   key: string;
@@ -7924,7 +8496,13 @@ export interface CommandCenterPreference {
 export interface ExperienceRule {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -7951,7 +8529,13 @@ export interface ExperienceRule {
 export interface ExperienceVariant {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   rule: string | ExperienceRule;
@@ -7978,7 +8562,13 @@ export interface ExperienceVariant {
 export interface Experiment {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -8003,7 +8593,13 @@ export interface Experiment {
 export interface ConversionGoal {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   key: string;
@@ -8029,7 +8625,13 @@ export interface ConversionGoal {
 export interface ExperimentVariant {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8048,7 +8650,13 @@ export interface ExperimentVariant {
 export interface TrafficAllocation {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8065,7 +8673,13 @@ export interface TrafficAllocation {
 export interface ExperimentAssignment {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8085,7 +8699,13 @@ export interface ExperimentAssignment {
 export interface ExperimentEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8106,7 +8726,13 @@ export interface ExperimentEvent {
 export interface ExperimentAnalysis {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8139,7 +8765,13 @@ export interface ExperimentAnalysis {
 export interface ExperimentDecision {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   experiment: string | Experiment;
@@ -8161,7 +8793,13 @@ export interface ExperimentDecision {
 export interface QualityPolicy {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
@@ -8186,7 +8824,13 @@ export interface QualityPolicy {
 export interface QualityRule {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   policy?: (string | null) | QualityPolicy;
@@ -8214,14 +8858,20 @@ export interface QualityRule {
 export interface QualityScan {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   policy?: (string | null) | QualityPolicy;
   targetType: 'document' | 'book' | 'book-chapter' | 'content-release' | 'publication' | 'space' | 'site';
   targetId: string;
   revisionId?: string | null;
-  status: 'queued' | 'running' | 'completed' | 'failed' | 'stale';
+  status: 'queued' | 'running' | 'completed' | 'incomplete' | 'failed' | 'stale';
   startedAt?: string | null;
   completedAt?: string | null;
   job?: (string | null) | PayloadJob;
@@ -8244,7 +8894,13 @@ export interface QualityScan {
 export interface QualityIssue {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   scan?: (string | null) | QualityScan;
   rule?: (string | null) | QualityRule;
@@ -8285,7 +8941,13 @@ export interface QualityIssue {
 export interface QualityException {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   rule: string | QualityRule;
@@ -8304,7 +8966,13 @@ export interface QualityException {
 export interface QualityWaiver {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   issue: string | QualityIssue;
@@ -8322,7 +8990,13 @@ export interface QualityWaiver {
 export interface QualityReport {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   scan: string | QualityScan;
@@ -8346,7 +9020,13 @@ export interface QualityReport {
 export interface PaymentMethodCapability {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   merchantConnection: string | MerchantConnection;
@@ -8426,7 +9106,13 @@ export interface PaymentMethodCapability {
 export interface DigitalDeliveryGrant {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   product: string | Product;
@@ -8450,7 +9136,13 @@ export interface DigitalDeliveryGrant {
 export interface Entitlement {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   supporter: string | Supporter;
@@ -8494,7 +9186,13 @@ export interface Entitlement {
 export interface Supporter {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   displayName?: string | null;
@@ -8520,7 +9218,13 @@ export interface Supporter {
 export interface PaymentIntent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   checkoutSession: string | CheckoutSession;
@@ -8597,7 +9301,13 @@ export interface PaymentIntent {
 export interface CheckoutSession {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   cart: string | Cart;
@@ -8653,7 +9363,13 @@ export interface CheckoutSession {
 export interface Cart {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   merchantConnection?: (string | null) | MerchantConnection;
@@ -8722,7 +9438,13 @@ export interface Cart {
 export interface CheckoutProposal {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   cart: string | Cart;
@@ -8814,7 +9536,13 @@ export interface CheckoutProposal {
 export interface DigitalDownloadEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   grant: string | DigitalDeliveryGrant;
@@ -8833,7 +9561,13 @@ export interface DigitalDownloadEvent {
 export interface CatalogImportRun {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   checksum: string;
@@ -8860,7 +9594,13 @@ export interface CatalogImportRun {
 export interface Promotion {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   version: number;
@@ -8899,7 +9639,13 @@ export interface Promotion {
 export interface InventoryReservation {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   cart: string | Cart;
@@ -8919,7 +9665,13 @@ export interface InventoryReservation {
 export interface PaymentAttempt {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   checkoutSession: string | CheckoutSession;
@@ -8981,7 +9733,13 @@ export interface PaymentAttempt {
 export interface Order {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   checkoutSession: string | CheckoutSession;
@@ -9175,7 +9933,13 @@ export interface PaymentWebhookEvent {
 export interface CommerceRefund {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   order: string | Order;
@@ -9235,7 +9999,13 @@ export interface CommerceRefund {
 export interface CommerceDispute {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   order: string | Order;
@@ -9297,7 +10067,13 @@ export interface CommerceReconciliationCase {
 export interface PlanRevision {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   planKey: string;
@@ -9342,7 +10118,13 @@ export interface PlanRevision {
 export interface Subscription {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   supporter: string | Supporter;
@@ -9410,7 +10192,13 @@ export interface Subscription {
 export interface SubscriptionEvent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subscription: string | Subscription;
@@ -9437,7 +10225,13 @@ export interface SubscriptionEvent {
 export interface DonationCampaign {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   organization?: (string | null) | Organization;
@@ -9550,7 +10344,13 @@ export interface DonationCampaign {
 export interface DonationIntent {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   campaign: string | DonationCampaign;
@@ -9601,7 +10401,13 @@ export interface DonationIntent {
 export interface Donation {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   donationIntent: string | DonationIntent;
@@ -9687,7 +10493,13 @@ export interface DonationEvent {
 export interface PodConnection {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   merchantConnection: string | MerchantConnection;
@@ -9724,7 +10536,13 @@ export interface PodConnection {
 export interface PodJob {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   order: string | Order;
@@ -9799,7 +10617,13 @@ export interface PodJob {
 export interface ManualFulfillmentPackage {
   id: string;
   site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
   publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   order: string | Order;
@@ -10052,6 +10876,14 @@ export interface PayloadLockedDocument {
         value: string | EmailDeliveryEvent;
       } | null)
     | ({
+        relationTo: 'email-intents';
+        value: string | EmailIntent;
+      } | null)
+    | ({
+        relationTo: 'email-pauses';
+        value: string | EmailPause;
+      } | null)
+    | ({
         relationTo: 'recipient-snapshots';
         value: string | RecipientSnapshot;
       } | null)
@@ -10113,6 +10945,7 @@ export interface UsersSelect<T extends boolean = true> {
   email?: T;
   role?: T;
   member?: T;
+  isGlobalOwner?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10519,17 +11352,8 @@ export interface ProfilesSelect<T extends boolean = true> {
  */
 export interface SpacesSelect<T extends boolean = true> {
   site?: T;
-  member?: T;
   profile?: T;
-  handle?: T;
   canonicalPath?: T;
-  displayName?: T;
-  avatar?: T;
-  cover?: T;
-  bio?: T;
-  visibility?: T;
-  fieldAudience?: T;
-  layoutTheme?: T;
   capabilities?:
     | T
     | {
@@ -11189,40 +12013,27 @@ export interface ContentReleasesSelect<T extends boolean = true> {
  */
 export interface ContentSelect<T extends boolean = true> {
   site?: T;
+  contentType?: T;
+  status?: T;
+  visibility?: T;
+  publishedAt?: T;
+  title?: T;
+  subtitle?: T;
+  body?: T;
   publication?: T;
   space?: T;
-  owner?: T;
-  contentType?: T;
-  title?: T;
-  body?: T;
   summary?: T;
-  subtitle?: T;
   excerpt?: T;
-  authors?:
-    | T
-    | {
-        author?: T;
-        displayOrder?: T;
-        role?: T;
-        id?: T;
-      };
   sections?: T;
   categories?: T;
   collections?: T;
-  sortOrder?: T;
   topics?: T;
   tags?: T;
   series?: T;
-  slug?: T;
-  pathOverride?: T;
-  canonicalPath?: T;
-  parentPage?: T;
-  pageTemplate?: T;
-  featured?: T;
-  pinned?: T;
-  readingTimeMinutes?: T;
-  tableOfContents?: T;
+  sortOrder?: T;
   relatedContent?: T;
+  tableOfContents?: T;
+  readingTimeMinutes?: T;
   correctionNotices?:
     | T
     | {
@@ -11238,14 +12049,18 @@ export interface ContentSelect<T extends boolean = true> {
         issuedAt?: T;
         id?: T;
       };
+  owner?: T;
+  authors?:
+    | T
+    | {
+        author?: T;
+        displayOrder?: T;
+        role?: T;
+        id?: T;
+      };
   heroMedia?: T;
-  requiredEntitlement?: T;
-  visibility?: T;
-  status?: T;
-  publishedAt?: T;
-  updatedAtEditorial?: T;
-  commentsPolicy?: T;
-  publicChangeHistoryPolicy?: T;
+  featured?: T;
+  pinned?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -11254,10 +12069,18 @@ export interface ContentSelect<T extends boolean = true> {
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
   discoveryOverrides?: T;
-  publicModifiedAt?: T;
-  relationships?: T;
   seoOverride?: T;
   socialOverride?: T;
+  slug?: T;
+  pathOverride?: T;
+  canonicalPath?: T;
+  parentPage?: T;
+  pageTemplate?: T;
+  requiredEntitlement?: T;
+  commentsPolicy?: T;
+  publicChangeHistoryPolicy?: T;
+  updatedAtEditorial?: T;
+  relationships?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -11279,6 +12102,7 @@ export interface ContentSelect<T extends boolean = true> {
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  publicModifiedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12454,6 +13278,7 @@ export interface DiscussionPostsSelect<T extends boolean = true> {
   visibility?: T;
   solution?: T;
   helpful?: T;
+  clientMutationId?: T;
   moderationState?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
@@ -13194,6 +14019,53 @@ export interface EmailDeliveryEventsSelect<T extends boolean = true> {
   event?: T;
   occurredAt?: T;
   evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-intents_select".
+ */
+export interface EmailIntentsSelect<T extends boolean = true> {
+  site?: T;
+  purpose?: T;
+  trafficClass?: T;
+  recipientEmail?: T;
+  recipientHash?: T;
+  idempotencyKey?: T;
+  fromIdentity?: T;
+  subject?: T;
+  payloadCiphertext?: T;
+  submission?: T;
+  receiving?: T;
+  placement?: T;
+  actionState?: T;
+  provider?: T;
+  providerMessageId?: T;
+  attempts?: T;
+  attemptBudget?: T;
+  leaseOwner?: T;
+  leaseUntil?: T;
+  nextAttemptAt?: T;
+  expiresAt?: T;
+  acceptedAt?: T;
+  events?: T;
+  lastError?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-pauses_select".
+ */
+export interface EmailPausesSelect<T extends boolean = true> {
+  site?: T;
+  scope?: T;
+  trafficClass?: T;
+  boundary?: T;
+  campaignId?: T;
+  reason?: T;
+  active?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -14976,16 +15848,10 @@ export interface SiteSetting {
     | number
     | boolean
     | null;
+  /**
+   * Search-engine ownership verification tokens, rendered as meta tags on the homepage only. Shape: {"google": "<token>", "bing": "<token>", "yandex": "<token>"} — for several sites, add "bySite": {"<site id>": {"google": "<token>"}}. Paste only the token value from the provider, not the whole meta tag. The tag proves nothing by itself: verification completes only when the provider checks your live homepage.
+   */
   siteVerification?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  robotsDefaults?:
     | {
         [k: string]: unknown;
       }
@@ -15033,6 +15899,9 @@ export interface SiteSetting {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -15042,6 +15911,9 @@ export interface SiteSetting {
     | number
     | boolean
     | null;
+  /**
+   * Editorial aid only — not emitted as a meta tag and not used as a ranking signal.
+   */
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   /**
@@ -15218,7 +16090,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   contactDefaults?: T;
   socialHandles?: T;
   siteVerification?: T;
-  robotsDefaults?: T;
   searchAction?:
     | T
     | {

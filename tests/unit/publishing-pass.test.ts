@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { ValidationError } from 'payload'
 
 import {
   assertEditorialPath,
@@ -29,5 +30,17 @@ describe('PUB-02 canonical content paths', () => {
   it('refuses implementation and system URL spaces', () => {
     expect(() => assertEditorialPath('/admin/notes')).toThrow('reserved')
     expect(() => assertEditorialPath('/Two Words')).toThrow('lowercase')
+  })
+
+  it('reports a missing title/slug as a field validation error on title (RC2-DEBT-23)', async () => {
+    const failure = await deriveEditorialPath({
+      data: { contentType: 'article', site: 'site-a' },
+      payload,
+    }).catch((error: unknown) => error)
+    expect(failure).toBeInstanceOf(ValidationError)
+    expect((failure as ValidationError).status).toBe(400)
+    expect((failure as ValidationError).data.errors).toEqual([
+      { message: 'A title or URL slug is required.', path: 'title' },
+    ])
   })
 })

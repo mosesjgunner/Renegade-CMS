@@ -118,6 +118,21 @@ export function renderSitemapIndex(
   return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`
 }
 
+/**
+ * Render the sitemap index from per-page lastmods (the index summary the
+ * projection computes without shaping full entries). Output is identical
+ * to `renderSitemapIndex` for the same entry set.
+ */
+export function renderSitemapIndexSummary(origin: string, pageLastmods: Array<string | null>) {
+  const body = pageLastmods
+    .map(
+      (lastmod, page) =>
+        `<sitemap><loc>${xml(`${origin}/sitemaps/${page + 1}.xml`)}</loc>${lastmod ? `<lastmod>${xml(lastmod)}</lastmod>` : ''}</sitemap>`,
+    )
+    .join('')
+  return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${body}</sitemapindex>`
+}
+
 export function conditionalXml(
   request: Request,
   body: string,

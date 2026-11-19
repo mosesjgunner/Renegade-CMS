@@ -284,7 +284,14 @@ async function resolveOperatorGrantContextUncached(
         authorizedSiteIds: siteIds,
         isGlobalOwner: true,
       }
-    } catch {
+    } catch (error) {
+      // RC2-DEBT-10: fail-closed is unchanged, but the failure is no longer
+      // silent — a database error here is indistinguishable from "no sites"
+      // without this log line.
+      console.error(
+        '[operator-grants] global-owner site enumeration failed; authorizing with an empty site list.',
+        error,
+      )
       return {
         authorized: true,
         user: { id: userId, email, role, member: memberRelation || null },
@@ -308,8 +315,9 @@ async function resolveOperatorGrantContextUncached(
       if (memberRes.docs.length > 0) {
         memberId = String(memberRes.docs[0].id)
       }
-    } catch {
-      // ignore
+    } catch (error) {
+      // RC2-DEBT-10: logged — a lookup failure must not look like "no member".
+      console.error('[operator-grants] member lookup by email failed.', error)
     }
   }
 
@@ -355,8 +363,9 @@ async function resolveOperatorGrantContextUncached(
           const allSiteIds = allSites.docs.map((d) => String(d.id))
           isAllSites =
             allSiteIds.length > 0 && allSiteIds.every((id) => authorizedSiteIds.includes(id))
-        } catch {
-          // ignore
+        } catch (error) {
+          // RC2-DEBT-10: logged — failure leaves isAllSites false (fail-closed).
+          console.error('[operator-grants] all-sites comparison failed.', error)
         }
 
         const isGlobal =
@@ -370,8 +379,10 @@ async function resolveOperatorGrantContextUncached(
           isGlobalOwner: isGlobal,
         }
       }
-    } catch {
-      // ignore
+    } catch (error) {
+      // RC2-DEBT-10: logged — role-grant resolution failed; the caller sees
+      // the fail-closed empty context, and this line says why.
+      console.error('[operator-grants] role-grant resolution failed.', error)
     }
   }
 
@@ -398,7 +409,14 @@ async function resolveOperatorGrantContextUncached(
         authorizedSiteIds: siteIds,
         isGlobalOwner: true,
       }
-    } catch {
+    } catch (error) {
+      // RC2-DEBT-10: fail-closed is unchanged, but the failure is no longer
+      // silent — a database error here is indistinguishable from "no sites"
+      // without this log line.
+      console.error(
+        '[operator-grants] global-owner site enumeration failed; authorizing with an empty site list.',
+        error,
+      )
       return {
         authorized: true,
         user: { id: userId, email, role, member: memberRelation || null },

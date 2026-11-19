@@ -5,6 +5,7 @@ import { Puck, createUsePuck, type Config, type Data, type Field } from '@pucked
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
+  slotFieldNames,
   type PageLayout,
   type PresentationField,
   type ReferenceValue,
@@ -125,6 +126,7 @@ function QueryEditor({
 }
 
 function puckField(field: PresentationField, layoutId: string): Field {
+  if (field.type === 'slot') return { type: 'slot', label: field.label }
   if (field.type === 'text') return { type: 'text', label: field.label }
   if (field.type === 'long-text') return { type: 'textarea', label: field.label }
   if (field.type === 'number')
@@ -323,6 +325,7 @@ export function VisualEditor({
                 alignment: 'left',
                 spacing: 'normal',
                 ...(definition.fields.variant ? { variant: 'default' } : {}),
+                ...Object.fromEntries(slotFieldNames(definition).map((name) => [name, []])),
               },
               render: (props: Record<string, unknown>) => definition.render(props),
             },

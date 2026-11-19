@@ -241,25 +241,26 @@ const unsub = await req({
   json: { token: c1ForSub1[0]?.unsubscribeToken },
 })
 const suppressions1 = await list('suppressions', `where[site][equals]=${siteA}`)
+const deliveriesBeforeC2 = await deliveriesFor(email1)
 const c2 = await sendCampaign(`D03 Campaign Two ${stamp}`)
-await poll(
-  async () =>
-    (await req({ path: `/api/email-messages/${c2.data?.messageId}?depth=0`, cookie: adminA })).data,
-  (m) => m && m.status !== 'scheduled',
-  180000,
-)
-const c2ForSub1 = (await deliveriesFor(email1)).filter(
-  (x) => String(x.message) === String(c2.data?.messageId),
-)
+// Journey contract updated in RC2-I-02 (empty-audience decision, option A):
+// the segment's only eligible subscriber has unsubscribed, so scheduling
+// the next campaign is refused by the empty-audience guard (400,
+// emptyAudience: true) instead of scheduling a send to nobody. The
+// suppression claim this arc exists to prove is carried by the refusal
+// itself plus the delivery record: the address received the first
+// campaign and nothing after its unsubscribe.
+const deliveriesAfterUnsub = await deliveriesFor(email1)
 const [sub1AfterUnsub] = await byEmail(email1)
 stage(
-  'unsubscribe records a suppression and the next campaign does not deliver to that address',
+  'unsubscribe records a suppression and the next campaign is refused by the empty-audience guard',
   unsub.status === 200 &&
     suppressions1.length >= 1 &&
-    c2.status === 200 &&
-    c2ForSub1.length === 0 &&
+    c2.status === 400 &&
+    c2.data?.emptyAudience === true &&
+    deliveriesAfterUnsub.length === deliveriesBeforeC2.length &&
     (sub1AfterUnsub?.status !== 'active' || Boolean(sub1AfterUnsub?.globalUnsubscribedAt)),
-  `unsub=${unsub.status} suppressions=${suppressions1.length} c2Deliveries=${c2ForSub1.length} sub1Status=${sub1AfterUnsub?.status}`,
+  `unsub=${unsub.status} suppressions=${suppressions1.length} c2=${c2.status} emptyAudience=${c2.data?.emptyAudience} deliveries=${deliveriesAfterUnsub.length} sub1Status=${sub1AfterUnsub?.status}`,
 )
 
 // ---- Arc 6: a signed bounce webhook suppresses the address ------------------

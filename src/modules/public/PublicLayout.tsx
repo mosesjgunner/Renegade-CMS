@@ -1,10 +1,10 @@
-import type { PublishedPresentation } from '../presentation/snapshots'
+import { readPublishedPresentation } from '../presentation/snapshots'
 import { renderPresentation } from '../presentation/document'
 import { resolveTheme } from './contracts'
 import { renderLayout, type PageLayout } from './page-builder'
 
 export function PublicLayout({ record, path }: { record: Record<string, unknown>; path: string }) {
-  const snapshot = record.publishedPresentation as PublishedPresentation | undefined
+  const snapshot = readPublishedPresentation(record.publishedPresentation)
   if (snapshot) {
     const site =
       typeof record.site === 'string' ? record.site : (record.site as { id?: string })?.id
@@ -32,5 +32,7 @@ export function PublicLayout({ record, path }: { record: Record<string, unknown>
     publishedRevision:
       typeof record.publishedRevision === 'number' ? record.publishedRevision : undefined,
   }
-  return <main className="mx-auto min-h-screen max-w-6xl px-6 py-12">{renderLayout(layout)}</main>
+  return (
+    <main className="mx-auto min-h-screen max-w-6xl px-6 py-12">{renderLayout(layout, 'all')}</main>
+  )
 }

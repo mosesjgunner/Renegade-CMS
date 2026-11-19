@@ -9,6 +9,31 @@ export type DiscoveryLifecycleSummary = {
   resolved: number
   active: number
   totalIssues: number
+  /** Open issues left in place because their URL was not re-examined. */
+  unverified: number
+  scope: {
+    state: string
+    eligible: number
+    examined: number
+    complete: boolean
+  } | null
+}
+
+/**
+ * Re-examination evidence for one audit run (DEBT-14). An open issue may
+ * be resolved only when its target URL appears in `examinedUrls` — a
+ * skipped, failed, or out-of-scope page can never silently resolve it.
+ * When scope is omitted there is no re-examination evidence at all, so
+ * resolution never happens implicitly.
+ */
+export type RenderedAuditScopeEvidence = {
+  state: 'complete' | 'partial' | 'empty' | 'no-eligible'
+  eligible: number
+  examined: number
+  failed?: number
+  skipped?: number
+  examinedUrls: readonly string[]
+  complete: boolean
 }
 
 export type IssueStateFilter = 'all' | 'open' | 'resolved' | 'ignored'
@@ -17,20 +42,33 @@ export async function persistRenderedAuditLifecycle(
   payload: Payload,
   siteId: string,
   issues: readonly RenderedAuditIssue[],
+  scope?: RenderedAuditScopeEvidence,
 ): Promise<DiscoveryLifecycleSummary> {
   const now = new Date().toISOString()
+  const incomplete = scope?.state === 'partial' || scope?.state === 'empty'
 
-  // 1. Create a QualityScan entry for this audit run
+  // 1. Create a QualityScan entry for this audit run. A partial or empty
+  // audit is recorded as 'incomplete', never as a clean 'completed'.
   const scanDoc = (await payload.create({
     collection: 'quality-scans',
     data: {
       site: siteId,
       targetType: 'site',
       targetId: siteId,
-      status: 'completed',
+      status: incomplete ? 'incomplete' : 'completed',
       startedAt: now,
       completedAt: now,
-      summary: { type: 'rendered_audit', totalIssues: issues.length },
+      summary: {
+        type: 'rendered_audit',
+        totalIssues: issues.length,
+        scope: {
+          state: scope?.state ?? 'unscoped',
+          eligible: scope?.eligible ?? 0,
+          examined: scope?.examined ?? 0,
+          ...(scope?.failed !== undefined ? { failed: scope.failed } : {}),
+          ...(scope?.skipped !== undefined ? { skipped: scope.skipped } : {}),
+        },
+      },
     } as never,
     overrideAccess: true,
   })) as unknown as QualityScan
@@ -141,20 +179,28 @@ export async function persistRenderedAuditLifecycle(
     }
   }
 
-  // Mark previous open issues that are no longer detected as resolved
+  // Resolution invariant (DEBT-14): a previous open issue is resolved
+  // only when its target URL was actually re-examined in this run and
+  // the finding is no longer detected. Issues whose URL was skipped,
+  // failed, or out of scope stay open and are counted as unverified.
+  const examinedUrls = new Set(scope?.examinedUrls ?? [])
+  let unverified = 0
   for (const [key, existingIssue] of existingMap.entries()) {
-    if (!activeDedupeKeys.has(key) && existingIssue.status === 'open') {
-      await payload.update({
-        collection: 'quality-issues',
-        id: existingIssue.id,
-        data: {
-          status: 'resolved',
-          resolvedAt: now,
-        } as never,
-        overrideAccess: true,
-      })
-      resolved++
+    if (activeDedupeKeys.has(key) || existingIssue.status !== 'open') continue
+    if (!examinedUrls.has(String(existingIssue.targetId))) {
+      unverified++
+      continue
     }
+    await payload.update({
+      collection: 'quality-issues',
+      id: existingIssue.id,
+      data: {
+        status: 'resolved',
+        resolvedAt: now,
+      } as never,
+      overrideAccess: true,
+    })
+    resolved++
   }
 
   const activeCount = grouped.size
@@ -166,6 +212,15 @@ export async function persistRenderedAuditLifecycle(
     resolved,
     active: activeCount,
     totalIssues: issues.length,
+    unverified,
+    scope: scope
+      ? {
+          state: scope.state,
+          eligible: scope.eligible,
+          examined: scope.examined,
+          complete: scope.complete,
+        }
+      : null,
   }
 }
 

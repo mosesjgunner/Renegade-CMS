@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   sites: [{ id: 'site-a' }] as Array<{ id: string }>,
   allowed: ['site-a'],
   find: vi.fn(),
+  collections: { 'quality-scans': {} } as Record<string, unknown>,
   settings: vi.fn(),
   documents: vi.fn(),
   audit: vi.fn(),
@@ -12,7 +13,11 @@ const mocks = vi.hoisted(() => ({
 }))
 vi.mock('@payload-config', () => ({ default: Promise.resolve({}) }))
 vi.mock('payload', () => ({
-  getPayload: async () => ({ auth: async () => ({ user: mocks.user }), find: mocks.find }),
+  getPayload: async () => ({
+    auth: async () => ({ user: mocks.user }),
+    find: mocks.find,
+    collections: mocks.collections,
+  }),
 }))
 vi.mock('@/modules/operations/operator-grants', () => ({
   checkOperatorSiteAccess: async (_payload: unknown, _user: unknown, site: string) =>
@@ -51,6 +56,7 @@ describe('rendered quality audit tenant authorization', () => {
     mocks.user = { id: 'staff-a', role: 'staff' }
     mocks.sites = [{ id: 'site-a' }]
     mocks.allowed = ['site-a']
+    mocks.collections = { 'quality-scans': {} }
     mocks.find.mockImplementation(async () => ({ docs: mocks.sites }))
     mocks.settings.mockResolvedValue({
       canonicalOrigin: 'https://alpha.example.test',
@@ -78,7 +84,10 @@ describe('rendered quality audit tenant authorization', () => {
     expect(mocks.find).toHaveBeenCalledWith(
       expect.objectContaining({ collection: 'sites', overrideAccess: false, user: mocks.user }),
     )
-    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-a', [])
+    // The lifecycle now takes a fourth scope argument; the mocked audit
+    // returns no scope, so the route passes undefined (no re-examination
+    // evidence) rather than letting findings resolve implicitly.
+    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-a', [], undefined)
   })
 
   it('denies an actor whose persisted site grant has been revoked', async () => {
@@ -97,13 +106,23 @@ describe('rendered quality audit tenant authorization', () => {
     mocks.allowed.push('site-b')
     expect((await POST(request({ siteId: 'site-b' }))).status).toBe(200)
     expect(mocks.documents).toHaveBeenCalledWith(expect.anything(), 'site-b')
-    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-b', [])
+    expect(mocks.persist).toHaveBeenCalledWith(expect.anything(), 'site-b', [], undefined)
   })
 
   it('rejects anonymous callers before site enumeration', async () => {
     mocks.user = null
     expect((await POST(request({ siteId: 'site-a' }))).status).toBe(403)
     expect(mocks.find).not.toHaveBeenCalled()
+    expect(mocks.persist).not.toHaveBeenCalled()
+  })
+
+  it('refuses cleanly with 503 when the quality module is not enabled (RC2-DEBT-07)', async () => {
+    mocks.collections = {}
+    const response = await POST(request({ siteId: 'site-a' }))
+    expect(response.status).toBe(503)
+    expect(mocks.find).not.toHaveBeenCalled()
+    expect(mocks.documents).not.toHaveBeenCalled()
+    expect(mocks.audit).not.toHaveBeenCalled()
     expect(mocks.persist).not.toHaveBeenCalled()
   })
 })

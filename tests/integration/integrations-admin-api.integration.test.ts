@@ -2,6 +2,7 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { createServer, type Server } from 'node:http'
 import { GET, POST } from '../../src/app/(frontend)/api/admin/integrations/route'
+import { encryptSecret } from '../../src/modules/social/security'
 import { credentialCipher } from '../../src/modules/ai/connections'
 import { EncryptedCredentialBoundary } from '../../src/modules/extensions/connection-runtime'
 import {
@@ -497,7 +498,8 @@ describe('Operational Admin API (/api/admin/integrations)', () => {
         network: 'mastodon',
         displayName: 'Mastodon Account',
         credentialHealth: 'healthy',
-        connectionReference: JSON.stringify({ identifier: 'op', appPassword: 'pw' }),
+        // SOC-SEC-1: fixtures seed the encrypted envelope, never plaintext.
+        connectionReference: `enc:${encryptSecret(JSON.stringify({ identifier: 'op', appPassword: 'pw' }))}`,
         lastVerifiedAt: '2026-09-01T00:00:00.000Z',
       })
 

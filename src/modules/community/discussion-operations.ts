@@ -8,6 +8,19 @@ import { getThreadLifecycle } from './thread-lifecycle'
 
 export async function versionedCommentTarget(payload: Payload, siteId: string, threadId: string) {
   const thread = await getThreadLifecycle(payload, { siteId, threadId })
+  if (!thread.canonicalContentId) {
+    // A standalone discussion is its own target; it carries commentsPolicy itself.
+    const discussion = (await payload
+      .findByID({ collection: 'discussions', id: threadId, depth: 0, overrideAccess: true })
+      .catch(() => null)) as unknown as Record<string, unknown> | null
+    return {
+      thread,
+      content: {
+        id: threadId,
+        commentsPolicy: String(discussion?.commentsPolicy ?? 'open'),
+      },
+    }
+  }
   const content = await discussionTarget(payload, siteId, 'content', thread.canonicalContentId)
   return { thread, content }
 }

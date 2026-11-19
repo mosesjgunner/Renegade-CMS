@@ -168,6 +168,70 @@ if (command === 'export') {
     }
     return out
   }
+  // RC2-DEBT-26: a reference can also be unresolvable when its target
+  // collection IS in the archive but the specific record is not — the
+  // member's profile a space points at, or a revision's creator (a users
+  // record, which is never portable). Those source ids survived the
+  // remap untouched and reached the database as empty strings in UUID
+  // columns, failing the whole record. After remapping, a relationship
+  // value is resolvable only when it is an id this import has written
+  // (idMap) or a source id of a record this archive carries (a later
+  // retry resolves those once their row lands). Anything else is severed
+  // to null where the field allows it; a required field keeps its value
+  // and fails loudly, as before.
+  const manifestSourceIds = new Map<string, Set<string>>()
+  for (const record of manifest.records) {
+    const set = manifestSourceIds.get(record.collection) ?? new Set<string>()
+    set.add(record.id)
+    manifestSourceIds.set(record.collection, set)
+  }
+  const relationshipFields = new Map<
+    string,
+    Array<{ name: string; relationTo: string; required: boolean }>
+  >()
+  const severUnresolvableReferences = (collection: string, data: Record<string, unknown>) => {
+    let fields = relationshipFields.get(collection)
+    if (!fields) {
+      const config = (
+        payload.collections as unknown as Record<
+          string,
+          { config?: { flattenedFields?: Array<Record<string, unknown>> } }
+        >
+      )[collection]?.config
+      fields = (config?.flattenedFields ?? [])
+        .filter(
+          (field) =>
+            (field.type === 'relationship' || field.type === 'upload') &&
+            typeof field.relationTo === 'string',
+        )
+        .map((field) => ({
+          name: String(field.name),
+          relationTo: String(field.relationTo),
+          required: field.required === true,
+        }))
+      relationshipFields.set(collection, fields)
+    }
+    if (!fields.length) return data
+    const writtenIds = new Set(idMap.values())
+    const severValue = (field: { relationTo: string; required: boolean }, value: unknown) => {
+      if (typeof value !== 'string' || !value) return value
+      if (writtenIds.has(value)) return value
+      if (manifestSourceIds.get(field.relationTo)?.has(value)) return value
+      return field.required ? value : null
+    }
+    const out = { ...data }
+    for (const field of fields) {
+      const value = out[field.name]
+      if (Array.isArray(value)) {
+        out[field.name] = value
+          .map((item) => severValue(field, item))
+          .filter((item) => item !== null)
+      } else if (value !== undefined && value !== null) {
+        out[field.name] = severValue(field, value)
+      }
+    }
+    return out
+  }
   const findImported = async (collection: string, sourceRecordId: string) =>
     (await portabilityPayload
       .findByID({
@@ -206,10 +270,13 @@ if (command === 'export') {
           )
           data = { ...data, storageLocation: location, storageProvider: storage.provider }
         }
-        const remappedData = remapReferences(
-          severForeignReferences(collection, data),
-          `${collection}/${id}`,
-        ) as Record<string, unknown>
+        const remappedData = severUnresolvableReferences(
+          collection,
+          remapReferences(
+            severForeignReferences(collection, data),
+            `${collection}/${id}`,
+          ) as Record<string, unknown>,
+        )
         if (collection === 'article-family-content') {
           const pointers: Record<string, unknown> = {}
           for (const field of ['currentRevision', 'latestPublishedRevision']) {

@@ -1,19 +1,25 @@
 import type { Payload } from 'payload'
-import { executeDbQuery } from '../community/comment-composer'
+import { executeDbQuery } from '../community/db-query'
 
 /** Own contributions are exportable regardless of publication/moderation state.
  * Foreign conversation text follows the same active-membership/history boundary as the product.
  * Own sent messages remain exportable after leaving a group. Never export other members' contacts,
  * moderation evidence, delivery credentials, private object keys or read receipts.
+ *
+ * RC2-DEBT-20: comments, revisions and reactions read from the live
+ * discussion store (the v1 comments/comment_threads/comment_reactions
+ * tables retired in the fold; edit history lives in the community
+ * audit log as comment.edited.v1). The legacy forum stores
+ * (forum_topics/forum_posts/forum_drafts) retired with the comm-04
+ * engine — no live path ever wrote them — so their export sections
+ * are empty by construction and kept only for shape stability.
  */
 export async function exportCommunityData(payload: Payload, memberId: string) {
   const query = (statement: string) => executeDbQuery(payload, statement, [memberId])
+  const empty: never[] = []
   const [
     comments,
     commentRevisions,
-    topics,
-    posts,
-    drafts,
     conversations,
     messages,
     legacyConversations,
@@ -24,18 +30,10 @@ export async function exportCommunityData(payload: Payload, memberId: string) {
     threadSubscriptions,
     legacyReactions,
   ] = await Promise.all([
-    query(`SELECT c.id,t.site_id,t.canonical_content_id,c.thread_id,c.parent_id,c.status,c.body_raw,c.body_html,c.created_at,c.updated_at,c.deleted_at
-      FROM comments c JOIN comment_threads t ON t.id=c.thread_id WHERE c.author_id=$1 AND c.author_type='member' ORDER BY c.created_at,c.id`),
-    query(`SELECT r.id,r.comment_id,r.previous_body_raw,r.created_at FROM comment_revisions r JOIN comments c ON c.id=r.comment_id
-      WHERE c.author_id=$1 AND c.author_type='member' ORDER BY r.created_at,r.id`),
-    query(
-      `SELECT id,site_id,space_id,title,created_at,updated_at FROM forum_topics WHERE author_id=$1 ORDER BY created_at,id`,
-    ),
-    query(`SELECT p.id,t.site_id,p.topic_id,p.sequence_number,p.reply_to_post_id,p.body_raw,p.body_html,p.created_at,p.updated_at
-      FROM forum_posts p JOIN forum_topics t ON t.id=p.topic_id WHERE p.author_id=$1 ORDER BY p.created_at,p.id`),
-    query(
-      `SELECT id,site_id,space_id,topic_id,title,body_raw,reply_to_post_id,created_at,updated_at FROM forum_drafts WHERE author_id=$1 ORDER BY created_at,id`,
-    ),
+    query(`SELECT p.id,d.site_id,(SELECT rels.content_id FROM discussions_rels rels WHERE rels.parent_id=d.id AND rels.path='attachedTo') AS canonical_content_id,p.discussion_id AS thread_id,p.parent_id,p.status,p.body AS body_raw,p.body AS body_html,p.created_at,p.updated_at,NULL AS deleted_at
+      FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.author_member_id=$1 ORDER BY p.created_at,p.id`),
+    query(`SELECT a.id,(a.event_payload->>'comment_id') AS comment_id,(a.event_payload->>'previous_body') AS previous_body_raw,a.created_at FROM community_audit_log a JOIN discussion_posts p ON p.id=(a.event_payload->>'comment_id')::uuid
+      WHERE a.event_type='comment.edited.v1' AND p.author_member_id=$1 ORDER BY a.created_at,a.id`),
     query(`SELECT c.id,c.site_id,c.kind,c.title,c.status,c.request_state,c.created_at,c.updated_at,cm.joined_at,cm.left_at,cm.visible_from_sequence
       FROM conversations c JOIN conversation_memberships cm ON cm.conversation_id=c.id WHERE cm.member_id=$1 ORDER BY c.created_at,c.id`),
     query(`SELECT m.id,c.site_id,m.conversation_id,m.sender_id,m.sequence_number,m.body_html,m.kind,m.system_event,m.created_at
@@ -52,10 +50,10 @@ export async function exportCommunityData(payload: Payload, memberId: string) {
       `SELECT site_id,channel,kind,frequency,rules,updated_at FROM notification_preferences WHERE member_id=$1 ORDER BY site_id,channel,kind`,
     ),
     query(
-      `SELECT r.comment_id,t.site_id,r.reaction_code,r.created_at FROM comment_reactions r JOIN comments c ON c.id=r.comment_id JOIN comment_threads t ON t.id=c.thread_id WHERE r.member_id=$1 ORDER BY r.created_at,r.comment_id`,
+      `SELECT target_id AS comment_id,site_id,emoji AS reaction_code,created_at FROM community_reactions WHERE member_id=$1 AND target_type='post' ORDER BY created_at,target_id`,
     ),
     query(
-      `SELECT s.thread_id,t.site_id,s.created_at FROM comment_thread_subscriptions s JOIN comment_threads t ON t.id=s.thread_id WHERE s.member_id=$1 ORDER BY s.created_at,s.thread_id`,
+      `SELECT s.thread_id,d.site_id,s.created_at FROM comment_thread_subscriptions s JOIN discussions d ON d.id=s.thread_id WHERE s.member_id=$1 ORDER BY s.created_at,s.thread_id`,
     ),
     query(
       `SELECT id,site_id,target_type,target_id,emoji,created_at,updated_at FROM community_reactions WHERE member_id=$1 ORDER BY created_at,id`,
@@ -65,9 +63,9 @@ export async function exportCommunityData(payload: Payload, memberId: string) {
     contributions: {
       comments,
       commentRevisions,
-      topics,
-      posts,
-      drafts,
+      topics: empty,
+      posts: empty,
+      drafts: empty,
       reactions,
       threadSubscriptions,
       legacyReactions,

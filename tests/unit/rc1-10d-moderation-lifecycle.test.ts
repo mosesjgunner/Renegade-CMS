@@ -9,7 +9,7 @@ import {
 } from '@/modules/community/moderation-actions'
 import { snapshotHash } from '@/modules/community/moderation-reports'
 import { exportCommunityData } from '@/modules/identity/community-export'
-import { targetIsDeliverable, type InboxEvent } from '@/modules/community/inbox-notifications'
+import { deliverableCommunitySources } from '@/modules/community/external-notifications'
 import {
   startDirectConversation,
   sendConversationMessage,
@@ -69,7 +69,7 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
       if (text.includes('FROM moderation_cases')) {
         return { rows: [{ id: caseId }] }
       }
-      if (text.includes('FROM comments')) {
+      if (text.includes('FROM discussion_posts')) {
         return { rows: [{ authorId: memberAlice, threadId: 'thread-1' }] }
       }
       if (text.includes('INSERT INTO moderation_actions')) {
@@ -81,7 +81,7 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
       if (text.includes('INSERT INTO outbox_events')) {
         return { rows: [{ id: 'outbox-1' }] }
       }
-      if (text.includes('UPDATE comments')) {
+      if (text.includes('UPDATE discussion_posts')) {
         return { rows: [{ id: targetCommentId }] }
       }
       if (text.includes('UPDATE moderation_cases')) {
@@ -113,7 +113,9 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
     expect(result.actionId).toBe('action-remove-1')
 
     // Verifies tombstone and case closure executed
-    expect(executedQueries.some((q) => q.includes('UPDATE comments SET status=$1'))).toBe(true)
+    expect(executedQueries.some((q) => q.includes('UPDATE discussion_posts SET status=$1'))).toBe(
+      true,
+    )
     expect(
       executedQueries.some((q) => q.includes("UPDATE moderation_cases SET status='closed'")),
     ).toBe(true)
@@ -135,7 +137,7 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
       if (text.includes('FROM moderation_cases')) {
         return { rows: [{ id: caseId }] }
       }
-      if (text.includes('FROM comments')) {
+      if (text.includes('FROM discussion_posts')) {
         return { rows: [{ authorId: memberAlice, threadId: 'thread-1' }] }
       }
       if (text.includes('INSERT INTO moderation_actions')) {
@@ -147,7 +149,7 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
       if (text.includes('INSERT INTO outbox_events')) {
         return { rows: [{ id: 'outbox-2' }] }
       }
-      if (text.includes('UPDATE comments')) {
+      if (text.includes('UPDATE discussion_posts')) {
         return { rows: [{ id: targetCommentId }] }
       }
       if (text.includes('UPDATE member_sanctions SET revoked_at')) {
@@ -182,9 +184,9 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
     expect(result.actionId).toBe('action-reinstate-1')
 
     // Verifies status restored to visible
-    expect(executedQueries.some((q) => q.includes("UPDATE comments SET status='visible'"))).toBe(
-      true,
-    )
+    expect(
+      executedQueries.some((q) => q.includes("UPDATE discussion_posts SET status='published'")),
+    ).toBe(true)
     // Verifies active sanctions revoked
     expect(executedQueries.some((q) => q.includes('revoked_at=now()'))).toBe(true)
     // Verifies case closed and report resolved
@@ -262,71 +264,59 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
     })
   })
 
-  it('suppresses inbox notification delivery when the referenced target is quarantined or removed', async () => {
-    const queryQuarantined = async (text: string) => {
-      if (text.includes('FROM discussion_posts')) {
-        return { rows: [{ status: 'published', moderation_state: 'quarantined' }] }
-      }
-      return { rows: [] }
+  it('suppresses digest delivery when the referenced reply target is quarantined or removed', async () => {
+    // DEBT-21 re-pin: the deliverability policy lives in the canonical
+    // digest source filter now (external-notifications) — a reply
+    // notification is a digest source only while its target post is
+    // published and moderation-clear on the site.
+    const memberId = '00000000-0000-7000-8000-000000000020'
+    const makePayload = (postRow: Record<string, string>) =>
+      ({
+        find: async (args: { collection: string }) => {
+          if (args.collection === 'notifications') {
+            return {
+              docs: [
+                {
+                  id: 'notif-1',
+                  createdAt: new Date().toISOString(),
+                  activityEvent: {
+                    type: 'comment.reply',
+                    site: siteA,
+                    actor: { memberId: '00000000-0000-7000-8000-000000000030' },
+                    object: { id: 'post-1' },
+                    payload: {},
+                  },
+                },
+              ],
+              hasNextPage: false,
+            }
+          }
+          return { docs: [] }
+        },
+        db: {
+          pool: {
+            query: async (text: string) => {
+              if (text.includes('FROM discussion_posts')) return { rows: [postRow] }
+              return { rows: [] }
+            },
+          },
+        },
+      }) as never
+    const window = {
+      start: new Date(Date.now() - 86400000).toISOString(),
+      end: new Date(Date.now() + 60000).toISOString(),
     }
-    const payloadQuarantined = {
-      db: { pool: { query: async (text: string) => queryQuarantined(text) } },
-    } as never
-    const deliverableQuarantined = await targetIsDeliverable(payloadQuarantined, {
-      id: 'event-1',
-      eventType: 'post.created',
-      payload: {
-        siteId: siteA,
-        targetType: 'post',
-        targetId: 'post-quarantined-1',
-      },
-    } as unknown as InboxEvent)
-    expect(deliverableQuarantined).toBe(false)
+    const run = (postRow: Record<string, string>) =>
+      deliverableCommunitySources(makePayload(postRow), siteA, memberId, window.start, window.end)
 
-    const queryRemoved = async (text: string) => {
-      if (text.includes('FROM comments')) {
-        return { rows: [{ status: 'deleted' }] }
-      }
-      return { rows: [] }
-    }
-    const payloadRemoved = {
-      db: { pool: { query: async (text: string) => queryRemoved(text) } },
-    } as never
-    const deliverableRemoved = await targetIsDeliverable(payloadRemoved, {
-      id: 'event-2',
-      eventType: 'comment.created',
-      payload: {
-        siteId: siteA,
-        targetType: 'comment',
-        targetId: 'comment-removed-1',
-      },
-    } as unknown as InboxEvent)
-    expect(deliverableRemoved).toBe(false)
-
-    const queryVisible = async (text: string) => {
-      if (text.includes('FROM comments')) {
-        return { rows: [{ status: 'visible' }] }
-      }
-      return { rows: [] }
-    }
-    const payloadVisible = {
-      db: { pool: { query: async (text: string) => queryVisible(text) } },
-    } as never
-    const deliverableVisible = await targetIsDeliverable(payloadVisible, {
-      id: 'event-3',
-      eventType: 'comment.created',
-      payload: {
-        siteId: siteA,
-        targetType: 'comment',
-        targetId: 'comment-visible-1',
-      },
-    } as unknown as InboxEvent)
-    expect(deliverableVisible).toBe(true)
+    expect(await run({ status: 'published', moderation_state: 'quarantined' })).toHaveLength(0)
+    expect(await run({ status: 'removed', moderation_state: 'removed' })).toHaveLength(0)
+    expect(await run({ status: 'published', moderation_state: 'clear' })).toHaveLength(1)
   })
 
   it('excludes moderation cases, reports, and staff evidence from member data export', async () => {
     const query = async (text: string) => {
-      if (text.includes('FROM comments')) {
+      if (text.includes('FROM discussion_posts')) {
         return [
           {
             id: targetCommentId,
@@ -334,9 +324,9 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
             canonical_content_id: 'art-1',
             thread_id: 'thread-1',
             parent_id: null,
-            status: 'visible',
+            status: 'published',
             body_raw: 'Member public comment',
-            body_html: '<p>Member public comment</p>',
+            body_html: 'Member public comment',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             deleted_at: null,
@@ -422,7 +412,7 @@ describe('RC1 10D Moderation Lifecycle, Audit Chain & Community Privacy', () => 
           ],
         }
       }
-      if (text.includes('FROM comments c JOIN comment_threads')) {
+      if (text.includes('FROM discussion_posts')) {
         return { rows: [{ authorId: memberAlice, threadId: 'thread-1' }] }
       }
       if (text.includes('INSERT INTO moderation_appeals')) {

@@ -33,9 +33,12 @@ import { DiscoveryPanel as DiscoveryPanel_316962dfcaea97df226bfa41602339e9 } fro
 import { SemanticURLPreview as SemanticURLPreview_f958bb1a071e34731e46d51660a678dc } from '@/modules/admin/SemanticURLPreview'
 import { AiContentActionField as AiContentActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { default as default_6c6551caf884ec9bfe14525f15ba614e } from '../../../modules/admin/FocusModeToggle'
+import { default as default_dd4b4083426af9ecccc1b5cd1fa714de } from '../../../modules/admin/SkipToSave'
+import { OpenStudioField as OpenStudioField_e56841a7c670ba1edde33cbd70e4a033 } from '@/modules/admin/OpenStudioField'
 import { AiDistributionActionField as AiDistributionActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { default as default_540c8fd8e80fc68e99ce7b541e67baa6 } from '../../../modules/admin/PublishingLinks'
 import { default as default_b2e9d352a88622b4016040a046ab3cc7 } from '../../../modules/admin/CapabilityCenterLink'
+import { default as default_1c78dd12dc02f2a7430743aa52f98bc5 } from '../../../modules/admin/AdminA11yBridge'
 import { default as default_4568b6c45b14a1b26da8fe5e64713f3d } from '../../../modules/admin/PublisherDashboard'
 import { default as default_fe35e1f410b072870cb675c432203da0 } from '../../../modules/admin/DesignSystemShowcase'
 import { default as default_3b4e427f915b118814e3c59e0f2d3df8 } from '../../../modules/admin/CapabilityCenter'
@@ -92,9 +95,12 @@ export const importMap = {
   "@/modules/admin/SemanticURLPreview#SemanticURLPreview": SemanticURLPreview_f958bb1a071e34731e46d51660a678dc,
   "@/modules/admin/AiProposalActionField#AiContentActionField": AiContentActionField_4db112374481e7b6e11792b2a6848818,
   "./modules/admin/FocusModeToggle#default": default_6c6551caf884ec9bfe14525f15ba614e,
+  "./modules/admin/SkipToSave#default": default_dd4b4083426af9ecccc1b5cd1fa714de,
+  "@/modules/admin/OpenStudioField#OpenStudioField": OpenStudioField_e56841a7c670ba1edde33cbd70e4a033,
   "@/modules/admin/AiProposalActionField#AiDistributionActionField": AiDistributionActionField_4db112374481e7b6e11792b2a6848818,
   "./modules/admin/PublishingLinks#default": default_540c8fd8e80fc68e99ce7b541e67baa6,
   "./modules/admin/CapabilityCenterLink#default": default_b2e9d352a88622b4016040a046ab3cc7,
+  "./modules/admin/AdminA11yBridge#default": default_1c78dd12dc02f2a7430743aa52f98bc5,
   "./modules/admin/PublisherDashboard#default": default_4568b6c45b14a1b26da8fe5e64713f3d,
   "./modules/admin/DesignSystemShowcase#default": default_fe35e1f410b072870cb675c432203da0,
   "./modules/admin/CapabilityCenter#default": default_3b4e427f915b118814e3c59e0f2d3df8,

@@ -4,6 +4,8 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 import os from 'node:os'
 
+import { resolveFfmpegBinary, resolveFfprobeBinary } from './ffmpeg'
+
 export type VideoProbe = {
   durationSeconds: number
   width: number
@@ -81,8 +83,8 @@ async function command(
 export class LocalFfmpegVideoProcessor implements VideoProcessor {
   readonly provider = 'local-ffmpeg'
   constructor(
-    private readonly ffmpeg = process.env.FFMPEG_PATH || 'ffmpeg',
-    private readonly ffprobe = process.env.FFPROBE_PATH || 'ffprobe',
+    private readonly ffmpeg = resolveFfmpegBinary(),
+    private readonly ffprobe = resolveFfprobeBinary(),
   ) {}
 
   async probe(source: Uint8Array): Promise<VideoProbe> {

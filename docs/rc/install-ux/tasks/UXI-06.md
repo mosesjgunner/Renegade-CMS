@@ -1,0 +1,3 @@
+# UXI-06 — Deliver a usable starter and first publication
+
+Status: HANDED TO SYSTEM 2. Starter provisioning, starter-content edit preservation, and the starter→publication walk live on the onboarding/presentation surface the System 2 v1.2 program is actively changing (its S2-10/S2-11). This pass recorded the requirements as inputs in the evidence log and implemented nothing competing. The Stage E live journey in this pass proves setup→publish→visitor on the default starter as it exists at baseline.

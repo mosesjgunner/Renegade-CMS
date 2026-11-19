@@ -119,7 +119,9 @@ describe('COMM-05C appeals, reversals, and append-only audit chain', () => {
         reason: 'reversed',
       }),
     ).resolves.toEqual({ appealId: ids.appeal, reversalActionId: 'reversal-1' })
-    expect(calls.some((call) => call.includes("UPDATE comments SET status='visible'"))).toBe(true)
+    expect(
+      calls.some((call) => call.includes("UPDATE discussion_posts SET status='published'")),
+    ).toBe(true)
     expect(calls.some((call) => call.includes("'reversal'"))).toBe(true)
     expect(calls.some((call) => call.includes('search.rehydrate.v1'))).toBe(true)
     expect(calls.some((call) => call.includes('UPDATE moderation_actions'))).toBe(false)

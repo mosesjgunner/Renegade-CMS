@@ -12,6 +12,15 @@ import type { StarterId, StarterInstallStatus } from './contracts'
 import { snapshotLayout } from '../presentation/snapshots'
 import { importMarkdownToRichText } from '../editorial/markdown'
 import { withExecutionLock } from '../operations/execution-lock'
+import {
+  beginRecipeRun,
+  completeRecipeRun,
+  failRecipeRun,
+  recordRecipeSteps,
+  stageRecipeMedia,
+  type RecipeRunHandle,
+  type RecipeStepOutcome,
+} from '../operations/recipe-execution'
 
 export const toLexicalDocument = (text: string) => {
   const convert = (node: any): any => {
@@ -35,6 +44,75 @@ export const toLexicalDocument = (text: string) => {
     return result
   }
   return { root: convert(importMarkdownToRichText(text).document.document.root) }
+}
+
+function stableStringify(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value) ?? 'null'
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(',')}]`
+  const entries = Object.entries(value as Record<string, unknown>)
+    .filter(([, entryValue]) => entryValue !== undefined)
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+  return `{${entries
+    .map(([key, entryValue]) => `${JSON.stringify(key)}:${stableStringify(entryValue)}`)
+    .join(',')}}`
+}
+
+/**
+ * Blocks are compared with link/media references reduced to the identity of
+ * the record they point at plus their label: the two binding passes (install
+ * and upgrade) legitimately produce different href spellings for the same
+ * target, while a re-pointed reference or an edited label is a real change.
+ */
+function normalizeBlocksForCompare(blocks: unknown): unknown {
+  if (Array.isArray(blocks)) return blocks.map(normalizeBlocksForCompare)
+  if (blocks && typeof blocks === 'object') {
+    const normalized: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(blocks as Record<string, unknown>)) {
+      if (
+        (key === 'link' || key === 'media') &&
+        value &&
+        typeof value === 'object' &&
+        typeof (value as { id?: unknown }).id === 'string'
+      ) {
+        const reference = value as { id: string; label?: unknown }
+        normalized[key] = { id: reference.id, label: reference.label ?? null }
+      } else {
+        normalized[key] = normalizeBlocksForCompare(value)
+      }
+    }
+    return normalized
+  }
+  return blocks
+}
+
+function blocksMatch(a: unknown, b: unknown): boolean {
+  return (
+    stableStringify(normalizeBlocksForCompare(a)) === stableStringify(normalizeBlocksForCompare(b))
+  )
+}
+
+const STARTER_HISTORY_ACTIONS = new Set(['starter-install', 'starter-upgrade'])
+
+/**
+ * The last starter-generated blocks recorded for a layout, or undefined when
+ * no reliable baseline exists (older installs, imported records). Without a
+ * baseline an upgrade cannot prove a record is uncustomized, so callers must
+ * preserve the record and surface a conflict instead of overwriting it.
+ */
+function starterBaselineBlocks(doc: {
+  revisionHistory?: unknown
+}): Record<string, unknown>[] | undefined {
+  if (!Array.isArray(doc.revisionHistory)) return undefined
+  for (let index = doc.revisionHistory.length - 1; index >= 0; index--) {
+    const entry = doc.revisionHistory[index] as {
+      action?: unknown
+      blocks?: unknown
+    } | null
+    if (entry && STARTER_HISTORY_ACTIONS.has(String(entry.action)) && Array.isArray(entry.blocks)) {
+      return entry.blocks as Record<string, unknown>[]
+    }
+  }
+  return undefined
 }
 
 async function upsertRecord(
@@ -75,6 +153,126 @@ async function upsertRecord(
   return { id: String(created.id), ...data, ...created }
 }
 
+/** The starter pipeline's phases, recorded as journal step outcomes. */
+const STARTER_STEP_KEYS = [
+  'site',
+  'owner',
+  'publication',
+  'media',
+  'members',
+  'pages',
+  'articles',
+  'products',
+  'campaign',
+  'templates',
+  'patterns',
+  'globals',
+  'home-layout',
+  'settings',
+] as const
+
+export type StarterInstallPlan = {
+  siteId: string
+  starterId: StarterId
+  empty: boolean
+  collisions: Array<{ kind: 'content' | 'layout' | 'media'; key: string; existingId: string }>
+  additions: { content: number; layouts: number; media: number }
+}
+
+/**
+ * The additive plan for installing a starter on a site that may already
+ * have content (S2-10): every starter item is checked against the site's
+ * actual records by its natural key, so an operator sees exactly what
+ * would collide before anything is written. Installation itself still
+ * refuses a non-empty site — the plan is the reviewable path forward
+ * (upgrade, or install on an empty site), never a silent overwrite.
+ */
+export async function planStarterInstall(
+  payload: Payload,
+  input: { siteId: string; starterId: StarterId },
+): Promise<StarterInstallPlan> {
+  const starter = starterDefinitions[input.starterId]
+  if (!Object.hasOwn(starterDefinitions, input.starterId))
+    throw new Error(`Unknown starter experience: ${input.starterId}`)
+  const collisions: StarterInstallPlan['collisions'] = []
+  const findByKeys = async (
+    collection: string,
+    field: string,
+    keys: string[],
+    kind: StarterInstallPlan['collisions'][number]['kind'],
+  ) => {
+    if (!keys.length) return 0
+    const found = await payload.find({
+      collection,
+      where: {
+        and: [{ site: { equals: input.siteId } }, { [field]: { in: keys } }],
+      },
+      limit: keys.length,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const byKey = new Map(
+      (found.docs as unknown as Array<Record<string, unknown>>).map((doc) => [
+        String(doc[field]),
+        String(doc.id),
+      ]),
+    )
+    let hits = 0
+    for (const key of keys) {
+      const existingId = byKey.get(key)
+      if (existingId) {
+        hits += 1
+        collisions.push({ kind, key, existingId })
+      }
+    }
+    return hits
+  }
+  const contentKeys = [
+    ...starter.pages.map((page) => page.canonicalPath),
+    ...starter.articles.map((article) => article.canonicalPath),
+  ]
+  const layoutDefs = [
+    ...starter.templates,
+    ...starter.patterns,
+    ...starter.globals,
+    ...starter.layouts,
+  ]
+  const contentHits = await findByKeys('content', 'canonicalPath', contentKeys, 'content')
+  const layoutHits = await findByKeys(
+    'page-layouts',
+    'path',
+    layoutDefs.map((layout) => layout.path),
+    'layout',
+  )
+  const mediaHits = await findByKeys(
+    'media-assets',
+    'originalFilename',
+    starter.media.map((media) => media.originalFilename),
+    'media',
+  )
+  const contentCount = await payload.count({
+    collection: 'content',
+    where: { site: { equals: input.siteId } },
+    overrideAccess: true,
+  })
+  const layoutCount = await payload.count({
+    collection: 'page-layouts',
+    where: { site: { equals: input.siteId } },
+    overrideAccess: true,
+  })
+  return {
+    siteId: input.siteId,
+    starterId: input.starterId,
+    empty: contentCount.totalDocs === 0 && layoutCount.totalDocs === 0,
+    collisions,
+    additions: {
+      content: contentKeys.length - contentHits,
+      layouts: layoutDefs.length - layoutHits,
+      media: starter.media.length - mediaHits,
+    },
+  }
+}
+
 export async function installStarter(
   payload: Payload,
   input:
@@ -89,19 +287,110 @@ export async function installStarter(
   const storage = mediaStorage(loadConfig())
   const key = typeof input === 'string' ? input : (input.siteId ?? input.starterId)
   return withExecutionLock(payload, `starter-install:${key}`, async () => {
+    const args = typeof input === 'string' ? { starterId: input } : input
+    const starter = starterDefinitions[args.starterId]
+    if (!Object.hasOwn(starterDefinitions, args.starterId))
+      throw new Error(`Unknown starter experience: ${args.starterId}`)
+
+    // Unified recipe execution (S2-10): the run is journaled before any
+    // write, media keys are staged before any file exists, and a
+    // completed run returns its prior outcome instead of re-installing.
+    let siteId = args.siteId
+    if (!siteId) {
+      const existing = await payload.find({
+        collection: 'sites',
+        where: { slug: { equals: starter.id } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (existing.docs[0]) siteId = String(existing.docs[0].id)
+    }
+    let run: RecipeRunHandle | undefined
+    if (siteId) {
+      run = await beginRecipeRun(payload, {
+        siteId,
+        kind: 'starter',
+        recipeId: starter.id,
+        recipeVersion: starter.version,
+      })
+      if (run.state === 'completed')
+        return {
+          success: true,
+          starterId: starter.id,
+          siteId,
+          summary: run.data.summary ?? `Installed ${starter.name} (${starter.version}).`,
+        }
+      const stagedKeys: string[] = []
+      for (const media of starter.media) {
+        const bytes = await readFile(path.join(process.cwd(), 'public', media.localAssetPath))
+        stagedKeys.push(
+          `starters/${siteId}/${createHash('sha256').update(bytes).digest('hex')}/${media.originalFilename}`,
+        )
+      }
+      await stageRecipeMedia(payload, run, stagedKeys)
+    }
+
     const transactionID = await payload.db.beginTransaction()
     if (!transactionID) throw new Error('Starter installation requires transactional storage.')
     const req = await createLocalReq({}, payload)
     req.transactionID = transactionID
+    let result: Awaited<ReturnType<typeof provisionStarter>>
     try {
-      const result = await provisionStarter(transactionPayload(payload, req), input, writtenKeys)
+      result = await provisionStarter(transactionPayload(payload, req), input, writtenKeys)
       await payload.db.commitTransaction(transactionID)
-      return result
     } catch (error) {
       await payload.db.rollbackTransaction(transactionID)
-      for (const key of writtenKeys) await storage.remove(key)
+      for (const writtenKey of writtenKeys) await storage.remove(writtenKey)
+      if (run) await failRecipeRun(payload, run, error)
+      // A non-empty site refusal carries the additive collision plan, so
+      // the operator sees exactly what overlaps instead of a dead end.
+      if (
+        siteId &&
+        error instanceof Error &&
+        error.message.startsWith('Install a starter on an empty site')
+      ) {
+        const plan = await planStarterInstall(payload, { siteId, starterId: starter.id })
+        const preview = plan.collisions
+          .slice(0, 5)
+          .map((collision) => `${collision.kind}:${collision.key}`)
+          .join(', ')
+        throw new Error(
+          `${error.message} Collision plan: ${plan.collisions.length} existing record(s) overlap this starter` +
+            (preview ? ` (${preview}${plan.collisions.length > 5 ? ', …' : ''})` : '') +
+            `; ${plan.additions.content} content, ${plan.additions.layouts} layout and ${plan.additions.media} media item(s) would be new.`,
+        )
+      }
       throw error
     }
+
+    // Step outcomes persist only now: inside the rolled-back transaction
+    // they would not have durably happened. A first-ever install created
+    // its site inside the transaction, so its run starts here.
+    if (!run) {
+      run = await beginRecipeRun(payload, {
+        siteId: result.siteId,
+        kind: 'starter',
+        recipeId: starter.id,
+        recipeVersion: starter.version,
+      })
+      const stagedKeys: string[] = []
+      for (const media of starter.media) {
+        const bytes = await readFile(path.join(process.cwd(), 'public', media.localAssetPath))
+        stagedKeys.push(
+          `starters/${result.siteId}/${createHash('sha256').update(bytes).digest('hex')}/${media.originalFilename}`,
+        )
+      }
+      await stageRecipeMedia(payload, run, stagedKeys)
+    }
+    const steps: Record<string, RecipeStepOutcome> = {}
+    for (const stepKey of STARTER_STEP_KEYS)
+      steps[stepKey] = { status: 'done', targetId: result.siteId }
+    await recordRecipeSteps(payload, run, steps)
+    await completeRecipeRun(payload, run, {
+      summary: result.summary,
+      targets: { site: result.siteId },
+    })
+    return result
   })
 }
 
@@ -795,13 +1084,40 @@ export async function getStarterStatus(
   const activeStarterId = source?.slice('starter:'.length) as StarterId | undefined
 
   const installed = Boolean(layouts.length > 0 && activeStarterId)
+  const starter = activeStarterId ? starterDefinitions[activeStarterId] : undefined
+
+  // Upgradable is computed from the actual records, not asserted: an upgrade
+  // has work to do when a starter template/pattern is missing, when a record
+  // has no starter baseline or was customized (a conflict to review), or
+  // when the recorded baseline differs from the current starter definition.
+  let upgradable = false
+  if (installed && starter) {
+    const byPath = new Map(layouts.map((layout) => [String(layout.path), layout]))
+    for (const definition of [...starter.templates, ...starter.patterns]) {
+      const doc = byPath.get(definition.path)
+      if (!doc) {
+        upgradable = true
+        break
+      }
+      const baseline = starterBaselineBlocks(doc)
+      if (
+        !baseline ||
+        !blocksMatch(doc.blocks, baseline) ||
+        !blocksMatch(baseline, definition.blocks)
+      ) {
+        upgradable = true
+        break
+      }
+    }
+  }
 
   return {
     installed,
     starterId: activeStarterId,
-    version: '1.0.0',
+    version: starter?.version,
     siteId,
-    upgradable: false,
+    upgradable,
+    availableUpgradeVersion: upgradable ? starter?.version : undefined,
     stats: {
       pagesCount,
       articlesCount,
@@ -814,12 +1130,29 @@ export async function getStarterStatus(
   }
 }
 
-/** Non-destructive upgrade: updates templates, patterns, globals, and adds missing starter assets without altering existing canonical content or custom page layout edits. */
+/**
+ * Non-destructive upgrade: refreshes pristine templates and patterns as new
+ * draft revisions, stages missing starter assets as drafts, and preserves
+ * customized records as reviewable conflicts. It never publishes and never
+ * alters canonical content or custom page layouts.
+ */
+export type StarterUpgradeConflict = {
+  path: string
+  surface: 'template' | 'pattern'
+  reason: string
+  candidateBlocks: unknown[]
+}
+
 export async function upgradeStarter(
   payload: Payload,
   input: StarterId | { siteId: string; starterId: StarterId },
   siteIdParam?: string,
-): Promise<{ success: boolean; updatedCount: number; message: string }> {
+): Promise<{
+  success: boolean
+  updatedCount: number
+  conflicts: StarterUpgradeConflict[]
+  message: string
+}> {
   const starterId = typeof input === 'string' ? input : input.starterId
   const siteId = typeof input === 'string' ? siteIdParam || '1' : input.siteId
 
@@ -862,95 +1195,141 @@ export async function upgradeStarter(
     return next
   }
   let updatedCount = 0
+  const conflicts: StarterUpgradeConflict[] = []
 
-  // 1. Refresh templates and patterns with latest defaults if not customized
-  for (const tpl of starter.templates) {
+  /**
+   * One template/pattern upgrade step. A record is refreshed only when its
+   * current blocks still equal the last starter-generated baseline — and
+   * even then the refresh is staged as a new draft revision: published
+   * output changes only through an explicit publication. A customized
+   * record, or one with no reliable baseline, is preserved untouched and
+   * reported as a conflict carrying the candidate blocks for review.
+   */
+  const upgradeLayout = async (
+    definition: { name: string; path: string; blocks: any[]; category?: string },
+    surface: 'template' | 'pattern',
+  ) => {
     const existing = await (payload as any).find({
       collection: 'page-layouts',
-      where: { and: [{ site: { equals: siteId } }, { path: { equals: tpl.path } }] },
+      where: { and: [{ site: { equals: siteId } }, { path: { equals: definition.path } }] },
       limit: 1,
+      depth: 0,
       overrideAccess: true,
     })
-    if (existing.docs.length > 0) {
-      const doc = existing.docs[0]
-      const nextRev = (Number(doc.revision) || 1) + 1
-      const snapshot = snapshotLayout({
-        ...doc,
-        blocks: await bindBlocks(tpl.blocks),
-        revision: nextRev,
-        publishedRevision: nextRev,
+
+    let candidate: any[]
+    try {
+      candidate = await bindBlocks(definition.blocks)
+    } catch {
+      conflicts.push({
+        path: definition.path,
+        surface,
+        reason:
+          'The upgrade candidate references content or media that is unavailable in this site; the current record was preserved.',
+        candidateBlocks: definition.blocks,
       })
-      await (payload as any).update({
+      return
+    }
+
+    if (existing.docs.length === 0) {
+      // Missing starter asset: stage it as a draft, never published.
+      await (payload as any).create({
         collection: 'page-layouts',
-        id: doc.id,
         data: {
-          blocks: await bindBlocks(tpl.blocks),
-          revision: nextRev,
-          publishedRevision: nextRev,
-          publishedPresentation: snapshot,
+          site: siteId,
+          name: definition.name,
+          path: definition.path,
+          themeId: starter.themeId,
+          surface,
+          slot: 'main',
+          category: definition.category || (surface === 'template' ? 'General' : 'Sections'),
+          layoutVersion: 1,
+          status: 'draft',
+          visibility: 'public',
+          blocks: candidate,
+          unknownBlocks: [],
+          revision: 1,
           revisionHistory: [
-            ...(Array.isArray(doc.revisionHistory) ? doc.revisionHistory : []),
             {
-              revision: nextRev,
-              blocks: await bindBlocks(tpl.blocks),
+              revision: 1,
+              blocks: candidate,
               action: 'starter-upgrade',
               savedAt: new Date().toISOString(),
             },
           ],
         },
-        context: { publishPresentation: true },
         overrideAccess: true,
       })
       updatedCount++
+      return
     }
+
+    const doc = existing.docs[0]
+    const baseline = starterBaselineBlocks(doc)
+    if (!baseline) {
+      conflicts.push({
+        path: definition.path,
+        surface,
+        reason:
+          'No starter-generated baseline is recorded for this record, so customization cannot be ruled out; the current record was preserved for review.',
+        candidateBlocks: candidate,
+      })
+      return
+    }
+    if (!blocksMatch(doc.blocks, baseline)) {
+      conflicts.push({
+        path: definition.path,
+        surface,
+        reason:
+          'This record was customized after the last starter-generated revision; the current record was preserved for review.',
+        candidateBlocks: candidate,
+      })
+      return
+    }
+    if (blocksMatch(candidate, doc.blocks)) return // already current; no empty revision
+
+    const nextRev = (Number(doc.revision) || 1) + 1
+    await (payload as any).update({
+      collection: 'page-layouts',
+      id: doc.id,
+      data: {
+        blocks: candidate,
+        revision: nextRev,
+        revisionHistory: [
+          ...(Array.isArray(doc.revisionHistory) ? doc.revisionHistory : []),
+          {
+            revision: nextRev,
+            blocks: candidate,
+            action: 'starter-upgrade',
+            savedAt: new Date().toISOString(),
+          },
+        ],
+      },
+      overrideAccess: true,
+    })
+    updatedCount++
   }
 
-  // 2. Refresh patterns with latest defaults
+  // 1. Refresh templates with the latest defaults (draft-staged, see above)
+  for (const tpl of starter.templates) {
+    await upgradeLayout(tpl, 'template')
+  }
+
+  // 2. Refresh patterns with the latest defaults (draft-staged, see above)
   for (const pat of starter.patterns) {
-    const existing = await (payload as any).find({
-      collection: 'page-layouts',
-      where: { and: [{ site: { equals: siteId } }, { path: { equals: pat.path } }] },
-      limit: 1,
-      overrideAccess: true,
-    })
-    if (existing.docs.length > 0) {
-      const doc = existing.docs[0]
-      const nextRev = (Number(doc.revision) || 1) + 1
-      const snapshot = snapshotLayout({
-        ...doc,
-        blocks: await bindBlocks(pat.blocks),
-        revision: nextRev,
-        publishedRevision: nextRev,
-      })
-      await (payload as any).update({
-        collection: 'page-layouts',
-        id: doc.id,
-        data: {
-          blocks: await bindBlocks(pat.blocks),
-          revision: nextRev,
-          publishedRevision: nextRev,
-          publishedPresentation: snapshot,
-          revisionHistory: [
-            ...(Array.isArray(doc.revisionHistory) ? doc.revisionHistory : []),
-            {
-              revision: nextRev,
-              blocks: await bindBlocks(pat.blocks),
-              action: 'starter-upgrade',
-              savedAt: new Date().toISOString(),
-            },
-          ],
-        },
-        context: { publishPresentation: true },
-        overrideAccess: true,
-      })
-      updatedCount++
-    }
+    await upgradeLayout(pat, 'pattern')
   }
 
   return {
     success: true,
     updatedCount,
-    message: `Starter "${starter.name}" successfully upgraded. ${updatedCount} templates/patterns refreshed to v${starter.version}. Canonical content and custom page layouts were preserved.`,
+    conflicts,
+    message:
+      `Starter "${starter.name}" upgrade staged. ${updatedCount} templates/patterns updated as drafts for v${starter.version}; ` +
+      (conflicts.length > 0
+        ? `${conflicts.length} customized record(s) were preserved and reported as conflicts for review. `
+        : '') +
+      'Published output is unchanged until a draft is published. Canonical content and custom page layouts were preserved.',
   }
 }
 

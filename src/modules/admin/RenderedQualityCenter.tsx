@@ -67,13 +67,33 @@ type SeoAiSuggestion = {
   accepted: boolean
 }
 
+type AuditScope = {
+  eligible: number
+  queued: number
+  examined: number
+  fetched: number
+  failed: number
+  skipped: Array<{ url: string; reason: string }>
+  state: 'complete' | 'partial' | 'empty' | 'no-eligible'
+  complete: boolean
+}
+
 type FullAuditResponse = {
   pages?: Array<{ url: string; status: number; title: string | null; description: string | null }>
   issues?: AuditIssue[]
+  scope?: AuditScope
   crossChecks?: CrossCheckResult
   cannibalization?: { reviews: CannibalizationReview[]; issues: AuditIssue[] }
   aiSuggestions?: { suggestions: SeoAiSuggestion[] }
-  lifecycle?: { scanId: string; created: number; updated: number; resolved: number; active: number }
+  lifecycle?: {
+    scanId: string
+    created: number
+    updated: number
+    resolved: number
+    active: number
+    unverified?: number
+    scope?: { state: string; eligible: number; examined: number; complete: boolean } | null
+  }
   error?: string
 }
 
@@ -136,6 +156,8 @@ export default function RenderedQualityCenter() {
   const cannibalizationReviews = data?.cannibalization?.reviews || []
   const aiSuggestions = data?.aiSuggestions?.suggestions || []
   const lifecycle = data?.lifecycle
+  const scope = data?.scope
+  const scopeIncomplete = scope !== undefined && !scope.complete
 
   return (
     <div
@@ -170,6 +192,29 @@ export default function RenderedQualityCenter() {
         </div>
       ) : null}
 
+      {/* Audit scope: an incomplete audit must never read as a clean one */}
+      {scopeIncomplete && scope && (
+        <div
+          style={{
+            marginBottom: '16px',
+            padding: '12px 16px',
+            background: '#fffbeb',
+            border: '1px solid #f59e0b',
+            borderRadius: '8px',
+            fontSize: '14px',
+            color: '#92400e',
+          }}
+        >
+          <strong>INCOMPLETE AUDIT</strong> — examined {scope.examined} of {scope.eligible} pages.
+          Findings on unexamined pages were not verified and remain open
+          {scope.failed > 0 ? `; ${scope.failed} page(s) failed to load` : ''}
+          {scope.skipped.length > 0
+            ? `; ${scope.skipped.length} page(s) skipped (${scope.skipped[0].reason})`
+            : ''}
+          . Do not treat this run as a clean bill of health.
+        </div>
+      )}
+
       {/* Summary Cards */}
       {lifecycle && (
         <div
@@ -180,6 +225,26 @@ export default function RenderedQualityCenter() {
             marginBottom: '24px',
           }}
         >
+          {scope && (
+            <div
+              style={{
+                background: scopeIncomplete ? '#fffbeb' : '#f8fafc',
+                padding: '16px',
+                borderRadius: '8px',
+                border: scopeIncomplete ? '1px solid #f59e0b' : '1px solid #e2e8f0',
+              }}
+            >
+              <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600' }}>
+                AUDIT COVERAGE
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#0f172a' }}>
+                {scope.examined} of {scope.eligible}
+              </div>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                pages examined{scopeIncomplete ? ' — INCOMPLETE' : ''}
+              </div>
+            </div>
+          )}
           <div
             style={{
               background: '#f8fafc',

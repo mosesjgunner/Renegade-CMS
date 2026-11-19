@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { discoverThemes } from '@/modules/presentation/packages'
+import { preflightSiteCompatibility } from '@/modules/presentation/compatibility'
 import {
   changeTheme,
   createThemePreview,
@@ -95,6 +96,25 @@ export async function POST(request: Request) {
       const candidate = body.action === 'activate' ? current.draft : current.previous
       if (!candidate || current.revision !== body.revision)
         throw new Error('Theme candidate changed or is missing. Refresh before retrying.')
+      // Site compatibility preflight (S2-09): inventory the site's actual
+      // published output against the candidate before any render probe.
+      // A candidate that cannot render required domain content is refused
+      // with the affected records named; warnings ride along visibly.
+      const compatibility = await preflightSiteCompatibility(
+        payload,
+        body.site,
+        candidate,
+        await discoverThemes(),
+      )
+      if (compatibility.blockers.length)
+        return NextResponse.json(
+          {
+            error:
+              'Theme candidate cannot render required published content on this site. Resolve the blocked records or choose another theme.',
+            compatibility,
+          },
+          { status: 409, headers: { 'Cache-Control': 'private, no-store' } },
+        )
       const publicSite = await publicSiteForHost(payload, request.headers.get('host'))
       if (publicSite !== body.site)
         throw new Error(

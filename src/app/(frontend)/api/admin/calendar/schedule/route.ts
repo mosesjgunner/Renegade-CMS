@@ -7,7 +7,7 @@ import {
   scheduleEditorialPublication,
   cancelScheduledPublication,
 } from '@/modules/editorial/persistence'
-import type { EditorialActor } from '@/modules/editorial/workflow'
+import { EditorialPermissionError, type EditorialActor } from '@/modules/editorial/workflow'
 import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import { transactionPayload } from '@/modules/core/transaction-payload'
 
@@ -55,18 +55,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     const actorUserId = String(auth.user.id)
+    // WP-SEC-1 (Red R-2): the editorial actor derives ONLY from the
+    // authenticated session. A request-body `role` is never honored — a
+    // plain staff account previously scheduled as a publisher by sending
+    // "role":"publisher". Mirrors the workflow/actions route: staff is
+    // fixed to editor; owner/administrator hold publisher authority.
     const canPublish = ['owner', 'administrator'].includes(String(auth.user.role))
-    const requestedRole = (body as { role?: string }).role
-    const role: 'publisher' | 'editor' = canPublish
-      ? requestedRole === 'editor'
-        ? 'editor'
-        : 'publisher'
-      : requestedRole === 'publisher'
-        ? 'publisher'
-        : 'editor'
     const actor: EditorialActor = {
       id: actorUserId,
-      role,
+      role: canPublish ? 'publisher' : 'editor',
     }
 
     if (action === 'cancel') {
@@ -207,6 +204,12 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     )
   } catch (error) {
+    if (error instanceof EditorialPermissionError) {
+      // Authorization denial (e.g. staff attempting publisher-only
+      // scheduling): log it and answer 403, not a 500.
+      console.warn('API /api/admin/calendar/schedule authorization denial:', error.message)
+      return NextResponse.json({ error: error.message }, { status: 403 })
+    }
     console.error('API /api/admin/calendar/schedule error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : String(error) },

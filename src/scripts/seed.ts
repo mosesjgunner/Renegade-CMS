@@ -52,7 +52,7 @@ export async function seed(payload: Payload): Promise<void> {
       defaultTitle: 'Demo Publication',
       defaultDescription: 'A neutral fixture proving the portable publishing foundation.',
       sameAs: ['https://example.test/civic-demo'],
-      robotsDefaults: { index: true, follow: true },
+
       inheritancePolicy: 'site-publication-brand',
       structuredDataMode: 'manual',
       structuredDataPrimaryType: 'Organization',
@@ -147,16 +147,11 @@ export async function seed(payload: Payload): Promise<void> {
 
   const space = await upsert(payload, {
     collection: 'spaces',
-    where: { and: [{ site: { equals: site.id } }, { handle: { equals: 'river-morgan' } }] },
+    where: { and: [{ site: { equals: site.id } }, { profile: { equals: profile.id } }] },
     data: {
       site: site.id,
-      member: member.id,
       profile: profile.id,
-      handle: 'river-morgan',
       canonicalPath: '/members/river-morgan',
-      displayName: 'River Morgan Space',
-      bio: 'Member-owned demo space.',
-      visibility: 'public',
       capabilities: [
         { key: 'space.blog', status: 'enabled' },
         { key: 'space.albums', status: 'enabled' },
