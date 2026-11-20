@@ -1,5 +1,30 @@
 # RC3-UX-INSTALL-01 — Acceptance results
 
+## Remainder-pass addendum (branch `ux-install-remainder`, 2026-11-20)
+
+The results below are the PR #100 candidate's. The remainder pass
+(Stages 1–9) re-ran the engineering checks on its final tree; the
+numbers differ because the tree grew (Stages 1–7) and two environment
+replacements forced fresh databases — no tally was carried across a
+replacement.
+
+| Check                                                                                                                                                                                                                                  | Result                                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Typecheck (`npm run typecheck`)                                                                                                                                                                                                        | **PASS** (exit 0)                                                                                                                                                                                      |
+| Format (`npm run format:check`, repo-wide)                                                                                                                                                                                             | **PASS**                                                                                                                                                                                               |
+| Unit gate (`vitest run tests/unit --no-file-parallelism`)                                                                                                                                                                              | **PASS — 2,757 passed / 0 failed / 16 skipped (342 files)**                                                                                                                                            |
+| Integration, targeted subset (fresh-migrated + seeded `renegade_release_acceptance`; uxi13-wrong-site, installation, installation-resume, setup-draft, setup-first-run, starter-experiences, uxi11-guided-operations, operations-jobs) | **PASS — 47/47 (8/8 files)**                                                                                                                                                                           |
+| Integration, full suite (local)                                                                                                                                                                                                        | **PARTIAL** — started on the same fresh DB; 6 files / 44 tests green, 0 failures, stopped for environment time; full suite is the lead's CI gauntlet leg. Stage 6's full tally on its tree was 524/0/6 |
+| Production build (`npm run build`)                                                                                                                                                                                                     | **PASS** — exit 0 in a quiet window; the silent-compile-death flake recorded below recurred all night (Turbopack peaks ≈4.9GB RSS on this shared rig)                                                  |
+| Accessibility audit (`tests/browser/uxi12-accessibility.spec.ts`, axe-core 4.14.1, production standalone)                                                                                                                              | **PASS — 12/12; zero axe violations at any impact on 10 core pages**; keyboard focus, reflow (320/640px), and target-size checks green; validation-semantics test green                                |
+| Surface crawl (`tests/browser/uxi15-surface-crawl.spec.ts`, 29 routes)                                                                                                                                                                 | **PASS — 29/29, no 5xx**; staff surfaces redirect anonymous visitors to `/login`; `/preferences` redirect verified live                                                                                |
+| Migration-interruption (`tests/installer/uxi13-migration-interruption.mjs`)                                                                                                                                                            | **PASS** — SIGKILL at journal 1–2/155; resume → fingerprint identical to control (324 tables / 4,863 columns / 155 migrations)                                                                         |
+
+Browser specs in this environment need `NODE_OPTIONS="--import tsx"`
+for the harness's in-process Payload import (the `next/link`
+resolution failure recorded below); with the preload, the specs run
+as-is against the standalone server.
+
 Candidate: branch `rc3-ux-install-01`, head `fe1d296` (docs) on top of code
 head `3d630f7`; baseline main `0e7a0d5138b3c504ec17ad0e3911a7efb8b69be8`
 verified by fetch. Build manifest: "Built source

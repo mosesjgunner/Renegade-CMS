@@ -25,6 +25,7 @@ case "$*" in
   info) exit 0 ;;
   *"compose version"*) echo "v2.39.0"; exit 0 ;;
   *"ps -q"*) [[ -n "${FAKE_WEB_CONTAINER:-}" ]] && echo "$FAKE_WEB_CONTAINER"; exit 0 ;;
+  *"logs renegade-web"*) [[ -n "${FAKE_SETUP_TOKEN:-}" ]] && echo "Renegade CMS setup token (expires in 15 minutes; use once): $FAKE_SETUP_TOKEN"; exit 0 ;;
   port*) [[ -n "${FAKE_PUBLISHED:-}" ]] && echo "$FAKE_PUBLISHED"; exit 0 ;;
   *) exit 0 ;;
 esac
@@ -150,6 +151,20 @@ check "audio engine checksum mismatch fails closed" "[[ $rc -ne 0 ]] && [[ \"$ou
 rm -f "$work/node.log"
 out="$(FAKE_NODE_MODE=unavailable run_install --non-interactive 2>&1)" && rc=0 || rc=$?
 check "audio engine unavailable warns and continues" "[[ $rc -eq 0 ]] && [[ \"$out\" == *'Capability Center'* ]]"
+
+# 12. UXI-04 claim handoff: when the web log announces a token, the
+# installer's primary instruction is the fragment claim link; the log
+# grep remains, labelled as the fallback only.
+rm -f "$work/docker.log" "$work/site/.env.production"
+out="$(FAKE_PORT_LISTENING= FAKE_SETUP_TOKEN=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ run_install "${fresh_args[@]}" 2>&1)" && rc=0 || rc=$?
+check "claim link is the primary handoff when a token is announced" "[[ $rc -eq 0 ]] && [[ \"$out\" == *'Claim your installation (primary handoff'* ]] && [[ \"$out\" == *'https://uxi.example.test/setup#claim=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ'* ]]"
+check "log grep is demoted to a labelled fallback" "[[ \"$out\" == *'Fallback (only if the link does not work)'* ]]"
+
+# 13. UXI-04 claim handoff: with no announced token the installer never
+# fabricates a claim link; it prints the retrieval path and the template.
+rm -f "$work/docker.log" "$work/site/.env.production"
+out="$(FAKE_PORT_LISTENING= FAKE_SETUP_TOKEN= run_install "${fresh_args[@]}" 2>&1)" && rc=0 || rc=$?
+check "no fabricated claim link when no token is announced" "[[ $rc -eq 0 ]] && [[ \"$out\" == *'Retrieve the one-time bootstrap token'* ]] && [[ \"$out\" != *'setup#claim=abcdef'* ]]"
 
 echo
 if [[ $failures -eq 0 ]]; then echo "install.sh harness: ALL PASS"; else echo "install.sh harness: $failures FAILURE(S)"; exit 1; fi

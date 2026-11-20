@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { findPublicEvents } from '@/modules/events/public'
 import { isRegisteredCollection } from '@/modules/public/registered-collections'
 
+export const metadata: Metadata = { title: 'Events' }
 export const dynamic = 'force-dynamic'
 const date = (value: string, timeZone: string) =>
   new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short', timeZone }).format(
@@ -47,10 +49,22 @@ export default async function EventsPage({
       </header>
       <form>
         <label>
-          From <input type="date" name="from" defaultValue={from.toISOString().slice(0, 10)} />
+          From{' '}
+          <input
+            className="form-input"
+            type="date"
+            name="from"
+            defaultValue={from.toISOString().slice(0, 10)}
+          />
         </label>{' '}
         <label>
-          To <input type="date" name="to" defaultValue={to.toISOString().slice(0, 10)} />
+          To{' '}
+          <input
+            className="form-input"
+            type="date"
+            name="to"
+            defaultValue={to.toISOString().slice(0, 10)}
+          />
         </label>{' '}
         <button>Filter</button>
       </form>

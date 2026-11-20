@@ -40,6 +40,8 @@ import { hasEntitlement } from '@/modules/commerce/subscription-service'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import { canReadEvent } from '@/modules/events/public'
 import { isSafeSemanticRequestPath } from '@/modules/public/semantic-url'
+import { ComingSoonPage } from '@/modules/public/ComingSoonPage'
+import { resolvePublicSiteAccess } from '@/modules/public/site-visibility'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -80,7 +82,13 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   if (!isSafeSemanticRequestPath(path)) return { robots: { index: false, follow: false } }
   try {
     const payload = await getPayload({ config })
-    const siteId = await catalogSiteForHost(payload, (await requestHeaders()).get('host'))
+    const hdrs = await requestHeaders()
+    const siteId = await catalogSiteForHost(payload, hdrs.get('host'))
+    if (siteId) {
+      const access = await resolvePublicSiteAccess(payload, { siteId, headers: hdrs })
+      if (!access.allowed)
+        return { title: access.siteName, robots: { index: false, follow: false } }
+    }
     if (siteId && /^\/(authors|tags)\//.test(path)) {
       const archive = await loadContentArchive(payload, siteId, path)
       if (!archive) return { robots: { index: false, follow: false } }
@@ -124,6 +132,17 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     () => null,
   )
   if (!siteId) notFound()
+
+  // Site visibility gate (UXI-06): anonymous visitors to a
+  // coming-soon/private site get the holding page for every path —
+  // no canonical record, layout, form, or archive is loaded for them.
+  const siteAccess = await resolvePublicSiteAccess(payload, {
+    siteId,
+    headers: await requestHeaders(),
+  })
+  if (!siteAccess.allowed) {
+    return <ComingSoonPage siteName={siteAccess.siteName} visibility={siteAccess.visibility} />
+  }
 
   const publications = await payload.find({
     collection: 'publications',

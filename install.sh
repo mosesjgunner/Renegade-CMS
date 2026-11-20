@@ -284,6 +284,29 @@ fi
 echo
 echo 'Renegade CMS is ready.'
 echo "Setup URL: ${app_url%/}/setup"
-echo 'Open the setup URL, then retrieve the one-time bootstrap token (valid 15 minutes) locally with:'
-echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web | grep 'setup token'"
-echo 'Use a reverse proxy (Caddy, Nginx, Traefik, or equivalent) for TLS and forward it only to the loopback listener. In trusted mode it must overwrite forwarded headers.'
+# UXI-04: the primary claim handoff is a fragment link. The web container
+# announces the one-time token (and the ready-made claim link) in its log
+# on first start; the installer reads that line locally and prints the
+# claim link here, in the operator's own terminal. The token rides in the
+# URL fragment (#claim=...), which browsers never send to the server, so
+# opening the link puts the token in no access log or referrer. If the
+# token cannot be read here (log already rotated, container restarted),
+# fall back to retrieving it locally — never paste it into tickets/chat.
+claim_token=''
+claim_log_line="$("${compose[@]}" logs renegade-web 2>/dev/null | grep 'setup token' | tail -n 1 || true)"
+if [[ "$claim_log_line" == *': '* ]]; then
+  claim_token="${claim_log_line##*: }"
+fi
+if [[ "$claim_token" =~ ^[A-Za-z0-9_-]{43}$ ]]; then
+  echo 'Claim your installation (primary handoff; valid 15 minutes, single use):'
+  echo "  ${app_url%/}/setup#claim=$claim_token"
+  echo 'Open that link in your browser: the token is read from the link fragment and removed from the address bar immediately.'
+  echo 'Fallback (only if the link does not work): retrieve the one-time token locally with:'
+  echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web | grep 'setup token'"
+else
+  echo 'Retrieve the one-time bootstrap token (valid 15 minutes) locally with:'
+  echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web | grep 'setup token'"
+  echo "Then open ${app_url%/}/setup#claim=<token> with the token in place of <token>, or paste the token into the setup form."
+fi
+unset claim_token claim_log_line
+echo 'Use a reverse proxy (Caddy, Nginx, Traefik, or equivalent) for TLS and forward it only to the loopback listener. In trusted mode it must overwrite forwarded headers. See docs/operations/reverse-proxy.md for the managed Caddy path and the existing-proxy variant.'

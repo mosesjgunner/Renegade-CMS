@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import config from '@payload-config'
+
+export const metadata: Metadata = { title: 'Videos' }
 import { getPayload } from 'payload'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -19,20 +22,30 @@ export default async function VideoArchive() {
   return (
     <main className="mx-auto max-w-5xl px-6 py-12">
       <h1 className="text-4xl font-bold">Videos</h1>
-      <ul className="mt-8 space-y-4">
-        {videos.docs.map((item) => (
-          <li key={item.id}>
-            <Link
-              href={String(
-                (item as unknown as { canonicalPath?: string; slug: string }).canonicalPath ||
-                  `/videos/${String((item as unknown as { slug: string }).slug)}`,
-              )}
-            >
-              {String((item as unknown as { title: string }).title)}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {videos.docs.length === 0 ? (
+        <div className="mt-8 space-y-4">
+          <p>No videos have been published yet.</p>
+          <p className="text-sm">
+            When a video is published it will appear here. Looking for something to watch in the
+            meantime? Browse the <Link href="/articles">articles archive</Link> instead.
+          </p>
+        </div>
+      ) : (
+        <ul className="mt-8 space-y-4">
+          {videos.docs.map((item) => (
+            <li key={item.id}>
+              <Link
+                href={String(
+                  (item as unknown as { canonicalPath?: string; slug: string }).canonicalPath ||
+                    `/videos/${String((item as unknown as { slug: string }).slug)}`,
+                )}
+              >
+                {String((item as unknown as { title: string }).title)}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   )
 }

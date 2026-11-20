@@ -193,6 +193,16 @@ export const Sites: CollectionConfig = {
       options: ['draft', 'active', 'archived'],
     },
     {
+      name: 'visibility',
+      type: 'select',
+      defaultValue: 'public',
+      options: ['public', 'coming-soon', 'private'],
+      admin: {
+        description:
+          'Who can see this site on the web. Public: everyone. Coming soon: visitors see a holding page with the site name while signed-in site staff can still preview. Private: same holding page, plus a sign-in link for staff. Existing sites stay public until an operator changes this.',
+      },
+    },
+    {
       name: 'communityRegistrationPolicy',
       type: 'select',
       required: true,

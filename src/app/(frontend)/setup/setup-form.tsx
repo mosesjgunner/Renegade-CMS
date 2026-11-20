@@ -1,8 +1,10 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 
+import { consumeClaimFragment } from '@/modules/operations/claim-handoff'
+import { useUnsavedWorkGuard } from '@/hooks/useUnsavedWorkGuard'
 import { themes } from '@/modules/presentation/registry'
 import type { OnboardingInput } from '@/modules/operations/onboarding'
 import type { ResourceProfile } from '@/modules/extensions/contracts'
@@ -128,6 +130,9 @@ export function SetupForm({
     featureProfile: installedProfile === 'Lean' ? 'Lean' : 'Standard',
     optionalConnections: [],
     starterContent: true,
+    // Site visibility (UXI-06): the explicit launch choice. The site
+    // starts public unless the owner picks a holding page here.
+    siteVisibility: 'public',
     publishingDefaults: {
       indexingMode: 'index',
       commentsPolicy: 'open',
@@ -137,12 +142,118 @@ export function SetupForm({
   const [error, setError] = useState<string>()
   const [result, setResult] = useState<SetupResult>()
   const [busy, setBusy] = useState(false)
+  // Server-side setup draft (UXI-02): non-secret answers persist server-side
+  // so a refresh/reopen resumes at the last safe checkpoint. The bootstrap
+  // token is NEVER part of the draft — it stays only in this tab's state.
+  const draftVersionRef = useRef(0)
+  const [operationId] = useState<string>(() =>
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `setup-${Date.now()}`,
+  )
+  const [draftRestored, setDraftRestored] = useState(false)
+  const [claimReceived, setClaimReceived] = useState(false)
+  // Unsaved-work protection (UXI-07): answers typed into this form are
+  // guarded against an accidental refresh/close until setup completes.
+  // (The server draft also checkpoints them; the guard covers the gap
+  // between typing and the next checkpoint save.)
+  useUnsavedWorkGuard(!result && (step > 0 || form.name !== '' || token !== ''))
+
+  // UXI-04 fragment claim handoff: the installer's claim link carries the
+  // bootstrap token in the URL fragment (#claim=...), which the browser
+  // never sends to the server. Read it once, immediately clear it from
+  // the address bar and history, and keep it only in this tab's state —
+  // the same place a manually pasted token lives. Without JavaScript
+  // this never runs and the operator uses the log/CLI fallback instead.
+  useEffect(() => {
+    const claimed = consumeClaimFragment(window.location, window.history)
+    if (claimed) {
+      setToken(claimed)
+      setClaimReceived(true)
+    }
+  }, [])
   const canContinue = useMemo(() => {
     if (step === 0) return resuming || Boolean(token && email)
     if (step === 1)
       return Boolean(form.name && form.slug && form.primaryUrl && form.locale && form.timezone)
     return true
   }, [email, form, resuming, step, token])
+
+  // Restore the server draft once, on load. A draft belongs to this
+  // browser's claim (or its enrollment session); a foreign draft simply
+  // reads as no draft, and the form starts fresh.
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/setup/draft', { credentials: 'same-origin' })
+      .then(async (response) => (response.ok ? response.json() : { draft: null }))
+      .then(
+        (body: {
+          draft?: {
+            answers?: Partial<OnboardingInput>
+            ownerEmail?: string
+            currentStep?: number
+            version?: number
+          } | null
+        }) => {
+          if (cancelled || !body.draft) return
+          const draft = body.draft
+          draftVersionRef.current = draft.version ?? 0
+          if (draft.answers) {
+            setForm((current) => ({ ...current, ...draft.answers }))
+            if (
+              draft.answers.slug &&
+              draft.answers.name &&
+              draft.answers.slug !== deriveSlug(draft.answers.name)
+            ) {
+              setSlugTouched(true)
+            }
+          }
+          if (draft.ownerEmail) setEmail(draft.ownerEmail)
+          if (typeof draft.currentStep === 'number') {
+            setStep(Math.min(Math.max(draft.currentStep, 0), steps.length - 1))
+          }
+          setDraftRestored(true)
+        },
+      )
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  async function saveDraft(nextStep: number, answers: OnboardingInput, ownerEmail: string) {
+    try {
+      const response = await fetch('/api/setup/draft', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          ownerEmail: ownerEmail || undefined,
+          answers,
+          currentStep: nextStep,
+          operationId,
+          version: draftVersionRef.current,
+        }),
+      })
+      const body = (await response.json().catch(() => ({}))) as {
+        draft?: { version?: number }
+        error?: string
+      }
+      if (response.status === 409) {
+        // A second tab saved first: surface it, never silently overwrite.
+        setError(
+          'This setup was changed in another tab. Reload the page to pick up the latest answers before continuing.',
+        )
+        return
+      }
+      if (response.ok && body.draft)
+        draftVersionRef.current = body.draft.version ?? draftVersionRef.current
+    } catch {
+      // Draft persistence is a checkpoint, not a gate: setup continues
+      // in-page when the server cannot be reached.
+    }
+  }
 
   useEffect(() => {
     if (step !== 3 || readiness !== null) return
@@ -204,7 +315,9 @@ export function SetupForm({
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (step < steps.length - 1) {
-      setStep((value) => value + 1)
+      const nextStep = step + 1
+      setStep(nextStep)
+      void saveDraft(nextStep, form, email)
       return
     }
     setBusy(true)
@@ -280,6 +393,12 @@ export function SetupForm({
             A few choices now create a usable site, private starter content, and a secure owner
             account. Provider credentials can always wait.
           </p>
+          {draftRestored ? (
+            <p className="text-xs text-blue-700 dark:text-blue-300" role="status">
+              Resumed from your saved progress — your earlier answers were restored from this
+              installation.
+            </p>
+          ) : null}
           <ol
             className="grid grid-cols-5 gap-1 text-[10px] sm:text-xs text-stone-500"
             aria-label="Setup progress"
@@ -302,6 +421,7 @@ export function SetupForm({
               token={token}
               setToken={setToken}
               resuming={resuming}
+              claimReceived={claimReceived}
             />
           ) : null}
           {step === 1 ? (
@@ -337,7 +457,11 @@ export function SetupForm({
               <button
                 className="btn btn-secondary text-xs"
                 type="button"
-                onClick={() => setStep((value) => value - 1)}
+                onClick={() => {
+                  const previousStep = step - 1
+                  setStep(previousStep)
+                  void saveDraft(previousStep, form, email)
+                }}
                 disabled={busy}
               >
                 Back
@@ -367,12 +491,14 @@ function OwnerStep({
   token,
   setToken,
   resuming,
+  claimReceived,
 }: {
   email: string
   setEmail: (value: string) => void
   token: string
   setToken: (value: string) => void
   resuming: boolean
+  claimReceived?: boolean
 }) {
   const [hasPasskeySupport, setHasPasskeySupport] = useState(false)
   useEffect(() => {
@@ -409,21 +535,27 @@ function OwnerStep({
         The one-time bootstrap token proves local operator access. Your first admin account will be
         enrolled with passkey credentials after you confirm your choices.
       </p>
+      {claimReceived ? (
+        <p className="text-xs text-emerald-700 dark:text-emerald-300" role="status">
+          Claim received from your installer link — the token was read from the link and removed
+          from the address bar. It is filled in below; just add your owner email.
+        </p>
+      ) : null}
 
       <div className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-800 space-y-1.5 text-xs">
         <div className="flex items-center justify-between font-medium">
           <span>Browser Passkey / WebAuthn Support:</span>
           {hasPasskeySupport ? (
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+            <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
               ✓ Available in this browser
             </span>
           ) : (
-            <span className="text-amber-600 dark:text-amber-400 font-semibold">
+            <span className="text-amber-700 dark:text-amber-400 font-semibold">
               ⚠ Not detected — enrollment at the final step will confirm
             </span>
           )}
         </div>
-        <p className="text-stone-500">
+        <p className="text-stone-600">
           Normal admin sign-in occurs at <code className="font-mono">/login</code> via passkey.
           Emergency recovery codes will be generated at completion for fallback access.
         </p>
@@ -435,9 +567,14 @@ function OwnerStep({
           required
           value={token}
           onChange={(event) => setToken(event.target.value)}
-          placeholder="Paste one-time token from CLI"
+          placeholder="Filled by your installer claim link, or paste the one-time token"
         />
       </Field>
+      <p className="text-[11px] text-stone-500">
+        No claim link? On the server, the token is in the web container log (grep for “setup token”)
+        or a fresh one comes from <code className="font-mono">npm run installation:recover</code> —
+        paste it above. That log path is the fallback; the claim link is the normal handoff.
+      </p>
       <Field label="Owner email" badge="Required">
         <input
           className="form-input text-sm"
@@ -844,7 +981,7 @@ function FeatureStep({
               <option value="closed">Closed (Disabled)</option>
             </select>
           </Field>
-          <Field label="Site visibility" badge="Optional">
+          <Field label="Default post visibility" badge="Optional">
             <select
               className="form-input text-xs"
               value={form.publishingDefaults?.visibility ?? 'public'}
@@ -856,6 +993,39 @@ function FeatureStep({
               <option value="members-only">Members-only</option>
             </select>
           </Field>
+        </div>
+      </div>
+
+      {/* Site visibility / launch choice (UXI-06) */}
+      <div className="space-y-3 pt-2 border-t border-stone-200 dark:border-stone-800">
+        <div className="flex items-center justify-between">
+          <span className="form-label">Who can see your site?</span>
+          <span className="text-[10px] uppercase font-bold text-stone-500 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">
+            Launch choice
+          </span>
+        </div>
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          This is the whole site, not a single post. You can change it later in guided setup.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <Choice
+            checked={(form.siteVisibility ?? 'public') === 'public'}
+            onChange={() => update('siteVisibility', 'public')}
+            title="Make site public"
+            detail="Anyone can read your published pages as soon as setup finishes."
+          />
+          <Choice
+            checked={form.siteVisibility === 'coming-soon'}
+            onChange={() => update('siteVisibility', 'coming-soon')}
+            title="Coming soon"
+            detail="Visitors see a holding page with your site name and no content. You can still preview while signed in."
+          />
+          <Choice
+            checked={form.siteVisibility === 'private'}
+            onChange={() => update('siteVisibility', 'private')}
+            title="Keep working privately"
+            detail="Visitors see a holding page with a sign-in link. Only people with site access can preview."
+          />
         </div>
       </div>
     </section>
@@ -916,6 +1086,16 @@ function ReviewStep({
           <dd className="text-stone-900 dark:text-stone-100">
             {form.publishingDefaults?.indexingMode ?? 'index'} /{' '}
             {form.publishingDefaults?.commentsPolicy ?? 'open'}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-stone-500 font-medium">Who can see the site</dt>
+          <dd className="text-stone-900 dark:text-stone-100">
+            {form.siteVisibility === 'coming-soon'
+              ? 'Coming soon — visitors see a holding page'
+              : form.siteVisibility === 'private'
+                ? 'Private — keep working privately'
+                : 'Public — make site public'}
           </dd>
         </div>
         <div>
@@ -1050,7 +1230,10 @@ function Completion({
             Renegade listens on its private loopback port. Put Caddy, Nginx, Traefik, or an
             equivalent reverse proxy in front of it for TLS, and in trusted proxy mode have that
             proxy replace forwarded headers before sending requests to Renegade. Do not expose the
-            application listener directly to the internet.
+            application listener directly to the internet. The step-by-step managed Caddy path and
+            the existing-proxy variant live in docs/operations/reverse-proxy.md. Public HTTPS is
+            only reported ready when the DNS, certificate, and proxy checks actually pass — a failed
+            check is shown as a failure, never as ready.
           </p>
         </section>
         {onboarding.studioUrl ? (
@@ -1112,8 +1295,8 @@ function Field({
           <span
             className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
               badge === 'Required'
-                ? 'text-red-600 bg-red-50 dark:bg-red-950/60'
-                : 'text-stone-500 bg-stone-100 dark:bg-stone-800'
+                ? 'text-red-700 bg-red-50 dark:bg-red-950/60'
+                : 'text-stone-700 bg-stone-100 dark:bg-stone-800'
             }`}
           >
             {badge}

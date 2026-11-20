@@ -89,6 +89,29 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
   } catch {
     podcastShows = []
   }
+  // Designed next steps (UXI-06): link to the actual homepage layout
+  // and the actual first draft when they exist — never placeholders.
+  let homeLayoutId: string | null = null
+  let firstDraftId: string | null = null
+  try {
+    const homeLayouts = await payload.find({
+      collection: 'page-layouts',
+      where: { path: { equals: '/' } },
+      sort: '-updatedAt',
+      limit: 1,
+      depth: 0,
+      req: initPageResult.req,
+      overrideAccess: false,
+    } as never)
+    homeLayoutId = homeLayouts.docs[0] ? String(homeLayouts.docs[0].id) : null
+    const firstDraft = drafts.docs.find((row) => (row as ContentRow).status === 'draft') as
+      | ContentRow
+      | undefined
+    firstDraftId = firstDraft?.id ?? null
+  } catch {
+    homeLayoutId = null
+    firstDraftId = null
+  }
   const groups = [
     {
       title: `Waiting for review${reviews.totalDocs ? ` (${reviews.totalDocs})` : ''}`,
@@ -151,6 +174,29 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
           </p>
         </section>
       )}
+      {homeLayoutId || firstDraftId ? (
+        <section aria-label="Next steps" style={{ marginTop: 28 }}>
+          <SectionHeader>Next steps</SectionHeader>
+          <p>
+            {homeLayoutId ? (
+              <>
+                <ActionLink href={`/builder/${homeLayoutId}`} intent="primary">
+                  Edit your homepage
+                </ActionLink>{' '}
+              </>
+            ) : null}
+            {firstDraftId ? (
+              <ActionLink href={`/admin/collections/content/${firstDraftId}`}>
+                Write your first post
+              </ActionLink>
+            ) : (
+              <ActionLink href="/admin/collections/content/create?contentType=article">
+                Write your first post
+              </ActionLink>
+            )}
+          </p>
+        </section>
+      ) : null}
       {podcastShows.length ? (
         <section aria-label="Podcast studio" style={{ marginTop: 28 }}>
           <SectionHeader>Podcast studio</SectionHeader>

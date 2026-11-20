@@ -1,8 +1,18 @@
 'use client'
 
 import Link from 'next/link'
-import React, { useEffect, useState, useTransition } from 'react'
+import React, { useEffect, useState } from 'react'
 import type { MessageDesign } from '../audience/email-composer'
+import {
+  DisabledWithReason,
+  FieldError,
+  fieldAriaProps,
+  FormField,
+  FormStatusSummary,
+  SaveStateIndicator,
+  type FormProblem,
+} from './forms'
+import { saveHttpError, useSaveState } from './forms/useSaveState'
 
 type ArticleItem = {
   id: string
@@ -88,16 +98,17 @@ export default function EmailComposer() {
   const [fgColor, setFgColor] = useState<string>('#172033')
   const [accentColor, setAccentColor] = useState<string>('#164e9b')
 
-  // Legal block (mandatory)
-  const [legalAddress, setLegalAddress] = useState<string>(
-    '123 Renegade Way, Suite 100, Washington, DC 20001',
-  )
-  const [preferenceUrl, setPreferenceUrl] = useState<string>(
-    'https://renegadeparty.org/audience/preferences',
-  )
-  const [unsubscribeUrl, setUnsubscribeUrl] = useState<string>(
-    'https://renegadeparty.org/audience/unsubscribe',
-  )
+  // Legal block (mandatory) — UXI-D12 repair (UXI-09): no fabricated
+  // defaults. The postal address starts empty until the operator sets
+  // their own (a placeholder address must never ship in a real
+  // campaign footer), and the preference/unsubscribe URLs start at
+  // this app's real routes (/subscribe/preferences and /unsubscribe —
+  // the paths the audience tasks generate tokenised links for). When
+  // the site's canonical origin loads, the URLs are upgraded to
+  // absolute URLs on that origin.
+  const [legalAddress, setLegalAddress] = useState<string>('')
+  const [preferenceUrl, setPreferenceUrl] = useState<string>('/subscribe/preferences')
+  const [unsubscribeUrl, setUnsubscribeUrl] = useState<string>('/unsubscribe')
 
   // Step 3: Audience Segment & Targeting
   const [selectedSegmentId, setSelectedSegmentId] = useState<string>('')
@@ -121,7 +132,20 @@ export default function EmailComposer() {
   const [createdMessageId, setCreatedMessageId] = useState<string | null>(null)
   const [snapshotHash, setSnapshotHash] = useState<string | null>(null)
   const [frozenRecipients, setFrozenRecipients] = useState<number | null>(null)
-  const [isPending, startTransition] = useTransition()
+  // UXI-08: campaign saves run through the shared save-state machine —
+  // the success copy below is set only from a server acknowledgment —
+  // and validation problems are field-linked input problems, kept
+  // distinct from service failures (the `error` state).
+  const { state: saveState, save: runSave, isSaving } = useSaveState()
+  const isPending = isSaving
+  const [lastSaveTarget, setLastSaveTarget] = useState<'draft' | 'review' | 'schedule'>('draft')
+  const [inputProblems, setInputProblems] = useState<
+    Array<Extract<FormProblem, { kind: 'input' }>>
+  >([])
+  const problemFor = (fieldId: string) =>
+    inputProblems.find((problem) => problem.fieldId === fieldId)?.message ?? null
+  const clearProblem = (fieldId: string) =>
+    setInputProblems((current) => current.filter((problem) => problem.fieldId !== fieldId))
 
   // Delivery Retry (Legacy maintenance action)
   const [retryDeliveryId, setRetryDeliveryId] = useState('')
@@ -141,6 +165,13 @@ export default function EmailComposer() {
         const data = await res.json()
         if (active) {
           setSite(data.site)
+          // UXI-D12: point the legal footer at this site's real
+          // preference/unsubscribe routes on its own canonical origin.
+          if (data.site?.canonicalOrigin) {
+            const origin = String(data.site.canonicalOrigin).replace(/\/$/, '')
+            setPreferenceUrl(`${origin}/subscribe/preferences`)
+            setUnsubscribeUrl(`${origin}/unsubscribe`)
+          }
           setArticles(data.articles || [])
           setTemplates(data.templates || [])
           setSegments(data.segments || [])
@@ -364,9 +395,17 @@ export default function EmailComposer() {
   // Test send to operator
   const handleTestSend = async () => {
     if (!testEmail) {
-      setError('Please provide a test recipient email.')
+      setInputProblems([
+        {
+          kind: 'input',
+          fieldId: 'test-send-email',
+          label: 'Test recipient email',
+          message: 'Add the email address to send the test to, then send again.',
+        },
+      ])
       return
     }
+    clearProblem('test-send-email')
     try {
       setIsTestSending(true)
       setTestSendStatus('Sending test email...')
@@ -397,62 +436,92 @@ export default function EmailComposer() {
   const handleSaveAndSchedule = async (targetStatus: 'draft' | 'review' | 'schedule') => {
     setError(null)
     setSuccess(null)
+    setLastSaveTarget(targetStatus)
+    // Validation problems are input problems (UXI-08): field-linked in
+    // the summary and under each field, never a bare global error.
+    const problems: Array<Extract<FormProblem, { kind: 'input' }>> = []
     if (!subject.trim()) {
-      setError('Campaign subject is required.')
-      return
+      problems.push({
+        kind: 'input',
+        fieldId: 'campaign-subject',
+        label: 'Subject Line',
+        message: 'Subject is empty — add a subject line, then save again.',
+      })
     }
     if (!selectedSegmentId) {
-      setError('Please select a target audience segment.')
-      return
+      problems.push({
+        kind: 'input',
+        fieldId: 'campaign-segment',
+        label: 'Target Audience Segment',
+        message: 'No segment is chosen — choose a segment in step 3, then save again.',
+      })
     }
+    if (!legalAddress.trim()) {
+      problems.push({
+        kind: 'input',
+        fieldId: 'legal-address',
+        label: 'Physical Mailing Address',
+        message:
+          'No postal address is set — add your own postal address in the legal footer (step 2), then save again. Campaigns are never sent with a placeholder address.',
+      })
+    }
+    setInputProblems(problems)
+    if (problems.length) return
 
-    startTransition(async () => {
-      try {
-        const design = buildDesign()
-        const res = await fetch('/api/admin/audience/campaign', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            action: 'save-and-schedule',
-            targetStatus,
-            subject,
-            preheader,
-            messageDesign: design,
-            segmentId: selectedSegmentId,
-            scheduledFor: new Date(scheduledFor).toISOString(),
-            allowEmptyAudience: false,
-          }),
-        })
-        const data = await res.json()
-        if (!res.ok) {
-          throw new Error(data.error || 'Operation failed.')
-        }
-
-        setCampaignStatus(data.status)
-        setCreatedMessageId(data.messageId)
-        if (data.snapshotHash) setSnapshotHash(data.snapshotHash)
-        if (data.recipientCount !== undefined) setFrozenRecipients(data.recipientCount)
-
-        if (targetStatus === 'schedule') {
-          setSuccess(
-            `Campaign scheduled successfully for ${new Date(scheduledFor).toLocaleString()} targeting ${data.recipientCount} consented recipients!`,
-          )
-        } else if (targetStatus === 'review') {
-          setSuccess('Campaign saved and submitted for review.')
-        } else {
-          setSuccess('Draft campaign saved.')
-        }
-
-        // Refresh campaigns
-        const refRes = await fetch('/api/admin/audience/campaign')
-        if (refRes.ok) {
-          const refData = await refRes.json()
-          setCampaigns(refData.campaigns || [])
-        }
-      } catch (err: unknown) {
-        setError(String(err))
+    const outcome = await runSave(async () => {
+      const design = buildDesign()
+      const res = await fetch('/api/admin/audience/campaign', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          action: 'save-and-schedule',
+          targetStatus,
+          subject,
+          preheader,
+          messageDesign: design,
+          segmentId: selectedSegmentId,
+          scheduledFor: new Date(scheduledFor).toISOString(),
+          allowEmptyAudience: false,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        throw saveHttpError(res.status, data.error || 'Operation failed.')
+      }
+      return data as {
+        status: 'draft' | 'review' | 'scheduled'
+        messageId: string
+        snapshotHash?: string
+        recipientCount?: number
       }
     })
+    if (!outcome.ok) {
+      // The SaveStateIndicator renders the failure (error / offline /
+      // conflict) with the work preserved; success copy is never set.
+      return
+    }
+    const data = outcome.value
+    setCampaignStatus(data.status)
+    setCreatedMessageId(data.messageId)
+    if (data.snapshotHash) setSnapshotHash(data.snapshotHash)
+    if (data.recipientCount !== undefined) setFrozenRecipients(data.recipientCount)
+
+    if (targetStatus === 'schedule') {
+      setSuccess(
+        `Campaign scheduled successfully for ${new Date(scheduledFor).toLocaleString()} targeting ${data.recipientCount} consented recipients!`,
+      )
+    } else if (targetStatus === 'review') {
+      setSuccess('Campaign saved and submitted for review.')
+    } else {
+      setSuccess('Draft campaign saved.')
+    }
+
+    // Refresh campaigns
+    const refRes = await fetch('/api/admin/audience/campaign')
+    if (refRes.ok) {
+      const refData = await refRes.json()
+      setCampaigns(refData.campaigns || [])
+    }
   }
 
   // Delivery Retry
@@ -563,23 +632,22 @@ export default function EmailComposer() {
         </div>
       </div>
 
-      {/* Global Alerts */}
-      {error && (
-        <div
-          data-testid="composer-error-alert"
-          style={{
-            background: '#fef2f2',
-            border: '1px solid #f87171',
-            color: '#b91c1c',
-            padding: '12px 16px',
-            borderRadius: 8,
-            marginBottom: 20,
-            fontSize: 14,
-          }}
-        >
-          <strong>Error:</strong> {error}
-        </div>
-      )}
+      {/* Global Alerts — UXI-08 summary: field-linked input problems
+          are listed separately from service failures. */}
+      <FormStatusSummary
+        testId="composer-error-alert"
+        problems={[
+          ...inputProblems,
+          ...(error
+            ? [
+                {
+                  kind: 'service' as const,
+                  message: `${error} Your work in this form is unchanged — fix the problem above or try again.`,
+                },
+              ]
+            : []),
+        ]}
+      />
       {success && (
         <div
           data-testid="composer-success-alert"
@@ -645,25 +713,30 @@ export default function EmailComposer() {
                   ))
                 )}
               </select>
-              <button
-                type="button"
-                data-testid="derive-article-btn"
-                onClick={handleDeriveArticle}
+              <DisabledWithReason
                 disabled={articles.length === 0}
-                style={{
-                  padding: '9px 16px',
-                  background: '#0f172a',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                }}
+                reason="No published articles yet — publish an article first, then derive a newsletter from it."
               >
-                Derive from Article
-              </button>
+                <button
+                  type="button"
+                  data-testid="derive-article-btn"
+                  onClick={handleDeriveArticle}
+                  disabled={articles.length === 0}
+                  style={{
+                    padding: '9px 16px',
+                    background: '#0f172a',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Derive from Article
+                </button>
+              </DisabledWithReason>
             </div>
           </section>
 
@@ -682,25 +755,32 @@ export default function EmailComposer() {
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
-                  Subject Line
-                </label>
-                <input
-                  type="text"
-                  data-testid="campaign-subject-input"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. Weekly Political Dispatch #42"
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #cbd5e1',
-                    fontSize: 14,
-                  }}
-                />
-              </div>
+              <FormField
+                fieldId="campaign-subject"
+                label="Subject Line"
+                error={problemFor('campaign-subject')}
+              >
+                {(ariaProps) => (
+                  <input
+                    {...ariaProps}
+                    type="text"
+                    data-testid="campaign-subject-input"
+                    value={subject}
+                    onChange={(e) => {
+                      setSubject(e.target.value)
+                      clearProblem('campaign-subject')
+                    }}
+                    placeholder="e.g. Weekly Political Dispatch #42"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 6,
+                      border: '1px solid #cbd5e1',
+                      fontSize: 14,
+                    }}
+                  />
+                )}
+              </FormField>
 
               <div>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>
@@ -932,8 +1012,15 @@ export default function EmailComposer() {
                   <input
                     type="text"
                     data-testid="block-legal-address"
+                    placeholder="Your organisation's postal address"
+                    {...fieldAriaProps('legal-address', {
+                      error: problemFor('legal-address'),
+                    })}
                     value={legalAddress}
-                    onChange={(e) => setLegalAddress(e.target.value)}
+                    onChange={(e) => {
+                      setLegalAddress(e.target.value)
+                      clearProblem('legal-address')
+                    }}
                     style={{
                       width: '100%',
                       padding: '6px 8px',
@@ -942,6 +1029,18 @@ export default function EmailComposer() {
                       fontSize: 12,
                     }}
                   />
+                  {!legalAddress.trim() ? (
+                    <p
+                      data-testid="legal-address-unconfigured"
+                      style={{ fontSize: 11, marginTop: 4 }}
+                    >
+                      Set your postal address — this is shown in every campaign footer, and a
+                      campaign cannot be saved until it is set. No address is pre-filled.
+                    </p>
+                  ) : null}
+                  {problemFor('legal-address') ? (
+                    <FieldError fieldId="legal-address" message={problemFor('legal-address')!} />
+                  ) : null}
                 </div>
                 <div
                   style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 6 }}
@@ -1028,11 +1127,15 @@ export default function EmailComposer() {
 
             <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
               <select
+                {...fieldAriaProps('campaign-segment', {
+                  error: problemFor('campaign-segment'),
+                })}
                 data-testid="segment-select"
                 aria-label="Select Target Segment"
                 value={selectedSegmentId}
                 onChange={(e) => {
                   setSelectedSegmentId(e.target.value)
+                  clearProblem('campaign-segment')
                   handleEvaluateSegment(e.target.value)
                 }}
                 style={{
@@ -1054,25 +1157,37 @@ export default function EmailComposer() {
                   ))
                 )}
               </select>
-              <button
-                type="button"
-                data-testid="evaluate-segment-btn"
-                onClick={() => handleEvaluateSegment()}
+              <DisabledWithReason
                 disabled={evaluatingSegment || !selectedSegmentId}
-                style={{
-                  padding: '9px 14px',
-                  background: '#334155',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontWeight: 600,
-                  fontSize: 13,
-                  cursor: 'pointer',
-                }}
+                reason={
+                  !selectedSegmentId
+                    ? 'Choose a segment first — evaluation counts who in that segment can receive this campaign.'
+                    : undefined
+                }
               >
-                {evaluatingSegment ? 'Evaluating...' : 'Evaluate'}
-              </button>
+                <button
+                  type="button"
+                  data-testid="evaluate-segment-btn"
+                  onClick={() => handleEvaluateSegment()}
+                  disabled={evaluatingSegment || !selectedSegmentId}
+                  style={{
+                    padding: '9px 14px',
+                    background: '#334155',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: 6,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {evaluatingSegment ? 'Evaluating...' : 'Evaluate'}
+                </button>
+              </DisabledWithReason>
             </div>
+            {problemFor('campaign-segment') ? (
+              <FieldError fieldId="campaign-segment" message={problemFor('campaign-segment')!} />
+            ) : null}
 
             {/* Live Evaluation Analysis Results */}
             {evaluationCounts && (
@@ -1317,26 +1432,42 @@ export default function EmailComposer() {
                   Submit for Review
                 </button>
 
-                <button
-                  type="button"
-                  data-testid="schedule-campaign-btn"
-                  onClick={() => handleSaveAndSchedule('schedule')}
-                  disabled={isPending || evaluationCounts?.isEmpty}
-                  style={{
-                    padding: '10px 22px',
-                    background: evaluationCounts?.isEmpty ? '#94a3b8' : '#16a34a',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 6,
-                    fontWeight: 700,
-                    fontSize: 14,
-                    cursor: evaluationCounts?.isEmpty ? 'not-allowed' : 'pointer',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                  }}
+                <DisabledWithReason
+                  disabled={isPending || Boolean(evaluationCounts?.isEmpty)}
+                  reason={
+                    evaluationCounts?.isEmpty
+                      ? 'The selected segment has no eligible recipients — choose a different segment in step 3, or check consent and suppressions in the Audience Center.'
+                      : undefined
+                  }
                 >
-                  {isPending ? 'Scheduling...' : 'Schedule Campaign'}
-                </button>
+                  <button
+                    type="button"
+                    data-testid="schedule-campaign-btn"
+                    onClick={() => handleSaveAndSchedule('schedule')}
+                    disabled={isPending || evaluationCounts?.isEmpty}
+                    style={{
+                      padding: '10px 22px',
+                      background: evaluationCounts?.isEmpty ? '#94a3b8' : '#16a34a',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 6,
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: evaluationCounts?.isEmpty ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    {isPending ? 'Scheduling...' : 'Schedule Campaign'}
+                  </button>
+                </DisabledWithReason>
               </div>
+              {saveState.status !== 'idle' ? (
+                <SaveStateIndicator
+                  state={saveState}
+                  onRetry={() => void handleSaveAndSchedule(lastSaveTarget)}
+                  onResolveConflict={() => window.location.reload()}
+                />
+              ) : null}
             </div>
           </section>
         </div>
@@ -1526,10 +1657,14 @@ export default function EmailComposer() {
             </p>
             <div style={{ display: 'flex', gap: 8 }}>
               <input
+                {...fieldAriaProps('test-send-email', { error: problemFor('test-send-email') })}
                 type="email"
                 data-testid="test-send-email"
                 value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
+                onChange={(e) => {
+                  setTestEmail(e.target.value)
+                  clearProblem('test-send-email')
+                }}
                 placeholder="operator@renegadeparty.org"
                 style={{
                   flex: 1,
@@ -1558,6 +1693,9 @@ export default function EmailComposer() {
                 {isTestSending ? 'Sending...' : 'Send Test'}
               </button>
             </div>
+            {problemFor('test-send-email') ? (
+              <FieldError fieldId="test-send-email" message={problemFor('test-send-email')!} />
+            ) : null}
             {testSendStatus && (
               <p
                 data-testid="test-send-status"

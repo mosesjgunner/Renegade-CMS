@@ -8,6 +8,7 @@ import { loadConfig } from '../core/config'
 import { transactionPayload } from '../core/transaction-payload'
 
 import { starterDefinitions } from './definitions'
+import { exampleContentChecksum } from './provenance'
 import type { StarterId, StarterInstallStatus } from './contracts'
 import { snapshotLayout } from '../presentation/snapshots'
 import { importMarkdownToRichText } from '../editorial/markdown'
@@ -85,7 +86,7 @@ function normalizeBlocksForCompare(blocks: unknown): unknown {
   return blocks
 }
 
-function blocksMatch(a: unknown, b: unknown): boolean {
+export function blocksMatch(a: unknown, b: unknown): boolean {
   return (
     stableStringify(normalizeBlocksForCompare(a)) === stableStringify(normalizeBlocksForCompare(b))
   )
@@ -99,7 +100,7 @@ const STARTER_HISTORY_ACTIONS = new Set(['starter-install', 'starter-upgrade'])
  * baseline an upgrade cannot prove a record is uncustomized, so callers must
  * preserve the record and surface a conflict instead of overwriting it.
  */
-function starterBaselineBlocks(doc: {
+export function starterBaselineBlocks(doc: {
   revisionHistory?: unknown
 }): Record<string, unknown>[] | undefined {
   if (!Array.isArray(doc.revisionHistory)) return undefined
@@ -282,7 +283,13 @@ export async function installStarter(
         starterId: StarterId
         ownerEmail?: string
       },
-): Promise<{ success: boolean; starterId: StarterId; siteId: string; summary: string }> {
+): Promise<{
+  success: boolean
+  starterId: StarterId
+  siteId: string
+  summary: string
+  nextSteps?: { homeLayoutId?: string; homePath: string; firstArticleId?: string }
+}> {
   const writtenKeys: string[] = []
   const storage = mediaStorage(loadConfig())
   const key = typeof input === 'string' ? input : (input.siteId ?? input.starterId)
@@ -641,6 +648,7 @@ async function provisionStarter(
 
   // 6. Provision Canonical Pages
   for (const page of starter.pages) {
+    const pageBody = toLexicalDocument(page.body || page.summary || page.title)
     const record = await upsertRecord(
       payload,
       'content',
@@ -653,12 +661,18 @@ async function provisionStarter(
         slug: page.slug,
         canonicalPath: page.canonicalPath,
         summary: page.summary,
-        body: toLexicalDocument(page.body || page.summary || page.title),
+        body: pageBody,
         publishedAt: new Date().toISOString(),
         status: page.status,
         commentsPolicy: 'closed',
         importSourceSystem: `starter:${starter.id}`,
         importSourceIdentifier: `page:${page.slug}`,
+        importSourceChecksum: exampleContentChecksum({
+          title: page.title,
+          summary: page.summary,
+          status: page.status,
+          body: pageBody,
+        }),
         exportFormatVersion: 1,
       },
     )
@@ -687,7 +701,9 @@ async function provisionStarter(
     })
 
   // 7. Provision Canonical Articles
+  let firstArticleId = ''
   for (const article of starter.articles) {
+    const articleBody = toLexicalDocument(article.body)
     const record = await upsertRecord(
       payload,
       'content',
@@ -700,15 +716,22 @@ async function provisionStarter(
         slug: article.slug,
         canonicalPath: article.canonicalPath,
         summary: article.summary,
-        body: toLexicalDocument(article.body),
+        body: articleBody,
         publishedAt: article.publishedAt,
         status: 'published',
         commentsPolicy: article.commentsPolicy,
         importSourceSystem: `starter:${starter.id}`,
         importSourceIdentifier: `article:${article.slug}`,
+        importSourceChecksum: exampleContentChecksum({
+          title: article.title,
+          summary: article.summary,
+          status: 'published',
+          body: articleBody,
+        }),
         exportFormatVersion: 1,
       },
     )
+    if (!firstArticleId) firstArticleId = String(record.id)
     linkReferences.set(article.canonicalPath, {
       id: `content:${record.id}`,
       siteId,
@@ -1019,6 +1042,13 @@ async function provisionStarter(
     starterId: starter.id,
     siteId,
     summary: `Installed ${starter.name} (${starter.version}) with ${starter.pages.length} pages, ${starter.articles.length} dispatches, ${starter.templates.length} templates, ${starter.patterns.length} patterns, ${starter.globals.length} global regions, and ${starter.media.length} governed media assets.`,
+    // Designed next steps (UXI-06): real records the operator can open
+    // next — the installed homepage layout and the first sample post.
+    nextSteps: {
+      homeLayoutId: homeLayoutId || undefined,
+      homePath: '/',
+      firstArticleId: firstArticleId || undefined,
+    },
   }
 }
 

@@ -21,16 +21,28 @@ import { PublicExperiment } from '@/modules/experiences/PublicExperiment'
 import { resolvePublicUrl } from '@/modules/public/semantic-url'
 import { headers } from 'next/headers'
 import { publicSiteForHost } from '@/modules/public/site-scope'
+import { ComingSoonPage } from '@/modules/public/ComingSoonPage'
+import { resolvePublicSiteAccess } from '@/modules/public/site-visibility'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
   let host: string | null = null
+  let requestHeaders: Headers | null = null
   try {
-    host = (await headers()).get('host')
+    requestHeaders = await headers()
+    host = requestHeaders.get('host')
   } catch {}
   const siteId = await publicSiteForHost(payload, host)
+  // A non-public site exposes only its name to anonymous visitors —
+  // no discovery metadata for content behind the holding page.
+  if (siteId && requestHeaders) {
+    const access = await resolvePublicSiteAccess(payload, { siteId, headers: requestHeaders })
+    if (!access.allowed) {
+      return { title: access.siteName, robots: { index: false, follow: false } }
+    }
+  }
   const doc = await resolveDiscoveryDocument(payload, { path: '/', siteId: siteId || undefined })
   return discoveryToMetadata(doc)
 }
@@ -45,6 +57,17 @@ export default async function HomePage() {
   } catch {}
   const resolvedSiteId = await publicSiteForHost(payload, host)
   if (!resolvedSiteId) notFound()
+
+  // Site visibility gate (UXI-06): a coming-soon/private site renders
+  // only the holding page for anonymous visitors; no content queries
+  // run past this point for them. Authorized staff preview normally.
+  const siteAccess = await resolvePublicSiteAccess(payload, {
+    siteId: resolvedSiteId,
+    headers: await headers(),
+  })
+  if (!siteAccess.allowed) {
+    return <ComingSoonPage siteName={siteAccess.siteName} visibility={siteAccess.visibility} />
+  }
 
   const discoveryDoc = await resolveDiscoveryDocument(payload, {
     path: '/',
@@ -239,7 +262,7 @@ export default async function HomePage() {
               </h2>
               <Link
                 href="/articles"
-                className="text-sm font-semibold text-red-600 hover:underline dark:text-red-400"
+                className="text-sm font-semibold text-red-700 hover:underline dark:text-red-400"
               >
                 View all →
               </Link>
@@ -247,7 +270,7 @@ export default async function HomePage() {
 
             {recentArticles.docs.length === 0 ? (
               <div className="rounded-lg border border-dashed border-stone-300 p-12 text-center dark:border-stone-700">
-                <p className="text-sm text-stone-500 dark:text-stone-400">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
                   No articles published yet. Publish your first post in the admin center.
                 </p>
               </div>
@@ -310,7 +333,7 @@ export default async function HomePage() {
                         <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
                           <Link
                             href={articlePath}
-                            className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
+                            className="text-xs font-semibold text-red-700 hover:underline dark:text-red-400"
                           >
                             Read story →
                           </Link>

@@ -10,13 +10,29 @@ export default function MemberAuthPage() {
   const [ready, setReady] = useState(false)
   useEffect(() => setReady(true), [])
   const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState('')
   const [message, setMessage] = useState('')
   async function requestLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    // The form is noValidate: validation errors are owned here so they are
+    // exposed programmatically (aria-invalid + aria-describedby + alert),
+    // not only as a native browser bubble (UXI-12/UXI-13).
+    const value = email.trim()
+    if (!value) {
+      setEmailError('Enter your email address.')
+      document.getElementById('member-auth-email')?.focus()
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setEmailError('Enter a valid email address, like name@example.com.')
+      document.getElementById('member-auth-email')?.focus()
+      return
+    }
+    setEmailError('')
     const response = await fetch('/api/member-auth/magic-link/request', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email: value }),
     })
     const body = await response.json().catch(() => ({}))
     setMessage(body.status ?? body.error ?? 'Could not request a sign-in link.')
@@ -54,19 +70,30 @@ export default function MemberAuthPage() {
       <p className="mt-3">
         Use your email to sign in or create a member account. This is not administrator access.
       </p>
-      <form onSubmit={requestLink} className="mt-6 grid gap-4">
+      <form onSubmit={requestLink} className="mt-6 grid gap-4" noValidate>
         <label>
           Email address
           <input
             required
+            id="member-auth-email"
             type="email"
             autoComplete="email"
             aria-label="Email address"
+            aria-invalid={emailError ? true : undefined}
+            aria-describedby={emailError ? 'member-auth-email-error' : undefined}
             className="form-input"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            onChange={(event) => {
+              setEmail(event.target.value)
+              if (emailError) setEmailError('')
+            }}
           />
         </label>
+        {emailError ? (
+          <p role="alert" id="member-auth-email-error" className="text-sm text-red-700">
+            {emailError}
+          </p>
+        ) : null}
         <button className="btn btn-primary" type="submit" disabled={!ready}>
           Email me a sign-in link
         </button>
