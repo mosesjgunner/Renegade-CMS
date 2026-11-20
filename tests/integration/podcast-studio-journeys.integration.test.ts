@@ -25,6 +25,7 @@ import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -989,7 +990,7 @@ describe.skipIf(!hasFfmpegBinaries)('JP-6 — edit & publish', () => {
     // Artwork for the MP3 embed (generated JPEG, labelled synthetic).
     const artDir = await mkdtemp(path.join(os.tmpdir(), 'pod20-jp6-art-'))
     const artPath = path.join(artDir, 'cover.jpg')
-    execFileSync('ffmpeg', [
+    execFileSync(resolveFfmpegBinary(), [
       '-hide_banner',
       '-loglevel',
       'error',
@@ -1458,7 +1459,7 @@ const decodeHeard = async (bytes: Buffer, dir: string) => {
   const file = path.join(dir, `heard-${randomUUID().slice(0, 8)}.mp3`)
   await writeFile(file, bytes)
   const probe = JSON.parse(
-    execFileSync('ffprobe', [
+    execFileSync(resolveFfprobeBinary(), [
       '-v',
       'quiet',
       '-print_format',
@@ -1847,7 +1848,7 @@ describe.skipIf(!hasFfmpegBinaries)('JP-11 — video episode (bounded)', () => {
         wavBytes((t) => 0.5 * Math.sin(2 * Math.PI * 440 * t), 6),
       )
       const artworkPath = path.join(dir, 'art.png')
-      execFileSync('ffmpeg', [
+      execFileSync(resolveFfmpegBinary(), [
         '-hide_banner',
         '-loglevel',
         'error',
@@ -1861,7 +1862,7 @@ describe.skipIf(!hasFfmpegBinaries)('JP-11 — video episode (bounded)', () => {
         artworkPath,
       ])
       const chapterImagePath = path.join(dir, 'chapter.png')
-      execFileSync('ffmpeg', [
+      execFileSync(resolveFfmpegBinary(), [
         '-hide_banner',
         '-loglevel',
         'error',
@@ -1875,7 +1876,7 @@ describe.skipIf(!hasFfmpegBinaries)('JP-11 — video episode (bounded)', () => {
         chapterImagePath,
       ])
       const cameraPath = path.join(dir, 'camera.webm')
-      execFileSync('ffmpeg', [
+      execFileSync(resolveFfmpegBinary(), [
         '-hide_banner',
         '-loglevel',
         'error',
