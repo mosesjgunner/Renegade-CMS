@@ -14,7 +14,10 @@ export const dynamic = 'force-dynamic'
  * Per-show podcast feed health (POD-REQ-05): staff-authenticated structural
  * validation of the show's live feed. Returns the validator's named errors
  * and warnings so an operator can fix the show config, not just see a red
- * light. Read-only; it never submits the feed anywhere.
+ * light. POD-RC-01: unmet directory prerequisites are returned separately
+ * from validity, and directory acceptance is reported as not-verified —
+ * this route never submits the feed anywhere and cannot prove acceptance.
+ * Read-only.
  */
 export async function GET(request: Request, { params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
@@ -68,13 +71,22 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     })
   }
 
-  const inspection = inspectPodcastFeed(await feedResponse.text())
+  // POD-RC-01: validity, directory prerequisites, and directory
+  // acceptance are three different questions. This route answers the
+  // first two from the feed itself; acceptance is the directory's own
+  // decision after a human submits, and is always reported as
+  // not-verified here — a green feed-health check is not an acceptance.
+  const inspection = inspectPodcastFeed(await feedResponse.text(), {
+    requireOwnerEmail: Boolean(show.directoryOwnerEmail),
+  })
   return NextResponse.json(
     {
       slug,
       valid: inspection.valid,
       errors: inspection.errors,
       warnings: inspection.warnings,
+      prerequisites: inspection.prerequisites,
+      directoryAcceptance: 'not-verified',
       counts: inspection.counts,
       checkedAt,
     },

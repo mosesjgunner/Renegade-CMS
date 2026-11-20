@@ -129,6 +129,7 @@ export const BUNDLE_SHOW_FIELDS = [
   'importOwnership',
   'podcastGuidValue',
   'lockedOwnerEmail',
+  'directoryOwnerEmail',
   'medium',
   'funding',
   'value',

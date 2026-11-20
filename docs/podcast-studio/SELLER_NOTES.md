@@ -165,9 +165,11 @@ These are open gates and unbuilt pieces. Do not sell past them.
   delay and two-device drift are unmeasured. coturn is documented, not
   deployed.
 - **Live is proven against an Icecast protocol fixture, not a real
-  Icecast server**, and the **browser→ingest byte path is not built**:
-  today the relay's proven inputs are a local pipe and files, so a host
-  cannot yet push their live browser mix to the stream.
+  Icecast server.** The browser→ingest byte path is wired (browser
+  adapter → ingest endpoint → relay) and its server side is
+  fixture-proven, but no real browser has pushed a live mix through
+  it and no real Icecast has received it — live ingest is wired but
+  unproven until both legs run in a real environment.
 - **The live audience room is a data binding only** — there is no
   rooms/chat machinery for live shows in this version.
 - **Now-playing metadata** authenticates to Icecast with the stream
