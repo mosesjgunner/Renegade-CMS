@@ -34,7 +34,9 @@ export function useSaveState(options?: { isOnline?: () => boolean }) {
   const [state, dispatch] = useReducer(saveStateReducer, initialSaveState)
   const inFlight = useRef(false)
   const isOnlineRef = useRef(options?.isOnline)
-  isOnlineRef.current = options?.isOnline
+  useEffect(() => {
+    isOnlineRef.current = options?.isOnline
+  }, [options?.isOnline])
 
   const isOnline = useCallback(() => {
     if (isOnlineRef.current) return isOnlineRef.current()

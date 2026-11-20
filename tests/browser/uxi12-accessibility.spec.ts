@@ -86,7 +86,27 @@ function writePart(name: string, data: unknown) {
 async function runAxe(page: Page) {
   await page.addScriptTag({ content: AXE_SOURCE })
   return page.evaluate(async () => {
-    const axe = (window as unknown as { axe: { run: Function } }).axe
+    const axe = (
+      window as unknown as {
+        axe: {
+          run: (
+            context: Document,
+            options: { runOnly: { type: string; values: string[] } },
+          ) => Promise<{
+            violations: Array<{
+              id: string
+              impact: string | null
+              help: string
+              nodes: Array<{
+                html: string
+                any: Array<{ data: Record<string, unknown> | null }>
+              }>
+            }>
+            incomplete: Array<{ id: string; nodes: unknown[] }>
+          }>
+        }
+      }
+    ).axe
     const results = await axe.run(document, {
       runOnly: {
         type: 'tag',

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
 
 import { ConfirmDestructive } from './forms'
@@ -420,9 +421,9 @@ export default function GuidedOperationsPanel() {
           >
             Preview exactly what is included
           </button>
-          <a className="border rounded px-3 py-1 text-sm" href="/api/operations/support-bundle">
+          <Link className="border rounded px-3 py-1 text-sm" href="/api/operations/support-bundle">
             Download support bundle
-          </a>
+          </Link>
         </span>
         {bundlePreview ? (
           <pre className="text-[11px] overflow-auto max-h-80 border rounded p-2">

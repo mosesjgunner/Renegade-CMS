@@ -146,13 +146,11 @@ export function SetupForm({
   // so a refresh/reopen resumes at the last safe checkpoint. The bootstrap
   // token is NEVER part of the draft — it stays only in this tab's state.
   const draftVersionRef = useRef(0)
-  const operationIdRef = useRef<string>('')
-  if (!operationIdRef.current) {
-    operationIdRef.current =
-      typeof crypto !== 'undefined' && 'randomUUID' in crypto
-        ? crypto.randomUUID()
-        : `setup-${Date.now()}`
-  }
+  const [operationId] = useState<string>(() =>
+    typeof crypto !== 'undefined' && 'randomUUID' in crypto
+      ? crypto.randomUUID()
+      : `setup-${Date.now()}`,
+  )
   const [draftRestored, setDraftRestored] = useState(false)
   const [claimReceived, setClaimReceived] = useState(false)
   // Unsaved-work protection (UXI-07): answers typed into this form are
@@ -234,7 +232,7 @@ export function SetupForm({
           ownerEmail: ownerEmail || undefined,
           answers,
           currentStep: nextStep,
-          operationId: operationIdRef.current,
+          operationId,
           version: draftVersionRef.current,
         }),
       })
