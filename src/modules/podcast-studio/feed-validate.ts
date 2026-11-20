@@ -14,6 +14,15 @@
  * podcast:transcript / podcast:person shape) run when the feed declares
  * `xmlns:podcast` — feeds that never claimed the namespace are held to the
  * RSS contract only, which keeps legacy validation callers honest.
+ *
+ * POD-RC-01 (Step 02) — three separate questions, three separate answers:
+ * `valid`/`errors` say whether the XML and its enclosures are sound;
+ * `prerequisites` lists what a podcast DIRECTORY additionally needs
+ * before it will list the show (channel artwork, at least one episode,
+ * an <itunes:owner> email when ownership verification is wanted). An
+ * unmet prerequisite never flips `valid` — a structurally sound feed can
+ * still be unlistable. Whether a directory actually ACCEPTS a submitted
+ * feed is the directory's own decision and is never claimed here.
  */
 
 export type XmlNode = {
@@ -198,15 +207,38 @@ export type PodcastFeedInspection = {
   valid: boolean
   errors: string[]
   warnings: string[]
+  /**
+   * Directory prerequisites NOT yet met (POD-RC-01): reported separately
+   * from `errors`. A feed can be `valid` and still have unmet
+   * prerequisites; meeting them all still does not guarantee a directory
+   * accepts the show — acceptance is the directory's decision.
+   */
+  prerequisites: string[]
   counts: { items: number; liveItems: number; enclosures: number; persons: number }
   enclosureLength?: number
   enclosureType?: string
 }
 
+export type PodcastFeedInspectionOptions = {
+  /**
+   * Set when the operator wants directory ownership verification: the
+   * absence of a usable <itunes:owner><itunes:email> is then reported
+   * as an unmet prerequisite. Off by default — publishing an owner
+   * email is an explicit opt-in, never a requirement to be valid.
+   */
+  requireOwnerEmail?: boolean
+}
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 /** Non-throwing structural inspection; `validatePodcastFeed` is the throwing wrapper. */
-export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
+export function inspectPodcastFeed(
+  xmlText: string,
+  options: PodcastFeedInspectionOptions = {},
+): PodcastFeedInspection {
   const errors: string[] = []
   const warnings: string[] = []
+  const prerequisites: string[] = []
   const counts = { items: 0, liveItems: 0, enclosures: 0, persons: 0 }
   let enclosureLength: number | undefined
   let enclosureType: string | undefined
@@ -218,17 +250,17 @@ export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
     root = parseXml(xmlText)
   } catch (error) {
     errors.push(error instanceof Error ? error.message : 'Malformed XML.')
-    return { valid: false, errors, warnings, counts }
+    return { valid: false, errors, warnings, prerequisites, counts }
   }
 
   if (root.name !== 'rss') {
     errors.push('Missing <rss> root.')
-    return { valid: false, errors, warnings, counts }
+    return { valid: false, errors, warnings, prerequisites, counts }
   }
   const channel = firstChild(root, 'channel')
   if (!channel) {
     errors.push('Missing <channel> element.')
-    return { valid: false, errors, warnings, counts }
+    return { valid: false, errors, warnings, prerequisites, counts }
   }
 
   const items = childrenNamed(channel, 'item')
@@ -246,6 +278,23 @@ export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
       return
     }
     counts.enclosures++
+    // POD-RC-01: the URL itself is part of validity. Before this check a
+    // feed whose enclosure carried a length and type but NO url came
+    // back valid — a false green directories would have rejected.
+    const enclosureUrl = (enclosure.attrs.url ?? '').trim()
+    if (!enclosureUrl) {
+      errors.push(`${label} is missing an enclosure URL.`)
+    } else {
+      let parsed: URL | undefined
+      try {
+        parsed = new URL(enclosureUrl)
+      } catch {
+        parsed = undefined
+      }
+      if (!parsed || (parsed.protocol !== 'http:' && parsed.protocol !== 'https:')) {
+        errors.push(`${label} enclosure URL "${enclosureUrl}" is not a valid http(s) URL.`)
+      }
+    }
     const length = Number(enclosure.attrs.length)
     if (!enclosure.attrs.length || !Number.isFinite(length) || length < 1) {
       errors.push(`${label} enclosure length must be at least 1.`)
@@ -260,8 +309,32 @@ export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
       enclosureType = enclosure.attrs.type
     }
   })
+
+  // Directory prerequisites (POD-RC-01): separate from validity above.
+  // An empty feed is well-formed XML — it is simply not listable yet —
+  // so it is reported here, not as a structural error.
+  const artwork = firstChild(channel, 'itunes:image')
+  if (!artwork || !(artwork.attrs.href ?? '').trim()) {
+    prerequisites.push(
+      'Missing channel artwork: directories require an <itunes:image> before they will list a show.',
+    )
+  }
   if (!items.length && !liveItems.length) {
-    errors.push('Feed contains no enclosures.')
+    prerequisites.push(
+      'Feed has no episodes yet: directories list a show only once at least one episode is published.',
+    )
+  }
+  const ownerElement = firstChild(channel, 'itunes:owner')
+  const ownerEmailValue = ownerElement ? (firstChild(ownerElement, 'itunes:email')?.text ?? '') : ''
+  if (ownerElement && ownerEmailValue && !EMAIL_PATTERN.test(ownerEmailValue)) {
+    warnings.push(
+      `The <itunes:owner> email "${ownerEmailValue}" does not look like an email address; directories will not be able to verify ownership with it.`,
+    )
+  }
+  if (options.requireOwnerEmail && !EMAIL_PATTERN.test(ownerEmailValue)) {
+    prerequisites.push(
+      'No usable <itunes:owner> email: set the show\u2019s directory owner email so directories can verify ownership.',
+    )
   }
 
   const podcastDeclared = typeof root.attrs['xmlns:podcast'] === 'string'
@@ -357,6 +430,7 @@ export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
     valid: errors.length === 0,
     errors,
     warnings,
+    prerequisites,
     counts,
     enclosureLength,
     enclosureType,
@@ -369,14 +443,15 @@ export function inspectPodcastFeed(xmlText: string): PodcastFeedInspection {
  * enclosure, or throws `Podcast feed validation failed: <named errors>`
  * with the full per-error list attached as `error.errors`.
  */
-export function validatePodcastFeed(xmlText: string) {
-  const inspection = inspectPodcastFeed(xmlText)
+export function validatePodcastFeed(xmlText: string, options: PodcastFeedInspectionOptions = {}) {
+  const inspection = inspectPodcastFeed(xmlText, options)
   if (!inspection.valid) {
     const error = new Error(
       `Podcast feed validation failed: ${inspection.errors.join(', ')}`,
-    ) as Error & { errors?: string[]; warnings?: string[] }
+    ) as Error & { errors?: string[]; warnings?: string[]; prerequisites?: string[] }
     error.errors = inspection.errors
     error.warnings = inspection.warnings
+    error.prerequisites = inspection.prerequisites
     throw error
   }
   return {

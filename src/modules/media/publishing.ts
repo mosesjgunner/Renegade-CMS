@@ -194,6 +194,13 @@ export function podcastRss(input: {
   podcastGuidValue?: string
   locked?: boolean
   lockedOwnerEmail?: string
+  /**
+   * POD-RC-01: explicit per-show opt-in. When set, the feed carries
+   * <itunes:owner><itunes:email> for directory ownership verification.
+   * Never derived from an account email or from lockedOwnerEmail — the
+   * two settings have different meanings and different exposure.
+   */
+  directoryOwnerEmail?: string
   medium?: string
   funding?: PodcastFunding
   value?: PodcastValue
@@ -209,6 +216,9 @@ export function podcastRss(input: {
   const author = input.author ? `<itunes:author>${xml(input.author)}</itunes:author>` : ''
   const categories = Array.isArray(input.categories)
     ? input.categories.map((c) => `<itunes:category text="${xml(c)}"/>`).join('')
+    : ''
+  const directoryOwner = input.directoryOwnerEmail
+    ? `<itunes:owner><itunes:email>${xml(input.directoryOwnerEmail)}</itunes:email></itunes:owner>`
     : ''
   // Always-emitted Podcasting 2.0 channel tags (POD-REQ-01). For a show with
   // no funding/value/persons configured and no live episodes these three tags
@@ -273,7 +283,7 @@ export function podcastRss(input: {
       return `<item><title>${xml(episode.title)}</title><guid isPermaLink="false">${xml(episode.guid)}</guid><link>${xml(episodeUrl)}</link><description>${cdata(episode.description)}</description><pubDate>${new Date(episode.publishedAt).toUTCString()}</pubDate><enclosure url="${xml(episode.audioUrl)}" length="${episode.bytes}" type="${xml(episode.mimeType)}"/>${alternateEnclosure}${episode.artworkUrl ? `<itunes:image href="${xml(episode.artworkUrl)}"/>` : ''}${episode.explicit ? '<itunes:explicit>yes</itunes:explicit>' : '<itunes:explicit>no</itunes:explicit>'}${episode.durationSeconds ? `<itunes:duration>${Math.round(episode.durationSeconds)}</itunes:duration>` : ''}${episode.episodeNumber ? `<itunes:episode>${episode.episodeNumber}</itunes:episode>` : ''}${season}${epAuthor}${transcript}${transcriptVariants}${chapters}${podcastPersonsXml(episode.persons)}${podcastFundingXml(episode.funding)}${podcastValueXml(episode.value)}</item>`
     })
     .join('')
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${xml(input.title)}</title><link>${xml(showUrl)}</link><description>${cdata(input.description)}</description><language>${xml(input.language || 'en')}</language>${input.explicit ? '<itunes:explicit>yes</itunes:explicit>' : '<itunes:explicit>no</itunes:explicit>'}${author}${categories}<atom:link href="${xml(self)}" rel="self" type="application/rss+xml"/>${image}${channelNamespace}${items}</channel></rss>`
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${xml(input.title)}</title><link>${xml(showUrl)}</link><description>${cdata(input.description)}</description><language>${xml(input.language || 'en')}</language>${input.explicit ? '<itunes:explicit>yes</itunes:explicit>' : '<itunes:explicit>no</itunes:explicit>'}${author}${categories}${directoryOwner}<atom:link href="${xml(self)}" rel="self" type="application/rss+xml"/>${image}${channelNamespace}${items}</channel></rss>`
 }
 
 /** Stable across a human URL/slug change; never derive a GUID from routing. */
@@ -296,7 +306,10 @@ export const canRenderPodcast = (record: Doc) =>
  * exact call signature / success shape.
  */
 export { inspectPodcastFeed, validatePodcastFeed } from '../podcast-studio/feed-validate'
-export type { PodcastFeedInspection } from '../podcast-studio/feed-validate'
+export type {
+  PodcastFeedInspection,
+  PodcastFeedInspectionOptions,
+} from '../podcast-studio/feed-validate'
 
 const text = (source: string, tag: string) =>
   new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'i')

@@ -14,6 +14,12 @@ is the documented prerequisite set, not a tested claim.
       `https://<your-domain>/podcasts/<show-slug>/feed.xml`.
 - [ ] Feed health is green: `GET /api/podcasts/<show-slug>/feed-health`
       (staff sign-in required) returns `"valid": true` with no errors.
+      Read the three answers separately: `valid`/`errors` cover the XML
+      and its enclosures; `prerequisites` lists what a directory still
+      needs (artwork, a first episode, an owner email) without failing
+      validity; `directoryAcceptance` is always `"not-verified"` — no
+      Renegade check can prove a directory accepted the show. Only the
+      directory's own dashboard proves that.
 - [ ] The channel carries `podcast:guid`, `podcast:locked`, and
       `podcast:medium` (emitted on every Renegade feed since POD-01), plus
       show artwork of at least 1400×1400 px, a title, a description, a
@@ -24,7 +30,15 @@ is the documented prerequisite set, not a tested claim.
 - [ ] `podcast:locked` reads `yes` with the owner's email set
       (show → _Locked owner email_), so a later feed move is recognised as
       the owner's own.
-- [ ] You control the email address directories send verification mail to.
+- [ ] The show's _Directory owner email_ is set. Directories verify
+      ownership against the feed's `<itunes:owner><itunes:email>` — a
+      different element from `podcast:locked`, with a different job.
+      Setting it is opt-in: the address is **public in the feed** (anyone
+      who downloads the feed can read it), so use an address you are
+      comfortable exposing. It is never copied from your account email or
+      from the locked owner email automatically.
+- [ ] You control the email address directories send verification mail to
+      (the directory owner email above).
 
 ## Apple Podcasts Connect
 
@@ -40,8 +54,10 @@ is the documented prerequisite set, not a tested claim.
 
 1. Sign in at <https://podcasters.spotify.com>.
 2. Add the show by pasting the Renegade feed URL and complete the email
-   verification (the code goes to the address in the feed's owner fields —
-   set the show's locked owner email first).
+   verification (the code goes to the address in the feed's
+   `<itunes:owner>` element — set the show's _Directory owner email_
+   first; the `podcast:locked` owner email is not the address Spotify
+   verifies against).
 3. Confirm catalog details and submit.
 
 ## Podcast Index

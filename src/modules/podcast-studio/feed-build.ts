@@ -125,6 +125,15 @@ export type PodcastFeedRenderOptions = {
   /** Include episodes flagged `membersOnly` (member feeds only). */
   includeMembersOnly: boolean
   /**
+   * POD-RC-01: set by the per-member token feed. A members-only
+   * episode's transcript/chapter sidecars are NOT public — the public
+   * sidecar routes 404 them (POD-19) and no entitlement-checked
+   * sidecar route exists — so a member feed must not advertise
+   * sidecar links for members-only episodes. Public episodes in the
+   * same feed keep their (working) public sidecar links.
+   */
+  memberFeed?: boolean
+  /**
    * Enclosure URL for an episode with audio. Defaults to the public
    * `/media/<id>` URL; member feeds pass a token-scoped URL builder.
    */
@@ -192,6 +201,11 @@ export function renderPodcastFeed(
           ...personsFromAuthors(episode.guests, 'guest', 'Guests', origin),
         ])
 
+      // POD-RC-01: in a member feed, a members-only episode's sidecars
+      // stay private — omit the transcript/chapter links entirely
+      // rather than advertising URLs the public routes refuse to serve.
+      const withholdSidecars = options.memberFeed === true && Boolean(episode.membersOnly)
+
       return [
         {
           id: String(episode.id),
@@ -212,17 +226,20 @@ export function renderPodcastFeed(
           durationSeconds: hasAudio ? Number(audio.durationSeconds) || undefined : undefined,
           episodeNumber: Number(episode.episodeNumber) || undefined,
           seasonNumber: Number(episode.seasonNumber) || undefined,
-          transcriptUrl: episode.transcript
-            ? new URL(`/podcasts/episodes/${episode.slug}/transcript`, origin).toString()
-            : undefined,
-          transcriptJsonUrl: episode.transcript
-            ? new URL(`/podcasts/episodes/${episode.slug}/transcript.json`, origin).toString()
-            : undefined,
-          transcriptSrtUrl: episode.transcript
-            ? new URL(`/podcasts/episodes/${episode.slug}/transcript.srt`, origin).toString()
-            : undefined,
+          transcriptUrl:
+            !withholdSidecars && episode.transcript
+              ? new URL(`/podcasts/episodes/${episode.slug}/transcript`, origin).toString()
+              : undefined,
+          transcriptJsonUrl:
+            !withholdSidecars && episode.transcript
+              ? new URL(`/podcasts/episodes/${episode.slug}/transcript.json`, origin).toString()
+              : undefined,
+          transcriptSrtUrl:
+            !withholdSidecars && episode.transcript
+              ? new URL(`/podcasts/episodes/${episode.slug}/transcript.srt`, origin).toString()
+              : undefined,
           transcriptLanguage: episode.language || show.language || undefined,
-          chapters: episode.chapters,
+          chapters: withholdSidecars ? undefined : episode.chapters,
           explicit: Boolean(episode.explicit ?? show.explicit),
           artworkUrl: episode.artwork
             ? new URL(`/media/${value(episode.artwork)}`, origin).toString()
@@ -270,6 +287,7 @@ export function renderPodcastFeed(
     categories,
     podcastGuidValue: show.podcastGuidValue ? String(show.podcastGuidValue) : undefined,
     lockedOwnerEmail: show.lockedOwnerEmail ? String(show.lockedOwnerEmail) : undefined,
+    directoryOwnerEmail: show.directoryOwnerEmail ? String(show.directoryOwnerEmail) : undefined,
     medium: show.medium ? String(show.medium) : undefined,
     funding: asFunding(show.funding),
     value: asValue(show.value),

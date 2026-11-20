@@ -9,6 +9,8 @@ import sharp from 'sharp'
 
 import config from '../../src/payload.config'
 import { loadConfig } from '../../src/modules/core/config'
+import { resolveSiteSettings } from '../../src/modules/core/site-settings'
+import { podcastFeedOrigin } from '../../src/modules/podcast-studio/feed-origin'
 import { mediaStorage } from '../../src/modules/media/storage'
 import { extractAudioMetadata } from '../../src/modules/media/audio'
 import { validatePodcastFeed } from '../../src/modules/media/publishing'
@@ -561,7 +563,17 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     expect(feedXml).toContain('<itunes:author>Alex Vance</itunes:author>')
     expect(feedXml).toContain('<language>en-US</language>')
     // Episode 1 enclosure and metadata
-    const publicOrigin = (process.env.APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+    // POD-RC-01 step 03: feed URLs are built from the show's site's
+    // configured canonical origin (site-settings), not the raw
+    // APP_URL — resolve it exactly the way the feed route does. (The
+    // shared settings global is pinned by other suites in the full
+    // run, so the configured origin is read live, not assumed.)
+    const feedSettings = await resolveSiteSettings(payload, { includeTheme: false })
+    const publicOrigin = podcastFeedOrigin(
+      feedSettings,
+      String(site.id),
+      loadConfig().appUrl,
+    ).replace(/\/$/, '')
     expect(feedXml).toContain(
       `<enclosure url="${publicOrigin}/media/${audioAsset.id}" length="${wavBytes.byteLength}" type="audio/wav"/>`,
     )

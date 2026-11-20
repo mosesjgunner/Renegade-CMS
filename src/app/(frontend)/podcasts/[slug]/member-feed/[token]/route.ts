@@ -9,7 +9,9 @@ import {
   memberHasPodcastEntitlement,
   resolveToken,
 } from '@/modules/podcast-studio/member-feeds'
+import { podcastFeedOrigin } from '@/modules/podcast-studio/feed-origin'
 import { loadConfig } from '@/modules/core/config'
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -31,7 +33,6 @@ export async function GET(
     new Response('Not found', { status: 404, headers: { 'Cache-Control': 'private, no-store' } })
   const payload = await getPayload({ config })
   const { slug, token } = await params
-  const origin = loadConfig().appUrl
 
   const shows = await payload.find({
     collection: 'podcast-shows',
@@ -42,6 +43,15 @@ export async function GET(
   } as never)
   const show = shows.docs[0] as any
   if (!show || !show.rssEnabled || !canRenderPodcast(show)) return denied()
+
+  // POD-RC-01: feed URLs are built from the show's own site's canonical
+  // origin, matching the public feed's domain authority (a local/dev
+  // configured origin is not a creator domain and falls back to the
+  // install's APP_URL — see feed-origin.ts).
+  const settings = await resolveSiteSettings(payload, { includeTheme: false })
+  const showSiteId =
+    typeof show.site === 'string' ? show.site : show.site?.id ? String(show.site.id) : undefined
+  const origin = podcastFeedOrigin(settings, showSiteId, loadConfig().appUrl)
 
   const resolved = await resolveToken(payload as never, token, { showId: String(show.id) })
   if (!resolved) return denied()
@@ -67,6 +77,7 @@ export async function GET(
     feedPath: `/podcasts/${slug}/member-feed/${token}`,
     showPath: `/podcasts/${slug}`,
     includeMembersOnly: entitled,
+    memberFeed: true,
     enclosureUrl: (episode) =>
       new URL(memberEnclosurePath(slug, token, String(episode.id)), origin).toString(),
   })

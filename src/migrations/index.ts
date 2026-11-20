@@ -22,6 +22,7 @@ import * as rc3Pod17Video from './20261118_250000_rc3_pod17_video'
 import * as rc3Pod18Promotion from './20261118_260000_rc3_pod18_promotion'
 import * as uxi02TaskReadinessSetupDraft from './20261119_120000_uxi02_task_readiness_setup_draft'
 import * as uxi06SiteVisibility from './20261119_130000_uxi06_site_visibility'
+import * as podrc01DirectoryOwnerEmail from './20261120_120000_podrc01_directory_owner_email'
 import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
@@ -911,6 +912,11 @@ export const migrations = [
     up: uxi06SiteVisibility.up,
     down: uxi06SiteVisibility.down,
     name: '20261119_130000_uxi06_site_visibility',
+  },
+  {
+    up: podrc01DirectoryOwnerEmail.up,
+    down: podrc01DirectoryOwnerEmail.down,
+    name: '20261120_120000_podrc01_directory_owner_email',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

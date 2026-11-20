@@ -437,6 +437,14 @@ export const PodcastShows: CollectionConfig = {
       },
     },
     {
+      name: 'directoryOwnerEmail',
+      type: 'email',
+      admin: {
+        description:
+          'Optional directory-verification email (POD-RC-01). When set, this address is published in the feed as <itunes:owner><itunes:email> so directories such as Apple Podcasts and Spotify can send you an ownership-verification message. It is PUBLIC — anyone who downloads the feed can see it — so use an address you are comfortable exposing. It is a separate setting from the podcast:locked owner email above, and it is never filled in from your account email automatically. Leave it empty to publish no owner email.',
+      },
+    },
+    {
       name: 'medium',
       type: 'select',
       defaultValue: 'podcast',
