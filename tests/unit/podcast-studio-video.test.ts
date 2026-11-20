@@ -42,9 +42,10 @@ import {
   renderPodcastFeed,
 } from '../../src/modules/podcast-studio/feed-build'
 import { inspectPodcastFeed } from '../../src/modules/podcast-studio/feed-validate'
+import { resolveFfmpegBinary } from '../../src/modules/media/ffmpeg'
 
 const execFileAsync = promisify(execFile)
-const ffmpeg = process.env.FFMPEG_PATH ?? 'ffmpeg'
+const ffmpeg = resolveFfmpegBinary()
 
 const run = (args: string[]) => execFileAsync(ffmpeg, args, { maxBuffer: 16 * 1024 * 1024 })
 

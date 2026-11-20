@@ -41,6 +41,7 @@ import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { loadConfig } from '../../src/modules/core/config'
 import { transcriptChecksum } from '../../src/modules/media/contracts'
 import {
@@ -186,7 +187,7 @@ const decodeAudio = async (bytes: Buffer) => {
   await writeFile(file, bytes)
   const probe = JSON.parse(
     (
-      await execFileAsync('ffprobe', [
+      await execFileAsync(resolveFfprobeBinary(), [
         '-v',
         'quiet',
         '-print_format',
@@ -197,7 +198,7 @@ const decodeAudio = async (bytes: Buffer) => {
       ])
     ).stdout,
   )
-  const { stderr } = await execFileAsync('ffmpeg', [
+  const { stderr } = await execFileAsync(resolveFfmpegBinary(), [
     '-hide_banner',
     '-i',
     file,

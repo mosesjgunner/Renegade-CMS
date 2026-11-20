@@ -46,6 +46,7 @@ import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { loadConfig } from '../../src/modules/core/config'
 import { renderPodcastFeed } from '../../src/modules/podcast-studio/feed-build'
 import { inspectPodcastFeed } from '../../src/modules/podcast-studio/feed-validate'
@@ -156,7 +157,7 @@ const decodeAudio = async (bytes: Buffer, extension: string) => {
   await writeFile(file, bytes)
   const probe = JSON.parse(
     (
-      await execFileAsync('ffprobe', [
+      await execFileAsync(resolveFfprobeBinary(), [
         '-v',
         'quiet',
         '-print_format',
@@ -168,7 +169,7 @@ const decodeAudio = async (bytes: Buffer, extension: string) => {
     ).stdout,
   )
   const decoded = path.join(tmpRoot, `decoded-${randomUUID().slice(0, 8)}.wav`)
-  const { stderr } = await execFileAsync('ffmpeg', [
+  const { stderr } = await execFileAsync(resolveFfmpegBinary(), [
     '-hide_banner',
     '-i',
     file,
@@ -178,10 +179,18 @@ const decodeAudio = async (bytes: Buffer, extension: string) => {
     'null',
     '-',
   ]).catch((error: any) => error as { stderr: string })
-  await execFileAsync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', file, decoded])
+  await execFileAsync(resolveFfmpegBinary(), [
+    '-hide_banner',
+    '-loglevel',
+    'error',
+    '-y',
+    '-i',
+    file,
+    decoded,
+  ])
   const wavProbe = JSON.parse(
     (
-      await execFileAsync('ffprobe', [
+      await execFileAsync(resolveFfprobeBinary(), [
         '-v',
         'quiet',
         '-print_format',
@@ -249,7 +258,7 @@ beforeAll(async () => {
   // which is skipped when the binaries are absent (CI runners).
   if (hasFfmpegBinaries) {
     toneWav = path.join(tmpRoot, 'tone.wav')
-    await execFileAsync('ffmpeg', [
+    await execFileAsync(resolveFfmpegBinary(), [
       '-hide_banner',
       '-loglevel',
       'error',
