@@ -34,6 +34,7 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { applyCleanupToFile } from '../../src/modules/podcast-studio/intelligence/cleanup'
 import { runRoomCheck } from '../../src/modules/podcast-studio/intelligence/room-check'
 import type { EditEdl } from '../../src/modules/podcast-studio/edit/edl-engine'
@@ -191,9 +192,13 @@ describe.skipIf(!hasFfmpegBinaries)('audio pass — bad-session fixture', () => 
     // segments are preserved. (Percentile "speech level" mixes
     // window populations; segments are the honest measure.)
     const segmentDb = (file: string, startSec: number, endSec: number): number => {
-      const pcm = execFileSync('ffmpeg', ['-v', 'error', '-i', file, '-f', 's16le', '-'], {
-        maxBuffer: 256 * 1024 * 1024,
-      })
+      const pcm = execFileSync(
+        resolveFfmpegBinary(),
+        ['-v', 'error', '-i', file, '-f', 's16le', '-'],
+        {
+          maxBuffer: 256 * 1024 * 1024,
+        },
+      )
       const samples = new Int16Array(
         pcm.buffer.slice(pcm.byteOffset, pcm.byteOffset + pcm.byteLength - (pcm.byteLength % 2)),
       )
@@ -298,6 +303,8 @@ describe.skipIf(!hasFfmpegBinaries)('audio pass — bad-session fixture', () => 
     const host = result.audioHealth!.sources.find((s) => s.sourceId === 'host')!
     expect(host.clippedRanges).toEqual([])
     expect(result.outputs.mp3).toBeTruthy()
-    expect(() => execFileSync('ffprobe', ['-v', 'error', result.outputs.mp3!.path])).not.toThrow()
+    expect(() =>
+      execFileSync(resolveFfprobeBinary(), ['-v', 'error', result.outputs.mp3!.path]),
+    ).not.toThrow()
   }, 300_000)
 })

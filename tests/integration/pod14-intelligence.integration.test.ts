@@ -36,6 +36,7 @@ import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -534,7 +535,7 @@ describe('POD-14 JP-7: transcribe → review → assists → audiogram → publi
       const file = path.join(dir, 'audiogram.mp4')
       await writeFile(file, bytes)
       const probe = JSON.parse(
-        execFileSync('ffprobe', [
+        execFileSync(resolveFfprobeBinary(), [
           '-v',
           'error',
           '-show_entries',
