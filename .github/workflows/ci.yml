@@ -27,12 +27,27 @@ jobs:
       APP_URL: http://127.0.0.1:3100
       SMOKE_TEST_TOKEN: ci-only-smoke-token-with-24-characters
       UPGRADE_MIGRATION_DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_upgrade_acceptance
+      # The audio engine is never assumed to exist on the runner. The step
+      # below installs the exact pinned build customers get (see
+      # scripts/ffmpeg-bundle.json) and these paths point every test and
+      # render at it, so a green board means "works with the shipped engine".
+      FFMPEG_PATH: ${{ github.workspace }}/vendor/ffmpeg/ffmpeg
+      FFPROBE_PATH: ${{ github.workspace }}/vendor/ffmpeg/ffprobe
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
+      - name: Install the pinned bundled audio engine
+        # Same installer the product's easy install runs on customer
+        # servers: downloads the pinned static build, verifies its
+        # SHA-256, and fails closed on any mismatch. Requires
+        # scripts/install-bundled-ffmpeg.mjs and scripts/ffmpeg-bundle.json
+        # on main (landed with the podcast idiot-proof pass).
+        run: node scripts/install-bundled-ffmpeg.mjs
+      - name: Show the audio engine CI will test against
+        run: '"$FFMPEG_PATH" -version | head -n 1 && "$FFPROBE_PATH" -version | head -n 1'
       - name: Create upgrade migration acceptance database
         run: >-
           PGPASSWORD=ci_test_only psql
