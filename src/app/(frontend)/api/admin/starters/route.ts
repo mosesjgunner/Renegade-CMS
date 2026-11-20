@@ -9,9 +9,12 @@ import { starterDefinitions } from '@/modules/starters/definitions'
 import {
   getStarterStatus,
   installStarter,
+  planStarterInstall,
   upgradeStarter,
   rollbackStarterLayout,
 } from '@/modules/starters/service'
+import { listStarterExamples, removeStarterExamples } from '@/modules/starters/examples'
+import { normalizeSiteVisibility } from '@/modules/public/site-visibility'
 import type { StarterId } from '@/modules/starters/contracts'
 import { themePool, readThemeState, createThemePreview } from '@/modules/presentation/lifecycle'
 
@@ -192,6 +195,56 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json(result)
+    }
+
+    if (action === 'plan') {
+      // Starter-change impact preview (UXI-06): what a different
+      // starter would create vs. what already exists and is preserved.
+      if (!starterId || !Object.hasOwn(starterDefinitions, starterId)) {
+        throw new Error(`Valid starterId is required. Received: ${starterId}`)
+      }
+      const plan = await planStarterInstall(payload, {
+        siteId,
+        starterId: starterId as StarterId,
+      })
+      return NextResponse.json({ plan })
+    }
+
+    if (action === 'examples') {
+      // Report exactly what removal would touch BEFORE anything is
+      // removed: pristine examples vs. operator-edited (protected).
+      const preview = await listStarterExamples(payload, siteId)
+      return NextResponse.json({ preview })
+    }
+
+    if (action === 'remove-examples') {
+      const result = await removeStarterExamples(payload, siteId)
+      try {
+        revalidatePath('/', 'layout')
+      } catch {
+        // no cache in local dev
+      }
+      return NextResponse.json({ result })
+    }
+
+    if (action === 'set-visibility') {
+      // Site visibility policy (UXI-06): public / coming-soon / private.
+      const visibility = normalizeSiteVisibility(body.visibility)
+      if (body.visibility !== visibility) {
+        throw new Error('Visibility must be "public", "coming-soon", or "private".')
+      }
+      const updated = await payload.update({
+        collection: 'sites',
+        id: siteId,
+        data: { visibility },
+        overrideAccess: true,
+      } as never)
+      try {
+        revalidatePath('/', 'layout')
+      } catch {
+        // no cache in local dev
+      }
+      return NextResponse.json({ success: true, siteId, visibility: (updated as any).visibility })
     }
 
     if (action === 'preview') {

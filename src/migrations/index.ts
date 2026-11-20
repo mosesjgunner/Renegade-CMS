@@ -20,6 +20,8 @@ import * as rc3Pod14Assists from './20261118_230000_rc3_pod14_assists'
 import * as rc3Pod16Live from './20261118_240000_rc3_pod16_live'
 import * as rc3Pod17Video from './20261118_250000_rc3_pod17_video'
 import * as rc3Pod18Promotion from './20261118_260000_rc3_pod18_promotion'
+import * as uxi02TaskReadinessSetupDraft from './20261119_120000_uxi02_task_readiness_setup_draft'
+import * as uxi06SiteVisibility from './20261119_130000_uxi06_site_visibility'
 import * as rc1NetworkRelationshipIds from './20261101_160000_rc1_network_relationship_ids'
 import * as rc1ExperimentForm from './20261101_150000_rc1_experiment_form'
 import * as rc1FulfillmentBinding from './20261029_130000_rc1_fulfillment_binding'
@@ -899,6 +901,16 @@ export const migrations = [
     up: rc3Pod18Promotion.up,
     down: rc3Pod18Promotion.down,
     name: '20261118_260000_rc3_pod18_promotion',
+  },
+  {
+    up: uxi02TaskReadinessSetupDraft.up,
+    down: uxi02TaskReadinessSetupDraft.down,
+    name: '20261119_120000_uxi02_task_readiness_setup_draft',
+  },
+  {
+    up: uxi06SiteVisibility.up,
+    down: uxi06SiteVisibility.down,
+    name: '20261119_130000_uxi06_site_visibility',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

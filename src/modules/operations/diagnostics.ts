@@ -1,5 +1,5 @@
 import { access, constants } from 'node:fs/promises'
-import { backupStatusFromMedia } from './backup'
+import { backupStatusFromMedia, parseBackupStatusRecord, type BackupCoverage } from './backup'
 import { getMigrations, type Payload } from 'payload'
 import { CapabilityLifecycleService, type CapabilityLifecycle } from '../core/capabilities'
 import type { AppConfig } from '../core/config'
@@ -79,6 +79,9 @@ export type OperationsDiagnostics = {
     status: 'not_configured' | 'healthy' | 'failed'
     lastSuccessfulAt: string | null
     lastFailureAt: string | null
+    /** UXI-11 (additive): truthful destination label + per-component coverage. */
+    destinationLabel?: string
+    coverage?: BackupCoverage | null
   }
 }
 export type FailedJobDiagnostic = {
@@ -323,34 +326,74 @@ export async function buildOperationsDiagnostics(
   }
 }
 function backupDiagnostic(value: unknown): OperationsDiagnostics['backup'] {
-  if (!value || typeof value !== 'object')
-    return { status: 'not_configured', lastSuccessfulAt: null, lastFailureAt: null }
-  const status = (value as { status?: unknown }).status
-  const successful = iso((value as { lastSuccessfulAt?: unknown }).lastSuccessfulAt)
-  const failed = iso((value as { lastFailureAt?: unknown }).lastFailureAt)
+  const parsed = parseBackupStatusRecord(value)
   return {
-    status: status === 'healthy' || status === 'failed' ? status : 'not_configured',
-    lastSuccessfulAt: successful,
-    lastFailureAt: failed,
+    status: parsed.status,
+    lastSuccessfulAt: parsed.lastSuccessfulAt,
+    lastFailureAt: parsed.lastFailureAt,
+    destinationLabel: parsed.destinationLabel,
+    coverage: parsed.coverage,
   }
 }
 
+/**
+ * UXI-11: the support bundle is built by ALLOWLIST, not by dumping
+ * diagnostics and redacting. Every field below is picked explicitly (see
+ * SUPPORT_BUNDLE_ALLOWLIST in guided-operations.ts); job error text,
+ * provider labels/keys, configuration warnings, and any secret-shaped
+ * value are never copied in, so they cannot appear in the output even
+ * when the diagnostics snapshot contains them.
+ */
 export function createSupportBundle(diagnostics: OperationsDiagnostics, config: AppConfig) {
-  const bundle = redact(
-    {
-      format: 'renegade-support-bundle/v1',
-      generatedAt: diagnostics.generatedAt,
-      diagnostics,
-      logExcerpts: [],
-      configuration: {
-        storage: { driver: config.storage.driver },
-        email: { mode: config.email.mode, secure: config.email.secure },
-        proxyMode: config.proxyMode,
-        warnings: config.warnings,
-      },
+  const bundle = {
+    format: 'renegade-support-bundle/v1',
+    generatedAt: diagnostics.generatedAt,
+    status: diagnostics.status,
+    version: {
+      app: diagnostics.version.app,
+      buildSha: diagnostics.version.buildSha,
+      schemaVersion: diagnostics.version.schemaVersion ?? null,
+      deploymentProfile: diagnostics.version.deploymentProfile ?? null,
     },
-    configuredSecretValues(),
-  )
+    database: { status: diagnostics.database.status },
+    migrations: {
+      status: diagnostics.migrations.status,
+      applied: diagnostics.migrations.applied,
+      expected: diagnostics.migrations.expected,
+      missing: [...diagnostics.migrations.missing],
+    },
+    worker: { status: diagnostics.worker.status, ageMs: diagnostics.worker.ageMs },
+    jobs: {
+      queued: diagnostics.jobs.queued,
+      running: diagnostics.jobs.running,
+      failed: diagnostics.jobs.failed,
+      recentFailures: diagnostics.jobs.recentFailures.map((failure) => ({
+        taskName: failure.taskName,
+        attemptCount: failure.attemptCount,
+        timestamps: failure.timestamps,
+      })),
+    },
+    mediaStorage: {
+      status: diagnostics.mediaStorage.status,
+      driver: diagnostics.mediaStorage.driver,
+    },
+    backup: {
+      status: diagnostics.backup.status,
+      lastSuccessfulAt: diagnostics.backup.lastSuccessfulAt,
+      lastFailureAt: diagnostics.backup.lastFailureAt,
+      destinationLabel: diagnostics.backup.destinationLabel ?? null,
+    },
+    email: { provider: diagnostics.email.provider, status: diagnostics.email.status },
+    providers: {
+      count: diagnostics.providers.length,
+      degradedCount: diagnostics.providers.filter((item) => item.status === 'degraded').length,
+    },
+    configuration: {
+      storageDriver: config.storage.driver,
+      emailMode: config.email.mode,
+      proxyMode: config.proxyMode,
+    },
+  }
   const text = JSON.stringify(bundle)
   if (text.length <= DIAGNOSTICS_MAX_SUPPORT_BUNDLE_BYTES) return text
   return JSON.stringify({
@@ -358,11 +401,8 @@ export function createSupportBundle(diagnostics: OperationsDiagnostics, config: 
     generatedAt: diagnostics.generatedAt,
     truncated: true,
     status: diagnostics.status,
-    version: diagnostics.version,
-    database: diagnostics.database,
-    configuration: {
-      storage: { driver: config.storage.driver },
-      email: { mode: config.email.mode },
-    },
+    version: bundle.version,
+    database: bundle.database,
+    configuration: bundle.configuration,
   })
 }

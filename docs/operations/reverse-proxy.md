@@ -26,6 +26,86 @@ SSE is an advisory wake-up channel. Clients resume with `Last-Event-ID` (or `aft
 PostgreSQL-backed event outbox and must refetch canonical notifications/drafts after reconnect.
 The ordinary draft checkpoint endpoint remains available even with `REALTIME_ENABLED=false`.
 
+## Managed-proxy path (clean dedicated host, Caddy)
+
+For a clean dedicated host with no existing proxy, the supported managed
+path is **Caddy** in front of the loopback listener. Caddy is
+operator-installed and operator-owned — it is not bundled into the
+Compose stack — but this exact configuration is the one the HTTPS
+diagnosis checks are written against. (The repo previously leaned on no
+single proxy; Caddy is chosen here because it obtains and renews
+publicly trusted certificates automatically once DNS is correct, which
+removes the most common certificate failure class for a beginner
+operator.)
+
+Prerequisites, in order:
+
+1. DNS first: create the exact records the installer/diagnosis names —
+   `A <hostname> → <host public IPv4>` and, if the host has IPv6,
+   `AAAA <hostname> → <host public IPv6>`. A correct A with a stale
+   AAAA still fails the HTTPS check (IPv6 visitors would reach the
+   wrong host).
+2. Ports 80 and 443 open to the host; the app listener stays on
+   `127.0.0.1:3000` (`RENEGADE_WEB_BIND`).
+3. `.env.production` carries `PROXY_MODE=trusted` and
+   `TRUSTED_PROXY_HOPS=1`.
+
+Caddyfile (replace the hostname and keep the bind loopback):
+
+```caddy
+cms.example.com {
+    reverse_proxy 127.0.0.1:3000
+}
+```
+
+That is the whole required configuration: Caddy terminates TLS with an
+automatically issued certificate, redirects HTTP to HTTPS, and — for
+`reverse_proxy` — sets `X-Forwarded-For`, `X-Forwarded-Host`, and
+`X-Forwarded-Proto` from connection facts (it does not pass through
+client-supplied values for the proxied request). Do not add
+`header_up X-Forwarded-*` lines that copy client headers; overwriting
+from connection facts is the contract.
+
+## Existing-proxy variant (Nginx / Traefik / CDN already in place)
+
+If a proxy already terminates TLS for the host, keep it and hold it to
+the same contract:
+
+- It must **overwrite**, never append to or pass through,
+  `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto`.
+  Nginx example for the Renegade location:
+
+  ```nginx
+  proxy_set_header X-Forwarded-For $remote_addr;
+  proxy_set_header X-Forwarded-Host $host;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_pass http://127.0.0.1:3000;
+  ```
+
+- `TRUSTED_PROXY_HOPS` must equal the number of controlled proxies in
+  the chain (a CDN edge in front of an origin proxy is 2). A
+  forwarded-for chain longer than the declared hops is treated as
+  spoofing by the diagnosis module.
+- The app port must not be reachable from the public network by any
+  other path (firewall or loopback bind), or the proxy boundary can be
+  bypassed entirely.
+- For Cloudflare or another CDN, keep authenticated TLS from edge to
+  origin as described in the generic contract above; no
+  Cloudflare-specific headers are trusted.
+
+## Verifying the proxy and HTTPS (UXI-04 diagnosis)
+
+`src/modules/operations/https-diagnosis.ts` checks this story from
+facts, not from configuration claims: DNS records against the host's
+expected public addresses (stale AAAA called out separately),
+certificate validity (expired / wrong host / self-signed / untrusted
+chain / handshake failure), forwarded headers as observed at the app
+(contradicting host/proto, over-long chains, forwarded headers in
+direct mode), and a non-loopback listener bind. Public HTTPS readiness
+is false while any blocking finding exists. Live public proof still
+requires a real owner domain and host — the module grades what its
+probes observe at check time and nothing more.
+
 ## Origin exposure checklist
 
 - App port is private/firewalled.

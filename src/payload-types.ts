@@ -627,6 +627,10 @@ export interface Site {
   description?: string | null;
   lifecycle: 'draft' | 'active' | 'archived';
   /**
+   * Who can see this site on the web. Public: everyone. Coming soon: visitors see a holding page with the site name while signed-in site staff can still preview. Private: same holding page, plus a sign-in link for staff. Existing sites stay public until an operator changes this.
+   */
+  visibility?: ('public' | 'coming-soon' | 'private') | null;
+  /**
    * Controls whether new members may register on this site: open sign-up, invite-only, staff approval required, or registration disabled.
    */
   communityRegistrationPolicy: 'open' | 'invite' | 'approval' | 'disabled';
@@ -10958,6 +10962,7 @@ export interface SitesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   lifecycle?: T;
+  visibility?: T;
   communityRegistrationPolicy?: T;
   commentReactionCodes?: T;
   updatedAt?: T;

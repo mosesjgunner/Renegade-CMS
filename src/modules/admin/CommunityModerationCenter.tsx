@@ -176,7 +176,10 @@ export default function CommunityModerationCenter() {
       <main className="gutter--left gutter--right">
         <h1>Community Moderation</h1>
         <p role="alert">{statusMessage}</p>
-        <Link href="/member-auth">Member sign-in</Link>
+        {/* UXI-D14: moderation rights come from a staff account, so the
+            recovery action is staff sign-in (/login) — member sign-in
+            can never grant moderation access. */}
+        <Link href="/login">Staff sign-in</Link>
         <button type="button" onClick={() => void loadData(siteId)}>
           Retry moderation access
         </button>

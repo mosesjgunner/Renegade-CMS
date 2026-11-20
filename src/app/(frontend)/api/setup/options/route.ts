@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { InstallationError, beginPasskeyRegistration } from '@/modules/operations/installation'
+import { isClaimOriginAllowed } from '@/modules/operations/claim-handoff'
 import { loadConfig } from '@/modules/core/config'
 
 export async function POST(request: Request) {
@@ -17,6 +18,13 @@ export async function POST(request: Request) {
       ?.split(';')
       .map((part) => part.trim().split('='))
       .find(([name]) => name === 'renegade-setup')?.[1]
+    // UXI-04: a claim presented from a foreign browser origin is refused
+    // before the token is ever checked, with the same safe error a bad
+    // token gets. Resume requests (enrollment cookie, no token) are
+    // already bound to the enrollment session and are not affected.
+    if (input.token && !isClaimOriginAllowed(request.headers, runtimeConfig.appUrl)) {
+      throw new InstallationError('INSTALLATION_TOKEN_INVALID', 'The bootstrap token is invalid.')
+    }
     const result = await beginPasskeyRegistration(payload, runtimeConfig, {
       email: input.email ?? '',
       token: input.token ?? '',

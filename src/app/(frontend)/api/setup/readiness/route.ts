@@ -5,6 +5,10 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 
 import { getInstallationReadiness } from '@/modules/operations/installation'
+import {
+  evaluateSetupTasks,
+  persistTaskReadinessSnapshot,
+} from '@/modules/operations/task-readiness'
 import { loadConfig } from '@/modules/core/config'
 import { probeAudioEngine } from '@/modules/media/ffmpeg'
 import { migrations } from '@/migrations'
@@ -103,12 +107,55 @@ export async function GET() {
       },
     }
 
+    // The setup form reads `readiness` and `providers` exactly as before;
+    // `tasks` is additive: the same live checks expressed through the
+    // shared task-readiness service, so the setup page and the operator
+    // console read one readiness contract. Persisting the snapshot is
+    // best-effort and never fails this live response.
+    const tasks = evaluateSetupTasks({ readiness, providers })
+    await persistTaskReadinessSnapshot(payload, tasks).catch(() => false)
+
     return Response.json({
       readiness,
       providers,
+      tasks,
     })
   } catch (error: unknown) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown readiness error'
+    const fallbackTasks = evaluateSetupTasks({
+      readiness: {
+        ready: false,
+        database: 'disconnected',
+        migrationState: 'uninitialized',
+        appliedMigrations: 0,
+        totalMigrations: migrations.length,
+        pendingMigrations: [],
+        installationState: 'uninitialized',
+        recoveryAction: 'Start PostgreSQL container and verify DATABASE_URL.',
+      },
+      providers: {
+        database: {
+          name: 'PostgreSQL Database',
+          type: 'required' as const,
+          status: 'failed' as const,
+          message: 'Database connection failed',
+          recovery: 'PostgreSQL is unavailable. Start container with "docker compose up -d".',
+        },
+        storage: {
+          name: 'Media Storage',
+          type: 'required' as const,
+          status: 'failed' as const,
+          message: 'Storage validation deferred until database is connected.',
+        },
+        audioEngine: {
+          name: 'Audio Engine (ffmpeg)',
+          type: 'optional' as const,
+          status: 'unconfigured' as const,
+          message:
+            'Not set up yet — podcast recording, rendering and live streaming need the audio engine. It installs automatically with the installer, or an owner can install it from the Capability Center.',
+        },
+      },
+    })
     return Response.json(
       {
         readiness: {
@@ -121,6 +168,7 @@ export async function GET() {
           installationState: 'uninitialized',
           recoveryAction: 'Start PostgreSQL container and verify DATABASE_URL.',
         },
+        tasks: fallbackTasks,
         providers: {
           database: {
             name: 'PostgreSQL Database',

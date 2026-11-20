@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { InstallationError, completeInstallation } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
 import { passkeySessionCookie } from '@/modules/operations/passkey-auth'
+import { SETUP_DRAFT_COOKIE, clearSetupDraft } from '@/modules/operations/setup-draft'
 import type { OnboardingInput } from '@/modules/operations/onboarding'
 
 export async function POST(request: Request) {
@@ -39,6 +40,13 @@ export async function POST(request: Request) {
       ),
     )
     headers.append('set-cookie', 'renegade-setup=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax')
+    // The setup draft has served its purpose; clear it (best-effort) so no
+    // stale checkpoint survives a completed installation.
+    await clearSetupDraft(payload)
+    headers.append(
+      'set-cookie',
+      `${SETUP_DRAFT_COOKIE}=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax`,
+    )
     return Response.json(
       { recoveryCodes: result.recoveryCodes, onboarding: result.onboarding },
       { headers, status: 201 },

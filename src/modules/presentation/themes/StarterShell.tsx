@@ -62,7 +62,7 @@ export function StarterShell({
             {footerText ? (
               <p className="text-xs text-stone-500 dark:text-stone-400">{footerText}</p>
             ) : siteDescription ? (
-              <p className="text-xs text-stone-500 dark:text-stone-400">{siteDescription}</p>
+              <p className="text-xs text-stone-600 dark:text-stone-400">{siteDescription}</p>
             ) : (
               <p className="text-xs text-stone-500 dark:text-stone-400">
                 © {year} {siteName}. All rights reserved.

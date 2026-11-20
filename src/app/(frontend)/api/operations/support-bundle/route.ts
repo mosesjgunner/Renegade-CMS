@@ -17,6 +17,12 @@ export async function GET(request: Request) {
   const diagnostics = await buildOperationsDiagnostics(payload, appConfig, {
     expectedMigrations: migrations.map((migration) => migration.name),
   })
+  // UXI-11: ?preview=1 returns the exact bundle inline (no attachment
+  // header) so the operator sees precisely what a download would contain
+  // before downloading it.
+  if (new URL(request.url).searchParams.get('preview') === '1') {
+    return Response.json(JSON.parse(createSupportBundle(diagnostics, appConfig)))
+  }
   return new Response(createSupportBundle(diagnostics, appConfig), {
     headers: {
       'content-type': 'application/json; charset=utf-8',

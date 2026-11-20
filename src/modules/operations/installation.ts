@@ -14,6 +14,7 @@ import type { Payload } from 'payload'
 
 import { loadConfig, type AppConfig } from '../core/config'
 import { migrations } from '../../migrations'
+import { buildClaimUrl } from './claim-handoff'
 import { createPasskeySession } from './passkey-auth'
 import { requireAdminUser } from './passkey-auth'
 import {
@@ -231,7 +232,7 @@ export async function ensureBootstrap(
        VALUES (true, 'incomplete', $1, $2)`,
       [hashValue(token, config.payloadSecret), new Date(Date.now() + bootstrapLifetimeMs)],
     )
-    announceBootstrapToken(token)
+    announceBootstrapToken(token, config.appUrl)
   } catch {
     // Another application process created the singleton row. Its token is the only valid one.
   }
@@ -513,7 +514,7 @@ export async function rotateBootstrapToken(payload: Payload, config: AppConfig):
      WHERE singleton = true`,
     [hashValue(token, config.payloadSecret), new Date(Date.now() + bootstrapLifetimeMs)],
   )
-  announceBootstrapToken(token)
+  announceBootstrapToken(token, config.appUrl)
 }
 
 /**
@@ -1212,8 +1213,18 @@ function safeEqual(left: string, right: string): boolean {
   return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer)
 }
 
-function announceBootstrapToken(token: string): void {
+function announceBootstrapToken(token: string, appUrl?: string): void {
+  // The raw-token line stays first and unchanged: it is the documented
+  // log/CLI fallback path, and operator tooling greps for it.
   console.warn(`Renegade CMS setup token (expires in 15 minutes; use once): ${token}`)
+  // Primary handoff (UXI-04): the fragment claim link. The token rides
+  // in the URL fragment, which browsers never send to the server, so
+  // opening this link puts the token in no access log or referrer.
+  if (appUrl) {
+    console.warn(
+      `Renegade CMS setup claim link (expires in 15 minutes; use once): ${buildClaimUrl(appUrl, token)}`,
+    )
+  }
 }
 
 async function getRequiredEnrollmentState(

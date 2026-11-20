@@ -2,6 +2,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
+import { ConfirmDestructive, DisabledWithReason, FormField } from './forms'
+
 type Item = {
   document: Record<string, unknown>
   portable: Record<string, unknown>
@@ -13,6 +15,7 @@ export default function CatalogCommandCenter() {
   const [selected, setSelected] = useState<string[]>([])
   const [message, setMessage] = useState('Loading catalog…')
   const [importText, setImportText] = useState('[]')
+  const [importError, setImportError] = useState<string | null>(null)
   const refresh = async () => {
     const response = await fetch('/api/admin/catalog')
     const body = await response.json()
@@ -50,19 +53,29 @@ export default function CatalogCommandCenter() {
       body: JSON.stringify({ productIds: selected }),
     })
     const body = await response.json()
+    // Throw on failure so the shared ConfirmDestructive flow stays in
+    // its error state instead of reporting a completion that did not happen.
+    if (!response.ok) throw new Error(body.error ?? 'Archiving did not complete.')
     setMessage(
-      response.ok
-        ? `Archived ${body.archived.length} products. ${body.warnings.filter((item: { dependencies: string[] }) => item.dependencies.length).length} have retained dependencies.`
-        : body.error,
+      `Archived ${body.archived.length} products. ${body.warnings.filter((item: { dependencies: string[] }) => item.dependencies.length).length} have retained dependencies.`,
     )
-    if (response.ok) {
-      setSelected([])
-      await refresh()
-    }
+    setSelected([])
+    await refresh()
   }
   const runImport = async (mode: 'dry-run' | 'apply') => {
+    // A JSON syntax problem is an input error on this field (UXI-08):
+    // it belongs under the field with the fix, not in the status line.
+    let products: unknown
     try {
-      const products = JSON.parse(importText)
+      products = JSON.parse(importText) as unknown
+      setImportError(null)
+    } catch {
+      setImportError(
+        'That is not valid JSON — check for a missing comma, bracket, or quote in the catalog text, then try again.',
+      )
+      return
+    }
+    try {
       const response = await fetch('/api/admin/catalog/import', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -94,9 +107,19 @@ export default function CatalogCommandCenter() {
             Products
           </h2>
           <Link href="/admin/collections/products/create">Create product</Link>
-          <button type="button" disabled={!selected.length} onClick={() => void archive()}>
-            Archive selected
-          </button>
+          <DisabledWithReason
+            disabled={!selected.length}
+            reason="Select at least one product first — tick a product's checkbox in the list."
+          >
+            <ConfirmDestructive
+              triggerLabel="Archive selected"
+              scope={`${selected.length} selected product${selected.length === 1 ? '' : 's'}`}
+              consequence="They are archived and stop appearing in the store. Products with retained dependencies keep those dependencies. There is no un-archive action here."
+              confirmLabel="Archive them"
+              onConfirm={archive}
+              disabled={!selected.length}
+            />
+          </DisabledWithReason>
           <a
             href={`data:application/json;charset=utf-8,${encodeURIComponent(exportValue)}`}
             download="renegade-catalog-v1.json"
@@ -181,12 +204,17 @@ export default function CatalogCommandCenter() {
                           <button onClick={() => void transition(id, 'approve')}>Approve</button>
                         ) : null}
                         {state === 'approved' ? (
-                          <button
+                          <DisabledWithReason
                             disabled={!readiness.ready}
-                            onClick={() => void transition(id, 'publish')}
+                            reason={`Not ready to publish — ${readiness.blockers[0] ?? 'resolve the blockers listed under Readiness first.'}`}
                           >
-                            Publish
-                          </button>
+                            <button
+                              disabled={!readiness.ready}
+                              onClick={() => void transition(id, 'publish')}
+                            >
+                              Publish
+                            </button>
+                          </DisabledWithReason>
                         ) : null}
                       </td>
                     </tr>
@@ -201,14 +229,20 @@ export default function CatalogCommandCenter() {
         <h2 id="import-heading" className="text-2xl font-bold">
           Import
         </h2>
-        <label htmlFor="catalog-import">Catalog JSON</label>
-        <textarea
-          id="catalog-import"
-          rows={10}
-          className="w-full font-mono"
-          value={importText}
-          onChange={(event) => setImportText(event.target.value)}
-        />
+        <FormField fieldId="catalog-import" label="Catalog JSON" error={importError}>
+          {(ariaProps) => (
+            <textarea
+              {...ariaProps}
+              rows={10}
+              className="w-full font-mono"
+              value={importText}
+              onChange={(event) => {
+                setImportText(event.target.value)
+                if (importError) setImportError(null)
+              }}
+            />
+          )}
+        </FormField>
         <div className="flex gap-3">
           <button type="button" onClick={() => void runImport('dry-run')}>
             Dry run

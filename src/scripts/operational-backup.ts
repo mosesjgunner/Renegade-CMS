@@ -18,6 +18,11 @@ if (!output || !has('--maintenance-window-confirmed'))
   throw new Error(
     'Usage: backup:operational -- --output <directory> --maintenance-window-confirmed [--env-file .env.production]',
   )
+const destinationKind =
+  value('--destination-kind') === 'operator-configured-remote'
+    ? 'operator-configured-remote'
+    : 'local-disk'
+const destinationRemoteType = value('--destination-remote-type')
 const compose = value('--compose-file', 'compose.production.yaml')!
 const envFile = value('--env-file', '.env.production')!
 const backupRoot = path.resolve(
@@ -176,6 +181,10 @@ try {
       'db-extension-and-capability-state',
       'non-secret-installation-metadata',
     ],
+    destination: {
+      kind: destinationKind,
+      ...(destinationRemoteType ? { remoteType: destinationRemoteType } : {}),
+    },
     migrationState: migrationText ? migrationText.split(/\r?\n/).filter(Boolean) : [],
     installation: {
       storageDriver: 'local',
@@ -216,6 +225,9 @@ try {
     lastSuccessfulAt: new Date().toISOString(),
     backupFormat: 'renegade-operational-backup',
     verified: true,
+    destinationKind,
+    ...(destinationRemoteType ? { destinationRemoteType } : {}),
+    coverage: manifest.coverage ?? null,
   })
   await run('docker', [
     ...composeArgs,

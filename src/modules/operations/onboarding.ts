@@ -5,6 +5,7 @@ import type { Payload } from 'payload'
 
 import { previewRecipe } from '../public/page-builder'
 import { installStarter, toLexicalDocument } from '../starters/service'
+import { contentMatchesInstallChecksum, exampleContentChecksum } from '../starters/provenance'
 import {
   beginRecipeRun,
   completeRecipeRun,
@@ -89,6 +90,13 @@ export type OnboardingInput = {
    * the historical behavior — the site goes active immediately.
    */
   launchState?: 'prelaunch' | 'active'
+  /**
+   * Site-level visibility policy (UXI-06): who can see the site on the
+   * web. Absent means the historical default — the site is public.
+   * Applied when the site is created and whenever setup explicitly
+   * supplies it; a rerun without it never changes the current policy.
+   */
+  siteVisibility?: 'public' | 'coming-soon' | 'private'
   publishingDefaults?: {
     indexingMode?: 'index' | 'noindex'
     commentsPolicy?: 'closed' | 'open' | 'members'
@@ -136,6 +144,11 @@ export function validateOnboardingInput(input: OnboardingInput): OnboardingInput
     throw new Error('Locale and timezone are required.')
   if (input.launchState !== undefined && !['prelaunch', 'active'].includes(input.launchState))
     throw new Error('Launch state must be prelaunch or active.')
+  if (
+    input.siteVisibility !== undefined &&
+    !['public', 'coming-soon', 'private'].includes(input.siteVisibility)
+  )
+    throw new Error('Site visibility must be "public", "coming-soon", or "private".')
   const optionalConnections = [...new Set(input.optionalConnections)].filter(
     (key): key is (typeof optionalConnectionKeys)[number] => optionalConnectionKeys.includes(key),
   )
@@ -232,6 +245,17 @@ async function upsertStarterContent(
   payload: Payload,
   data: Record<string, unknown>,
 ): Promise<{ id: string }> {
+  // Stamp the install-time provenance checksum (UXI-06) so the record
+  // stays a removable example only while it is untouched.
+  const stamped = {
+    ...data,
+    importSourceChecksum: exampleContentChecksum({
+      title: data.title,
+      summary: data.summary,
+      status: data.status,
+      body: data.body,
+    }),
+  }
   const found = await payload.find({
     collection: 'content',
     where: {
@@ -246,20 +270,27 @@ async function upsertStarterContent(
   if (!existing) {
     return payload.create({
       collection: 'content',
-      data,
+      data: stamped,
       overrideAccess: true,
     } as never) as unknown as Promise<{ id: string }>
   }
   if (existing.importSourceSystem !== 'onboarding-starter') return { id: String(existing.id) }
+  // With a recorded checksum, "pristine" means the record still hashes
+  // to what setup installed; any operator edit breaks the match and
+  // the record is preserved verbatim. Legacy records without a
+  // checksum keep the original field-by-field comparison.
+  const checksumPristine = contentMatchesInstallChecksum(existing)
   const managedFields = ['title', 'summary', 'status', 'commentsPolicy', 'contentType'] as const
   const pristine =
-    managedFields.every((field) => existing[field] === data[field]) &&
-    stableStringify(existing.body) === stableStringify(data.body)
+    checksumPristine !== null
+      ? checksumPristine
+      : managedFields.every((field) => existing[field] === data[field]) &&
+        stableStringify(existing.body) === stableStringify(data.body)
   if (!pristine) return { id: String(existing.id) }
   return payload.update({
     collection: 'content',
     id: existing.id,
-    data,
+    data: stamped,
     overrideAccess: true,
   } as never) as unknown as Promise<{ id: string }>
 }
@@ -281,7 +312,8 @@ async function provisionOnboardingSiteRecords(
     depth: 0,
     overrideAccess: true,
   })
-  const priorLifecycle = (priorSite.docs[0] as { lifecycle?: string } | undefined)?.lifecycle
+  const priorDoc = priorSite.docs[0] as { lifecycle?: string; visibility?: string } | undefined
+  const priorLifecycle = priorDoc?.lifecycle
   const site = await upsert(
     payload,
     'sites',
@@ -291,6 +323,9 @@ async function provisionOnboardingSiteRecords(
       slug: input.slug,
       description: input.description || undefined,
       lifecycle: priorLifecycle ?? (input.launchState === 'prelaunch' ? 'draft' : 'active'),
+      // Visibility is explicit: a supplied choice wins; otherwise the
+      // existing site's policy is kept and a new site defaults to public.
+      visibility: input.siteVisibility ?? priorDoc?.visibility ?? 'public',
     },
   )
   const member = await findOrCreate(

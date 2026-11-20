@@ -54,6 +54,38 @@ describe('first-run installation state', () => {
     expect(restartedStatus).toMatchObject({ state: 'installing', ownerEmail: 'owner@example.test' })
   })
 
+  it('admits exactly one of two concurrent claims of the same token (UXI-04)', async () => {
+    // The fragment claim handoff exchanges the token through the same
+    // enrollment API as a pasted token, so the single-use guarantee must
+    // hold under a race: one claim wins, the other gets the safe
+    // in-progress error, and the token is never accepted twice.
+    const attempts = await Promise.allSettled([
+      beginPasskeyRegistration(payload, loadConfig(), {
+        email: 'owner@example.test',
+        token,
+      }),
+      beginPasskeyRegistration(payload, loadConfig(), {
+        email: 'owner@example.test',
+        token,
+      }),
+    ])
+    const fulfilled = attempts.filter((attempt) => attempt.status === 'fulfilled')
+    const rejected = attempts.filter((attempt) => attempt.status === 'rejected')
+    expect(fulfilled).toHaveLength(1)
+    expect(rejected).toHaveLength(1)
+    expect((rejected[0] as PromiseRejectedResult).reason).toMatchObject({
+      code: 'INSTALLATION_IN_PROGRESS',
+    })
+
+    // Replay after the winning claim consumed the token also fails.
+    await expect(
+      beginPasskeyRegistration(payload, loadConfig(), {
+        email: 'owner@example.test',
+        token,
+      }),
+    ).rejects.toMatchObject({ code: 'INSTALLATION_IN_PROGRESS' })
+  })
+
   it('rejects an expired bootstrap token without changing the installation state', async () => {
     await payload.db.pool.query(
       `UPDATE installation_state SET bootstrap_expires_at = now() - interval '1 second'

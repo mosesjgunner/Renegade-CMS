@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import config from '@payload-config'
+
+export const metadata: Metadata = { title: 'Donate' }
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
