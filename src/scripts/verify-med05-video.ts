@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process'
 import path from 'node:path'
 
 import { LocalFfmpegVideoProcessor, localVideoRecipe } from '../modules/media/video'
+import { resolveFfmpegBinary } from '../modules/media/ffmpeg'
 
 const evidenceDir = process.argv[2] || '/tmp/med05-video-evidence'
 await mkdir(evidenceDir, { recursive: true })
@@ -10,7 +11,7 @@ const sourcePath = path.join(evidenceDir, 'small-real-source.mp4')
 
 await new Promise<void>((resolve, reject) => {
   const child = spawn(
-    'ffmpeg',
+    resolveFfmpegBinary(),
     [
       '-hide_banner',
       '-loglevel',

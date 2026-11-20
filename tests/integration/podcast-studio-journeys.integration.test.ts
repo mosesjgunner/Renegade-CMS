@@ -1471,7 +1471,7 @@ const decodeHeard = async (bytes: Buffer, dir: string) => {
   )
   const { spawnSync } = await import('node:child_process')
   const volume = spawnSync(
-    'ffmpeg',
+    resolveFfmpegBinary(),
     ['-hide_banner', '-i', file, '-af', 'volumedetect', '-f', 'null', '-'],
     { encoding: 'utf8' },
   )
