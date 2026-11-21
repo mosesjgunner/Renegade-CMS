@@ -3,8 +3,9 @@ import { createServer } from 'node:http'
 // Local AT Protocol boundary only. Records are created by real HTTP requests, never database edits.
 const records = new Map()
 const state = { creates: {}, requests: {}, mode: 'fail' }
+const port = Number(process.env.SOCIAL_FIXTURE_PORT || 3130)
 createServer(async (req, res) => {
-  const url = new URL(req.url, 'http://127.0.0.1:3130')
+  const url = new URL(req.url, `http://127.0.0.1:${port}`)
   const send = (status, body) => {
     res.writeHead(status, { 'content-type': 'application/json' })
     res.end(JSON.stringify(body))
@@ -47,4 +48,4 @@ createServer(async (req, res) => {
     return send(200, record)
   }
   send(404, {})
-}).listen(3130, '127.0.0.1')
+}).listen(port, '127.0.0.1')

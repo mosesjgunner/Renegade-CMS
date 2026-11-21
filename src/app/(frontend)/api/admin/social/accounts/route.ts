@@ -48,7 +48,19 @@ export async function GET(request: Request) {
       // SOC-SEC-1 (Red F-1): raw account docs carry the `enc:` credential
       // envelope in connectionReference. Only the redacted view leaves
       // the server.
-      accounts: (accountsResult.docs as Record<string, unknown>[]).map(toRedactedSocialAccountView),
+      accounts: (accountsResult.docs as Record<string, unknown>[]).map((account) => {
+        const view = toRedactedSocialAccountView(account)
+        const network = String(account.network || '') as Parameters<typeof socialProviderFor>[0]
+        const credentials = credentialsForSocialAccount(
+          typeof account.connectionReference === 'string' ? account.connectionReference : null,
+        )
+        const truth = getProviderCapabilityTruth(network, configuredMode(network, credentials))
+        return {
+          ...view,
+          capabilities: truth.capabilities,
+          diagnostics: { ...view.diagnostics, mode: truth.mode },
+        }
+      }),
     })
   } catch (error) {
     return NextResponse.json(
@@ -66,6 +78,16 @@ import {
   credentialsForSocialAccount,
 } from '@/modules/social/provider-runtime'
 import { blueskyAdapter } from '@/modules/social/adapters/bluesky'
+import { socialProviderMode } from '@/modules/social/dispatch-boundary'
+
+function configuredMode(network: string, credentials: { service?: string } | null | undefined) {
+  if (network !== 'bluesky') return undefined
+  try {
+    return socialProviderMode(credentials?.service || 'https://bsky.social')
+  } catch {
+    return undefined
+  }
+}
 
 export async function POST(request: Request) {
   try {
@@ -195,7 +217,7 @@ export async function POST(request: Request) {
       } else if (network === 'bluesky') {
         const identifier = resolvedCreds.identifier || resolvedCreds.handle
         const password = resolvedCreds.appPassword || resolvedCreds.password
-        const service = resolvedCreds.service || 'http://127.0.0.1:3130'
+        const service = resolvedCreds.service || 'https://bsky.social'
         if (!identifier || !password) {
           health = 'not-configured'
           errorMessage = 'Bluesky identifier and appPassword are required.'
@@ -212,7 +234,7 @@ export async function POST(request: Request) {
 
       const capabilityTruth = getProviderCapabilityTruth(
         network,
-        body.mode || (existing.diagnostics?.mode as any),
+        configuredMode(network, resolvedCreds),
       )
 
       const updated = await payload.update({
@@ -261,11 +283,6 @@ export async function POST(request: Request) {
     const externalAccountId = body.externalAccountId || body.displayName || `${network}-account`
     const displayName = body.displayName || externalAccountId
     const actorType = body.actorType || 'site'
-    const requestedMode =
-      body.mode || (process.env.NODE_ENV !== 'production' ? 'local-harness' : 'live')
-
-    const capabilityTruth = getProviderCapabilityTruth(network, requestedMode)
-
     let connectionRef: string | null = body.connectionReference || null
     // SOC-SEC-1 (Red F-3): a caller-supplied plaintext credential JSON
     // reference would be stored verbatim — unencrypted secrets at rest.
@@ -289,7 +306,7 @@ export async function POST(request: Request) {
       if (network === 'bluesky') {
         const identifier = creds.identifier
         const password = creds.appPassword || creds.password
-        const service = creds.service || 'http://127.0.0.1:3130'
+        const service = creds.service || 'https://bsky.social'
         if (!identifier || !password) {
           credentialHealth = 'not-configured'
           verificationError = 'Missing identifier or app password.'
@@ -315,7 +332,7 @@ export async function POST(request: Request) {
       if (resolved && network === 'bluesky') {
         const identifier = resolved.identifier
         const password = resolved.appPassword || resolved.password
-        const service = resolved.service || 'http://127.0.0.1:3130'
+        const service = resolved.service || 'https://bsky.social'
         try {
           await blueskyAdapter.createSession(service, identifier, password)
           credentialHealth = 'healthy'
@@ -330,6 +347,10 @@ export async function POST(request: Request) {
       }
     }
 
+    const capabilityTruth = getProviderCapabilityTruth(
+      network,
+      configuredMode(network, body.credentials || credentialsForSocialAccount(connectionRef)),
+    )
     const capabilityState =
       credentialHealth === 'healthy'
         ? capabilityTruth.mode === 'manual-handoff'

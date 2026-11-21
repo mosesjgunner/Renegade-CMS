@@ -23,6 +23,7 @@ import {
   type SocialDeliveryRecord,
 } from './models'
 import { executeVariantDelivery, type QueueProcessingOptions } from './queue'
+import { socialProviderFor } from './provider-runtime'
 
 export const ADAPTER_REGISTRY: Record<SocialNetwork, SocialProviderAdapter> = {
   bluesky: new BlueskyAdapter(),
@@ -65,7 +66,7 @@ export interface JobExecutionReport {
   variantId: string
   postId: string
   network: SocialNetwork
-  status: 'succeeded' | 'failed' | 'retrying' | 'reconnect_required'
+  status: 'succeeded' | 'failed' | 'retrying' | 'reconnect_required' | 'unknown'
   attemptCount: number
   remotePostId?: string
   remoteUrl?: string
@@ -83,6 +84,7 @@ export interface QueueBatchSummary {
   retryingCount: number
   failedCount: number
   reconnectRequiredCount: number
+  unknownCount: number
   jobs: JobExecutionReport[]
 }
 
@@ -169,6 +171,7 @@ export async function processQueueBatch(
   let retryingCount = 0
   let failedCount = 0
   let reconnectRequiredCount = 0
+  let unknownCount = 0
   let totalConsidered = 0
 
   for (const post of posts) {
@@ -192,7 +195,7 @@ export async function processQueueBatch(
       }
 
       processedCount += 1
-      const adapter = getSocialAdapter(variant.network)
+      const adapter = socialProviderFor(variant.network)
       const authContext: AuthContext = authMap.get(variant.accountId) || {
         accountId: variant.accountId,
         accountHandle: `@${variant.network}-user`,
@@ -213,6 +216,7 @@ export async function processQueueBatch(
       if (result.status === 'succeeded') succeededCount += 1
       else if (result.status === 'retrying') retryingCount += 1
       else if (result.status === 'reconnect_required') reconnectRequiredCount += 1
+      else if (result.status === 'unknown') unknownCount += 1
       else failedCount += 1
 
       jobs.push({
@@ -246,6 +250,7 @@ export async function processQueueBatch(
     retryingCount,
     failedCount,
     reconnectRequiredCount,
+    unknownCount,
     jobs,
   }
 }

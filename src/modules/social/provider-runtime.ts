@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { socialFetch, socialProviderMode } from './dispatch-boundary'
 import {
   normalizeProviderError,
   type AdapterResult,
@@ -62,6 +63,17 @@ const providerError = async (response: Response) => {
   })
 }
 
+const blueskyReceipt = (service: string, remoteId: string, remoteUrl: string) => ({
+  remotePostId: remoteId,
+  remoteUrl,
+  publishedAt: new Date(),
+  rawResponse: { providerMode: socialProviderMode(service) },
+})
+const blueskyRemoteUrl = (service: string, did: string, rkey: string) =>
+  socialProviderMode(service) === 'local-harness'
+    ? `${service.replace(/\/$/, '')}/posts/${rkey}`
+    : `https://bsky.app/profile/${did}/post/${rkey}`
+
 export const blueskyAdapter: SocialProviderAdapter = {
   network: 'bluesky',
   mode: 'live',
@@ -79,8 +91,9 @@ export const blueskyAdapter: SocialProviderAdapter = {
             'Bluesky requires an account identifier and app password. Reconnect this account.',
         }),
       }
+    let submitted = false
     try {
-      const session = await fetch(
+      const session = await socialFetch(
         service.replace(/\/$/, '') + '/xrpc/com.atproto.server.createSession',
         {
           method: 'POST',
@@ -103,17 +116,18 @@ export const blueskyAdapter: SocialProviderAdapter = {
         .update(variant.idempotencyKey || variant.id)
         .digest('hex')
         .slice(0, 32)
+      const expectedUri = `at://${auth.did}/app.bsky.feed.post/${rkey}`
       const recordUrl = new URL(service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.getRecord')
       recordUrl.searchParams.set('repo', auth.did)
       recordUrl.searchParams.set('collection', 'app.bsky.feed.post')
       recordUrl.searchParams.set('rkey', rkey)
-      const existing = await fetch(recordUrl, {
+      const existing = await socialFetch(recordUrl.toString(), {
         signal: AbortSignal.timeout(30_000),
         headers: { authorization: 'Bearer ' + auth.accessJwt },
       })
       if (existing.ok) {
         const record = (await existing.json()) as { uri?: string; value?: { text?: string } }
-        if (!record.uri || record.value?.text !== variant.text)
+        if (record.uri !== expectedUri || record.value?.text !== variant.text)
           return {
             status: 'failed',
             error: normalizeProviderError({
@@ -121,10 +135,12 @@ export const blueskyAdapter: SocialProviderAdapter = {
               message: 'Provider idempotency key is occupied by different content.',
             }),
           }
+        const remoteUrl = blueskyRemoteUrl(service, auth.did, rkey)
         return {
           status: 'published',
           remoteId: record.uri,
-          remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+          remoteUrl,
+          receipt: blueskyReceipt(service, record.uri, remoteUrl),
         }
       }
       const missing =
@@ -137,47 +153,67 @@ export const blueskyAdapter: SocialProviderAdapter = {
               .catch(() => null)
           )?.error === 'RecordNotFound')
       if (!missing) return { status: 'failed', error: await providerError(existing) }
-      const post = await fetch(service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.createRecord', {
-        method: 'POST',
-        signal: AbortSignal.timeout(30_000),
-        headers: {
-          authorization: 'Bearer ' + auth.accessJwt,
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({
-          repo: auth.did,
-          collection: 'app.bsky.feed.post',
-          rkey,
-          record: {
-            $type: 'app.bsky.feed.post',
-            text: variant.text,
-            createdAt: new Date().toISOString(),
+      submitted = true
+      const post = await socialFetch(
+        service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.createRecord',
+        {
+          method: 'POST',
+          signal: AbortSignal.timeout(30_000),
+          headers: {
+            authorization: 'Bearer ' + auth.accessJwt,
+            'content-type': 'application/json',
           },
-        }),
-      })
+          body: JSON.stringify({
+            repo: auth.did,
+            collection: 'app.bsky.feed.post',
+            rkey,
+            record: {
+              $type: 'app.bsky.feed.post',
+              text: variant.text,
+              createdAt: new Date().toISOString(),
+            },
+          }),
+        },
+      )
+      if (post.status >= 500)
+        return {
+          status: 'unknown',
+          error: normalizeProviderError({
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message: 'Bluesky returned a server error after submission; reconcile before retrying.',
+          }),
+        }
       if (!post.ok) return { status: 'failed', error: await providerError(post) }
       const record = (await post.json()) as { uri?: string }
-      return record.uri
+      const remoteUrl = record.uri
+        ? blueskyRemoteUrl(service, auth.did, record.uri.split('/').pop() || rkey)
+        : ''
+      return record.uri === expectedUri
         ? {
             status: 'published',
             remoteId: record.uri,
-            remoteUrl:
-              'https://bsky.app/profile/' + auth.did + '/post/' + record.uri.split('/').pop(),
+            remoteUrl,
+            receipt: blueskyReceipt(service, record.uri, remoteUrl),
           }
         : {
             status: 'unknown',
             error: normalizeProviderError({
               kind: 'remote-unknown',
-              message: 'Bluesky accepted the request without a record URI.',
+              message:
+                'Bluesky did not confirm the expected record URI; reconcile before retrying.',
               remoteOutcome: 'unknown',
             }),
           }
     } catch {
       return {
-        status: 'failed',
+        status: submitted ? 'unknown' : 'failed',
         error: normalizeProviderError({
-          kind: 'transient',
-          message: 'Bluesky could not be reached.',
+          kind: submitted ? 'remote-unknown' : 'transient',
+          remoteOutcome: submitted ? 'unknown' : 'known-failed',
+          message: submitted
+            ? 'Bluesky submission could not be confirmed; reconcile before retrying.'
+            : 'Bluesky could not be reached.',
         }),
       }
     }
@@ -204,7 +240,7 @@ export const blueskyAdapter: SocialProviderAdapter = {
         'Reconnect the account before read-only reconciliation. No provider request was made.',
       )
     try {
-      const session = await fetch(
+      const session = await socialFetch(
         service.replace(/\/$/, '') + '/xrpc/com.atproto.server.createSession',
         {
           method: 'POST',
@@ -226,22 +262,29 @@ export const blueskyAdapter: SocialProviderAdapter = {
       recordUrl.searchParams.set('repo', auth.did)
       recordUrl.searchParams.set('collection', 'app.bsky.feed.post')
       recordUrl.searchParams.set('rkey', rkey)
-      const existing = await fetch(recordUrl, {
+      const existing = await socialFetch(recordUrl.toString(), {
         signal: AbortSignal.timeout(30_000),
         headers: { authorization: 'Bearer ' + auth.accessJwt },
       })
       if (existing.ok) {
         const record = (await existing.json()) as { uri?: string; value?: { text?: string } }
-        if (record.uri && record.value?.text === variant.text)
+        if (
+          record.uri === `at://${auth.did}/app.bsky.feed.post/${rkey}` &&
+          record.value?.text === variant.text
+        )
           return {
             status: 'published',
             remoteId: record.uri,
-            remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+            remoteUrl: blueskyRemoteUrl(service, auth.did, rkey),
             receipt: {
               remotePostId: record.uri,
-              remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+              remoteUrl: blueskyRemoteUrl(service, auth.did, rkey),
               publishedAt: new Date(),
-              rawResponse: { ...record, reconciled: true, providerMode: 'live' },
+              rawResponse: {
+                ...record,
+                reconciled: true,
+                providerMode: socialProviderMode(service),
+              },
             },
           }
         return unknown(
@@ -270,7 +313,7 @@ export const blueskyAdapter: SocialProviderAdapter = {
   },
 }
 
-import { ADAPTER_REGISTRY, getSocialAdapter } from './worker'
+import { ADAPTER_REGISTRY } from './worker'
 import { decryptSecret } from './security'
 
 export const socialProviderAdapters: readonly SocialProviderAdapter[] = [
@@ -319,8 +362,11 @@ export function getProviderCapabilityTruth(
   detailedCapabilities?: Record<string, unknown>
   verifiedAt: string
 } {
-  const adapter = getSocialAdapter(network)
-  const effectiveMode = modeOverride || adapter.mode
+  const adapter = socialProviderFor(network)
+  const effectiveMode =
+    adapter.mode === 'manual-handoff' || adapter.mode === 'unavailable'
+      ? adapter.mode
+      : modeOverride || adapter.mode
 
   return {
     network,
