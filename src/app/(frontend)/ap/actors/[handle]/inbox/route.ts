@@ -1,4 +1,5 @@
 import { loadConfig } from '@/modules/core/config'
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 import {
   boundedActivity,
   readBoundedActivityBody,
@@ -95,25 +96,55 @@ export async function POST(request: Request, context: { params: Promise<{ handle
         typeof object.inReplyTo === 'string' &&
         typeof object.content === 'string'
       ) {
-        const discussion = await actor.payload.find({
-          collection: 'discussions',
-          where: { canonicalPath: { equals: new URL(object.inReplyTo).pathname } },
-          limit: 1,
-          depth: 0,
-          overrideAccess: true,
+        // RC3-01: discussion paths are unique per site only, so the path
+        // alone does not identify a tenant. A remote reply may attach
+        // only to a discussion owned by the receiving actor's site,
+        // cited under that site's canonical origin, and open to public
+        // replies. Anything else fails closed: the delivery is still
+        // acknowledged, but nothing is written.
+        const replyTarget = new URL(object.inReplyTo)
+        const actorSiteId = String((actor.publication as { site?: unknown }).site ?? '')
+        const settings = await resolveSiteSettings(actor.payload, {
+          includeTheme: false,
         })
-        if (discussion.docs[0])
-          await actor.payload.create({
-            collection: 'discussion-posts',
-            data: remoteReply({
-              activityId: String(verified.activity.id),
-              actor: String(verified.activity.actor),
-              content: object.content.replace(/<[^>]*>/g, ''),
-              inReplyTo: object.inReplyTo,
-              discussionId: String(discussion.docs[0].id),
-            }) as never,
+        const canonicalOrigin =
+          settings.canonicalOriginsBySite[actorSiteId] ?? settings.canonicalOrigin
+        let targetOrigin = ''
+        try {
+          targetOrigin = new URL(canonicalOrigin).origin
+        } catch {
+          targetOrigin = ''
+        }
+        if (actorSiteId && targetOrigin && replyTarget.origin === targetOrigin) {
+          const discussion = await actor.payload.find({
+            collection: 'discussions',
+            where: {
+              and: [
+                { canonicalPath: { equals: replyTarget.pathname } },
+                { site: { equals: actorSiteId } },
+                { status: { equals: 'open' } },
+                { visibility: { equals: 'public' } },
+                { commentsPolicy: { equals: 'open' } },
+                { moderationState: { not_equals: 'removed' } },
+              ],
+            },
+            limit: 1,
+            depth: 0,
             overrideAccess: true,
           })
+          if (discussion.docs[0])
+            await actor.payload.create({
+              collection: 'discussion-posts',
+              data: remoteReply({
+                activityId: String(verified.activity.id),
+                actor: String(verified.activity.actor),
+                content: object.content.replace(/<[^>]*>/g, ''),
+                inReplyTo: object.inReplyTo,
+                discussionId: String(discussion.docs[0].id),
+              }) as never,
+              overrideAccess: true,
+            })
+        }
       }
     }
     if (inbound.record) {
