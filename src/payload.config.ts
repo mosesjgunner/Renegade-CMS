@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
 
 import { loadConfig } from './modules/core/config'
+import { restoreValidationFieldErrorsHook } from './modules/core/validation-error-response'
 import {
   applyCoreGlobalGroups,
   applyProgressiveDisclosure,
@@ -82,6 +83,10 @@ export default buildConfig({
       scriptPath: path.resolve(dirname, 'scripts/recover-installation.ts'),
     },
   ],
+  // RC3-03 / F1: Payload's error formatter drops per-field validation
+  // data in this build's module graph; restore it at the afterError
+  // seam so the admin can render errors at the field (see the module).
+  hooks: { afterError: [restoreValidationFieldErrorsHook] },
   collections: applyProgressiveDisclosure(domainRegistrations.collections),
   globals: applyCoreGlobalGroups(domainRegistrations.globals),
   db: postgresAdapter({

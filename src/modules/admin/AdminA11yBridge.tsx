@@ -14,7 +14,10 @@ import { usePathname } from 'next/navigation'
  * 1. The nav link for the page being viewed gets no `aria-current`.
  * 2. A field validation error renders as plain text (`.field-error`)
  *    with no `role="alert"`, and the invalid input gets no
- *    `aria-invalid` / `aria-describedby`.
+ *    `aria-invalid` / `aria-describedby`. (RC3-03: the errors
+ *    themselves now reach the form — see validation-error-response —
+ *    and this bridge additionally moves focus to the first failing
+ *    control after a failed save.)
  *
  * This provider annotates the rendered chrome in place: it marks the
  * best-matching nav link `aria-current="page"` for the current route,
@@ -69,6 +72,43 @@ function annotateNav(pathname: string) {
 
 const FIELD_CONTROL = 'input:not([type="hidden"]), textarea, select, [contenteditable="true"]'
 
+/**
+ * RC3-03: after a failed save, focus belongs on the first failing
+ * control — but only when the failure is news and the user is not
+ * already working in a field. A submit leaves focus on the Save
+ * button (or nowhere, when React replaces it); both mean "the save
+ * just answered", so the bridge may move focus. If the user is
+ * typing in another field when an error appears, focus stays put.
+ * A control inside a collapsed section is not a focus target: the
+ * error still renders and announces, and the section header carries
+ * the failure state.
+ */
+export function shouldFocusErrorControl(args: {
+  activeKind: 'none' | 'button' | 'field' | 'other'
+  hasNewError: boolean
+  targetVisible: boolean
+}): boolean {
+  return (
+    args.hasNewError &&
+    args.targetVisible &&
+    (args.activeKind === 'none' || args.activeKind === 'button')
+  )
+}
+
+const activeElementKind = (): 'none' | 'button' | 'field' | 'other' => {
+  const el = document.activeElement
+  if (!el || el === document.body) return 'none'
+  if (
+    el.tagName === 'BUTTON' ||
+    el.getAttribute('role') === 'button' ||
+    (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'submit')
+  ) {
+    return 'button'
+  }
+  if (el.matches(FIELD_CONTROL)) return 'field'
+  return 'other'
+}
+
 export default function AdminA11yBridge({ children }: { children?: ReactNode }) {
   const pathname = usePathname()
 
@@ -76,6 +116,9 @@ export default function AdminA11yBridge({ children }: { children?: ReactNode }) 
     // input -> error element id this bridge associated with it, so the
     // association can be withdrawn when the error leaves the document.
     const upgraded = new Map<HTMLElement, string>()
+    // Error ids live on the previous pass, so a genuinely new failure
+    // (a fresh failed save) can be told apart from the standing set.
+    let knownErrorIds = new Set<string>()
     let errorSeq = 0
     let raf = 0
 
@@ -91,6 +134,7 @@ export default function AdminA11yBridge({ children }: { children?: ReactNode }) 
     const upgradeErrors = () => {
       const errors = [...document.querySelectorAll<HTMLElement>('.field-error')]
       const liveIds = new Set<string>()
+      let firstNewInput: HTMLElement | null = null
       for (const error of errors) {
         if (!error.id) {
           errorSeq += 1
@@ -101,6 +145,7 @@ export default function AdminA11yBridge({ children }: { children?: ReactNode }) 
         const field = error.closest('.field-type') ?? error.parentElement
         const input = field?.querySelector<HTMLElement>(FIELD_CONTROL)
         if (!input) continue
+        if (firstNewInput === null && !knownErrorIds.has(error.id)) firstNewInput = input
         const previous = upgraded.get(input)
         if (previous && previous !== error.id) withdraw(input, previous)
         upgraded.set(input, error.id)
@@ -121,6 +166,20 @@ export default function AdminA11yBridge({ children }: { children?: ReactNode }) 
           upgraded.delete(input)
         }
       }
+      // RC3-03: a fresh failure moves focus to its first control (see
+      // shouldFocusErrorControl for the exact conditions).
+      if (
+        firstNewInput &&
+        shouldFocusErrorControl({
+          activeKind: activeElementKind(),
+          hasNewError: true,
+          targetVisible: firstNewInput.getClientRects().length > 0,
+        })
+      ) {
+        firstNewInput.focus()
+        firstNewInput.scrollIntoView({ block: 'center' })
+      }
+      knownErrorIds = liveIds
     }
 
     const run = () => {
