@@ -175,6 +175,16 @@ export async function recordInbound(
     return { duplicate: false, record }
   } catch (error) {
     // The unique index is the final replay guard under concurrent requests.
+    // A racing loser's create can surface as a generic validation error
+    // rather than a 'unique' message (RC3-01), so re-check for the winning
+    // record before treating the failure as real.
+    const winner = await payload.find({
+      collection: 'inbound-network-activities',
+      where: { dedupeKey: { equals: input.dedupeKey } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (winner.docs[0]) return { duplicate: true, record: winner.docs[0] }
     if (String(error).toLowerCase().includes('unique')) return { duplicate: true, record: null }
     throw error
   }
