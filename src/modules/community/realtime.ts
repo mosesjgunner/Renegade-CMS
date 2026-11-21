@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events'
+import { AsyncLocalStorage } from 'node:async_hooks'
 import type { Payload } from 'payload'
 
 export type CommunityRealtimeEvent = {
@@ -50,6 +51,22 @@ class CommunityRealtimeBus extends EventEmitter {
 }
 
 export const communityRealtime = new CommunityRealtimeBus()
+const deferredRealtime = new AsyncLocalStorage<CommunityRealtimeEvent[]>()
+
+/** Deliver in-memory hints only after the operation has committed. */
+export async function withDeferredCommunityRealtime<T>(operation: () => Promise<T>): Promise<T> {
+  if (deferredRealtime.getStore()) return operation()
+  const pending: CommunityRealtimeEvent[] = []
+  const result = await deferredRealtime.run(pending, operation)
+  for (const event of pending) {
+    try {
+      communityRealtime.emitCommunityEvent(event)
+    } catch (error) {
+      console.error('[community] committed realtime hint delivery failed.', error)
+    }
+  }
+  return result
+}
 
 /**
  * Emits both to the in-memory realtime bus and persistently to realtime-events
@@ -115,5 +132,7 @@ export async function emitCommunityEvent(
       // request transaction. Never report business success after that rollback.
       if (payload.collections?.['realtime-events']) throw error
     }
-  communityRealtime.emitCommunityEvent(fullEvent)
+  const pending = deferredRealtime.getStore()
+  if (pending) pending.push(fullEvent)
+  else communityRealtime.emitCommunityEvent(fullEvent)
 }

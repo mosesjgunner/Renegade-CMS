@@ -1,4 +1,5 @@
 import { createLocalReq, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
 import { transactionPayload } from '../core/transaction-payload'
 import { canRenderPublic, type PublicState } from '../public/contracts'
 import { withExecutionLock } from '../operations/execution-lock'
@@ -29,7 +30,7 @@ import {
   sanitizeProfileProjection,
   type RelationshipCheck,
 } from './policy'
-import { emitCommunityEvent } from './realtime'
+import { emitCommunityEvent, withDeferredCommunityRealtime } from './realtime'
 import { loadProfileProjection, projectMemberProfile, relationshipView } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { getMemberNotificationPreference } from './notification-delivery'
@@ -93,7 +94,7 @@ const hasSanctionReadBoundary = (payload: Payload) =>
 
 async function discussionTransaction<T>(
   payload: Payload,
-  execute: (scoped: Payload) => Promise<T>,
+  execute: (scoped: Payload, transactionID?: string | number) => Promise<T>,
 ) {
   if (!payload.db?.beginTransaction) return execute(payload)
   const transactionID = await payload.db.beginTransaction()
@@ -101,14 +102,121 @@ async function discussionTransaction<T>(
     throw new CommunityError('Transactional storage unavailable', 503, 'DISCUSSION_DB_UNAVAILABLE')
   const req = await createLocalReq({}, payload)
   req.transactionID = transactionID
-  try {
-    const result = await execute(transactionPayload(payload, req))
-    await payload.db.commitTransaction(transactionID)
-    return result
-  } catch (error) {
-    await payload.db.rollbackTransaction(transactionID)
-    throw error
-  }
+  return withDeferredCommunityRealtime(async () => {
+    try {
+      const result = await execute(transactionPayload(payload, req), transactionID)
+      await payload.db.commitTransaction(transactionID)
+      return result
+    } catch (error) {
+      await payload.db.rollbackTransaction(transactionID)
+      throw error
+    }
+  })
+}
+
+/** Idempotent v1 notification fanout: marker and notifications commit together. */
+export async function dispatchV1ThreadNotifications(
+  payload: Payload,
+  input: { siteId: string; threadId: string; postId: string; authorId: string },
+) {
+  if (!payload.collections && !payload.db?.beginTransaction) return
+  if (!hasSanctionReadBoundary(payload) || !payload.db?.beginTransaction)
+    throw new CommunityError('Transactional storage unavailable', 503)
+  return withExecutionLock(payload, `thread-notifications:${input.postId}`, () =>
+    discussionTransaction(payload, async (scoped, transactionID) => {
+      if (!transactionID) throw new CommunityError('Transactional storage unavailable', 503)
+      const session = payload.db.sessions?.[String(transactionID)]?.db as
+        | { execute: (query: unknown) => Promise<{ rows: unknown[] }> }
+        | undefined
+      if (!session) throw new CommunityError('Transactional storage unavailable', 503)
+      const post = (await scoped.findByID({
+        collection: 'discussion-posts',
+        id: input.postId,
+        depth: 0,
+        overrideAccess: true,
+      })) as unknown as Record<string, unknown>
+      if (
+        !post ||
+        String(post.discussion) !== input.threadId ||
+        String(post.authorMember) !== input.authorId ||
+        post.status !== 'published' ||
+        post.moderationState !== 'clear'
+      )
+        return
+      const discussion = (await scoped.findByID({
+        collection: 'discussions',
+        id: input.threadId,
+        depth: 0,
+        overrideAccess: true,
+      })) as unknown as Record<string, unknown>
+      if (!discussion || String(discussion.site) !== input.siteId)
+        throw new CommunityError('Thread unavailable', 404)
+      const completed = await session.execute(
+        sql`SELECT post_id FROM thread_notification_dispatches WHERE post_id = ${input.postId}::uuid`,
+      )
+      if (completed.rows.length) return
+      const readiness = await session.execute(sql`
+        SELECT EXISTS (
+          SELECT 1 FROM outbox_events
+          WHERE event_type = 'comment.created.v1' AND payload->>'comment_id' = ${input.postId}
+        ) AND EXISTS (
+          SELECT 1 FROM moderation_submission_fingerprints
+          WHERE site_id = ${input.siteId}::uuid AND target_type = 'comment' AND target_id = ${input.postId}::uuid
+        ) AS ready
+      `)
+      if (!(readiness.rows[0] as { ready?: boolean } | undefined)?.ready)
+        throw new CommunityError(
+          'Comment completion requires operator recovery before notifications can be sent.',
+          503,
+          'COMMENT_COMPLETION_INCOMPLETE',
+        )
+      const marker = await session.execute(
+        sql`INSERT INTO thread_notification_dispatches (post_id) VALUES (${input.postId}::uuid) ON CONFLICT DO NOTHING RETURNING post_id`,
+      )
+      if (!marker.rows.length) return
+      const recipients = new Set(
+        await eligibleThreadSubscribers(scoped, input.siteId, discussion, input.authorId),
+      )
+      if (post.parent) {
+        const parent = await scoped
+          .findByID({
+            collection: 'discussion-posts',
+            id: String(post.parent),
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (parent?.authorMember) {
+          const parentId =
+            typeof parent.authorMember === 'object'
+              ? String(parent.authorMember.id)
+              : String(parent.authorMember)
+          for (const eligible of await eligibleThreadSubscribers(
+            scoped,
+            input.siteId,
+            discussion,
+            input.authorId,
+            [parentId],
+          ))
+            recipients.add(eligible)
+        }
+      }
+      for (const recipientMemberId of recipients) {
+        if (recipientMemberId === input.authorId) continue
+        await dispatchCommunityNotification(scoped, {
+          siteId: input.siteId,
+          recipientMemberId,
+          actorMemberId: input.authorId,
+          type: 'comment.reply',
+          object: { id: input.postId, permalink: post.permalink, discussionId: input.threadId },
+          payloadData: {
+            bodySnippet: String(post.body ?? '').slice(0, 120),
+            discussionTitle: String(discussion.title ?? ''),
+          },
+        })
+      }
+    }),
+  )
 }
 
 /** Subscribers are only candidates; current member and discussion access is rechecked. */
@@ -117,10 +225,12 @@ async function eligibleThreadSubscribers(
   siteId: string,
   discussion: Record<string, unknown>,
   actorMemberId: string,
+  explicitCandidates?: string[],
 ): Promise<string[]> {
   // In-memory contract doubles do not implement the subscription table.
   if (!hasSanctionReadBoundary(payload)) return []
-  const candidates = await getThreadSubscribers(payload, String(discussion.id))
+  const candidates =
+    explicitCandidates ?? (await getThreadSubscribers(payload, String(discussion.id)))
   if (!candidates.length) return []
   const members = await payload.find({
     collection: 'members',
@@ -130,6 +240,63 @@ async function eligibleThreadSubscribers(
     depth: 0,
     overrideAccess: true,
   })
+  const roleRows = await payload.find({
+    collection: 'member-site-roles',
+    where: {
+      and: [
+        { site: { equals: siteId } },
+        { member: { in: candidates } },
+        { role: { in: ['moderator', 'community-manager'] } },
+      ],
+    },
+    pagination: false,
+    limit: 0,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const teamRows =
+    !payload.collections || payload.collections['team-memberships']
+      ? await payload.find({
+          collection: 'team-memberships',
+          where: {
+            and: [
+              { site: { equals: siteId } },
+              { scopeKind: { equals: 'site' } },
+              { member: { in: candidates } },
+              { status: { equals: 'active' } },
+              { role: { in: ['owner', 'administrator', 'moderator'] } },
+            ],
+          },
+          pagination: false,
+          limit: 0,
+          depth: 0,
+          overrideAccess: true,
+        })
+      : { docs: [] }
+  const relationshipRows = await payload.find({
+    collection: 'relationships',
+    where: {
+      and: [
+        { site: { equals: siteId } },
+        { subject: { in: candidates } },
+        { role: { in: ['owner', 'moderator'] } },
+        { status: { equals: 'active' } },
+      ],
+    },
+    pagination: false,
+    limit: 0,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const relationId = (value: unknown) =>
+    typeof value === 'object' && value !== null
+      ? String((value as { id?: unknown }).id ?? '')
+      : String(value ?? '')
+  const moderators = new Set([
+    ...roleRows.docs.map((row) => relationId(row.member)),
+    ...teamRows.docs.map((row) => relationId(row.member)),
+    ...relationshipRows.docs.map((row) => relationId(row.subject)),
+  ])
   return (members.docs as unknown as Array<Record<string, unknown>>)
     .filter((member) => {
       const memberId = String(member.id)
@@ -137,7 +304,13 @@ async function eligibleThreadSubscribers(
       return evaluateCommunityPolicy(
         {
           siteId,
-          actor: { kind: 'member', memberId, status: 'active', isStaff: false, isModerator: false },
+          actor: {
+            kind: 'member',
+            memberId,
+            status: 'active',
+            isStaff: false,
+            isModerator: moderators.has(memberId),
+          },
         },
         {
           siteId: String(discussion.site),
@@ -2302,14 +2475,29 @@ export async function getMemberNotifications(
     const activitySiteId =
       typeof site === 'string' ? site : String((site as { id?: string } | null)?.id ?? '')
     if (activitySiteId !== context.siteId) continue
-    // New reply notifications retain the discussion identity so that an
-    // old subscription cannot reveal a thread that has since become private.
-    const object = activity.object as { discussionId?: unknown } | null
-    if (typeof object?.discussionId === 'string') {
+    // Resolve older reply notifications through their canonical post too;
+    // never reveal a reply or thread that is no longer accessible.
+    const object = activity.object as { id?: unknown; discussionId?: unknown } | null
+    let discussionId = typeof object?.discussionId === 'string' ? object.discussionId : ''
+    if (['comment.reply', 'thread.reply'].includes(String(activity.type))) {
+      if (typeof object?.id !== 'string') continue
+      const post = (await payload
+        .findByID({ collection: 'discussion-posts', id: object.id, depth: 0, overrideAccess: true })
+        .catch(() => null)) as unknown as Record<string, unknown> | null
+      if (!post || post.status !== 'published' || post.moderationState !== 'clear') continue
+      const postDiscussionId =
+        typeof post.discussion === 'object' && post.discussion !== null
+          ? String((post.discussion as { id?: unknown }).id ?? '')
+          : String(post.discussion ?? '')
+      if (discussionId && discussionId !== postDiscussionId) continue
+      discussionId = postDiscussionId
+      if (!discussionId) continue
+    }
+    if (discussionId) {
       const discussion = (await payload
         .findByID({
           collection: 'discussions',
-          id: object.discussionId,
+          id: discussionId,
           depth: 0,
           overrideAccess: true,
         })

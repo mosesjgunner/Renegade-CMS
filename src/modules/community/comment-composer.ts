@@ -482,6 +482,15 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
       )
     const createdAt = new Date(String(existing.createdAt)).getTime()
     if (currentTime - createdAt <= 60_000) {
+      if (authorType === 'member' && input.authorId) {
+        const { dispatchV1ThreadNotifications } = await import('./service')
+        await dispatchV1ThreadNotifications(payload, {
+          siteId: input.siteId,
+          threadId: input.threadId,
+          postId: String(existing.id),
+          authorId: input.authorId,
+        })
+      }
       const chain = existing.parent
         ? await parentChain(payload, relationId(existing.parent), input.threadId).catch(() => ({
             depth: 0,
@@ -665,39 +674,14 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
       text: rawBody,
     })
 
-  // RC2-DEBT-21: with the inbox projector retired, the parent author is
-  // notified through the canonical dispatcher — the same comment.reply
-  // notification the community composer path sends. Best-effort: a
-  // notification failure never fails the comment itself. (Dynamic
-  // import: service.ts already imports this module.)
-  if (input.parentId && authorType === 'member' && input.authorId) {
-    try {
-      const parent = (await payload
-        .findByID({
-          collection: 'discussion-posts',
-          id: input.parentId,
-          depth: 0,
-          overrideAccess: true,
-        })
-        .catch(() => null)) as unknown as Doc | null
-      const parentAuthorId = parent ? relationId(parent.authorMember) : ''
-      if (parentAuthorId && parentAuthorId !== input.authorId) {
-        const { dispatchCommunityNotification } = await import('./service')
-        await dispatchCommunityNotification(payload, {
-          siteId: input.siteId,
-          recipientMemberId: parentAuthorId,
-          actorMemberId: input.authorId,
-          type: 'comment.reply',
-          object: { id: String(created.id), permalink },
-          payloadData: {
-            bodySnippet: bodyText.slice(0, 120),
-            discussionTitle: String(discussion?.title ?? ''),
-          },
-        })
-      }
-    } catch (error) {
-      console.error('[comment-composer] reply notification dispatch failed.', error)
-    }
+  if (authorType === 'member' && input.authorId) {
+    const { dispatchV1ThreadNotifications } = await import('./service')
+    await dispatchV1ThreadNotifications(payload, {
+      siteId: input.siteId,
+      threadId: input.threadId,
+      postId: String(created.id),
+      authorId: input.authorId,
+    })
   }
 
   return {

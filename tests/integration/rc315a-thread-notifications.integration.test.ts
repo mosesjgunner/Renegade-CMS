@@ -7,6 +7,8 @@ import {
   listMemberNotificationsPage,
 } from '../../src/modules/community/service'
 import { setMemberRelation } from '../../src/modules/community/profile-projection'
+import { communityRealtime } from '../../src/modules/community/realtime'
+import { postThreadComment } from '../../src/modules/community/comment-composer'
 import {
   subscribeToThread,
   unsubscribeFromThread,
@@ -118,6 +120,39 @@ describe('RC3-15A thread subscriber notifications', () => {
     const threadId = world.siteA.discussionId!
     const owner = world.siteA.owner.memberId
     const subscriber = world.siteA.subscriber.memberId
+    const moderator = world.siteA.editor.memberId
+    const roles = await (payload as any).find({
+      collection: 'member-site-roles',
+      where: { and: [{ site: { equals: site } }, { member: { equals: moderator } }] },
+      overrideAccess: true,
+    })
+    const previousRole = roles.docs[0].role
+    await (payload as any).update({
+      collection: 'member-site-roles',
+      id: roles.docs[0].id,
+      data: { role: 'moderator' },
+      overrideAccess: true,
+    })
+    await subscribeToThread(payload, { siteId: site, threadId, memberId: moderator })
+    const moderatorBefore = await (payload as any).count({
+      collection: 'notifications',
+      where: { recipientMember: { equals: moderator } },
+      overrideAccess: true,
+    })
+    // Model a pre-upgrade reply notification whose object contains only the post id.
+    const historical = await (payload as any).find({
+      collection: 'notifications',
+      where: { recipientMember: { equals: subscriber } },
+      depth: 1,
+      overrideAccess: true,
+    })
+    const activity = historical.docs[0].activityEvent
+    await (payload as any).update({
+      collection: 'activity-events',
+      id: activity.id,
+      data: { object: { id: activity.object.id, permalink: activity.object.permalink } },
+      overrideAccess: true,
+    })
     await setMemberNotificationPreference(payload, {
       siteId: site,
       memberId: subscriber,
@@ -140,6 +175,18 @@ describe('RC3-15A thread subscriber notifications', () => {
       { siteId: site, discussionId: threadId, authorMemberId: owner, body: 'Private reply' },
       context(site, owner),
     )
+    const moderatorAfter = await (payload as any).count({
+      collection: 'notifications',
+      where: { recipientMember: { equals: moderator } },
+      overrideAccess: true,
+    })
+    expect(moderatorAfter.totalDocs).toBe(moderatorBefore.totalDocs + 1)
+    await (payload as any).update({
+      collection: 'member-site-roles',
+      id: roles.docs[0].id,
+      data: { role: previousRole },
+      overrideAccess: true,
+    })
     await (payload as any).update({
       collection: 'discussions',
       id: threadId,
@@ -227,6 +274,10 @@ describe('RC3-15A thread subscriber notifications', () => {
       editor: await notificationCount(editor),
     }
     const original = payload.create.bind(payload)
+    const hints: string[] = []
+    const unsubscribeHints = communityRealtime.subscribeMember(owner, (event) =>
+      hints.push(event.type),
+    )
     let calls = 0
     const spy = vi.spyOn(payload, 'create').mockImplementation(async (args: any) => {
       if (args.collection === 'notifications' && ++calls === 2)
@@ -252,10 +303,13 @@ describe('RC3-15A thread subscriber notifications', () => {
     expect(await postCount()).toBe(before.posts)
     expect(await notificationCount(owner)).toBe(before.owner)
     expect(await notificationCount(editor)).toBe(before.editor)
+    expect(hints).toEqual([])
     await send()
     expect(await postCount()).toBe(before.posts + 1)
     expect(await notificationCount(owner)).toBe(before.owner + 1)
     expect(await notificationCount(editor)).toBe(before.editor + 1)
+    expect(hints).toContain('community.notification_dispatched')
+    unsubscribeHints()
   }, 120000)
   it('uses the session and host-bound subscription routes and rejects a foreign site', async () => {
     const site = world.siteA.siteId
@@ -283,5 +337,82 @@ describe('RC3-15A thread subscriber notifications', () => {
       }),
     }
     expect((await subscribe(request('POST'), foreign)).status).toBe(404)
+  }, 120000)
+  it('fans out a v1 reply once and replays its idempotency key without duplicates', async () => {
+    const site = world.siteA.siteId
+    const threadId = world.siteA.discussionId!
+    const subscriber = world.siteA.subscriber.memberId
+    const author = world.siteA.member.memberId
+    await setMemberRelation(payload, {
+      siteId: site,
+      subjectId: subscriber,
+      targetId: author,
+      kind: 'mute',
+      active: false,
+    })
+    await setMemberNotificationPreference(payload, {
+      siteId: site,
+      memberId: subscriber,
+      channel: 'in_app',
+      kind: 'comment.reply',
+      frequency: 'immediate',
+    })
+    await subscribeToThread(payload, { siteId: site, threadId, memberId: subscriber })
+    const before = await listMemberNotificationsPage(payload, subscriber, context(site, subscriber))
+    const input = {
+      siteId: site,
+      threadId,
+      authorId: author,
+      body: `A v1 subscriber test ${world.suffix}`,
+      idempotencyKey: `v1-rc315a-${world.suffix}`,
+    }
+    const created = await postThreadComment(payload, input)
+    const replay = await postThreadComment(payload, input)
+    expect(created.replayed).toBe(false)
+    expect(replay.replayed).toBe(true)
+    const after = await listMemberNotificationsPage(payload, subscriber, context(site, subscriber))
+    expect(after.unreadCount).toBe(before.unreadCount + 1)
+  }, 120000)
+  it('retries a v1 fanout after an interrupted notification without duplicating the reply', async () => {
+    const site = world.siteA.siteId
+    const threadId = world.siteA.discussionId!
+    const subscriber = world.siteA.subscriber.memberId
+    const author = world.siteA.member.memberId
+    const count = async () =>
+      (
+        await (payload as any).count({
+          collection: 'notifications',
+          where: { recipientMember: { equals: subscriber } },
+          overrideAccess: true,
+        })
+      ).totalDocs
+    const before = await count()
+    const input = {
+      siteId: site,
+      threadId,
+      authorId: author,
+      body: `A different v1 recovery message ${world.suffix}`,
+      idempotencyKey: `v1-recovery-${world.suffix}`,
+    }
+    const original = payload.create.bind(payload)
+    let injected = false
+    const spy = vi.spyOn(payload, 'create').mockImplementation(async (args: any) => {
+      if (args.collection === 'notifications' && !injected) {
+        injected = true
+        throw new Error('injected v1 interruption')
+      }
+      return original(args)
+    })
+    try {
+      await expect(postThreadComment(payload, input)).rejects.toThrow('injected v1 interruption')
+    } finally {
+      spy.mockRestore()
+    }
+    expect(await count()).toBe(before)
+    const replay = await postThreadComment(payload, input)
+    expect(replay.replayed).toBe(true)
+    expect(await count()).toBe(before + 1)
+    await postThreadComment(payload, input)
+    expect(await count()).toBe(before + 1)
   }, 120000)
 })

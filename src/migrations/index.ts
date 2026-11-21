@@ -918,6 +918,12 @@ export const migrations = [
     down: podrc01DirectoryOwnerEmail.down,
     name: '20261120_120000_podrc01_directory_owner_email',
   },
+  {
+    up: rc315aThreadNotificationDispatch.up,
+    down: rc315aThreadNotificationDispatch.down,
+    name: '20261121_120000_rc315a_thread_notification_dispatch',
+  },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
 import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
+import * as rc315aThreadNotificationDispatch from './20261121_120000_rc315a_thread_notification_dispatch'
