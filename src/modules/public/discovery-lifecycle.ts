@@ -34,6 +34,7 @@ export type RenderedAuditScopeEvidence = {
   skipped?: number
   examinedUrls: readonly string[]
   complete: boolean
+  inboundLinksComplete?: boolean
 }
 
 export type IssueStateFilter = 'all' | 'open' | 'resolved' | 'ignored'
@@ -187,7 +188,10 @@ export async function persistRenderedAuditLifecycle(
   let unverified = 0
   for (const [key, existingIssue] of existingMap.entries()) {
     if (activeDedupeKeys.has(key) || existingIssue.status !== 'open') continue
-    if (!examinedUrls.has(String(existingIssue.targetId))) {
+    if (
+      !examinedUrls.has(String(existingIssue.targetId)) ||
+      (key.startsWith('disc-05:DISC-05-NO-AUDITED-INBOUND-LINK:') && !scope?.inboundLinksComplete)
+    ) {
       unverified++
       continue
     }

@@ -545,6 +545,27 @@ export async function runRenderedAudit(options: AuditOptions): Promise<RenderedA
     state,
     complete: state === 'complete' || state === 'no-eligible',
   }
+  // An incomplete crawl cannot establish the absence of an inbound link.
+  // Self-links do not make a page reachable from another audited page.
+  if (state === 'complete' && pages.every((page) => page.status >= 200 && page.status < 300)) {
+    const inbound = new Set(
+      graph
+        .filter((link) => withoutFragment(link.source) !== withoutFragment(link.target))
+        .map((link) => withoutFragment(link.target)),
+    )
+    for (const page of pages) {
+      if (new URL(page.url).pathname === '/' || inbound.has(withoutFragment(page.url))) continue
+      page.issues.push(
+        issue(
+          page.url,
+          'DISC-05-NO-AUDITED-INBOUND-LINK',
+          'informational',
+          'No other audited page links to this URL. Review navigation and links outside this audit scope.',
+          'body',
+        ),
+      )
+    }
+  }
   return {
     pages: pages.sort((a, b) => a.url.localeCompare(b.url)),
     issues: pages.flatMap((p) => p.issues),

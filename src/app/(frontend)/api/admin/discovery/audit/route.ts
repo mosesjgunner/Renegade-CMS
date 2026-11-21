@@ -127,6 +127,9 @@ export async function POST(request: Request) {
             skipped: audit.scope.skipped.length,
             complete: audit.scope.complete,
             examinedUrls,
+            inboundLinksComplete:
+              audit.scope.state === 'complete' &&
+              audit.pages.every((page) => page.status >= 200 && page.status < 300),
           }
         : undefined,
     )

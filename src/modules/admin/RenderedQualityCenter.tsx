@@ -26,6 +26,8 @@ const RULE_EXPLANATIONS: Record<string, string> = {
     'Description length out of bounds — adjust it to fit search display.',
   'DISC-05-CANNIBALIZATION-REVIEW':
     'Possible content overlap — two pages compete for the same search intent; review and differentiate or consolidate.',
+  'DISC-05-NO-AUDITED-INBOUND-LINK':
+    'No inbound link from audited pages — review whether this page needs a link.',
 }
 const ruleExplanation = (ruleId: string): string =>
   RULE_EXPLANATIONS[ruleId] ?? 'Discovery issue — see the evidence column for what was found.'
