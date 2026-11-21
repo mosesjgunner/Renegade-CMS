@@ -20,8 +20,14 @@ export async function proxy(request: NextRequest) {
     response.headers.set('Referrer-Policy', 'no-referrer')
     return response
   }
+  // Health probes are exempt from site resolution: /health/live is a
+  // static liveness answer and /health/ready runs its own database and
+  // migration checks, so neither may depend on the database-backed site
+  // lookup below. Without this exemption a database outage (or an
+  // unmigrated database during first install) turned both probes into
+  // bare 500s before their handlers could answer (RC3-06).
   if (
-    !/^\/(api|admin|_next)(\/|$)/.test(path) &&
+    !/^\/(api|admin|_next|health)(\/|$)/.test(path) &&
     !/\.(ico|png|jpg|svg|css|js|woff2?)$/.test(path)
   ) {
     const [{ getPayload }, { default: config }, { publicSiteForHost }, { resolveRedirectForSite }] =

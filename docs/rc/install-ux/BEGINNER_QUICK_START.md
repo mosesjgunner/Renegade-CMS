@@ -15,13 +15,15 @@ the browser. If someone else runs the server for you, skip to step 3.
 ## 2. Install (server operator, ~one command)
 
 ```sh
-./install.sh --app-url https://your-domain.example
+./install.sh --instance your-site --app-url https://your-domain.example
 ```
 
 The installer checks the machine first and tells you exactly what is
-missing if anything is. When it finishes it prints your site address and
-a one-line command to retrieve the one-time setup token. Keep that token
-private — it is shown to whoever runs that command on the server.
+missing if anything is. (`your-site` is a short name for this
+installation on this server — pick your own.) When it finishes it
+prints a claim link containing your one-time setup token, valid for 15
+minutes and single use. Keep that link private — whoever opens it
+first becomes the owner.
 
 Already installed and something interrupted you? Run the same command
 again. The installer recognizes its own running installation and safely
@@ -29,8 +31,10 @@ continues; it will not wipe or replace anything.
 
 ## 3. Finish in the browser (owner, ~five minutes)
 
-1. Open the setup address the installer printed.
-2. Paste the one-time token and confirm your email.
+1. Open the claim link the installer printed; it fills in your
+   one-time token for you. If you open the setup address without the
+   link, paste the token instead.
+2. Confirm your email.
 3. Name your site. The short address (slug), language, and timezone are
    filled in for you — change them only if they are wrong.
 4. Pick a look, or keep the default.
