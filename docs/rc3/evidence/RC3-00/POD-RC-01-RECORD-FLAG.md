@@ -11,7 +11,7 @@ owner's separate decision.
   an ancestor of the tag).
 - The published RC2 release notes describe POD-RC-01 as not part of
   RC2. Both statements are true in different senses — the notes
-  describe the RC2 *scope and exit verdict*; the tag is a *tree*,
+  describe the RC2 _scope and exit verdict_; the tag is a _tree_,
   and the tree includes the podcast pass because it merged to main
   before the tag was cut.
 - Left unannotated, a reader of the tag could reasonably conclude
