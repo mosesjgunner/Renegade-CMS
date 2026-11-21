@@ -97,6 +97,7 @@ describe('Social Distribution Admin API Routes', () => {
           displayName: 'LinkedIn Page',
           network: 'linkedin',
           capabilityState: 'available',
+          diagnostics: { mode: 'live' },
         },
       ]
 
@@ -106,6 +107,7 @@ describe('Social Distribution Admin API Routes', () => {
       const data = await res.json()
       expect(data.accounts).toHaveLength(2)
       expect(data.accounts[0].network).toBe('mastodon')
+      expect(data.accounts[1].diagnostics.mode).toBe('manual-handoff')
     })
 
     it('enforces staff role requirement', async () => {

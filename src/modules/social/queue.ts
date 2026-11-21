@@ -155,7 +155,7 @@ export function parseRateLimitHeaders(
 }
 
 export interface ExecutionResult {
-  status: 'succeeded' | 'failed' | 'retrying' | 'reconnect_required'
+  status: 'succeeded' | 'failed' | 'retrying' | 'reconnect_required' | 'unknown'
   deliveryRecord: SocialDeliveryRecord
   canonicalPostStatus: CanonicalSocialPost['status']
   error?: string
@@ -191,6 +191,7 @@ export async function executeVariantDelivery(
     }
   }
 
+  let publishStarted = false
   try {
     delivery.attemptCount += 1
     delivery.lastAttemptAt = new Date().toISOString()
@@ -220,6 +221,7 @@ export async function executeVariantDelivery(
       throw new Error(`Provider adapter for ${variant.network} does not implement publish()`)
     }
 
+    publishStarted = true
     const publishResult = await adapter.publish(targetVariantPayload, authContext, mediaResolver)
 
     // Handle published success
@@ -258,6 +260,24 @@ export async function executeVariantDelivery(
     )
 
     delivery.lastError = errorMessage
+
+    if (publishResult.status === 'unknown' || publishResult.error?.remoteOutcome === 'unknown') {
+      delivery.status = 'unknown'
+      variant.status = 'unknown'
+      delivery.nextRetryAt = undefined
+      delivery.executionAudit.push({
+        action: 'delivery.unknown',
+        timestamp: new Date().toISOString(),
+        details: { error: errorMessage },
+      })
+      post.status = evaluateCanonicalPostStatus(post)
+      return {
+        status: 'unknown',
+        deliveryRecord: delivery,
+        canonicalPostStatus: post.status,
+        error: errorMessage,
+      }
+    }
 
     // Authentication failure -> Reconnect required
     if (errorKind === 'authentication' || errorKind === 'reconnect-required') {
@@ -360,6 +380,24 @@ export async function executeVariantDelivery(
   } catch (err: unknown) {
     const errorMsg = sanitizeSocialLog(err instanceof Error ? err.message : String(err))
     delivery.lastError = errorMsg
+
+    if (publishStarted) {
+      delivery.status = 'unknown'
+      variant.status = 'unknown'
+      delivery.nextRetryAt = undefined
+      delivery.executionAudit.push({
+        action: 'delivery.unknown',
+        timestamp: new Date().toISOString(),
+        details: { error: errorMsg, attempt: delivery.attemptCount },
+      })
+      post.status = evaluateCanonicalPostStatus(post)
+      return {
+        status: 'unknown',
+        deliveryRecord: delivery,
+        canonicalPostStatus: post.status,
+        error: errorMsg,
+      }
+    }
 
     if (delivery.attemptCount < delivery.maxRetries) {
       const delayMs = calculateExponentialBackoff(

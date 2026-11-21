@@ -18,6 +18,7 @@ export type VariantDeliveryStatus =
   | 'uploading_media'
   | 'processing_media'
   | 'publishing'
+  | 'unknown'
   | 'published'
   | 'retrying'
   | 'failed'
@@ -284,7 +285,14 @@ export function evaluateCanonicalPostStatus(post: CanonicalSocialPost): Canonica
   const anyPublished = statuses.some((s) => s === 'published')
   const anyFailed = statuses.some((s) => s === 'failed' || s === 'reconnect_required')
   const anyProcessing = statuses.some((s) =>
-    ['pending', 'uploading_media', 'processing_media', 'publishing', 'retrying'].includes(s),
+    [
+      'pending',
+      'uploading_media',
+      'processing_media',
+      'publishing',
+      'retrying',
+      'unknown',
+    ].includes(s),
   )
 
   if (anyPublished && anyFailed && !anyProcessing) {
