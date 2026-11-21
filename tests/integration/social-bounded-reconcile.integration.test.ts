@@ -25,9 +25,9 @@ import {
  * without creating a second post.
  *
  * Runs against the repository AT-protocol fixture
- * (tests/rc03/provider-fixture.mjs, 127.0.0.1:3130).
+ * (tests/rc03/provider-fixture.mjs, isolated on 127.0.0.1:13160).
  */
-const FIXTURE = 'http://127.0.0.1:3130'
+const FIXTURE = 'http://127.0.0.1:13160'
 
 async function fixtureUp(): Promise<boolean> {
   try {
@@ -42,6 +42,7 @@ describe('RC2-DEBT-25: bounded-out failed items settle via read-only reconcile',
   let payload: Payload
   let world: Rc2World
   let fixtureProc: ChildProcess | null = null
+  const originalAllowedOrigins = process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS
   const stamp = Date.now().toString(36)
 
   async function seedBoundedItem(identifier: string, text: string) {
@@ -117,17 +118,18 @@ describe('RC2-DEBT-25: bounded-out failed items settle via read-only reconcile',
   }
 
   beforeAll(async () => {
+    process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS = FIXTURE
     assertFixtureSafeDatabase(process.env.DATABASE_URL)
-    if (!(await fixtureUp())) {
-      fixtureProc = spawn('node', ['tests/rc03/provider-fixture.mjs'], {
-        cwd: process.cwd(),
-        stdio: 'ignore',
-      })
-      const t0 = Date.now()
-      while (!(await fixtureUp())) {
-        if (Date.now() - t0 > 30_000) throw new Error('provider fixture did not start')
-        await new Promise((r) => setTimeout(r, 500))
-      }
+    if (await fixtureUp()) throw new Error('RC316 fixture port is already occupied')
+    fixtureProc = spawn('node', ['tests/rc03/provider-fixture.mjs'], {
+      cwd: process.cwd(),
+      stdio: 'ignore',
+      env: { ...process.env, SOCIAL_FIXTURE_PORT: '13160' },
+    })
+    const t0 = Date.now()
+    while (!(await fixtureUp())) {
+      if (Date.now() - t0 > 30_000) throw new Error('provider fixture did not start')
+      await new Promise((r) => setTimeout(r, 500))
     }
     payload = await getPayload({ config })
     world = await buildRc2World(payload)
@@ -136,7 +138,67 @@ describe('RC2-DEBT-25: bounded-out failed items settle via read-only reconcile',
   afterAll(async () => {
     if (payload && world) await teardownRc2World(payload, world)
     fixtureProc?.kill()
+    if (originalAllowedOrigins === undefined) delete process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS
+    else process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS = originalAllowedOrigins
   })
+
+  it('quarantines a lost response and reconciles without a second provider submission', async () => {
+    const did = 'did:plc:bad'
+    const { queueId } = await seedBoundedItem('bad.test', `RC316 lost response ${stamp}`)
+    await (payload as any).update({
+      collection: 'social-queue-items',
+      id: queueId,
+      data: { status: 'scheduled', attemptCount: 0, deadLetterReason: null },
+      overrideAccess: true,
+    })
+    const before = await (await fetch(`${FIXTURE}/state`)).json()
+    await fetch(`${FIXTURE}/recover`)
+    await executeSocialQueueItem(payload, {
+      queueItemId: queueId,
+      workerId: 'rc316',
+      mode: 'dispatch',
+    })
+    const unknown = await (payload as any).findByID({
+      collection: 'social-queue-items',
+      id: queueId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    expect(unknown.status).toBe('unknown')
+    expect(unknown.attemptCount).toBe(1)
+    await executeSocialQueueItem(payload, {
+      queueItemId: queueId,
+      workerId: 'rc316',
+      mode: 'retry',
+      operatorRequested: true,
+    })
+    const afterRetry = await (await fetch(`${FIXTURE}/state`)).json()
+    expect(afterRetry.requests[did]).toBe((before.requests[did] ?? 0) + 1)
+    await executeSocialQueueItem(payload, {
+      queueItemId: queueId,
+      workerId: 'rc316',
+      mode: 'reconcile',
+    })
+    const settled = await (payload as any).findByID({
+      collection: 'social-queue-items',
+      id: queueId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const afterReconcile = await (await fetch(`${FIXTURE}/state`)).json()
+    expect(settled.status).toBe('published')
+    expect(settled.attemptCount).toBe(1)
+    const attempts = await (payload as any).find({
+      collection: 'social-publish-attempts',
+      where: { queueItem: { equals: queueId } },
+      depth: 0,
+      overrideAccess: true,
+    })
+    expect(attempts.docs).toHaveLength(1)
+    expect(attempts.docs[0].response).toMatchObject({ providerMode: 'local-harness' })
+    expect(afterReconcile.requests[did]).toBe((before.requests[did] ?? 0) + 1)
+    expect(afterReconcile.creates[did]).toBe((before.creates[did] ?? 0) + 1)
+  }, 120_000)
 
   it('settles a bounded-out item to published from provider truth, spending no attempt and creating no second post', async () => {
     const identifier = `settle${stamp.slice(-6)}.test`
