@@ -8,6 +8,40 @@ import type { RenderedAuditIssue } from '../../src/modules/public/discovery-audi
 import type { Payload } from 'payload'
 
 describe('DISC-05 Persisted Lifecycle Fields & Quality Center Store', () => {
+  it('does not resolve an inbound-link finding without a complete link graph', async () => {
+    const url = 'https://example.test/a'
+    const payload = {
+      create: vi.fn(async () => ({ id: 'scan' })),
+      find: vi.fn(async () => ({
+        docs: [
+          {
+            id: 'issue',
+            targetId: url,
+            status: 'open',
+            dedupeKey: `disc-05:DISC-05-NO-AUDITED-INBOUND-LINK:${url}`,
+          },
+        ],
+      })),
+      update: vi.fn(async () => ({})),
+    } as unknown as Payload
+    const scope = {
+      state: 'partial' as const,
+      eligible: 2,
+      examined: 1,
+      examinedUrls: [url],
+      complete: false,
+    }
+    const partial = await persistRenderedAuditLifecycle(payload, 'site', [], scope)
+    expect(partial).toMatchObject({ resolved: 0, unverified: 1 })
+    expect(payload.update).not.toHaveBeenCalled()
+    const complete = await persistRenderedAuditLifecycle(payload, 'site', [], {
+      ...scope,
+      state: 'complete',
+      complete: true,
+      inboundLinksComplete: true,
+    })
+    expect(complete.resolved).toBe(1)
+  })
   it('groups repeated rule findings without violating uniqueness or losing evidence', async () => {
     const created: Record<string, unknown>[] = []
     const payload = {

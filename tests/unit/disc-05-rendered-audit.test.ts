@@ -8,6 +8,31 @@ const CLEAN_HTML =
   '<title>A sufficiently unique title</title><meta name="description" content="A deliberately long enough rendered description for this page to satisfy the check."><link rel="canonical" href="/a"><h1>A</h1>'
 
 describe('DISC-05 rendered audit', () => {
+  it('reports missing inbound links only for a complete successful crawl', async () => {
+    const fetcher = vi.fn(async (url: unknown) => {
+      const path = new URL(String(url)).pathname
+      return new Response(
+        `<title>Page ${path}</title><link rel="canonical" href="${path}"><h1>Page</h1>${path === '/a' ? '<a href="/b#part">B</a>' : '<a href="#self">Self</a>'}`,
+      )
+    }) as unknown as typeof fetch
+    const options = {
+      origin: 'https://example.test',
+      paths: ['/a', '/b', '/c'],
+      fetcher,
+      resolve: PUBLIC_RESOLVE,
+    }
+    const result = await runRenderedAudit(options)
+    expect(
+      result.issues
+        .filter((item) => item.ruleId === 'DISC-05-NO-AUDITED-INBOUND-LINK')
+        .map((item) => item.url)
+        .sort(),
+    ).toEqual(['https://example.test/a', 'https://example.test/c'])
+    const partial = await runRenderedAudit({ ...options, maxPages: 2 })
+    expect(partial.issues.some((item) => item.ruleId === 'DISC-05-NO-AUDITED-INBOUND-LINK')).toBe(
+      false,
+    )
+  })
   it('checks uncrawled navigation links over HTTP and excludes resource hints and fragment duplicates', async () => {
     const fetcher = vi.fn<typeof fetch>(
       async (url) =>
