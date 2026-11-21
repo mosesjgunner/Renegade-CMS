@@ -5,7 +5,9 @@
 Email is configured per **provider boundary**. The account boundary carries
 sign-in, invitation, and operational mail; the audience boundary carries
 newsletter confirmations and campaigns. Each boundary can use its own
-Postmark server token, From identity, quota, and webhook secret.
+Postmark server token, From identity, and webhook secret. (There is no
+per-boundary quota setting in configuration; provider quota is a property
+of the Postmark account itself.)
 
 Legacy mode (no boundary config): everything uses the global
 `EMAIL_MODE`/`EMAIL_FROM`/SMTP settings and the command center reports both

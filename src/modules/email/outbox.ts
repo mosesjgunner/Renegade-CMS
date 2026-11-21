@@ -194,6 +194,13 @@ export async function dispatchEmailIntent(
       // or quarantine, never resend blindly (mirrors the audience rule).
       return reconcileOrQuarantine(payload, intent, config, adapterOverride)
     }
+    if (intent.submission === 'unknown') {
+      // A previous attempt ended with an ambiguous provider outcome: the
+      // message may already have been accepted. Reconcile against the
+      // provider that recorded the outcome, or stay quarantined — a direct
+      // re-dispatch must never resend blindly (mirrors the audience rule).
+      return reconcileOrQuarantine(payload, intent, config, adapterOverride, 'unknown-outcome')
+    }
     const trafficClass = String(intent.trafficClass) as EmailTrafficClass
     const boundary = boundaryForClass(trafficClass)
     const siteId =
@@ -346,6 +353,7 @@ async function reconcileOrQuarantine(
   intent: Doc,
   config: AppConfig,
   adapterOverride?: EmailDeliveryAdapter,
+  source: 'interrupted' | 'unknown-outcome' = 'interrupted',
 ): Promise<DispatchOutcome> {
   const trafficClass = String(intent.trafficClass) as EmailTrafficClass
   const adapter =
@@ -378,8 +386,17 @@ async function reconcileOrQuarantine(
     data: {
       submission: 'unknown',
       leaseUntil: null,
-      lastError: { code: 'interrupted_send' },
-      events: [...events, intentEvent('quarantined-interrupted-send')],
+      lastError: {
+        code: source === 'unknown-outcome' ? 'unknown_outcome' : 'interrupted_send',
+      },
+      events: [
+        ...events,
+        intentEvent(
+          source === 'unknown-outcome'
+            ? 'quarantined-unknown-outcome'
+            : 'quarantined-interrupted-send',
+        ),
+      ],
     },
     overrideAccess: true,
   })
