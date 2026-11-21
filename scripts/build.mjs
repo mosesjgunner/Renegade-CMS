@@ -1,6 +1,6 @@
 import { execFileSync, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { cpSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import './apply-patches.mjs'
 
@@ -48,4 +48,16 @@ cpSync('theme-packages', resolve(standalone, 'theme-packages'), { recursive: tru
 cpSync(resolve(dist, 'static'), resolve(standalone, dist, 'static'), { recursive: true })
 if (existsSync('public')) cpSync('public', resolve(standalone, 'public'), { recursive: true })
 cpSync('build-provenance.json', resolve(standalone, 'build-provenance.json'))
+// Perf lane 08 / RC3-04: the middleware (src/proxy.ts) dynamically imports
+// the Payload config, so the standalone tracer spans the whole repository
+// and copies non-runtime trees into the artifact — docs/ alone measured
+// 826,230,127 bytes of the 1,117,797,606-byte standalone at the RC2
+// baseline, and the outputFileTracingExcludes entry in next.config.ts did
+// not stop it. Nothing reads docs/, tests/ or fixtures/ at runtime (theme
+// discovery reads theme-packages/, copied above), so prune them here, at
+// packaging time: the shipped artifact is correct by construction no
+// matter which trace path pulled them in.
+for (const tree of ['docs', 'tests', 'fixtures']) {
+  rmSync(resolve(standalone, tree), { recursive: true, force: true })
+}
 console.log(`Built source ${sourceSha}; clean source: ${String(clean)}.`)
