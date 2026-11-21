@@ -66,7 +66,7 @@
     "graphql": "16.11.0",
     "jose": "5.10.0",
     "monaco-editor": "0.57.0",
-    "next": "16.4.1",
+    "next": "16.4.5",
     "nodemailer": "10.1.4",
     "payload": "3.90.2",
     "qrcode": "^1.5.4",
@@ -99,11 +99,11 @@
   },
   "overrides": {
     "undici": "^7.30.0",
-    "fast-uri": "^3.1.8",
+    "fast-uri": "^3.1.9",
     "js-yaml": "^4.3.2",
     "@tiptap/core": "^3.31.4",
     "@tiptap/pm": "^3.31.4",
-    "dompurify": "^3.4.16",
+    "dompurify": "^3.4.17",
     "fast-copy": "^3.1.0",
     "@payloadcms/db-postgres": "3.90.2",
     "@payloadcms/next": "3.90.2",
@@ -118,6 +118,12 @@
     },
     "tinypool": "^2.2.0",
     "debug": "^4.4.3",
-    "esbuild": "0.28.2"
+    "esbuild": "0.28.2",
+    "@lexical/headless": {
+      "happy-dom": "^21.0.4"
+    },
+    "@puckeditor/core": {
+      "happy-dom": "^21.0.4"
+    }
   }
 }
