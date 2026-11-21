@@ -99,12 +99,12 @@ export function projectMemberProfile(
   if ((viewer.blocked || viewer.muted) && !isSelf)
     throw new ProfileAccessError(404, 'Profile unavailable.')
   const visibility = String(raw.visibility ?? 'private')
+  // Legacy "friends" is treated as private: a one-way follow is not friendship.
   const canSee =
     isSelf ||
     visibility === 'public' ||
     visibility === 'unlisted' ||
-    (visibility === 'members' && viewer.signedIn) ||
-    (visibility === 'friends' && viewer.following)
+    (visibility === 'members' && viewer.signedIn)
   if (!canSee) throw new ProfileAccessError(404, 'Profile unavailable.')
   const audience = (raw.fieldAudience ?? {}) as FieldAudience
   const visible = (field: Field) => maySee(audience[field] ?? 'public', viewer, isSelf)
@@ -116,6 +116,9 @@ export function projectMemberProfile(
     handle: String(raw.handle ?? ''),
     displayName: String(raw.displayName ?? 'Community member'),
     visibility,
+    ...(visibility === 'friends'
+      ? { visibilityNotice: 'Legacy friends visibility is treated as private.' }
+      : {}),
     ...(visible('bio') && typeof raw.bio === 'string' ? { bio: raw.bio } : {}),
     ...(visible('links') ? { links } : {}),
     ...(visible('locale') && typeof raw.locale === 'string' ? { locale: raw.locale } : {}),

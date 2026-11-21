@@ -3,7 +3,11 @@ import { getPayload } from 'payload'
 import { verifyCsrf } from '@/modules/identity/member-identity'
 import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { resolveCommunityActor } from '@/modules/community/service'
-import { findSiteStanding, joinSite } from '@/modules/community/site-standing'
+import {
+  findSiteStanding,
+  joinSite,
+  postingStandingDecision,
+} from '@/modules/community/site-standing'
 
 const headers = { 'cache-control': 'private, no-store' }
 
@@ -44,6 +48,7 @@ export async function POST(request: Request) {
     {
       joined: true,
       created: standing.created,
+      postingPolicy: postingStandingDecision(true),
       standing: { id: standing.id, siteId: standing.siteId, role: standing.role },
     },
     { status: standing.created ? 201 : 200, headers },
@@ -67,6 +72,7 @@ export async function GET(request: Request) {
   return Response.json(
     {
       joined: Boolean(standing),
+      postingPolicy: postingStandingDecision(Boolean(standing)),
       standing: standing ? { id: standing.id, siteId: standing.siteId, role: standing.role } : null,
     },
     { headers },

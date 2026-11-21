@@ -27,6 +27,15 @@ export interface SiteStanding {
   created: boolean
 }
 
+/** Compatibility preview only. An owner decision is required before enforcement. */
+export function postingStandingDecision(joined: boolean) {
+  return {
+    decision: 'owner-decision-required' as const,
+    enforcementEnabled: false as const,
+    wouldRequireJoin: !joined,
+  }
+}
+
 export async function findSiteStanding(
   payload: Payload,
   siteId: string,

@@ -17,17 +17,37 @@ import {
  * sets: dead scaffolding.
  */
 
-const { mockActor, mockIsSubscribed, mockSubscribe, mockUnsubscribe } = vi.hoisted(() => ({
+const {
+  mockActor,
+  mockIsSubscribed,
+  mockSubscribe,
+  mockUnsubscribe,
+  mockThread,
+  mockSite,
+  mockCsrf,
+} = vi.hoisted(() => ({
   mockActor: vi.fn(),
   mockIsSubscribed: vi.fn(async () => true),
   mockSubscribe: vi.fn(async () => ({ subscribed: true })),
   mockUnsubscribe: vi.fn(async () => ({ subscribed: false })),
+  mockThread: vi.fn(async () => ({
+    id: 'thread-1',
+    site: 'site-a',
+    kind: 'thread',
+    visibility: 'public',
+    status: 'open',
+    moderationState: 'clear',
+  })),
+  mockSite: vi.fn(async () => true),
+  mockCsrf: vi.fn(() => true),
 }))
 
 vi.mock('@payload-config', () => ({ default: Promise.resolve({}) }))
 vi.mock('payload', () => ({
-  getPayload: vi.fn(async () => ({})),
+  getPayload: vi.fn(async () => ({ findByID: mockThread })),
 }))
+vi.mock('@/modules/community/discussion-operations', () => ({ discussionRequestSite: mockSite }))
+vi.mock('@/modules/identity/member-identity', () => ({ verifyCsrf: mockCsrf }))
 vi.mock('@/modules/community/service', () => ({
   resolveCommunityActor: mockActor,
 }))
@@ -48,7 +68,13 @@ function request(headers: Record<string, string> = {}) {
 }
 
 const anonymous = { kind: 'anonymous', memberId: null, isStaff: false }
-const member = { kind: 'member', memberId: 'member-1', isStaff: false }
+const member = {
+  kind: 'member',
+  memberId: 'member-1',
+  status: 'active',
+  isStaff: false,
+  isModerator: false,
+}
 
 describe('Thread subscriptions — session-only identity (TA-P1-2)', () => {
   beforeEach(() => {
@@ -101,5 +127,35 @@ describe('Thread subscriptions — session-only identity (TA-P1-2)', () => {
       expect.anything(),
       expect.objectContaining({ memberId: 'member-1' }),
     )
+  })
+
+  it('denies a foreign thread and a private thread before writing', async () => {
+    mockActor.mockResolvedValue(member)
+    mockThread.mockResolvedValueOnce({
+      id: 'thread-1',
+      site: 'site-b',
+      kind: 'thread',
+      visibility: 'public',
+      status: 'open',
+      moderationState: 'clear',
+    })
+    expect((await POST(request(), context)).status).toBe(404)
+    mockThread.mockResolvedValueOnce({
+      id: 'thread-1',
+      site: 'site-a',
+      kind: 'thread',
+      visibility: 'private',
+      status: 'open',
+      moderationState: 'clear',
+    })
+    expect((await POST(request(), context)).status).toBe(404)
+    expect(mockSubscribe).not.toHaveBeenCalled()
+  })
+
+  it('rejects a subscription write without CSRF', async () => {
+    mockActor.mockResolvedValue(member)
+    mockCsrf.mockReturnValueOnce(false)
+    expect((await POST(request(), context)).status).toBe(403)
+    expect(mockSubscribe).not.toHaveBeenCalled()
   })
 })

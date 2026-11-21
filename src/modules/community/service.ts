@@ -35,6 +35,7 @@ import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { getMemberNotificationPreference } from './notification-delivery'
 import { eventNotificationEnabled } from './event-notification-preferences'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
+import { getThreadSubscribers } from './thread-lifecycle'
 import {
   readRouteTemplates,
   readRouteTemplatesBySite,
@@ -108,6 +109,47 @@ async function discussionTransaction<T>(
     await payload.db.rollbackTransaction(transactionID)
     throw error
   }
+}
+
+/** Subscribers are only candidates; current member and discussion access is rechecked. */
+async function eligibleThreadSubscribers(
+  payload: Payload,
+  siteId: string,
+  discussion: Record<string, unknown>,
+  actorMemberId: string,
+): Promise<string[]> {
+  // In-memory contract doubles do not implement the subscription table.
+  if (!hasSanctionReadBoundary(payload)) return []
+  const candidates = await getThreadSubscribers(payload, String(discussion.id))
+  if (!candidates.length) return []
+  const members = await payload.find({
+    collection: 'members',
+    where: { id: { in: candidates } },
+    pagination: false,
+    limit: 0,
+    depth: 0,
+    overrideAccess: true,
+  })
+  return (members.docs as unknown as Array<Record<string, unknown>>)
+    .filter((member) => {
+      const memberId = String(member.id)
+      if (memberId === actorMemberId || member.status !== 'active') return false
+      return evaluateCommunityPolicy(
+        {
+          siteId,
+          actor: { kind: 'member', memberId, status: 'active', isStaff: false, isModerator: false },
+        },
+        {
+          siteId: String(discussion.site),
+          ownerId: String(discussion.owner ?? ''),
+          status: String(discussion.status ?? 'open'),
+          moderationState: String(discussion.moderationState ?? 'clear'),
+          visibility: String(discussion.visibility ?? 'public'),
+        },
+        'read',
+      ).allowed
+    })
+    .map((member) => String(member.id))
 }
 
 export async function discussionTarget(
@@ -751,13 +793,23 @@ async function addCommentInternal(
     }
   }
 
-  if (recipientMemberId && recipientMemberId !== input.authorMemberId) {
+  const commentRecipients = new Set([
+    ...(recipientMemberId ? [recipientMemberId] : []),
+    ...(await eligibleThreadSubscribers(
+      payload,
+      input.siteId,
+      discussion as unknown as Record<string, unknown>,
+      input.authorMemberId,
+    )),
+  ])
+  for (const recipient of commentRecipients) {
+    if (recipient === input.authorMemberId) continue
     await dispatchCommunityNotification(payload, {
       siteId: input.siteId,
-      recipientMemberId,
+      recipientMemberId: recipient,
       actorMemberId: input.authorMemberId,
       type: 'comment.reply',
-      object: { id: post.id, permalink: post.permalink },
+      object: { id: post.id, permalink: post.permalink, discussionId: discussion.id },
       payloadData: { bodySnippet: input.body.slice(0, 120), discussionTitle: input.title },
     })
   }
@@ -1468,13 +1520,18 @@ async function replyToForumThreadInternal(
       ? discussion.owner
       : (discussion.owner as { id?: string } | undefined)?.id
 
-  if (threadOwnerId && threadOwnerId !== input.authorMemberId) {
+  const threadRecipients = new Set([
+    ...(threadOwnerId ? [threadOwnerId] : []),
+    ...(await eligibleThreadSubscribers(payload, input.siteId, discussion, input.authorMemberId)),
+  ])
+  for (const recipient of threadRecipients) {
+    if (recipient === input.authorMemberId) continue
     await dispatchCommunityNotification(payload, {
       siteId: input.siteId,
-      recipientMemberId: threadOwnerId,
+      recipientMemberId: recipient,
       actorMemberId: input.authorMemberId,
       type: 'thread.reply',
-      object: { id: post.id, permalink: post.permalink },
+      object: { id: post.id, permalink: post.permalink, discussionId: input.discussionId },
       payloadData: { threadTitle: String(discussion.title), snippet: input.body.slice(0, 120) },
     })
   }
@@ -2245,6 +2302,55 @@ export async function getMemberNotifications(
     const activitySiteId =
       typeof site === 'string' ? site : String((site as { id?: string } | null)?.id ?? '')
     if (activitySiteId !== context.siteId) continue
+    // New reply notifications retain the discussion identity so that an
+    // old subscription cannot reveal a thread that has since become private.
+    const object = activity.object as { discussionId?: unknown } | null
+    if (typeof object?.discussionId === 'string') {
+      const discussion = (await payload
+        .findByID({
+          collection: 'discussions',
+          id: object.discussionId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)) as unknown as Record<string, unknown> | null
+      if (!discussion || String(discussion.site) !== context.siteId) continue
+      const allowed = evaluateCommunityPolicy(
+        context,
+        {
+          siteId: String(discussion.site),
+          ownerId: String(discussion.owner ?? ''),
+          status: String(discussion.status ?? 'open'),
+          moderationState: String(discussion.moderationState ?? 'clear'),
+          visibility: String(discussion.visibility ?? 'public'),
+        },
+        'read',
+      )
+      if (!allowed.allowed) continue
+      if (discussion.kind === 'attached') {
+        const attached = discussion.attachedTo as { relationTo?: string; value?: unknown } | null
+        const value = attached?.value
+        const attachedId =
+          typeof value === 'object' && value !== null
+            ? String((value as { id?: unknown }).id ?? '')
+            : String(value ?? '')
+        if (
+          !attachedId ||
+          !['content', 'media-assets', 'albums'].includes(String(attached?.relationTo))
+        )
+          continue
+        try {
+          await discussionTarget(
+            payload,
+            context.siteId,
+            attached!.relationTo as 'content' | 'media-assets' | 'albums',
+            attachedId,
+          )
+        } catch {
+          continue
+        }
+      }
+    }
     const actor = activity.actor as { memberId?: unknown } | null
     const actorId = typeof actor?.memberId === 'string' ? actor.memberId : ''
     if (actorId && actorId !== memberId) {
