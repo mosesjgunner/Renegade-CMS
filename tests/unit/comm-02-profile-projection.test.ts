@@ -20,6 +20,16 @@ const owner = {
 }
 
 describe('COMM-02 public profile projection', () => {
+  it('treats legacy friends visibility as private even for followers', () => {
+    const profile = { ...owner, visibility: 'friends' }
+    expect(() =>
+      projectMemberProfile(profile, { signedIn: true, memberId: 'member-b', following: true }),
+    ).toThrow(ProfileAccessError)
+    expect(projectMemberProfile(profile, { signedIn: true, memberId: 'member-a' })).toMatchObject({
+      handle: 'alice',
+    })
+  })
+
   it('allows only explicitly visible fields for anonymous, member, follower, and owner audiences', () => {
     const anonymous = projectMemberProfile(owner, { signedIn: false })
     expect(anonymous).not.toHaveProperty('bio')

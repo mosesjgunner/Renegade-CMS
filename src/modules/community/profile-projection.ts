@@ -103,8 +103,7 @@ export function projectMemberProfile(
     isSelf ||
     visibility === 'public' ||
     visibility === 'unlisted' ||
-    (visibility === 'members' && viewer.signedIn) ||
-    (visibility === 'friends' && viewer.following)
+    (visibility === 'members' && viewer.signedIn)
   if (!canSee) throw new ProfileAccessError(404, 'Profile unavailable.')
   const audience = (raw.fieldAudience ?? {}) as FieldAudience
   const visible = (field: Field) => maySee(audience[field] ?? 'public', viewer, isSelf)
