@@ -102,7 +102,7 @@ const knownPublicFixtures = []
 const lockedPackages = JSON.parse(
   readFileSync(path.join(root, 'package-lock.json'), 'utf8'),
 ).packages
-// Happy DOM 20.11.2 publishes this fixed virtual-server certificate key in
+// Happy DOM 21.0.4 publishes this fixed virtual-server certificate key in
 // lib/fetch/certificate/FetchHTTPSCertificate.js. This exact public fixture is
 // not an operator credential. Retain its path/fingerprint in the report; no
 // other PEM key, package version or application source path is exempted.
@@ -137,10 +137,10 @@ const scan = (dir) => {
         if (
           index === 0 &&
           fixtureScope &&
-          lockedPackages['node_modules/happy-dom']?.version === '20.11.2' &&
+          lockedPackages['node_modules/happy-dom']?.version === '21.0.4' &&
           fingerprint === happyDomFixtureHash
         ) {
-          knownPublicFixtures.push({ path: rel, package: 'happy-dom@20.11.2', sha256: fingerprint })
+          knownPublicFixtures.push({ path: rel, package: 'happy-dom@21.0.4', sha256: fingerprint })
         } else {
           unexpectedSecret = true
         }
