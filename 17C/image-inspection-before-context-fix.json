@@ -1,0 +1,69 @@
+{
+  "user": {
+    "uid": 1001,
+    "gid": 65533
+  },
+  "files": {
+    "standalone/server.js": true,
+    "build-provenance.json": true,
+    "standalone/build-provenance.json": true,
+    "package.json": true,
+    "package-lock.json": true,
+    "next.config.ts": true,
+    "tsconfig.json": true,
+    "src/payload.config.ts": true,
+    "docker/worker-healthcheck.mjs": true,
+    "docker/install-runtime-esbuild.mjs": true,
+    "esbuild-build.txt": true,
+    "node_modules/next/package.json": true,
+    "node_modules/payload/package.json": true,
+    "node_modules/tsx/package.json": true,
+    "standalone/.next/static": true,
+    "public": false,
+    "src": true,
+    "theme-packages": true
+  },
+  "provenance": {
+    "root": {
+      "sourceSha": "5a6f85df89858f8a967d0cc9f4594a03d5aa25e8",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "bfb8e3b312549a2754ba62c6c65797b83cde7ff1f82d98533172598cada24ea7"
+    },
+    "standalone": {
+      "sourceSha": "5a6f85df89858f8a967d0cc9f4594a03d5aa25e8",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "bfb8e3b312549a2754ba62c6c65797b83cde7ff1f82d98533172598cada24ea7"
+    },
+    "lockfileSha256": "bfb8e3b312549a2754ba62c6c65797b83cde7ff1f82d98533172598cada24ea7",
+    "lockfileMatches": true
+  },
+  "sourceComparison": {
+    "compared": 968,
+    "mismatches": [],
+    "mismatchCount": 0
+  },
+  "dependencies": {
+    "graphPackageCount": 611,
+    "topLevelCount": 359,
+    "forbiddenPresent": [
+      "@playwright",
+      "typescript",
+      "prettier"
+    ],
+    "hasNext": true,
+    "hasPayload": true,
+    "hasTsx": true
+  },
+  "secrets": {
+    "hitCount": 4,
+    "hitPaths": [
+      "standalone/.next/server/chunks/ssr/[root-of-the-server]__0du9w207x5g2_._.js",
+      "standalone/docs/rc/evidence/rc1/stage-05/sol/records/independent-2026-10-15/harness/generate-tls.mjs.txt",
+      "standalone/docs/rc/evidence/rc1/stage-06/sol/harness/generate-tls.mjs.txt",
+      "standalone/scripts/run-integration.mjs"
+    ],
+    "envFiles": []
+  }
+}

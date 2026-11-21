@@ -1,0 +1,74 @@
+{
+  "user": {
+    "uid": 1001,
+    "gid": 65533
+  },
+  "files": {
+    "standalone/server.js": true,
+    "build-provenance.json": true,
+    "standalone/build-provenance.json": true,
+    "package.json": true,
+    "package-lock.json": true,
+    "next.config.ts": true,
+    "tsconfig.json": true,
+    "src/payload.config.ts": true,
+    "docker/worker-healthcheck.mjs": true,
+    "docker/install-runtime-esbuild.mjs": true,
+    "esbuild-build.txt": true,
+    "node_modules/next/package.json": true,
+    "node_modules/payload/package.json": true,
+    "node_modules/tsx/package.json": true,
+    "standalone/.next/static": true,
+    "standalone/public": true,
+    "src": true,
+    "theme-packages": true
+  },
+  "provenance": {
+    "root": {
+      "sourceSha": "577fa3808344d7e0aeaab563e1d619fc0331abf3",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "00a71efe0c78c9ff4991dfa0291a2a4f45718ed94490504b4de67bfac1e2ac7f"
+    },
+    "standalone": {
+      "sourceSha": "577fa3808344d7e0aeaab563e1d619fc0331abf3",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "00a71efe0c78c9ff4991dfa0291a2a4f45718ed94490504b4de67bfac1e2ac7f"
+    },
+    "lockfileSha256": "00a71efe0c78c9ff4991dfa0291a2a4f45718ed94490504b4de67bfac1e2ac7f",
+    "lockfileMatches": true
+  },
+  "sourceComparison": {
+    "compared": 1209,
+    "mismatches": [],
+    "mismatchCount": 0
+  },
+  "dependencies": {
+    "graphPackageCount": 610,
+    "topLevelCount": 356,
+    "forbiddenPresent": [],
+    "requiredProductionTooling": [
+      {
+        "name": "prettier",
+        "version": "3.6.2",
+        "requiredBy": "payload > json-schema-to-typescript"
+      }
+    ],
+    "hasNext": true,
+    "hasPayload": true,
+    "hasTsx": true
+  },
+  "secrets": {
+    "hitCount": 0,
+    "hitPaths": [],
+    "knownPublicFixtures": [
+      {
+        "path": "standalone/.next/server/chunks/ssr/[root-of-the-server]__0du9w207x5g2_._.js",
+        "package": "happy-dom@21.0.4",
+        "sha256": "7f7f8c83ded111336dca167452776b8b6c35e4223882103df5edeb55875a2d41"
+      }
+    ],
+    "envFiles": []
+  }
+}

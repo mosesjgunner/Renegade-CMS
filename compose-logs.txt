@@ -1,0 +1,391 @@
+migrate-1          | npm notice run renegade-cms@0.1.0 db:migrate
+migrate-1          | npm notice run npm run payload -- migrate
+migrate-1          | npm notice run renegade-cms@0.1.0 payload
+migrate-1          | npm notice run cross-env NODE_OPTIONS=--no-deprecation payload migrate
+migrate-1          | [16:13:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+migrate-1          | [16:13:55] [32mINFO[39m: [36mReading migration files from /app/src/migrations[39m
+renegade-web-1     | ▲ Next.js 16.4.5
+renegade-web-1     | - Local:         http://localhost:3000
+renegade-web-1     | - Network:       http://0.0.0.0:3000
+renegade-web-1     | ✓ Ready in 0ms
+renegade-web-1     | ✓ Running next.config took 4ms
+renegade-web-1     | [16:14:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+renegade-worker-1  | npm notice run renegade-cms@0.1.0 jobs:worker
+renegade-worker-1  | npm notice run tsx src/scripts/run-jobs-worker.ts
+renegade-worker-1  | [16:14:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260812_010209_initial_foundation[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260812_010209_initial_foundation (49ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260812_034055_m02_operations_jobs[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260812_034055_m02_operations_jobs (12ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260812_080000_m02_first_run_installation[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260812_080000_m02_first_run_installation (14ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260812_081000_m02_single_use_setup_token[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260812_081000_m02_single_use_setup_token (1ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260813_054441_canonical_information_architecture[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260813_054441_canonical_information_architecture (319ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260814_120000_m03_5_event_timeline_reconciliation[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260814_120000_m03_5_event_timeline_reconciliation (56ms)[39m
+postgres-1         | The files belonging to this database system will be owned by user "postgres".
+postgres-1         | This user must also own the server process.
+postgres-1         | 
+postgres-1         | The database cluster will be initialized with locale "en_US.utf8".
+postgres-1         | The default database encoding has accordingly been set to "UTF8".
+postgres-1         | The default text search configuration will be set to "english".
+postgres-1         | 
+postgres-1         | Data page checksums are disabled.
+postgres-1         | 
+postgres-1         | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+postgres-1         | creating subdirectories ... ok
+postgres-1         | selecting dynamic shared memory implementation ... posix
+postgres-1         | selecting default "max_connections" ... 100
+postgres-1         | selecting default "shared_buffers" ... 128MB
+postgres-1         | selecting default time zone ... UTC
+postgres-1         | creating configuration files ... ok
+postgres-1         | running bootstrap script ... ok
+postgres-1         | sh: locale: not found
+postgres-1         | 2026-11-21 16:13:46.701 UTC [35] WARNING:  no usable system locales were found
+postgres-1         | performing post-bootstrap initialization ... ok
+postgres-1         | syncing data to disk ... ok
+postgres-1         | 
+postgres-1         | 
+postgres-1         | Success. You can now start the database server using:
+postgres-1         | 
+postgres-1         |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+postgres-1         | 
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260818_000000_site_settings[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260818_000000_site_settings (4ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260818_010000_reconcile_seo_canonical_columns[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260818_010000_reconcile_seo_canonical_columns (23ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260818_062327_m04_c_editorial_workflow[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260818_062327_m04_c_editorial_workflow (56ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260822_010232_page_layouts[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260822_010232_page_layouts (6ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260822_012313_m07_a_passwordless_identity[39m
+postgres-1         | initdb: warning: enabling "trust" authentication for local connections
+postgres-1         | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+postgres-1         | waiting for server to start....2026-11-21 16:13:47.246 UTC [41] LOG:  starting PostgreSQL 17.6 on x86_64-pc-linux-musl, compiled by gcc (Alpine 14.2.0) 14.2.0, 64-bit
+postgres-1         | 2026-11-21 16:13:47.246 UTC [41] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1         | 2026-11-21 16:13:47.249 UTC [44] LOG:  database system was shut down at 2026-11-21 16:13:46 UTC
+postgres-1         | 2026-11-21 16:13:47.252 UTC [41] LOG:  database system is ready to accept connections
+postgres-1         |  done
+postgres-1         | server started
+postgres-1         | CREATE DATABASE
+postgres-1         | 
+postgres-1         | 
+postgres-1         | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+postgres-1         | 
+postgres-1         | waiting for server to shut down....2026-11-21 16:13:47.399 UTC [41] LOG:  received fast shutdown request
+postgres-1         | 2026-11-21 16:13:47.436 UTC [41] LOG:  aborting any active transactions
+postgres-1         | 2026-11-21 16:13:47.439 UTC [41] LOG:  background worker "logical replication launcher" (PID 47) exited with exit code 1
+postgres-1         | 2026-11-21 16:13:47.439 UTC [42] LOG:  shutting down
+postgres-1         | 2026-11-21 16:13:47.442 UTC [42] LOG:  checkpoint starting: shutdown immediate
+postgres-1         | 2026-11-21 16:13:47.525 UTC [42] LOG:  checkpoint complete: wrote 925 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.033 s, sync=0.048 s, total=0.087 s; sync files=301, longest=0.047 s, average=0.001 s; distance=4255 kB, estimate=4255 kB; lsn=0/19150D0, redo lsn=0/19150D0
+postgres-1         | 2026-11-21 16:13:47.533 UTC [41] LOG:  database system is shut down
+postgres-1         |  done
+postgres-1         | server stopped
+postgres-1         | 
+postgres-1         | PostgreSQL init process complete; ready for start up.
+postgres-1         | 
+postgres-1         | 2026-11-21 16:13:47.642 UTC [1] LOG:  starting PostgreSQL 17.6 on x86_64-pc-linux-musl, compiled by gcc (Alpine 14.2.0) 14.2.0, 64-bit
+postgres-1         | 2026-11-21 16:13:47.642 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+postgres-1         | 2026-11-21 16:13:47.642 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+postgres-1         | 2026-11-21 16:13:47.643 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+postgres-1         | 2026-11-21 16:13:47.646 UTC [57] LOG:  database system was shut down at 2026-11-21 16:13:47 UTC
+postgres-1         | 2026-11-21 16:13:47.650 UTC [1] LOG:  database system is ready to accept connections
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260822_012313_m07_a_passwordless_identity (12ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260825_171336[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260825_171336 (100ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260825_171738[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260825_171738 (4ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260825_173116_social_distribution[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260825_173116_social_distribution (99ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260825_180000_calendar_graphics[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrated:  20260825_180000_calendar_graphics (3ms)[39m
+migrate-1          | [16:13:56] [32mINFO[39m: [36mMigrating: 20260826_053416_second_pass_schema[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260826_053416_second_pass_schema (490ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_110000_content_release_execution[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_110000_content_release_execution (6ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_120000_quality_runtime[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_120000_quality_runtime (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_130000_progressive_disclosure_admin[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_130000_progressive_disclosure_admin (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_140000_onboarding_settings[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_140000_onboarding_settings (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_150000_integrations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_150000_integrations (23ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_160000_activitypub_delivery[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_160000_activitypub_delivery (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_170000_network_experience[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_170000_network_experience (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260829_180000_collaboration[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260829_180000_collaboration (10ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260830_090000_realtime_collaboration[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260830_090000_realtime_collaboration (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260830_100000_media_storage_workflow[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260830_100000_media_storage_workflow (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260830_110000_discoverability[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260830_110000_discoverability (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260830_120000_discoverability_lock_relation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260830_120000_discoverability_lock_relation (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260830_130000_admin_auth_hardening[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260830_130000_admin_auth_hardening (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_090000_phase_b_execution_foundation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_090000_phase_b_execution_foundation (6ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_100000_analytics_privacy_runtime[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_100000_analytics_privacy_runtime (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_110000_events_workflow[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_110000_events_workflow (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_120000_media_publishing_workflows[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_120000_media_publishing_workflows (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_130000_books_quality_center[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_130000_books_quality_center (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_140000_public_api_webhooks[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_140000_public_api_webhooks (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_150000_phase_b_locked_document_relations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_150000_phase_b_locked_document_relations (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_160000_phase_b_book_lifecycle_reconciliation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_160000_phase_b_book_lifecycle_reconciliation (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_170000_phase_b_scoped_media_reconciliation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_170000_phase_b_scoped_media_reconciliation (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_180000_phase_b_video_captions_relation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_180000_phase_b_video_captions_relation (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_190000_phase_b_integrations_id_defaults[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_190000_phase_b_integrations_id_defaults (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260831_200000_member_identity_foundation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260831_200000_member_identity_foundation (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260902_000000_pub_02_content_publishing_pass[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260902_000000_pub_02_content_publishing_pass (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260902_010000_pub_01_canonical_tenant_isolation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260902_010000_pub_01_canonical_tenant_isolation (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260902_020000_pub_04_publishing_floor[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260902_020000_pub_04_publishing_floor (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_000000_pre_00_theme_selection[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_000000_pre_00_theme_selection (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_010000_pre_01_theme_lifecycle[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_010000_pre_01_theme_lifecycle (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_020000_pre_01_presentation_snapshots[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_020000_pre_01_presentation_snapshots (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_030000_pre_03_visual_editor[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_030000_pre_03_visual_editor (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_040000_pre_04_reusable_composition[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_040000_pre_04_reusable_composition (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_050000_pre_05_legacy_site_migration[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_050000_pre_05_legacy_site_migration (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_060000_med_00_media_contract[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_060000_med_00_media_contract (14ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260912_070000_med_01_upload_sessions[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260912_070000_med_01_upload_sessions (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260913_080000_med_02_dam_governance[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260913_080000_med_02_dam_governance (9ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260913_090000_med_03_image_variants[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260913_090000_med_03_image_variants (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260913_100000_med_04_podcast_workflow[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260913_100000_med_04_podcast_workflow (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260914_110000_med_05_video_workflow[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260914_110000_med_05_video_workflow (10ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260914_120000_disc_01_discovery_workflow[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260914_120000_disc_01_discovery_workflow (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260914_121000_disc_01_shared_seo_fields[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260914_121000_disc_01_shared_seo_fields (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260915_130000_disc_04_search_projection[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260915_130000_disc_04_search_projection (6ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260916_070000_editorial_quality_gate_snapshot[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260916_070000_editorial_quality_gate_snapshot (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_000000_aud_00_delivery_snapshots[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_000000_aud_00_delivery_snapshots (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_010000_aud_01_audience_evidence[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_010000_aud_01_audience_evidence (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_020000_aud_02_forms[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_020000_aud_02_forms (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_030000_aud_03_email_composer[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_030000_aud_03_email_composer (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_050000_aud_05_email_delivery[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_050000_aud_05_email_delivery (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_060000_aud_06_telecom[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_060000_aud_06_telecom (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_070000_aud_07_audience_command[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_070000_aud_07_audience_command (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_080000_aud_08_audience_pass_gate[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_080000_aud_08_audience_pass_gate (22ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_090000_comm_00_community_domain[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_090000_comm_00_community_domain (9ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260920_100000_comm_01_member_auth_lifecycle[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260920_100000_comm_01_member_auth_lifecycle (6ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_000000_comm_02_profile_projection[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_000000_comm_02_profile_projection (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_010000_comm_02_profile_media_usage_relation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_010000_comm_02_profile_media_usage_relation (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_020000_comm_03a_comment_identity[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_020000_comm_03a_comment_identity (6ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_030000_comm_03c_comment_reactions[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_030000_comm_03c_comment_reactions (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_040000_comm_03d_thread_lifecycle_and_outbox[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_040000_comm_03d_thread_lifecycle_and_outbox (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260921_050000_comm_04a_forum_spaces[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260921_050000_comm_04a_forum_spaces (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_000000_comm_04b_forum_topics_posts[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_000000_comm_04b_forum_topics_posts (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_010000_comm_04c_forum_browsing_read_state[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_010000_comm_04c_forum_browsing_read_state (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_020000_comm_04d_forum_topic_operations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_020000_comm_04d_forum_topic_operations (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_030000_comm_05a_moderation_registry_reports[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_030000_comm_05a_moderation_registry_reports (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_040000_comm_05b_moderation_actions_sanctions[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_040000_comm_05b_moderation_actions_sanctions (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_050000_comm_05c_moderation_appeals_audit[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_050000_comm_05c_moderation_appeals_audit (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_060000_comm_05d_abuse_triage_console[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_060000_comm_05d_abuse_triage_console (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_070000_comm_07a_conversations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_070000_comm_07a_conversations (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_080000_comm_07b_message_requests[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_080000_comm_07b_message_requests (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_090000_comm_07c_message_attachments[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_090000_comm_07c_message_attachments (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_100000_comm_07d_group_administration[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_100000_comm_07d_group_administration (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_110000_comm_06b_inbox_projections[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_110000_comm_06b_inbox_projections (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_120000_comm_06c_notification_preferences_and_outbox[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_120000_comm_06c_notification_preferences_and_outbox (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260922_130000_commerce_canonical_contract[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260922_130000_commerce_canonical_contract (4ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_010000_shop_01_catalog_workflows[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_010000_shop_01_catalog_workflows (14ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_020000_shop_02_carts_and_checkout_proposals[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_020000_shop_02_carts_and_checkout_proposals (7ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_030000_shop_04_payment_operations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_030000_shop_04_payment_operations (10ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_040000_shop_05_subscriptions[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_040000_shop_05_subscriptions (7ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_050000_shop_06_affiliate_and_referrals[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_050000_shop_06_affiliate_and_referrals (8ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_060000_shop_07_donations[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_060000_shop_07_donations (10ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_070000_shop_07_donation_lifecycle[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_070000_shop_07_donation_lifecycle (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_080000_shop_03_pod_and_fulfillment[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_080000_shop_03_pod_and_fulfillment (7ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_090000_events_required_entitlement[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_090000_events_required_entitlement (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_100000_flow_03_scheduler_runtime[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_100000_flow_03_scheduler_runtime (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260923_110000_content_release_runtime[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260923_110000_content_release_runtime (2ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_000000_collection_scope_columns[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_000000_collection_scope_columns (10ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_010000_donation_checkout_idempotency[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_010000_donation_checkout_idempotency (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_020000_commerce_job_enum[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_020000_commerce_job_enum (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_030000_ai_proposals[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_030000_ai_proposals (5ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_040000_ai_locked_documents_rels[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_040000_ai_locked_documents_rels (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_050000_ai_budget_reservation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_050000_ai_budget_reservation (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20260924_060000_semantic_route_templates[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20260924_060000_semantic_route_templates (3ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20261004_160000_rc03_network_outbox_ids[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20261004_160000_rc03_network_outbox_ids (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20261004_180000_rc04_canonical_moderation[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20261004_180000_rc04_canonical_moderation (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20261006_010000_rc08b_form_intake[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20261006_010000_rc08b_form_intake (1ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20261006_013000_rc08b_federation_ids[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrated:  20261006_013000_rc08b_federation_ids (0ms)[39m
+migrate-1          | [16:13:57] [32mINFO[39m: [36mMigrating: 20261013_160000_rc1_uuid_schema_repair[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261013_160000_rc1_uuid_schema_repair (39ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261013_180000_rc1_editorial_calendar_audits[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261013_180000_rc1_editorial_calendar_audits (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261014_220000_rc1_cart_and_worker_schema[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261014_220000_rc1_cart_and_worker_schema (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261014_230000_rc1_machine_request_scope[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261014_230000_rc1_machine_request_scope (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261017_210000_rc1_review_comments[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261017_210000_rc1_review_comments (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261017_211000_rc1_review_comment_ids[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261017_211000_rc1_review_comment_ids (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261017_230000_rc1_content_hierarchy[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261017_230000_rc1_content_hierarchy (3ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261018_050000_rc1_content_visibility[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261018_050000_rc1_content_visibility (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261018_060000_rc1_taxonomy_layout_seo_fields[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261018_060000_rc1_taxonomy_layout_seo_fields (2ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261018_061000_rc1_content_entitlement[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261018_061000_rc1_content_entitlement (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261018_062000_rc1_public_modified[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261018_062000_rc1_public_modified (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261020_080000_rc1_social_dispatch_recovery[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261020_080000_rc1_social_dispatch_recovery (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261021_090000_rc1_delivery_suppressions[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261021_090000_rc1_delivery_suppressions (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261026_100000_rc1_discussion_pins[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261026_100000_rc1_discussion_pins (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261026_101000_rc1_discussion_event_ids[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261026_101000_rc1_discussion_event_ids (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261029_120000_rc1_referral_lifecycle[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261029_120000_rc1_referral_lifecycle (9ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261029_130000_rc1_fulfillment_binding[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261029_130000_rc1_fulfillment_binding (2ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261101_150000_rc1_experiment_form[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261101_150000_rc1_experiment_form (2ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261101_160000_rc1_network_relationship_ids[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261101_160000_rc1_network_relationship_ids (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261107_120000_rc1_execution_events_site_detach[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261107_120000_rc1_execution_events_site_detach (2ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261116_120000_rc2_global_owner_flag[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261116_120000_rc2_global_owner_flag (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261116_130000_rc2_profile_space_merge[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261116_130000_rc2_profile_space_merge (3ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261116_150000_rc2_discussion_post_mutation_id[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261116_150000_rc2_discussion_post_mutation_id (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261116_160000_rc2_subscription_thread_fk[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261116_160000_rc2_subscription_thread_fk (2ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261117_120000_rc3_seo10_scan_incomplete_status[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261117_120000_rc3_seo10_scan_incomplete_status (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261117_130000_rc3_email01_intents_pauses[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261117_130000_rc3_email01_intents_pauses (7ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_120000_rc3_pod01_feed_namespace[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_120000_rc3_pod01_feed_namespace (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_130000_rc3_pod02_import_media[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_130000_rc3_pod02_import_media (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_140000_rc3_pod03_member_feeds[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_140000_rc3_pod03_member_feeds (6ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_150000_rc3_pod04_production[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_150000_rc3_pod04_production (17ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_160000_rc3_pod05_studio_sessions[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_160000_rc3_pod05_studio_sessions (7ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_170000_rc3_pod08_peaks[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_170000_rc3_pod08_peaks (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_180000_rc3_pod09_recordings[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_180000_rc3_pod09_recordings (11ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_190000_rc3_pod10_guests[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_190000_rc3_pod10_guests (11ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_200000_rc3_pod11_conform[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_200000_rc3_pod11_conform (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_210000_rc3_pod12_edit_projects[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_210000_rc3_pod12_edit_projects (11ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_220000_rc3_pod13_renders[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_220000_rc3_pod13_renders (12ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_230000_rc3_pod14_assists[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_230000_rc3_pod14_assists (8ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_240000_rc3_pod16_live[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_240000_rc3_pod16_live (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_250000_rc3_pod17_video[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_250000_rc3_pod17_video (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261118_260000_rc3_pod18_promotion[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261118_260000_rc3_pod18_promotion (0ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261119_120000_uxi02_task_readiness_setup_draft[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261119_120000_uxi02_task_readiness_setup_draft (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261119_130000_uxi06_site_visibility[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261119_130000_uxi06_site_visibility (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrating: 20261120_120000_podrc01_directory_owner_email[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mMigrated:  20261120_120000_podrc01_directory_owner_email (1ms)[39m
+migrate-1          | [16:13:58] [32mINFO[39m: [36mDone.[39m
+migrate-1          | npm notice
+migrate-1          | npm notice New patch version of npm available! 12.2.0 -> 12.2.3
+migrate-1          | npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+migrate-1          | npm notice To update run: npm install -g npm@12.2.3
+migrate-1          | npm notice

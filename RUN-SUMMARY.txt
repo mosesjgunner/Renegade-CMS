@@ -1,0 +1,10 @@
+run_id: 44922421597
+sha: 577fa3808344d7e0aeaab563e1d619fc0331abf3
+ref: refs/heads/main
+harness_outcome: success
+compose_outcome: success
+REPOSITORY                                   TAG               DIGEST                                                                    IMAGE ID       CREATED              SIZE
+renegade-cms-media-heavy                     ci                sha256:ff6ad91ff70b85028ce531c0c3b281db44f938c79263686ce02b5042a8f759a6   ff6ad91ff70b   About a minute ago   2.23GB
+renegade-cms                                 ci                sha256:5a72e5b313079f972de8b3323bad1b827372ed2bae1f2cd895b4b8004360a724   5a72e5b31307   About a minute ago   2.03GB
+renegade-cms-media-heavy                     rc117c-577fa380   sha256:00dfa3b4a4a247cc8942c63989c82301640d8b144bc257a4769217a95947b70f   00dfa3b4a4a2   6 minutes ago        2.23GB
+renegade-cms                                 rc117c-577fa380   sha256:fbdf0bcba86bbd31ef1912bb6ad2bf31edb861c75319df8efa4937a6b9e3fed8   fbdf0bcba86b   7 minutes ago        2.03GB

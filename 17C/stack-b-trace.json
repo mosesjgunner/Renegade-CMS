@@ -1,0 +1,26 @@
+[
+  {
+    "name": "rc117cb: migration service (image CLI) exits 0 on the disposable database",
+    "passed": true
+  },
+  {
+    "name": "rc117cb: production web container reports ready over HTTP",
+    "passed": true
+  },
+  {
+    "name": "configured modules register: commerce (products) and newsletter (subscribers) collections present",
+    "passed": true
+  },
+  {
+    "name": "unconfigured modules stay off in the same image (no forum-sections from community)",
+    "passed": true
+  },
+  {
+    "name": "adding a media-heavy worker container does not change web feature registration",
+    "passed": true
+  },
+  {
+    "name": "media-heavy worker container is up with ffmpeg available",
+    "passed": true
+  }
+]

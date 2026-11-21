@@ -1,0 +1,10 @@
+{
+  "realPrivateKeyDetected": true,
+  "escapedPrivateKeyDetected": true,
+  "parserHeaderAloneIsNotKeyMaterial": true,
+  "githubTokenDetected": true,
+  "awsKeyDetected": true,
+  "openaiTokenDetected": true,
+  "webhookTokenDetected": true,
+  "slackTokenDetected": true
+}
