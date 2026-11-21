@@ -111,7 +111,7 @@ if [[ -f "$config_file" ]]; then
 fi
 
 if ! $existing_config && [[ -z "$instance" ]]; then
-  fail '--instance is required for a new installation.'
+  fail '--instance is required for a new installation. It is a short name for this installation on this server, for example: --instance my-site.'
 fi
 [[ "$instance" =~ ^[a-z0-9][a-z0-9_-]{0,62}$ ]] || fail 'instance must be 1-63 lowercase letters, digits, hyphens, or underscores and start with a letter or digit.'
 # Fresh installs use a project-specific image name, so building one installation
