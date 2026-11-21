@@ -1003,17 +1003,26 @@ export async function evaluateSegmentRecipients(
     const explanation = explainSegment(segment.definition, projection)
     if (explanation.selected) {
       matchedSubscribers++
-      if (!isActive) {
-        unconsentedOrPending++
-      } else if (isSuppressed) {
+      // RC3-02 (DEBT-15): the matched buckets are mutually exclusive and
+      // exhaustive — every matched subscriber lands in exactly one — with
+      // a fixed precedence: suppression, then consent state, then
+      // duplication, then eligible. Suppression is a hard exclusion
+      // recorded against the address itself, so a suppressed subscriber
+      // counts as suppressed even when the subscription is also inactive
+      // (pending, unsubscribed, erased); the old order filed those under
+      // unconsentedOrPending and hid the suppression from the operator.
+      // The send policy is unchanged: a recipient is deliverable exactly
+      // when active, not suppressed, and first-seen for their email —
+      // the reorder only decides which exclusion bucket reports them.
+      if (isSuppressed) {
         suppressed++
+      } else if (!isActive) {
+        unconsentedOrPending++
+      } else if (seenEmails.has(email)) {
+        duplicates++
       } else {
-        if (seenEmails.has(email)) {
-          duplicates++
-        } else {
-          seenEmails.add(email)
-          eligibleRecipients.push({ subscriberId: subId, email })
-        }
+        seenEmails.add(email)
+        eligibleRecipients.push({ subscriberId: subId, email })
       }
     }
   }
