@@ -7,7 +7,7 @@ import type {
   NormalizedMenu,
   PresentationReconstruction,
 } from './types'
-import { convertWordpressBlocks } from './wordpress-blocks'
+import { convertWordpressBlocks, type WordpressConversionOptions } from './wordpress-blocks'
 
 /** Extract hex colors from raw CSS or HTML */
 function extractColorsFromText(text?: string): {
@@ -45,6 +45,7 @@ export function reconstructPresentation(
   siteInfo: { title: string; description?: string },
   pages: NormalizedItem[],
   themeId = 'neutral-starter',
+  conversionOptions?: WordpressConversionOptions,
 ): PresentationReconstruction {
   const resolved = resolveTheme(themeId)
 
@@ -142,9 +143,15 @@ export function reconstructPresentation(
   ]
 
   // 4. Reconstruct Templates
-  const templateIdPost = `tpl-post-${randomUUID().slice(0, 8)}`
-  const templateIdPage = `tpl-page-${randomUUID().slice(0, 8)}`
-  const templateIdArchive = `tpl-archive-${randomUUID().slice(0, 8)}`
+  // Template and pattern plan ids are the layouts' path identities
+  // (__template__/<id>, __pattern__/<id>) and the pipeline's
+  // find-existing keys. They must be stable across plans: a random
+  // suffix made every re-import mint fresh identities, so re-importing
+  // the same export duplicated every template and pattern instead of
+  // finding the existing ones.
+  const templateIdPost = 'tpl-post'
+  const templateIdPage = 'tpl-page'
+  const templateIdArchive = 'tpl-archive'
 
   const templates: PresentationReconstruction['templates'] = [
     {
@@ -222,7 +229,7 @@ export function reconstructPresentation(
   ]
 
   // 5. Reconstruct Reusable Patterns
-  const patternIdCta = `pat-cta-${randomUUID().slice(0, 8)}`
+  const patternIdCta = 'pat-cta'
   const patterns: PresentationReconstruction['patterns'] = [
     {
       id: patternIdCta,
@@ -284,7 +291,7 @@ export function reconstructPresentation(
       // characters into one generic block — silent truncation. The
       // converter never truncates: long text splits across blocks, and
       // every source region lands in the page's conversion report.
-      const conversion = convertWordpressBlocks(page.rawContent)
+      const conversion = convertWordpressBlocks(page.rawContent, conversionOptions)
       blocks.push(...conversion.blocks)
       conversionReports.push({
         path,

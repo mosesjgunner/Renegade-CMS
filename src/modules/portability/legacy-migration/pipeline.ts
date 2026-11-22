@@ -8,6 +8,7 @@ import type {
   LegacySitePackage,
   MigrationReport,
   NormalizedWxr,
+  PresentationReconstruction,
   QuarantineRecord,
   SideBySideItem,
 } from './types'
@@ -101,63 +102,19 @@ export function inspectLegacySite(pkg: LegacySitePackage): {
   }
 }
 
-/** Stage 2 & 3: Plan migration */
-export function planLegacyMigration(
-  pkg: LegacySitePackage,
-  options: LegacyMigrationOptions,
-): {
-  normalized: NormalizedWxr
-  sourceChecksum: string
-  urlPlan: ReturnType<typeof buildUrlAndRedirectPlan>
-  presentation: ReturnType<typeof reconstructPresentation>
-  quarantineRecords: QuarantineRecord[]
-  runId: string
-} {
-  const sourceChecksum = computeSha256(pkg.wxr)
-  const normalized = parseWxr(pkg.wxr)
-  const runId = `mig-${randomUUID().slice(0, 12)}`
-
-  // URL & redirect plan
-  const urlPlan = buildUrlAndRedirectPlan(normalized.items)
-
-  // Presentation plan
-  const pages = normalized.items.filter((i) => i.postType === 'page')
-  const presentation = reconstructPresentation(
-    pkg.themeMapping,
-    pkg.capturedHtml,
-    normalized.menus,
-    normalized.site,
-    pages,
-    options.themeId || 'neutral-starter',
-  )
-
-  // Collect all unsupported artifacts for quarantine
-  const quarantineRecords: QuarantineRecord[] = []
-  for (const item of normalized.items) {
-    for (const art of item.unsupported) {
-      quarantineRecords.push({
-        id: randomUUID(),
-        runId,
-        siteId: '', // populated on import
-        sourceId: item.id,
-        itemType: item.postType,
-        title: item.title,
-        kind: art.kind,
-        name: art.name,
-        rawSource: art.rawSource,
-        location: art.location,
-        reason: art.reason,
-        createdAt: new Date().toISOString(),
-      })
-    }
-  }
-  // Quarantined conversion regions (S2-12) join the same store: plugin
-  // blocks, scripts, unacquired media and unsupported core blocks are
-  // preserved outside public output with their conversion provenance.
+/** Quarantine records for the quarantined regions of a presentation
+ * reconstruction (S2-12): plugin blocks, scripts, unacquired media and
+ * unsupported core blocks, preserved outside public output with their
+ * conversion provenance. */
+export function buildConversionQuarantineRecords(
+  presentation: PresentationReconstruction,
+  runId: string,
+): QuarantineRecord[] {
+  const records: QuarantineRecord[] = []
   for (const conversionReport of presentation.conversionReports) {
     for (const region of conversionReport.report) {
       if (region.outcome !== 'quarantined') continue
-      quarantineRecords.push({
+      records.push({
         id: randomUUID(),
         runId,
         siteId: '', // populated on import
@@ -182,6 +139,65 @@ export function planLegacyMigration(
       })
     }
   }
+  return records
+}
+
+/** Stage 2 & 3: Plan migration */
+export function planLegacyMigration(
+  pkg: LegacySitePackage,
+  options: LegacyMigrationOptions,
+): {
+  normalized: NormalizedWxr
+  sourceChecksum: string
+  urlPlan: ReturnType<typeof buildUrlAndRedirectPlan>
+  presentation: ReturnType<typeof reconstructPresentation>
+  quarantineRecords: QuarantineRecord[]
+  itemQuarantineRecords: QuarantineRecord[]
+  runId: string
+} {
+  const sourceChecksum = computeSha256(pkg.wxr)
+  const normalized = parseWxr(pkg.wxr)
+  const runId = `mig-${randomUUID().slice(0, 12)}`
+
+  // URL & redirect plan
+  const urlPlan = buildUrlAndRedirectPlan(normalized.items)
+
+  // Presentation plan
+  const pages = normalized.items.filter((i) => i.postType === 'page')
+  const presentation = reconstructPresentation(
+    pkg.themeMapping,
+    pkg.capturedHtml,
+    normalized.menus,
+    normalized.site,
+    pages,
+    options.themeId || 'neutral-starter',
+  )
+
+  // Collect all unsupported artifacts for quarantine
+  const itemQuarantineRecords: QuarantineRecord[] = []
+  for (const item of normalized.items) {
+    for (const art of item.unsupported) {
+      itemQuarantineRecords.push({
+        id: randomUUID(),
+        runId,
+        siteId: '', // populated on import
+        sourceId: item.id,
+        itemType: item.postType,
+        title: item.title,
+        kind: art.kind,
+        name: art.name,
+        rawSource: art.rawSource,
+        location: art.location,
+        reason: art.reason,
+        createdAt: new Date().toISOString(),
+      })
+    }
+  }
+  // Quarantined conversion regions (S2-12) join the same store.
+  const quarantineRecords = [
+    ...itemQuarantineRecords,
+    ...buildConversionQuarantineRecords(presentation, runId),
+  ]
 
   return {
     normalized,
@@ -189,6 +205,7 @@ export function planLegacyMigration(
     urlPlan,
     presentation,
     quarantineRecords,
+    itemQuarantineRecords,
     runId,
   }
 }
@@ -348,8 +365,10 @@ export async function executeLegacyMigration(
   options: LegacyMigrationOptions,
   existingRunId?: string,
 ): Promise<MigrationReport> {
-  const { normalized, sourceChecksum, urlPlan, presentation, quarantineRecords, runId } =
-    planLegacyMigration(pkg, options)
+  const plan = planLegacyMigration(pkg, options)
+  const { normalized, sourceChecksum, urlPlan, itemQuarantineRecords, runId } = plan
+  let presentation = plan.presentation
+  let quarantineRecords = plan.quarantineRecords
   const actualRunId = existingRunId || runId
 
   if (urlPlan.errors.length)
@@ -556,6 +575,41 @@ export async function executeLegacyMigration(
     )
       createdEntityIds.mediaIds.push(mediaData.mediaId)
     mediaChecksums[sourceId] = mediaData.sha256
+  }
+
+  // 4b. Rebuild the presentation now that media acquisition is known.
+  // The plan-stage reconstruction converts page blocks before any media
+  // exists, so every page image lands in quarantine as "not acquired".
+  // With acquisition settled, page image blocks resolve against the
+  // acquired assets of THIS site (the same resolution the conversion
+  // apply path performs, S2-13); regions whose media was not acquired
+  // stay quarantined with their reason, and the quarantine store is
+  // rebuilt from the settled reports.
+  if (mediaResult.acquiredMedia.size > 0) {
+    const mediaByUrl = new Map<string, { id: string; siteId: string; label: string }>()
+    for (const item of normalized.media) {
+      const acquired = mediaResult.acquiredMedia.get(item.id)
+      if (acquired) {
+        mediaByUrl.set(item.sourceUrl, {
+          id: acquired.mediaId,
+          siteId,
+          label: item.title || acquired.fileName,
+        })
+      }
+    }
+    presentation = reconstructPresentation(
+      pkg.themeMapping,
+      pkg.capturedHtml,
+      normalized.menus,
+      normalized.site,
+      normalized.items.filter((i) => i.postType === 'page'),
+      options.themeId || 'neutral-starter',
+      { mediaByUrl },
+    )
+    quarantineRecords = [
+      ...itemQuarantineRecords,
+      ...buildConversionQuarantineRecords(presentation, actualRunId),
+    ]
   }
 
   // 5. Content (Posts & Pages)
@@ -997,8 +1051,16 @@ export async function verifyLegacyMigration(
     contentCountsMatch:
       contentIds.length === report.sourceSummary.posts + report.sourceSummary.pages &&
       report.sideBySide.every((item, index) => persistedContent[index]?.id === item.renegadeId),
+    // Checksums verify what was actually acquired: every recorded
+    // checksum must resolve to a stored asset. Media that was not
+    // acquired (e.g. a remote file the operator did not bundle while
+    // downloads were disallowed) is accounted by the acquisition
+    // warnings in this report — counting it here would fail
+    // verification, and block activation, for an explicitly skipped
+    // file even though nothing about the acquired set is unverified.
     mediaChecksumsVerified:
-      mediaChecks.length === report.sourceSummary.media && mediaChecks.every(Boolean),
+      mediaChecks.length === Object.keys(report.checksums.media).length &&
+      mediaChecks.every(Boolean),
     urlsAndRedirectsLoopFree: !urlCheck.hasLoops && !urlCheck.hasCollisions,
     renderedTemplatesValid: report.reconciliation.created.templates > 0,
     themeSafeNoArbitraryExec: true,
