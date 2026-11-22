@@ -2,9 +2,13 @@
 
 Thank you for your interest in contributing to **Renegade CMoS (Content & Media Operating System)**!
 
-Renegade is an open-source, sovereign platform built on strict architectural principles. We aim for extreme reliability, zero hidden SaaS dependencies, and reproducible quality gates.
+Renegade is a source-available, sovereign platform built on strict architectural principles. We aim for extreme reliability, zero hidden SaaS dependencies, and reproducible quality gates.
 
 ---
+
+## Licensing and contributor rights
+
+This branch proposes Elastic License 2.0 for future rights-cleared Renegade-developed contributions. Before contributing, confirm you are entitled to submit the code under the project's current license. Do not copy AGPL-only third-party code into the relicensed work. Contributor agreements or explicit permissions may be required to support relicensing and separate commercial licensing; a Git commit alone does not establish rights assignment. See [license transition notes](docs/legal/MANAGED_HOSTING_LICENSE.md).
 
 ## 🏛️ Guiding Principles
 
