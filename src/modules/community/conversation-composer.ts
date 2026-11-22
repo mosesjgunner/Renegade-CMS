@@ -4,6 +4,7 @@ import { checkBlockBetween, dispatchCommunityNotification } from './service'
 import { blockMember } from './service'
 import { ingestModerationReport } from './moderation-reports'
 import { linkMessageAttachments } from './message-attachments'
+import { evaluateRoomAudience, listRoomMessages } from './rooms'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 
 export class ConversationError extends Error {
@@ -255,9 +256,36 @@ export async function sendConversationMessage(
         'SELECT c.request_state, c.request_recipient_member_id, c.status FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3 FOR SHARE',
         [input.conversationId, input.senderId, input.siteId],
       )
-      if (!membership.rows[0])
-        throw new ConversationError('Active membership is required', 403, 'NOT_CONVERSATION_MEMBER')
-      const conversation = membership.rows[0] as Record<string, unknown>
+      // Derived branch (Circles D3): a bound room carries no roster
+      // rows — the shared audience function decides. Unbound
+      // conversations are structurally unreachable by this branch, so
+      // DM semantics are unchanged.
+      let roomMode = false
+      if (!membership.rows[0]) {
+        const audience = await evaluateRoomAudience(query, {
+          siteId: input.siteId,
+          conversationId: input.conversationId,
+          memberId: input.senderId,
+        })
+        if (!audience.bound)
+          throw new ConversationError(
+            'Active membership is required',
+            403,
+            'NOT_CONVERSATION_MEMBER',
+          )
+        if (!audience.canWrite)
+          throw new ConversationError(
+            audience.binding?.lifecycle === 'closed' ? 'This room is closed' : 'Access denied',
+            audience.binding?.lifecycle === 'closed' ? 409 : 403,
+            audience.binding?.lifecycle === 'closed' ? 'ROOM_CLOSED' : 'NOT_ROOM_AUDIENCE',
+          )
+        roomMode = true
+      }
+      const conversation = (membership.rows[0] ?? {
+        request_state: 'active',
+        request_recipient_member_id: null,
+        status: 'active',
+      }) as Record<string, unknown>
       if (conversation.status === 'archived')
         throw new ConversationError(
           'Archived conversations are read-only',
@@ -279,10 +307,16 @@ export async function sendConversationMessage(
           403,
           'MESSAGE_REQUEST_PENDING',
         )
-      const peers = await query<{ member_id: string }>(
-        'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
-        [input.conversationId, input.senderId],
-      )
+      // In a room there is no pairwise peer set: pairwise blocks act
+      // at read/display (the blocker's content is hidden from the
+      // blocked member), while the send gate is the audience function
+      // plus site standing and sanctions, already enforced above.
+      const peers = roomMode
+        ? { rows: [] as Array<{ member_id: string }> }
+        : await query<{ member_id: string }>(
+            'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
+            [input.conversationId, input.senderId],
+          )
       for (const peer of peers.rows)
         if (
           peer.member_id &&
@@ -447,8 +481,25 @@ export async function listConversationMessages(
     'SELECT cm.visible_from_sequence FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3',
     [input.conversationId, input.memberId, input.siteId],
   )
-  if (!membership.rows[0])
+  if (!membership.rows[0]) {
+    // Derived branch (Circles D3): bound rooms resolve through the
+    // shared audience function and the (conversation, member) read
+    // state — floor, cursor and block/mute filtering included.
+    const audience = await evaluateRoomAudience(query, {
+      siteId: input.siteId,
+      conversationId: input.conversationId,
+      memberId: input.memberId,
+    })
+    if (audience.bound && audience.canRead) {
+      const room = await listRoomMessages(payload, {
+        siteId: input.siteId,
+        conversationId: input.conversationId,
+        memberId: input.memberId,
+      })
+      return room.messages as Array<Record<string, unknown>>
+    }
     throw new ConversationError('Access denied', 403, 'NOT_CONVERSATION_MEMBER')
+  }
   return (
     await query(
       `SELECT m.id,m.conversation_id,m.sender_id,m.sequence_number,m.body_html,m.created_at,

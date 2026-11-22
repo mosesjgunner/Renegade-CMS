@@ -928,8 +928,14 @@ export const migrations = [
     down: rc316EvergreenHandoff.down,
     name: '20261121_130000_rc316_evergreen_handoff',
   },
+  {
+    up: rc315bGroupsRooms.up,
+    down: rc315bGroupsRooms.down,
+    name: '20261121_170000_rc315b_groups_rooms',
+  },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
 import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
 import * as rc315aThreadNotificationDispatch from './20261121_120000_rc315a_thread_notification_dispatch'
 import * as rc316EvergreenHandoff from './20261121_130000_rc316_evergreen_handoff'
+import * as rc315bGroupsRooms from './20261121_170000_rc315b_groups_rooms'
