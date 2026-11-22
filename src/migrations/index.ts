@@ -944,6 +944,11 @@ export const migrations = [
     name: '20261121_200000_rc314_repurpose',
   },
   {
+    up: rc317EditorialDepth.up,
+    down: rc317EditorialDepth.down,
+    name: '20261122_090000_rc317_editorial_depth',
+  },
+  {
     up: cre01CreatorPolicy.up,
     down: cre01CreatorPolicy.down,
     name: '20261122_120000_cre01_creator_policy',
@@ -969,3 +974,4 @@ import * as rc316EvergreenHandoff from './20261121_130000_rc316_evergreen_handof
 import * as rc315bGroupsRooms from './20261121_170000_rc315b_groups_rooms'
 import * as rc312CreatorCatalog from './20261121_190000_rc312_creator_catalog'
 import * as rc314Repurpose from './20261121_200000_rc314_repurpose'
+import * as rc317EditorialDepth from './20261122_090000_rc317_editorial_depth'
