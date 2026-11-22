@@ -108,13 +108,27 @@ export async function createGraphicDerivative(
     },
     overrideAccess: true,
   } as never)) as Doc
+  // RC3-18 fix: this write previously used fields that do not exist on
+  // the media-usages collection (usageType / targetCollection / approved)
+  // and omitted its required site / usedBy / purpose, so every call
+  // threw a ValidationError after the derivative had been created. The
+  // row below is the collection's real shape: the source asset is used
+  // by the graphic document, unapproved until the derivative is.
   await recordMediaUsage(payload, {
+    site: input.scope.site,
     media: input.sourceMediaId,
+    usedBy: { relationTo: 'graphic-documents', value: document.id },
     usageKey: `graphic:${derivative.id}`,
-    usageType: 'graphic-source',
-    targetCollection: 'media-derivatives',
+    targetType: 'graphic-document',
     targetId: derivative.id,
-    approved: true,
+    // 'cover': the media_usages_purpose DB enum carries only seven of
+    // the thirteen purposes the collection declares (layout / theme /
+    // seo / podcast / video / distribution are rejected by Postgres) —
+    // a designed social/cover graphic is a cover use. Enum drift named
+    // in the RC3-18 RESULT.md; widening it is migration work.
+    purpose: 'cover',
+    lifecycle: 'draft',
+    approvedForPublic: false,
   })
   return { document, derivative }
 }
