@@ -3,6 +3,7 @@ import { createPortableManifest, type PortableRecord } from './contracts'
 import { PORTABLE_COLLECTIONS } from './workflow'
 import { loadConfig } from '../core/config'
 import { mediaStorage } from '../media/storage'
+import { mediaStorageKey } from '../media/workflow'
 
 /** Content portability: direct site records and referenced publishing history.
  * Global identities and unrelated tenants are never exported by scanning them.
@@ -108,7 +109,8 @@ export async function exportPortableSite(payload: Payload, siteId: string) {
     records
       .filter((record) => record.collection === 'media-assets')
       .map(async (record) => {
-        const bytes = await storage.get(String(record.data.storageLocation))
+        const key = await mediaStorageKey(payload, record.data)
+        const bytes = key ? await storage.get(key) : undefined
         if (!bytes) throw new Error(`Original media bytes missing: media-assets/${record.id}`)
         return {
           id: record.id,

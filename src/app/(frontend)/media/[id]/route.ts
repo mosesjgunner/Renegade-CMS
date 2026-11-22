@@ -9,6 +9,8 @@ import { loadConfig } from '@/modules/core/config'
 import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import { formatMimeTypes, standardRecipes, type VariantFormat } from '@/modules/media/variants'
 
+import { fetchPortfolioMedia } from '@/modules/creator-studio/portfolio-public'
+
 export const runtime = 'nodejs'
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -23,14 +25,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const recipeVersion = url.searchParams.has('variant') ? url.searchParams.get('v') : null
   const isDownload = url.searchParams.get('download') === 'true'
 
-  let media = await publicMedia(payload, id)
-  const isPublic = Boolean(media)
-  const auth = await payload.auth({ headers: request.headers }).catch(() => ({ user: null }))
+  const portfolio = url.searchParams.get('portfolio')
+  let media: Record<string, unknown> | undefined = portfolio === null
+    ? await publicMedia(payload, id)
+    : isDownload ? undefined : (await fetchPortfolioMedia(payload, request.headers, portfolio, id, url.searchParams.get('preview') === '1')) as unknown as Record<string, unknown> | undefined
+  const isPublic = portfolio === null && Boolean(media)
+  const auth = portfolio !== null ? { user: null } : await payload.auth({ headers: request.headers }).catch(() => ({ user: null }))
   const isStaff = Boolean(
     auth.user && ['owner', 'administrator', 'staff'].includes(String(auth.user.role)),
   )
 
-  if (!media && isStaff) {
+  if (!media && isStaff && portfolio === null) {
     media = (await payload
       .findByID({ collection: 'media-assets', id, depth: 0, overrideAccess: true } as never)
       .catch(() => undefined)) as unknown as Record<string, unknown> | undefined

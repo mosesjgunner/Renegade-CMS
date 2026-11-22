@@ -44,6 +44,8 @@ import {
   safelyRecordIndexingChange,
 } from '../modules/public/indexing'
 import { resolveSiteSettings } from '../modules/core/site-settings'
+import { portfolioSnapshotFields, readAlbums } from './CreatorProjects'
+import { portfolioKinds } from '../modules/creator-studio/portfolio-contract'
 import { canDiscoverPublic } from '../modules/public/contracts'
 import {
   assignRecordSemanticPath,
@@ -2163,7 +2165,7 @@ export const Albums: CollectionConfig = {
   access: {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
-    read: () => true,
+    read: readAlbums,
     update: operatorSiteUpdateAccess,
   },
   hooks: {
@@ -2204,7 +2206,7 @@ export const Albums: CollectionConfig = {
     ...ownerFields(),
     { name: 'category', type: 'relationship', relationTo: 'categories', index: true },
     { name: 'sortOrder', type: 'number', defaultValue: 0 },
-    { name: 'kind', type: 'select', required: true, options: ['album', 'portfolio'] },
+    { name: 'kind', type: 'select', required: true, options: ['album', ...portfolioKinds] },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
     { name: 'canonicalPath', type: 'text', required: true },
@@ -2258,6 +2260,7 @@ export const Albums: CollectionConfig = {
       options: moderationStateOptions,
     },
     { name: 'exportRequestedAt', type: 'date' },
+    ...portfolioSnapshotFields(),
     ...retentionFields(),
   ],
   indexes: [

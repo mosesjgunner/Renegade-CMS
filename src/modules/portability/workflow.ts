@@ -41,6 +41,7 @@ export const PORTABLE_COLLECTIONS = [
   'product-variants',
   'product-categories',
   'inventory-items',
+  'creator-projects',
   'site-settings',
 ] as const
 export type PortableCollection = (typeof PORTABLE_COLLECTIONS)[number]

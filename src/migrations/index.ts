@@ -963,7 +963,13 @@ export const migrations = [
     down: cre02Submissions.down,
     name: '20261122_140000_cre02_submissions',
   },
+  {
+    up: cre03Portfolios.up,
+    down: cre03Portfolios.down,
+    name: "20261122_150000_cre03_portfolios",
+  },
 ]
+import * as cre03Portfolios from "./20261122_150000_cre03_portfolios"
 import * as cre01CreatorPolicy from './20261122_120000_cre01_creator_policy'
 import * as cre01SpaceDescription from './20261122_130000_cre01_space_description'
 import * as cre02Submissions from './20261122_140000_cre02_submissions'

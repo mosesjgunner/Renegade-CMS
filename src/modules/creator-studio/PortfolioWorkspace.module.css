@@ -1,0 +1,34 @@
+﻿.workspace {
+  width: min(100% - 2rem, var(--presentation-widths-content, 72rem));
+  margin-inline: auto;
+  padding-block: 2rem;
+  display: grid;
+  gap: 1rem;
+}
+.workspace :is(a, summary) { text-decoration: underline; }
+.workspace :is(button, input, select, textarea) {
+  min-width: 0;
+  max-width: 100%;
+  border: 1px solid var(--presentation-muted, #777);
+  border-radius: var(--presentation-radii-normal, .4rem);
+  padding: .45rem .65rem;
+  background: var(--color-bg-surface, Canvas);
+  color: var(--color-text-primary, CanvasText);
+}
+.workspace button:disabled { opacity: .6; }
+.workspace button, .workspace summary { cursor: pointer; }
+.workspace label { display: grid; gap: .3rem; min-width: 0; }
+.workspace legend { font-weight: 650; padding-inline: .35rem; }
+.workspace ul { display: grid; gap: .5rem; }
+.panel, .section, .block, .sections { display: grid; gap: 1rem; min-width: 0; }
+.panel, .section, .block {
+  padding: 1rem;
+  border: 1px solid var(--presentation-muted, #777);
+  border-radius: var(--presentation-radii-normal, .4rem);
+}
+.fields { display: grid; gap: .75rem; min-width: 0; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; }
+.handle { cursor: grab; padding-inline: .25rem; }
+@media (min-width: 680px) {
+  .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

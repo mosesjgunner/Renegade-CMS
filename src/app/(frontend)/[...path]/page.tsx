@@ -24,6 +24,8 @@ import {
   type RedirectRule,
 } from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
+import { lookupPortfolio } from '@/modules/creator-studio/portfolio-public'
+import { PortfolioView, portfolioMetadata } from '@/modules/creator-studio/PortfolioView'
 import { SubmissionTargetLink } from '@/modules/creator-studio/SubmissionTargetLink'
 import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { PublicForm } from '@/modules/audience/PublicForm'
@@ -89,6 +91,10 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
       const access = await resolvePublicSiteAccess(payload, { siteId, headers: hdrs })
       if (!access.allowed)
         return { title: access.siteName, robots: { index: false, follow: false } }
+      const portfolio = await lookupPortfolio(payload, path, siteId, hdrs)
+      if (portfolio.found) return portfolio.page
+        ? portfolioMetadata(payload, portfolio.page, access.visibility === 'public')
+        : { robots: { index: false, follow: false } }
     }
     if (siteId && /^\/(authors|tags)\//.test(path)) {
       const archive = await loadContentArchive(payload, siteId, path)
@@ -388,6 +394,16 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         <BookReader book={book} chapters={chapters} />
       </>
     )
+  }
+
+  const portfolio = await lookupPortfolio(payload, path, siteId, await requestHeaders())
+  if (portfolio.found) {
+    if (!portfolio.page) notFound()
+    if (portfolio.page.doc.portfolioPublished || !('kind' in portfolio.page.doc) ||
+        !portfolio.page.doc.category || portfolio.page.draft.sections.some((section) => section.blocks.length) ||
+        portfolio.page.draft.cover) {
+      return <PortfolioView payload={payload} page={portfolio.page} siteIsPublic={siteAccess.visibility === 'public'} />
+    }
   }
 
   const hierarchy = await loadPublicHierarchy(payload, siteId)

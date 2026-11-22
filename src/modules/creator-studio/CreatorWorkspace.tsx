@@ -116,6 +116,7 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <h1 className="text-3xl font-bold">Creator Studio</h1>
+      <p><Link href="/studio/portfolio">Portfolios and projects</Link></p>
       <Link href="/studio/submissions">Community submissions</Link>
       {message && <p role="status">{message}</p>}
       {workspace && !workspace.space && (

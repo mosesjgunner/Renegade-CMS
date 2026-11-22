@@ -167,6 +167,7 @@ export interface Config {
     'timeline-memberships': TimelineMembership;
     sources: Source;
     albums: Album;
+    'creator-projects': CreatorProject;
     'media-usages': MediaUsage;
     'forum-sections': ForumSection;
     forums: Forum;
@@ -390,6 +391,7 @@ export interface Config {
     'timeline-memberships': TimelineMembershipsSelect<false> | TimelineMembershipsSelect<true>;
     sources: SourcesSelect<false> | SourcesSelect<true>;
     albums: AlbumsSelect<false> | AlbumsSelect<true>;
+    'creator-projects': CreatorProjectsSelect<false> | CreatorProjectsSelect<true>;
     'media-usages': MediaUsagesSelect<false> | MediaUsagesSelect<true>;
     'forum-sections': ForumSectionsSelect<false> | ForumSectionsSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
@@ -652,7 +654,7 @@ export interface Member {
 export interface Site {
   id: string;
   /**
-   * JSON object: enabled, selfServiceSpaces, and quotas. Creator access is denied by default.
+   * JSON object: enabled, selfServiceSpaces, quotas, and submissionTargets. Creator access is denied by default.
    */
   creatorPolicy?:
     | {
@@ -1288,7 +1290,7 @@ export interface Album {
   owner?: (string | null) | Member;
   category?: (string | null) | Category;
   sortOrder?: number | null;
-  kind: 'album' | 'portfolio';
+  kind: 'album' | 'portfolio' | 'gallery' | 'mixed-media' | 'exhibition' | 'catalog';
   title: string;
   slug: string;
   canonicalPath: string;
@@ -1311,6 +1313,27 @@ export interface Album {
   commentsPolicy: 'open' | 'members' | 'closed';
   moderationState: 'clear' | 'review' | 'restricted' | 'removed';
   exportRequestedAt?: string | null;
+  /**
+   * Edit in Creator Studio.
+   */
+  portfolioDraft?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  portfolioPublished?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -3090,12 +3113,6 @@ export interface MediaVariant {
  * via the `definition` "media-upload-sessions".
  */
 export interface MediaUploadSession {
-  stagingClearedAt?: string | null;
-  chunkManifest?: Record<string, unknown> | null;
-  creatorKey?: string | null;
-  creatorTarget?: string | null;
-  reviewStatus?: string | null;
-  creatorDetails?: Record<string, unknown> | null;
   id: string;
   site: string | Site;
   /**
@@ -3124,6 +3141,12 @@ export interface MediaUploadSession {
     | number
     | boolean
     | null;
+  chunkManifest?: Record<string, unknown> | null;
+  creatorKey?: string | null;
+  creatorTarget?: string | null;
+  reviewStatus?: string | null;
+  creatorDetails?: Record<string, unknown> | null;
+  stagingClearedAt?: string | null;
   state: 'open' | 'finalizing' | 'completed' | 'cancelled' | 'aborted' | 'failed' | 'expired';
   asset?: (string | null) | MediaAsset;
   expiresAt: string;
@@ -6749,6 +6772,51 @@ export interface TimelineMembership {
   displayStartsAt?: string | null;
   displayEndsAt?: string | null;
   renderVariant?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Projects are authored in Creator Studio.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "creator-projects".
+ */
+export interface CreatorProject {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  slug: string;
+  canonicalPath: string;
+  /**
+   * Edit in Creator Studio.
+   */
+  portfolioDraft?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  portfolioPublished?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -12652,12 +12720,6 @@ export interface MediaVariantsSelect<T extends boolean = true> {
  * via the `definition` "media-upload-sessions_select".
  */
 export interface MediaUploadSessionsSelect<T extends boolean = true> {
-  stagingClearedAt?: T;
-  chunkManifest?: T;
-  creatorKey?: T;
-  creatorTarget?: T;
-  reviewStatus?: T;
-  creatorDetails?: T;
   site?: T;
   publication?: T;
   space?: T;
@@ -12671,6 +12733,12 @@ export interface MediaUploadSessionsSelect<T extends boolean = true> {
   chunkSize?: T;
   receivedBytes?: T;
   receivedChunks?: T;
+  chunkManifest?: T;
+  creatorKey?: T;
+  creatorTarget?: T;
+  reviewStatus?: T;
+  creatorDetails?: T;
+  stagingClearedAt?: T;
   state?: T;
   asset?: T;
   expiresAt?: T;
@@ -14254,11 +14322,30 @@ export interface AlbumsSelect<T extends boolean = true> {
   commentsPolicy?: T;
   moderationState?: T;
   exportRequestedAt?: T;
+  portfolioDraft?: T;
+  portfolioPublished?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "creator-projects_select".
+ */
+export interface CreatorProjectsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  slug?: T;
+  canonicalPath?: T;
+  portfolioDraft?: T;
+  portfolioPublished?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -32,6 +32,7 @@ import {
   Forums,
   ForumSections,
 } from '../../collections/Community'
+import { CreatorProjects } from '../../collections/CreatorProjects'
 import type { DomainDefinition } from '../core/payload-domains'
 import { editorialTasks } from './tasks'
 
@@ -62,6 +63,7 @@ export const editorialDomain: DomainDefinition = {
     TimelineMemberships,
     Sources,
     Albums,
+    CreatorProjects,
     MediaUsages,
     ForumSections,
     Forums,
