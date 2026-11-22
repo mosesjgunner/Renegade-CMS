@@ -5,7 +5,7 @@
 ### The Sovereign Content Operating System
 
 [![Release Blocked](https://img.shields.io/badge/Release-Blocked-red.svg?style=for-the-badge)](docs/release/BETA_RELEASE_NOTES.md)
-[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-orange.svg?style=for-the-badge)](LICENSE)
+[![License: Elastic-2.0](https://img.shields.io/badge/License-Elastic--2.0-orange.svg?style=for-the-badge)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-3178C6.svg?style=for-the-badge&logo=typescript)](tsconfig.json)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20Turbopack-black.svg?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
 [![Payload CMS](https://img.shields.io/badge/Payload-3.90.2-black.svg?style=for-the-badge)](https://payloadcms.com)
@@ -27,6 +27,10 @@
 ---
 
 </div>
+
+## License and managed hosting
+
+**Proposed for future releases, pending rights and legal review:** Renegade-developed code is distributed under the [Elastic License 2.0](LICENSE) (source-available, not OSI open source). Individuals, creators, nonprofits, and businesses may self-host their own sites, including commercial sites, without paying Renegade. Offering Renegade itself to third parties as a hosted or managed service providing access to a substantial set of its features requires a separate commercial agreement with the rights holder. Ordinary managed infrastructure and agency arrangements can involve factual edge cases; the license text controls. Existing AGPL-distributed releases retain their previously granted rights, and third-party components retain their own licenses. See [commercial license notes](docs/legal/MANAGED_HOSTING_LICENSE.md).
 
 ## 🌐 Why Renegade CMoS?
 
