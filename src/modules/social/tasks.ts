@@ -6,6 +6,7 @@ import { loadConfig } from '../core/config'
 import { mediaStorage } from '../media/storage'
 import { assertMediaIdsPublishable } from '../media/workflow'
 import {
+  assertSocialTransition,
   campaignState,
   normalizeProviderError,
   retryDelayMs,
@@ -230,6 +231,46 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       accountHandle: account.displayName,
       network: variant.network,
       credentials: credentials ?? {},
+    }
+    // RC3-16: a manual-handoff destination is never "attempted" against a
+    // provider. Park the item in its own actionable state carrying the
+    // approved copy, link and attachments, so an operator can post it by
+    // hand and record completion via completeManualHandoff. No provider
+    // request is made and no publish attempt is recorded.
+    if (!recovery && provider.mode === 'manual-handoff') {
+      const handoff = {
+        network: variant.network,
+        accountId: id(account),
+        accountHandle: account.displayName,
+        text: variant.text,
+        linkUrl: variant.linkUrl ?? null,
+        canonicalUrl: draft.canonicalUrl ?? null,
+        attachments: attachments.map((row: any) => row.mediaAssetId),
+        queuedAt: new Date().toISOString(),
+      }
+      await atomic(payload, async (tx) => {
+        await tx.update({
+          collection: 'social-queue-items',
+          id: queue.id,
+          data: {
+            status: 'manual-handoff',
+            leaseOwner: null,
+            leaseUntil: null,
+            nextAttemptAt: null,
+            deadLetterReason: null,
+            handoff,
+          },
+          overrideAccess: true,
+        })
+        await tx.update({
+          collection: 'social-network-variants',
+          id: variant.id,
+          data: { status: 'manual-handoff' },
+          overrideAccess: true,
+        })
+        await updateParent(tx, variant)
+      })
+      return { output: { status: 'manual-handoff', handoff } }
     }
     const attempt = recovery
       ? Math.max(1, Number(queue.attemptCount ?? 0))
@@ -483,6 +524,74 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
         data: { status: result.status },
         overrideAccess: true,
       })
+      // RC3-16 evergreen: a published recurring slot spawns its next
+      // occurrence in the same transaction. The next slot is anchored to
+      // this slot's scheduled time (cadence does not drift with publish
+      // latency), carries the same approval (identical content hash), and
+      // is keyed deterministically — the unique idempotency key makes a
+      // duplicate spawn impossible even if completion is replayed.
+      if (
+        result.status === 'published' &&
+        Number(queue.recurrenceIntervalDays ?? 0) > 0 &&
+        queue.recurrenceSeriesKey
+      ) {
+        const occurrence = Number(queue.recurrenceOccurrence ?? 1) + 1
+        const nextKey = `evergreen:${queue.recurrenceSeriesKey}:${occurrence}:${variant.approvalHash}`
+        const existingNext = await tx.find({
+          collection: 'social-queue-items',
+          where: { idempotencyKey: { equals: nextKey } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        if (!existingNext.docs.length) {
+          const nextVariant = await tx.create({
+            collection: 'social-network-variants',
+            data: {
+              draft: id(variant.draft),
+              account: id(variant.account),
+              label: variant.label,
+              network: variant.network,
+              text: variant.text,
+              linkUrl: variant.linkUrl,
+              attachments: (variant.attachments ?? []).map((value: any) => id(value)),
+              status: 'scheduled',
+              approvalHash: variant.approvalHash,
+              approvedAt: variant.approvedAt,
+              idempotencyKey: `evergreen-variant:${queue.recurrenceSeriesKey}:${occurrence}`,
+            },
+            overrideAccess: true,
+          })
+          const nextScheduledFor = new Date(
+            Date.parse(queue.scheduledFor) + Number(queue.recurrenceIntervalDays) * 86_400_000,
+          ).toISOString()
+          const nextQueue = await tx.create({
+            collection: 'social-queue-items',
+            data: {
+              variant: String(nextVariant.id),
+              account: id(queue.account),
+              scheduledFor: nextScheduledFor,
+              timeZone: queue.timeZone,
+              status: 'scheduled',
+              idempotencyKey: nextKey,
+              recurrenceIntervalDays: queue.recurrenceIntervalDays,
+              recurrenceSeriesKey: queue.recurrenceSeriesKey,
+              recurrenceOccurrence: occurrence,
+            },
+            overrideAccess: true,
+          })
+          await tx.jobs.queue({
+            task: 'social-publish',
+            queue: 'operations',
+            input: {
+              queueItemId: String(nextQueue.id),
+              workerId: 'social-evergreen',
+              mode: 'dispatch',
+            },
+            waitUntil: new Date(nextScheduledFor),
+          })
+        }
+      }
       await updateParent(tx, variant)
       if (nextAttemptAt)
         await tx.jobs.queue({
@@ -503,6 +612,125 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       },
     }
   })
+}
+
+/** RC3-16: pause a queued/scheduled item. Paused items are invisible to
+ * the outbox sweep (which only selects scheduled/failed/publishing rows)
+ * and executeSocialQueueItem skips them, so a pause holds even if a
+ * previously queued dispatch job fires late. */
+export async function pauseSocialQueueItem(payload: Payload, queueItemId: string) {
+  const queue: any = await payload.findByID({
+    collection: 'social-queue-items',
+    id: queueItemId,
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!queue) throw new Error('Social queue item not found.')
+  assertSocialTransition(queue.status, 'paused')
+  await payload.update({
+    collection: 'social-queue-items',
+    id: queueItemId,
+    data: { status: 'paused' },
+    overrideAccess: true,
+  })
+  return { status: 'paused' }
+}
+
+/** RC3-16: resume a paused item back to its scheduled slot. */
+export async function resumeSocialQueueItem(payload: Payload, queueItemId: string) {
+  const queue: any = await payload.findByID({
+    collection: 'social-queue-items',
+    id: queueItemId,
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!queue) throw new Error('Social queue item not found.')
+  assertSocialTransition(queue.status, 'scheduled')
+  await payload.update({
+    collection: 'social-queue-items',
+    id: queueItemId,
+    data: { status: 'scheduled' },
+    overrideAccess: true,
+  })
+  return { status: 'scheduled' }
+}
+
+/** RC3-16: record an operator's manual posting of a handed-off item.
+ * The operator supplies the live post's URL (and provider id when the
+ * network exposes one); the completion is recorded as the item's
+ * receipt — an external-posts row plus the handoff completion stamp —
+ * and the variant/draft states settle exactly like a provider publish. */
+export async function completeManualHandoff(
+  payload: Payload,
+  input: { queueItemId: string; remoteUrl: string; remoteId?: string; note?: string },
+) {
+  const queue: any = await payload.findByID({
+    collection: 'social-queue-items',
+    id: input.queueItemId,
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!queue) throw new Error('Social queue item not found.')
+  assertSocialTransition(queue.status, 'published')
+  if (queue.status !== 'manual-handoff')
+    throw new Error('Only a manual-handoff item can be completed by an operator.')
+  if (!input.remoteUrl?.trim()) throw new Error('The live post URL is required.')
+  const variant: any = await payload.findByID({
+    collection: 'social-network-variants',
+    id: id(queue.variant),
+    depth: 0,
+    overrideAccess: true,
+  })
+  const remoteId = input.remoteId?.trim() || `manual:${queue.id}`
+  const completedAt = new Date().toISOString()
+  await atomic(payload, async (tx) => {
+    const existing = await tx.find({
+      collection: 'external-posts',
+      where: {
+        and: [{ account: { equals: id(queue.account) } }, { remoteId: { equals: remoteId } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (!existing.docs.length)
+      await tx.create({
+        collection: 'external-posts',
+        data: {
+          variant: variant.id,
+          account: id(queue.account),
+          remoteId,
+          remoteUrl: input.remoteUrl,
+          publishedAt: completedAt,
+          remoteState: 'published',
+        },
+        overrideAccess: true,
+      })
+    await tx.update({
+      collection: 'social-queue-items',
+      id: queue.id,
+      data: {
+        status: 'published',
+        handoff: {
+          ...(queue.handoff ?? {}),
+          completedAt,
+          completedBy: 'operator',
+          remoteId,
+          remoteUrl: input.remoteUrl,
+          ...(input.note ? { note: input.note } : {}),
+        },
+      },
+      overrideAccess: true,
+    })
+    await tx.update({
+      collection: 'social-network-variants',
+      id: variant.id,
+      data: { status: 'published' },
+      overrideAccess: true,
+    })
+    await updateParent(tx, variant)
+  })
+  return { status: 'published', remoteId, remoteUrl: input.remoteUrl }
 }
 
 export const socialPublishTask = {

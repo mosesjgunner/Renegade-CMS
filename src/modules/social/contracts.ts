@@ -25,7 +25,9 @@ export type SocialState =
   | 'approved'
   | 'queued'
   | 'scheduled'
+  | 'paused'
   | 'publishing'
+  | 'manual-handoff'
   | 'unknown'
   | 'published'
   | 'partially-published'
@@ -372,9 +374,11 @@ export const canTransitionSocial = (from: SocialState, to: SocialState) => {
     draft: ['review', 'cancelled'],
     review: ['draft', 'approved', 'cancelled'],
     approved: ['queued', 'scheduled', 'publishing', 'cancelled'],
-    queued: ['scheduled', 'publishing', 'cancelled'],
-    scheduled: ['queued', 'publishing', 'cancelled'],
-    publishing: ['published', 'failed', 'partially-published', 'unknown'],
+    queued: ['scheduled', 'publishing', 'paused', 'cancelled'],
+    scheduled: ['queued', 'publishing', 'paused', 'cancelled'],
+    paused: ['queued', 'scheduled', 'cancelled'],
+    publishing: ['published', 'failed', 'partially-published', 'unknown', 'manual-handoff'],
+    'manual-handoff': ['published', 'cancelled'],
     unknown: ['published', 'cancelled'],
     published: ['deletion-requested'],
     'partially-published': ['queued', 'published', 'failed'],
@@ -396,8 +400,8 @@ export const campaignState = (states: readonly SocialState[]): SocialState => {
   if (states.includes('failed') && states.includes('published')) return 'partially-published'
   if (states.length && states.every((state) => state === 'published')) return 'published'
   if (states.length && states.every((state) => state === 'failed')) return 'failed'
-  if (states.includes('publishing')) return 'publishing'
-  if (states.includes('scheduled')) return 'scheduled'
+  if (states.includes('publishing') || states.includes('manual-handoff')) return 'publishing'
+  if (states.includes('scheduled') || states.includes('paused')) return 'scheduled'
   if (states.includes('queued')) return 'queued'
   if (states.includes('approved')) return 'approved'
   return states.includes('review') ? 'review' : 'draft'

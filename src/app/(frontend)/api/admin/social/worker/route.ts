@@ -1,8 +1,11 @@
 import config from '@payload-config'
 import { getPayload, type Where } from 'payload'
 import {
+  completeManualHandoff,
   executeSocialQueueItem,
   MAX_PROVIDER_ATTEMPTS,
+  pauseSocialQueueItem,
+  resumeSocialQueueItem,
   type SocialDispatchInput,
 } from '@/modules/social/tasks'
 import {
@@ -67,11 +70,26 @@ export async function POST(request: Request) {
     action?: string
     queueItemId?: string
     draftId?: string
+    remoteUrl?: string
+    remoteId?: string
+    note?: string
   }
   const action = body.action ?? 'dispatch'
-  if (!['dispatch', 'dispatch-item', 'retry-failed', 'reconcile'].includes(action))
+  if (
+    ![
+      'dispatch',
+      'dispatch-item',
+      'retry-failed',
+      'reconcile',
+      'pause-item',
+      'resume-item',
+      'complete-manual',
+    ].includes(action)
+  )
     return Response.json({ error: 'Unsupported social worker action.' }, { status: 400 })
   if (action === 'dispatch-item' && !body.queueItemId)
+    return Response.json({ error: 'queueItemId is required.' }, { status: 400 })
+  if (['pause-item', 'resume-item', 'complete-manual'].includes(action) && !body.queueItemId)
     return Response.json({ error: 'queueItemId is required.' }, { status: 400 })
   const mode: SocialDispatchInput['mode'] =
     action === 'retry-failed' ? 'retry' : action === 'reconcile' ? 'reconcile' : 'dispatch'
@@ -100,6 +118,29 @@ export async function POST(request: Request) {
       )))
   )
     return Response.json({ error: 'Queue item site access denied.' }, { status: 403 })
+  // RC3-16: per-item operator actions that are not dispatches.
+  if (['pause-item', 'resume-item', 'complete-manual'].includes(action)) {
+    try {
+      const result =
+        action === 'pause-item'
+          ? await pauseSocialQueueItem(payload, body.queueItemId!)
+          : action === 'resume-item'
+            ? await resumeSocialQueueItem(payload, body.queueItemId!)
+            : await completeManualHandoff(payload, {
+                queueItemId: body.queueItemId!,
+                remoteUrl: body.remoteUrl ?? '',
+                remoteId: body.remoteId,
+                note: body.note,
+              })
+      return Response.json({ success: true, action, ...result })
+    } catch (error) {
+      logSocialError('social worker operator action failed', error)
+      return Response.json(
+        { error: error instanceof Error ? error.message : 'Operator action failed.' },
+        { status: 400 },
+      )
+    }
+  }
   const now = new Date().toISOString()
   const expired: Where = {
     and: [
