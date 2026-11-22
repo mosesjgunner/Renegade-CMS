@@ -924,6 +924,11 @@ export const migrations = [
     name: '20261121_120000_rc315a_thread_notification_dispatch',
   },
   {
+    up: rc316EvergreenHandoff.up,
+    down: rc316EvergreenHandoff.down,
+    name: '20261121_130000_rc316_evergreen_handoff',
+  },
+  {
     up: rc312CreatorCatalog.up,
     down: rc312CreatorCatalog.down,
     name: '20261121_190000_rc312_creator_catalog',
@@ -932,4 +937,5 @@ export const migrations = [
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
 import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
 import * as rc315aThreadNotificationDispatch from './20261121_120000_rc315a_thread_notification_dispatch'
+import * as rc316EvergreenHandoff from './20261121_130000_rc316_evergreen_handoff'
 import * as rc312CreatorCatalog from './20261121_190000_rc312_creator_catalog'
