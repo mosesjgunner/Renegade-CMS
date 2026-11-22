@@ -232,15 +232,36 @@ async function createHistoricalFixture(payload: Payload) {
     idempotencyKey: 'upgrade-sentinel-variant',
     attachments: [ids.media],
   })
-  await sentinel('queue', 'social-queue-items', {
-    id: ids.queue,
-    variant: ids.variant,
-    account: ids.account,
-    scheduledFor: timestamp,
-    timeZone: 'UTC',
-    status: 'scheduled',
-    idempotencyKey: 'upgrade-sentinel-queue',
-  })
+  // RC3-16 added recurrence/handoff columns to social_queue_items after
+  // the upgrade baseline; insert baseline-only columns directly, like
+  // the media and content sentinels above.
+  await insertRow(
+    'social_queue_items',
+    [
+      'id',
+      'variant_id',
+      'account_id',
+      'scheduled_for',
+      'time_zone',
+      'status',
+      'idempotency_key',
+      'attempt_count',
+      'created_at',
+      'updated_at',
+    ],
+    [
+      ids.queue,
+      ids.variant,
+      ids.account,
+      timestamp,
+      'UTC',
+      'scheduled',
+      'upgrade-sentinel-queue',
+      0,
+      timestamp,
+      timestamp,
+    ],
+  )
   for (const table of [
     'sites',
     'members',

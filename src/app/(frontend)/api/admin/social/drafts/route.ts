@@ -238,6 +238,7 @@ export async function POST(request: Request) {
       sourceRevisionId?: string
       canonicalUrl?: string
       scheduledFor?: string
+      recurrenceIntervalDays?: number
       timeZone?: string
       variants?: Array<{
         id?: string
@@ -833,6 +834,13 @@ export async function POST(request: Request) {
             overrideAccess: true,
           })
         } else {
+          // RC3-16: an evergreen series starts when the operator
+          // schedules with a recurrence interval. Occurrence 1 is this
+          // item; later occurrences are spawned by the publish path.
+          const recurrenceIntervalDays =
+            typeof body.recurrenceIntervalDays === 'number' && body.recurrenceIntervalDays > 0
+              ? Math.floor(body.recurrenceIntervalDays)
+              : null
           qDoc = await payload.create({
             collection: 'social-queue-items' as never,
             data: {
@@ -842,6 +850,13 @@ export async function POST(request: Request) {
               timeZone,
               status: 'scheduled',
               idempotencyKey: key,
+              ...(recurrenceIntervalDays
+                ? {
+                    recurrenceIntervalDays,
+                    recurrenceSeriesKey: `draft:${draft.id}:variant:${v.id}`,
+                    recurrenceOccurrence: 1,
+                  }
+                : {}),
             } as never,
             overrideAccess: true,
           })

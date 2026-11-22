@@ -14,7 +14,9 @@ const states = [
   'approved',
   'queued',
   'scheduled',
+  'paused',
   'publishing',
+  'manual-handoff',
   'unknown',
   'published',
   'partially-published',
@@ -230,6 +232,24 @@ export const SocialQueueItems: CollectionConfig = {
       },
     },
     { name: 'cancelledAt', type: 'date' },
+    {
+      name: 'recurrenceIntervalDays',
+      type: 'number',
+      admin: {
+        description:
+          'Evergreen recurrence: days between slots in this series. Empty means a one-off queue item.',
+      },
+    },
+    { name: 'recurrenceSeriesKey', type: 'text', index: true },
+    { name: 'recurrenceOccurrence', type: 'number' },
+    {
+      name: 'handoff',
+      type: 'json',
+      admin: {
+        description:
+          'Manual-handoff payload: the approved copy, link and destination an operator posts by hand, plus the operator completion receipt once recorded.',
+      },
+    },
   ],
 }
 export const SocialPublishAttempts: CollectionConfig = {

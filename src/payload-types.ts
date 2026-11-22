@@ -129,6 +129,17 @@ export interface Config {
     'podcast-shows': PodcastShow;
     'podcast-seasons': PodcastSeason;
     'podcast-episodes': PodcastEpisode;
+    'podcast-guests': PodcastGuest;
+    'podcast-guest-appearances': PodcastGuestAppearance;
+    'podcast-episode-approvals': PodcastEpisodeApproval;
+    'podcast-studio-sessions': PodcastStudioSession;
+    'podcast-recordings': PodcastRecording;
+    'podcast-edit-projects': PodcastEditProject;
+    'podcast-renders': PodcastRender;
+    'podcast-assist-drafts': PodcastAssistDraft;
+    'podcast-guest-invites': PodcastGuestInvite;
+    'podcast-signalling-messages': PodcastSignallingMessage;
+    'podcast-feed-tokens': PodcastFeedToken;
     'video-channels': VideoChannel;
     'video-playlists': VideoPlaylist;
     videos: Video;
@@ -341,6 +352,17 @@ export interface Config {
     'podcast-shows': PodcastShowsSelect<false> | PodcastShowsSelect<true>;
     'podcast-seasons': PodcastSeasonsSelect<false> | PodcastSeasonsSelect<true>;
     'podcast-episodes': PodcastEpisodesSelect<false> | PodcastEpisodesSelect<true>;
+    'podcast-guests': PodcastGuestsSelect<false> | PodcastGuestsSelect<true>;
+    'podcast-guest-appearances': PodcastGuestAppearancesSelect<false> | PodcastGuestAppearancesSelect<true>;
+    'podcast-episode-approvals': PodcastEpisodeApprovalsSelect<false> | PodcastEpisodeApprovalsSelect<true>;
+    'podcast-studio-sessions': PodcastStudioSessionsSelect<false> | PodcastStudioSessionsSelect<true>;
+    'podcast-recordings': PodcastRecordingsSelect<false> | PodcastRecordingsSelect<true>;
+    'podcast-edit-projects': PodcastEditProjectsSelect<false> | PodcastEditProjectsSelect<true>;
+    'podcast-renders': PodcastRendersSelect<false> | PodcastRendersSelect<true>;
+    'podcast-assist-drafts': PodcastAssistDraftsSelect<false> | PodcastAssistDraftsSelect<true>;
+    'podcast-guest-invites': PodcastGuestInvitesSelect<false> | PodcastGuestInvitesSelect<true>;
+    'podcast-signalling-messages': PodcastSignallingMessagesSelect<false> | PodcastSignallingMessagesSelect<true>;
+    'podcast-feed-tokens': PodcastFeedTokensSelect<false> | PodcastFeedTokensSelect<true>;
     'video-channels': VideoChannelsSelect<false> | VideoChannelsSelect<true>;
     'video-playlists': VideoPlaylistsSelect<false> | VideoPlaylistsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
@@ -527,6 +549,13 @@ export interface Config {
       'media-tts': TaskMediaTts;
       'video-process': TaskVideoProcess;
       'media-usage-reconcile': TaskMediaUsageReconcile;
+      'podcast-import-media': TaskPodcastImportMedia;
+      'podcast-recording-finalize': TaskPodcastRecordingFinalize;
+      'podcast-conform-track': TaskPodcastConformTrack;
+      'podcast-render': TaskPodcastRender;
+      'podcast-transcribe': TaskPodcastTranscribe;
+      'podcast-recording-cleanup': TaskPodcastRecordingCleanup;
+      'media-peaks': TaskMediaPeaks;
       'audio-recipe-task': TaskAudioRecipeTask;
       'social-publish': TaskSocialPublish;
       'network-delivery': TaskNetworkDelivery;
@@ -1023,6 +1052,15 @@ export interface MediaAsset {
   height?: number | null;
   durationSeconds?: number | null;
   audioMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  waveformPeaks?:
     | {
         [k: string]: unknown;
       }
@@ -3609,6 +3647,13 @@ export interface PayloadJob {
           | 'media-tts'
           | 'video-process'
           | 'media-usage-reconcile'
+          | 'podcast-import-media'
+          | 'podcast-recording-finalize'
+          | 'podcast-conform-track'
+          | 'podcast-render'
+          | 'podcast-transcribe'
+          | 'podcast-recording-cleanup'
+          | 'media-peaks'
           | 'audio-recipe-task'
           | 'social-publish'
           | 'network-delivery'
@@ -3677,6 +3722,13 @@ export interface PayloadJob {
         | 'media-tts'
         | 'video-process'
         | 'media-usage-reconcile'
+        | 'podcast-import-media'
+        | 'podcast-recording-finalize'
+        | 'podcast-conform-track'
+        | 'podcast-render'
+        | 'podcast-transcribe'
+        | 'podcast-recording-cleanup'
+        | 'media-peaks'
         | 'audio-recipe-task'
         | 'social-publish'
         | 'network-delivery'
@@ -4051,12 +4103,142 @@ export interface PodcastShow {
   categories?: (string | Category)[] | null;
   rssEnabled?: boolean | null;
   externalFeedUrl?: string | null;
+  /**
+   * POD-03: a members show has no public feed — episodes are served only through per-member token feeds to members holding the show entitlement. A public show may still flag individual episodes membersOnly.
+   */
+  feedVisibility: 'public' | 'members';
+  /**
+   * POD-04: how the guest book treats an appearance with no consent record when the guest is admitted (POD-10 consumes assertGuestAdmissionReady): off = never flagged, warn = flagged but admitted, block = admission refused until consent is recorded.
+   */
+  guestConsentPolicy: 'off' | 'warn' | 'block';
+  /**
+   * POD-09 storage policy: days raw multitrack recordings are retained after the bound episode is published. Empty = the default 30 days. Unpublished episodes’ raw tracks are always retained.
+   */
+  recordingRetentionDays?: number | null;
+  /**
+   * POD-03 entitlement binding for member feeds, following the commerce pattern: { "resource": "…", "capability": "…" } a subscription plan must grant. Leave empty to use the default binding — resource "podcast-show:<show id>", capability "listen".
+   */
+  requiredEntitlement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   importOwnership?: ('local' | 'claimed-import') | null;
   importSourceChecksum?: string | null;
+  /**
+   * When a local edit last took ownership of this show away from a claimed feed import (POD-02). Subsequent feed syncs skip a locally owned show.
+   */
+  ownershipChangedAt?: string | null;
   artwork?: (string | null) | MediaAsset;
   hosts?: (string | Author)[] | null;
   authors?: (string | Author)[] | null;
   body?: string | null;
+  /**
+   * Channel podcast:guid (UUIDv5), generated once from the canonical feed URL and persisted so slug renames never change it.
+   */
+  podcastGuidValue?: string | null;
+  /**
+   * Owner email emitted as the podcast:locked owner attribute when set.
+   */
+  lockedOwnerEmail?: string | null;
+  /**
+   * Optional directory-verification email (POD-RC-01). When set, this address is published in the feed as <itunes:owner><itunes:email> so directories such as Apple Podcasts and Spotify can send you an ownership-verification message. It is PUBLIC — anyone who downloads the feed can see it — so use an address you are comfortable exposing. It is a separate setting from the podcast:locked owner email above, and it is never filled in from your account email automatically. Leave it empty to publish no owner email.
+   */
+  directoryOwnerEmail?: string | null;
+  /**
+   * Podcasting 2.0 podcast:medium value for the channel.
+   */
+  medium?:
+    | (
+        | 'podcast'
+        | 'podcastL'
+        | 'podcastM'
+        | 'music'
+        | 'musicL'
+        | 'video'
+        | 'videoL'
+        | 'film'
+        | 'filmL'
+        | 'audiobook'
+        | 'audiobookL'
+        | 'newsletter'
+        | 'newsletterL'
+        | 'blog'
+        | 'blogL'
+      )
+    | null;
+  /**
+   * podcast:funding config: { "url": "https://…", "label": "Support the show" }.
+   */
+  funding?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * podcast:value config: { "type": "lightning", "method": "keysend", "suggested": "0.00000005", "recipients": [{ "name": "…", "type": "node", "address": "…", "split": 90 }] }. Recipient splits must sum to 100; enforced at save.
+   */
+  value?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Channel podcast:person list: [{ "name": "…", "role": "host", "group": "Hosts", "href": "https://…", "img": "https://…" }]. Authors records carry no role/group, so the channel person list lives here; hosts/authors relationships remain the fallback source.
+   */
+  persons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-13 per-show export profile: { filenameTemplate, titleTemplate, artistTemplate, albumTemplate, descriptionTemplate, mp3BitrateKbps, opusBitrateKbps } with {show-title}/{show-slug}/{episode-title}/{episode-slug}/{episode-number}/{date} tokens. Empty = the POD-13 defaults in src/modules/podcast-studio/render/render.ts.
+   */
+  exportProfile?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-16 Icecast stream profile — normally edited in the Studio’s live settings form (use Open Studio above); edit the JSON here only for advanced use. Shape: { "sourceUrl": "https://icecast…/mount", "bitrateKbps": 128, "title": "…", "enabled": true, "nowPlayingEnabled": true }. NEVER put the source password in this JSON — credentials live in the credential fields below and are refused here.
+   */
+  streamProfile?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-16 ADVANCED override: name of the environment variable holding the Icecast source password (env-referenced credential — the value itself never enters the database). Takes precedence over the encrypted credential. The primary path is the Studio live settings form’s source password, stored encrypted — use this env reference only when the password must stay in the server environment.
+   */
+  streamCredentialEnvName?: string | null;
+  /**
+   * POD-16: AES-256-GCM envelope of the Icecast source password, written only by the live service. Never returned by the API (field read access is off) and never logged.
+   */
+  streamCredentialEncrypted?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -4160,9 +4342,26 @@ export interface PodcastEpisode {
   show: string | PodcastShow;
   season?: (string | null) | PodcastSeason;
   seasonNumber?: number | null;
-  audio: string | MediaAsset;
+  audio?: (string | null) | MediaAsset;
   artwork?: (string | null) | MediaAsset;
   explicit?: boolean | null;
+  /**
+   * POD-03: members-only episodes are absent from the public feed entirely and are served only through entitled members’ token feeds. Episodes of a members-visibility show are members-only regardless of this flag.
+   */
+  membersOnly?: boolean | null;
+  /**
+   * POD-04 production lifecycle (POD-REQ-09), driven by the guarded state machine in src/modules/podcast-studio/production.ts — transitions through that module keep the public status in sync (published → status published, withdrawn → status unavailable, scheduled → status scheduled, everything else → draft). Direct edits here bypass the guards (approval, audio) and are not the supported path.
+   */
+  productionState:
+    | 'idea'
+    | 'scripted'
+    | 'scheduled-record'
+    | 'recorded'
+    | 'editing'
+    | 'review'
+    | 'scheduled'
+    | 'published'
+    | 'withdrawn';
   language?: string | null;
   guid?: string | null;
   downloadableFiles?: (string | MediaAsset)[] | null;
@@ -4192,6 +4391,18 @@ export interface PodcastEpisode {
   enclosureBytes?: number | null;
   enclosureMimeType?: string | null;
   importSourceChecksum?: string | null;
+  /**
+   * POD-02 enclosure migration state for imported episodes: pending → fetching → verifying → done, or failed with the reason in mediaMigrationError.
+   */
+  mediaMigrationState?: ('not-requested' | 'pending' | 'fetching' | 'verifying' | 'done' | 'failed') | null;
+  /**
+   * Why the last enclosure migration attempt failed, when it did.
+   */
+  mediaMigrationError?: string | null;
+  /**
+   * SHA-256 (hex) of the migrated enclosure bytes, verified before re-pointing.
+   */
+  mediaChecksum?: string | null;
   authors?: (string | Author)[] | null;
   guests?: (string | Author)[] | null;
   categories?: (string | Category)[] | null;
@@ -4205,6 +4416,77 @@ export interface PodcastEpisode {
     | boolean
     | null;
   transcript?: (string | null) | TranscriptRevision;
+  /**
+   * Podcasting 2.0 live state: scheduled/live episodes emit podcast:liveItem instead of a regular item; ended converts to a normal item once a recording (audio) exists.
+   */
+  liveState?: ('none' | 'scheduled' | 'live' | 'ended') | null;
+  liveStartAt?: string | null;
+  liveEndAt?: string | null;
+  liveStreamUrl?: string | null;
+  /**
+   * POD-16 audience room binding (data only): { "roomId": "…", "access": "public" | "members" }. The community rooms machinery is not in this tree yet — this binding is the reference it will consume; see docs/podcast-studio/LIVE.md.
+   */
+  liveRoom?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional per-episode podcast:person override: [{ "name": "…", "role": "guest", "group": "Guests", "href": "https://…", "img": "https://…" }]. Default: show hosts as hosts plus episode guests as guests.
+   */
+  persons?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-13 render provenance for the currently attached master: { renderId, edlHash, edlVersion, recipe, profile, loudnessTarget, measurements, chaptersSource, renderedAt, jobId }. Written by the render service when a master attaches; the episode GUID is never touched by a render.
+   */
+  renderProvenance?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-17 video render of this episode (MP4). Written only by the POD-17 video attach from a probe-verified render; the feed publishes a video enclosure only when videoProvenance carries the passed probe for these bytes.
+   */
+  video?: (string | null) | MediaAsset;
+  /**
+   * POD-17 video render provenance: { kind, mode (camera|slideshow), assetId, probe: { passed, durationSec, width, height, videoCodec, audioCodec, checksumSha256 }, audioDurationSec, durationDeltaSec, renderedAt }. Written by the video attach; the episode GUID and audio are never touched by a video render.
+   */
+  videoProvenance?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-18 promotion state (shared systems): { socialOptIn (per-episode opt-in, default OFF), socialDraftId, socialStatus, socialEnqueuedAt, socialError, newsletterDraftId, newsletterComposedAt }. socialOptIn is set by staff; the rest is written by src/modules/podcast-studio/promotion.ts. Social status is the social system’s own state, read back — never a copy of provider credentials.
+   */
+  promotion?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -4217,6 +4499,10 @@ export interface TranscriptRevision {
   title: string;
   media: string | MediaAsset;
   version: number;
+  /**
+   * POD-14: provider-generated revisions land as drafts and are never served until an explicit accept marks them reviewed and links them from the episode. Rows created before POD-14 have no value and are treated as reviewed (they were linked by hand).
+   */
+  reviewState?: ('draft' | 'reviewed') | null;
   source: 'provider' | 'manual' | 'ai-cleanup';
   sourceRevision?: (string | null) | TranscriptRevision;
   segments:
@@ -4230,6 +4516,449 @@ export interface TranscriptRevision {
     | null;
   checksum: string;
   immutable?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guests".
+ */
+export interface PodcastGuest {
+  id: string;
+  site: string | Site;
+  name: string;
+  email?: string | null;
+  /**
+   * Other contact handles: { "phone": "…", "social": "…", "agent": "…" }.
+   */
+  contact?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  bio?: string | null;
+  /**
+   * Guest links: [{ "label": "Website", "url": "https://…" }].
+   */
+  links?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional link to the authors record for the same person (the feed podcast:person source). Informational only.
+   */
+  author?: (string | null) | Author;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guest-appearances".
+ */
+export interface PodcastGuestAppearance {
+  id: string;
+  guest: string | PodcastGuest;
+  episode: string | PodcastEpisode;
+  role?: string | null;
+  prepNotes?: string | null;
+  /**
+   * Planned questions: ["…", "…"].
+   */
+  questions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentAt?: string | null;
+  consentBy?: string | null;
+  consentScope?: string | null;
+  releaseUrl?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-episode-approvals".
+ */
+export interface PodcastEpisodeApproval {
+  id: string;
+  episode: string | PodcastEpisode;
+  /**
+   * Payload user id of the staff member who recorded the decision.
+   */
+  approver: string;
+  decision: 'approved' | 'rejected' | 'changes-requested';
+  note?: string | null;
+  decidedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-studio-sessions".
+ */
+export interface PodcastStudioSession {
+  id: string;
+  site: string | Site;
+  show: string | PodcastShow;
+  title: string;
+  /**
+   * Desk state mirrored from the session document (draft/ready/live/paused/recording/stopped/ended). Driven through the studio API, not by direct edits.
+   */
+  state: 'draft' | 'ready' | 'live' | 'paused' | 'recording' | 'stopped' | 'ended';
+  /**
+   * The POD-00 StudioSession document (rundown, cartwall, mixer snapshot, chapters, log, plus preserved extension fields). Validated by the POD-00 parser on every save.
+   */
+  sessionData:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * StudioSession schema version (1 = POD-00 session v1).
+   */
+  schemaVersion: number;
+  startedAt?: string | null;
+  lastSavedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-recordings".
+ */
+export interface PodcastRecording {
+  id: string;
+  site: string | Site;
+  show: string | PodcastShow;
+  /**
+   * The POD-05 studio session record this recording was finalized from.
+   */
+  session?: (string | null) | PodcastStudioSession;
+  /**
+   * Optional episode binding: when set, finalize moves the episode production state to "recorded" through the POD-04 state machine.
+   */
+  episode?: (string | null) | PodcastEpisode;
+  /**
+   * finalized = every track assembled clean; degraded = at least one track carries a visible error/gap (see manifest + errorMessage); expired = raw tracks removed by the retention cleanup.
+   */
+  state: 'recording' | 'finalizing' | 'finalized' | 'degraded' | 'failed' | 'expired';
+  /**
+   * The POD-00 TrackManifest (validated) plus per-track extension fields: gaps, drift report, degraded flag, errors, mediaAssetId per track.
+   */
+  manifest?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Live recording markers (POD-09 recording state) for POD-12.
+   */
+  markers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * The POD-08 played-clip log snapshot for POD-12/POD-16.
+   */
+  playedClipLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Session log entries carried with the recording (errors stay visible here).
+   */
+  sessionLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Per-track media assets: [{ trackId, mediaAssetId, checksumSha256 }].
+   */
+  trackAssets?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * POD-11 guest conform reports, upserted by track: [{ inviteId, trackId, state, source, rateCorrection (POD-00 EDL artefact for POD-12), report, conformedChecksumSha256 }].
+   */
+  conformReports?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Resolved retention policy snapshot: { mode: "until-published-plus-days", daysAfterPublish }.
+   */
+  retentionPolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Raw tracks are cleanup-eligible after this instant; empty = retained indefinitely (episode unpublished or unbound).
+   */
+  retainUntil?: string | null;
+  finalizedAt?: string | null;
+  errorMessage?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-edit-projects".
+ */
+export interface PodcastEditProject {
+  id: string;
+  site: string | Site;
+  show: string | PodcastShow;
+  /**
+   * The POD-05 studio session record the source recording came from, when any.
+   */
+  session?: (string | null) | PodcastStudioSession;
+  /**
+   * The POD-09 recording this project was created from, when any.
+   */
+  recording?: (string | null) | PodcastRecording;
+  /**
+   * Optional episode binding: chapters/transcript seed from the episode canonical lists at creation.
+   */
+  episode?: (string | null) | PodcastEpisode;
+  title: string;
+  /**
+   * The POD-12 edit project document: { version, title, recordingId, sessionId, episodeId, edl (POD-00 schema), versions[] (bounded autosave history) }. The EDL is validated by the POD-00 parser on every save.
+   */
+  projectData:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Edit project schema version (1 = POD-12 project v1).
+   */
+  schemaVersion: number;
+  lastSavedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-renders".
+ */
+export interface PodcastRender {
+  id: string;
+  site: string | Site;
+  show: string | PodcastShow;
+  project: string | PodcastEditProject;
+  episode?: (string | null) | PodcastEpisode;
+  profile: 'master' | 'preview' | 'clip' | 'audiogram';
+  state: 'queued' | 'rendering' | 'completed' | 'failed';
+  /**
+   * SHA-256 over project id + EDL hash + profile + range. One completed render per key.
+   */
+  idempotencyKey: string;
+  edlHash?: string | null;
+  edlVersion?: number | null;
+  /**
+   * Timeline window for preview/clip/audiogram profiles: { startSec, durationSec }.
+   */
+  range?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * The render report: loudness target, loudnorm pass-1 measurements, verified measurements (ebur128 + PCM cross-check), gate verdict, filter graph, named POD-07→ffmpeg approximations.
+   */
+  report?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Registered outputs: { wavMaster?, mp3?, opus?, chaptersJson?, audiogramMp4? } each { mediaAssetId, filename, mimeType, sizeBytes, checksumSha256, durationSec? }.
+   */
+  outputs?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  errorMessage?: string | null;
+  jobId?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-assist-drafts".
+ */
+export interface PodcastAssistDraft {
+  id: string;
+  title: string;
+  episode: string | PodcastEpisode;
+  show?: (string | null) | PodcastShow;
+  site?: (string | null) | Site;
+  kind: 'chapters' | 'show-notes' | 'summary' | 'highlight' | 'audiogram';
+  state: 'draft' | 'accepted' | 'discarded';
+  /**
+   * The draft body: chapters list / show-notes+summary / highlight clip definitions / audiogram media reference, plus provenance (basis, enhancedBy, acceptedBy/acceptedAt).
+   */
+  payload?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Who or what produced the draft: a staff user id or a job label.
+   */
+  createdBy?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guest-invites".
+ */
+export interface PodcastGuestInvite {
+  id: string;
+  purpose: string;
+  session: string | PodcastStudioSession;
+  show?: (string | null) | PodcastShow;
+  site?: (string | null) | Site;
+  /**
+   * Optional guest-book link. When set, admission runs the POD-04 consent gate for this guest.
+   */
+  guest?: (string | null) | PodcastGuest;
+  /**
+   * SHA-256 (hex) of the single-use invite token. The raw token is never stored.
+   */
+  tokenHash: string;
+  /**
+   * SHA-256 (hex) of the post-join signalling credential, issued once at join. Never stored raw.
+   */
+  signallingTokenHash?: string | null;
+  state: 'invited' | 'preflight' | 'waiting' | 'admitted' | 'dropped' | 'left';
+  displayName?: string | null;
+  headphones?: ('headphones' | 'no-headphones-fallback') | null;
+  stripId?: string | null;
+  expiresAt?: string | null;
+  revokedAt?: string | null;
+  joinedAt?: string | null;
+  admittedAt?: string | null;
+  dropReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-signalling-messages".
+ */
+export interface PodcastSignallingMessage {
+  id: string;
+  session: string | PodcastStudioSession;
+  invite: string | PodcastGuestInvite;
+  sender: 'guest' | 'host';
+  type: 'offer' | 'answer' | 'ice-candidate' | 'bye' | 'hello' | 'preflight' | 'talkback';
+  /**
+   * SDP / ICE candidate / control payload for the message type.
+   */
+  payload?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-feed-tokens".
+ */
+export interface PodcastFeedToken {
+  id: string;
+  member: string | Member;
+  show: string | PodcastShow;
+  /**
+   * SHA-256 (hex) of the feed token. The raw token is never stored.
+   */
+  tokenHash: string;
+  revokedAt?: string | null;
+  lastUsedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5076,6 +5805,9 @@ export interface SocialAccount {
     | null;
   credentialHealth?: ('healthy' | 'expiring' | 'expired' | 'revoked' | 'not-configured') | null;
   credentialExpiresAt?: string | null;
+  /**
+   * Encrypted credential envelope; never display or store plaintext secrets.
+   */
   connectionReference?: string | null;
   lastVerifiedAt?: string | null;
   /**
@@ -5119,7 +5851,9 @@ export interface SocialDraft {
     | 'approved'
     | 'queued'
     | 'scheduled'
+    | 'paused'
     | 'publishing'
+    | 'manual-handoff'
     | 'unknown'
     | 'published'
     | 'partially-published'
@@ -5165,7 +5899,9 @@ export interface Campaign {
     | 'approved'
     | 'queued'
     | 'scheduled'
+    | 'paused'
     | 'publishing'
+    | 'manual-handoff'
     | 'unknown'
     | 'published'
     | 'partially-published'
@@ -5633,7 +6369,9 @@ export interface SocialNetworkVariant {
     | 'approved'
     | 'queued'
     | 'scheduled'
+    | 'paused'
     | 'publishing'
+    | 'manual-handoff'
     | 'unknown'
     | 'published'
     | 'partially-published'
@@ -5663,7 +6401,9 @@ export interface SocialQueueItem {
     | 'approved'
     | 'queued'
     | 'scheduled'
+    | 'paused'
     | 'publishing'
+    | 'manual-handoff'
     | 'unknown'
     | 'published'
     | 'partially-published'
@@ -5691,6 +6431,24 @@ export interface SocialQueueItem {
     | boolean
     | null;
   cancelledAt?: string | null;
+  /**
+   * Evergreen recurrence: days between slots in this series. Empty means a one-off queue item.
+   */
+  recurrenceIntervalDays?: number | null;
+  recurrenceSeriesKey?: string | null;
+  recurrenceOccurrence?: number | null;
+  /**
+   * Manual-handoff payload: the approved copy, link and destination an operator posts by hand, plus the operator completion receipt once recorded.
+   */
+  handoff?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -10860,6 +11618,50 @@ export interface PayloadLockedDocument {
         value: string | ScheduledPublishJob;
       } | null)
     | ({
+        relationTo: 'podcast-guests';
+        value: string | PodcastGuest;
+      } | null)
+    | ({
+        relationTo: 'podcast-guest-appearances';
+        value: string | PodcastGuestAppearance;
+      } | null)
+    | ({
+        relationTo: 'podcast-episode-approvals';
+        value: string | PodcastEpisodeApproval;
+      } | null)
+    | ({
+        relationTo: 'podcast-studio-sessions';
+        value: string | PodcastStudioSession;
+      } | null)
+    | ({
+        relationTo: 'podcast-recordings';
+        value: string | PodcastRecording;
+      } | null)
+    | ({
+        relationTo: 'podcast-edit-projects';
+        value: string | PodcastEditProject;
+      } | null)
+    | ({
+        relationTo: 'podcast-renders';
+        value: string | PodcastRender;
+      } | null)
+    | ({
+        relationTo: 'podcast-assist-drafts';
+        value: string | PodcastAssistDraft;
+      } | null)
+    | ({
+        relationTo: 'podcast-guest-invites';
+        value: string | PodcastGuestInvite;
+      } | null)
+    | ({
+        relationTo: 'podcast-signalling-messages';
+        value: string | PodcastSignallingMessage;
+      } | null)
+    | ({
+        relationTo: 'podcast-feed-tokens';
+        value: string | PodcastFeedToken;
+      } | null)
+    | ({
         relationTo: 'calendar-entry-audits';
         value: string | CalendarEntryAudit;
       } | null)
@@ -11662,6 +12464,7 @@ export interface MediaAssetsSelect<T extends boolean = true> {
   height?: T;
   durationSeconds?: T;
   audioMetadata?: T;
+  waveformPeaks?: T;
   videoMetadata?: T;
   altText?: T;
   focalPoint?:
@@ -12370,12 +13173,28 @@ export interface PodcastShowsSelect<T extends boolean = true> {
   categories?: T;
   rssEnabled?: T;
   externalFeedUrl?: T;
+  feedVisibility?: T;
+  guestConsentPolicy?: T;
+  recordingRetentionDays?: T;
+  requiredEntitlement?: T;
   importOwnership?: T;
   importSourceChecksum?: T;
+  ownershipChangedAt?: T;
   artwork?: T;
   hosts?: T;
   authors?: T;
   body?: T;
+  podcastGuidValue?: T;
+  lockedOwnerEmail?: T;
+  directoryOwnerEmail?: T;
+  medium?: T;
+  funding?: T;
+  value?: T;
+  persons?: T;
+  exportProfile?: T;
+  streamProfile?: T;
+  streamCredentialEnvName?: T;
+  streamCredentialEncrypted?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12426,6 +13245,8 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   audio?: T;
   artwork?: T;
   explicit?: T;
+  membersOnly?: T;
+  productionState?: T;
   language?: T;
   guid?: T;
   downloadableFiles?: T;
@@ -12439,11 +13260,215 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   enclosureBytes?: T;
   enclosureMimeType?: T;
   importSourceChecksum?: T;
+  mediaMigrationState?: T;
+  mediaMigrationError?: T;
+  mediaChecksum?: T;
   authors?: T;
   guests?: T;
   categories?: T;
   chapters?: T;
   transcript?: T;
+  liveState?: T;
+  liveStartAt?: T;
+  liveEndAt?: T;
+  liveStreamUrl?: T;
+  liveRoom?: T;
+  persons?: T;
+  renderProvenance?: T;
+  video?: T;
+  videoProvenance?: T;
+  promotion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guests_select".
+ */
+export interface PodcastGuestsSelect<T extends boolean = true> {
+  site?: T;
+  name?: T;
+  email?: T;
+  contact?: T;
+  bio?: T;
+  links?: T;
+  author?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guest-appearances_select".
+ */
+export interface PodcastGuestAppearancesSelect<T extends boolean = true> {
+  guest?: T;
+  episode?: T;
+  role?: T;
+  prepNotes?: T;
+  questions?: T;
+  consentAt?: T;
+  consentBy?: T;
+  consentScope?: T;
+  releaseUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-episode-approvals_select".
+ */
+export interface PodcastEpisodeApprovalsSelect<T extends boolean = true> {
+  episode?: T;
+  approver?: T;
+  decision?: T;
+  note?: T;
+  decidedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-studio-sessions_select".
+ */
+export interface PodcastStudioSessionsSelect<T extends boolean = true> {
+  site?: T;
+  show?: T;
+  title?: T;
+  state?: T;
+  sessionData?: T;
+  schemaVersion?: T;
+  startedAt?: T;
+  lastSavedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-recordings_select".
+ */
+export interface PodcastRecordingsSelect<T extends boolean = true> {
+  site?: T;
+  show?: T;
+  session?: T;
+  episode?: T;
+  state?: T;
+  manifest?: T;
+  markers?: T;
+  playedClipLog?: T;
+  sessionLog?: T;
+  trackAssets?: T;
+  conformReports?: T;
+  retentionPolicy?: T;
+  retainUntil?: T;
+  finalizedAt?: T;
+  errorMessage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-edit-projects_select".
+ */
+export interface PodcastEditProjectsSelect<T extends boolean = true> {
+  site?: T;
+  show?: T;
+  session?: T;
+  recording?: T;
+  episode?: T;
+  title?: T;
+  projectData?: T;
+  schemaVersion?: T;
+  lastSavedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-renders_select".
+ */
+export interface PodcastRendersSelect<T extends boolean = true> {
+  site?: T;
+  show?: T;
+  project?: T;
+  episode?: T;
+  profile?: T;
+  state?: T;
+  idempotencyKey?: T;
+  edlHash?: T;
+  edlVersion?: T;
+  range?: T;
+  report?: T;
+  outputs?: T;
+  errorMessage?: T;
+  jobId?: T;
+  startedAt?: T;
+  finishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-assist-drafts_select".
+ */
+export interface PodcastAssistDraftsSelect<T extends boolean = true> {
+  title?: T;
+  episode?: T;
+  show?: T;
+  site?: T;
+  kind?: T;
+  state?: T;
+  payload?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-guest-invites_select".
+ */
+export interface PodcastGuestInvitesSelect<T extends boolean = true> {
+  purpose?: T;
+  session?: T;
+  show?: T;
+  site?: T;
+  guest?: T;
+  tokenHash?: T;
+  signallingTokenHash?: T;
+  state?: T;
+  displayName?: T;
+  headphones?: T;
+  stripId?: T;
+  expiresAt?: T;
+  revokedAt?: T;
+  joinedAt?: T;
+  admittedAt?: T;
+  dropReason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-signalling-messages_select".
+ */
+export interface PodcastSignallingMessagesSelect<T extends boolean = true> {
+  session?: T;
+  invite?: T;
+  sender?: T;
+  type?: T;
+  payload?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "podcast-feed-tokens_select".
+ */
+export interface PodcastFeedTokensSelect<T extends boolean = true> {
+  member?: T;
+  show?: T;
+  tokenHash?: T;
+  revokedAt?: T;
+  lastUsedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12702,6 +13727,7 @@ export interface TranscriptRevisionsSelect<T extends boolean = true> {
   title?: T;
   media?: T;
   version?: T;
+  reviewState?: T;
   source?: T;
   sourceRevision?: T;
   segments?: T;
@@ -12886,6 +13912,10 @@ export interface SocialQueueItemsSelect<T extends boolean = true> {
   nextAttemptAt?: T;
   deadLetterReason?: T;
   cancelledAt?: T;
+  recurrenceIntervalDays?: T;
+  recurrenceSeriesKey?: T;
+  recurrenceOccurrence?: T;
+  handoff?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -16423,6 +17453,185 @@ export interface TaskMediaUsageReconcile {
     updated: number;
     removed: number;
     incidents: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-import-media".
+ */
+export interface TaskPodcastImportMedia {
+  input: {
+    episodeId: string;
+    idempotencyKey: string;
+  };
+  output: {
+    episodeId: string;
+    completed: boolean;
+    mediaAssetId?: string | null;
+    error?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-recording-finalize".
+ */
+export interface TaskPodcastRecordingFinalize {
+  input: {
+    sessionId: string;
+    sessionRecordId?: string | null;
+    siteId: string;
+    showId: string;
+    episodeId?: string | null;
+    storageRoot: string;
+    trackDefinitions:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    markers?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    playedClipLog?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    sessionLog?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    idempotencyKey: string;
+  };
+  output: {
+    recordingId: string;
+    completed: boolean;
+    state?: string | null;
+    episodeTransition?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-conform-track".
+ */
+export interface TaskPodcastConformTrack {
+  input: {
+    sessionRecordId: string;
+    inviteId: string;
+    storageRoot: string;
+    sessionFrames: number;
+    sampleRate?: number | null;
+    liveCapture?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    idempotencyKey: string;
+  };
+  output: {
+    trackId: string;
+    completed: boolean;
+    state?: string | null;
+    mediaAssetId?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-render".
+ */
+export interface TaskPodcastRender {
+  input: {
+    projectId: string;
+    profile?: string | null;
+    range?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    attachToEpisode?: boolean | null;
+    faultAtStage?: string | null;
+    idempotencyKey: string;
+  };
+  output: {
+    renderId?: string | null;
+    completed: boolean;
+    state?: string | null;
+    error?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-transcribe".
+ */
+export interface TaskPodcastTranscribe {
+  input: {
+    mediaAssetId: string;
+    episodeId?: string | null;
+    providerId?: string | null;
+    idempotencyKey: string;
+  };
+  output: {
+    mediaJobId?: string | null;
+    transcriptRevisionId?: string | null;
+    completed: boolean;
+    error?: string | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskPodcast-recording-cleanup".
+ */
+export interface TaskPodcastRecordingCleanup {
+  input: {
+    dryRun?: boolean | null;
+  };
+  output: {
+    dryRun: boolean;
+    scanned: number;
+    expired: number;
+    deleted: number;
+    observedAt: string;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMedia-peaks".
+ */
+export interface TaskMediaPeaks {
+  input: {
+    mediaAssetId: string;
+    idempotencyKey: string;
+  };
+  output: {
+    mediaAssetId: string;
+    completed: boolean;
+    peakCount?: number | null;
   };
 }
 /**
