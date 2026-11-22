@@ -46,7 +46,7 @@ describe('03D migration safety', () => {
     )
     expect(body.root.children[0]).toMatchObject({ type: 'heading', tag: 'h2' })
     expect(body.root.children[2]).toMatchObject({
-      type: 'upload',
+      type: 'relationship',
       relationTo: 'media-assets',
       value: 'asset-123',
     })
