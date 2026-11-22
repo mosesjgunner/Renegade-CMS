@@ -247,16 +247,138 @@ const assertCreateInput = (input: HostedCheckoutRequest) => {
 const sharedDeterministicRecords = new Map<string, ProviderPayment>()
 const sharedDeterministicIdempotency = new Map<string, string>()
 
+/**
+ * RC3-13: the deterministic provider is the sandbox fixture for recurring
+ * billing (F-02 recorded that no fixture existed, so provider-hosted
+ * recurring checkout could not be exercised at all). It implements the
+ * full RecurringPaymentProvider contract in memory, in the same style as
+ * its one-time side: HMAC-derived references, idempotent checkout
+ * creation, HMAC-signed webhooks, and explicit test controls. It is a
+ * test-mode fixture only — it moves no money and proves nothing about a
+ * live provider.
+ */
+export type DeterministicSubscriptionState =
+  | 'incomplete'
+  | 'trialing'
+  | 'active'
+  | 'past_due'
+  | 'canceled'
+  | 'paused'
+
+export interface DeterministicSubscriptionRecord {
+  subscriptionReference: string
+  customerReference: string
+  checkoutReference: string
+  priceReference: string
+  state: DeterministicSubscriptionState
+  currentPeriodStart: string
+  currentPeriodEnd: string
+  cancelAtPeriodEnd: boolean
+  amountMinor: string
+  currency: string
+  interval: string
+  intervalCount: number
+}
+
+export interface DeterministicPrice {
+  amountMinor: string
+  currency: string
+  interval: string
+  intervalCount: number
+}
+
+export interface DeterministicAdapterControls {
+  setState(reference: string, state: ProviderPaymentState): void
+  /** Provider-side truth for reconcile: advance the fixture's subscription record. */
+  setSubscriptionState(
+    reference: string,
+    patch: Partial<
+      Pick<
+        DeterministicSubscriptionRecord,
+        'state' | 'currentPeriodStart' | 'currentPeriodEnd' | 'cancelAtPeriodEnd' | 'priceReference'
+      >
+    >,
+  ): void
+  setSubscriptionPrice(priceReference: string, price: DeterministicPrice): void
+  setInvoice(
+    reference: string,
+    resolution: { subscriptionReference: string | null; fullyRefunded: boolean },
+  ): void
+  signSubscriptionEvent(event: NormalizedSubscriptionEvent): { raw: string; signature: string }
+}
+
+const sharedDeterministicSubscriptions = new Map<string, DeterministicSubscriptionRecord>()
+const sharedDeterministicSubscriptionIdempotency = new Map<string, string>()
+const sharedDeterministicPrices = new Map<string, DeterministicPrice>()
+const sharedDeterministicInvoices = new Map<
+  string,
+  { subscriptionReference: string | null; fullyRefunded: boolean }
+>()
+
+const subscriptionEventKinds: readonly NormalizedSubscriptionEvent['kind'][] = [
+  'trial_started',
+  'activated',
+  'invoice_paid',
+  'invoice_failed',
+  'cancel_scheduled',
+  'canceled',
+  'resumed',
+  'changed',
+  'payment_review',
+  'payment_refunded',
+  'refund_recorded',
+]
+
 export function createDeterministicPaymentAdapter(input: {
   key?: string
   secret: string
   initialState?: ProviderPaymentState
   now?: () => Date
   isolated?: boolean
-}): PaymentProviderAdapter & { setState(reference: string, state: ProviderPaymentState): void } {
+}): PaymentProviderAdapter & RecurringPaymentProvider & DeterministicAdapterControls {
   const records = input.isolated ? new Map<string, ProviderPayment>() : sharedDeterministicRecords
   const idempotency = input.isolated ? new Map<string, string>() : sharedDeterministicIdempotency
+  const subscriptions = input.isolated
+    ? new Map<string, DeterministicSubscriptionRecord>()
+    : sharedDeterministicSubscriptions
+  const subscriptionIdempotency = input.isolated
+    ? new Map<string, string>()
+    : sharedDeterministicSubscriptionIdempotency
+  const prices = input.isolated ? new Map<string, DeterministicPrice>() : sharedDeterministicPrices
+  const invoices = input.isolated
+    ? new Map<string, { subscriptionReference: string | null; fullyRefunded: boolean }>()
+    : sharedDeterministicInvoices
   const now = input.now ?? (() => new Date())
+  const refFor = (prefix: string, seed: string) =>
+    `${prefix}_${createHmac('sha256', input.secret).update(seed).digest('hex').slice(0, 24)}`
+  const plusInterval = (date: Date, interval: string, count: number) => {
+    const result = new Date(date)
+    if (interval === 'week') result.setUTCDate(result.getUTCDate() + 7 * count)
+    else if (interval === 'year') result.setUTCFullYear(result.getUTCFullYear() + count)
+    else result.setUTCMonth(result.getUTCMonth() + count)
+    return result
+  }
+  const assertPrice = (price: DeterministicPrice) => {
+    if (!/^[1-9][0-9]*$/.test(price.amountMinor))
+      throw new Error('Deterministic price amount must be positive minor units.')
+    if (!/^[A-Z]{3}$/.test(price.currency))
+      throw new Error('Deterministic price currency must be an ISO-4217 code.')
+    if (!['week', 'month', 'year'].includes(price.interval))
+      throw new Error('Deterministic price interval must be week, month or year.')
+    if (!Number.isInteger(price.intervalCount) || price.intervalCount < 1)
+      throw new Error('Deterministic price intervalCount must be a positive integer.')
+  }
+  const subscriptionRecord = (reference: string) => {
+    const record = subscriptions.get(reference)
+    if (!record)
+      throw new PaymentProviderError(
+        'not-found',
+        'Deterministic subscription was not found.',
+        false,
+        true,
+      )
+    return record
+  }
   return {
     key: input.key ?? 'deterministic-test',
     contractVersion: PAYMENT_PROVIDER_CONTRACT_VERSION,
@@ -360,6 +482,196 @@ export function createDeterministicPaymentAdapter(input: {
       const payment = records.get(reference)
       if (!payment) throw new Error('Unknown deterministic payment.')
       records.set(reference, { ...payment, state, observedAt: now().toISOString() })
+    },
+    async createSubscriptionCheckout(request) {
+      if (!request.idempotencyKey || request.idempotencyKey.length > 200)
+        throw new Error('A bounded idempotency key is required.')
+      if (!request.priceReference)
+        throw new Error('A price reference is required for subscription checkout.')
+      const expected = request.expectedPrice
+        ? {
+            amountMinor: request.expectedPrice.amountMinor,
+            currency: request.expectedPrice.currency,
+            interval: request.expectedPrice.interval,
+            intervalCount: request.expectedPrice.intervalCount,
+          }
+        : prices.get(request.priceReference)
+      if (expected) {
+        assertPrice(expected)
+        prices.set(request.priceReference, expected)
+      }
+      const prior = subscriptionIdempotency.get(request.idempotencyKey)
+      if (prior) {
+        const record = subscriptionRecord(prior)
+        return {
+          providerReference: record.checkoutReference,
+          customerReference: record.customerReference,
+          subscriptionReference: record.subscriptionReference,
+          actionUrl: `/checkout/test/${encodeURIComponent(record.checkoutReference)}`,
+          state:
+            record.state === 'trialing'
+              ? ('trialing' as const)
+              : record.state === 'active'
+                ? ('active' as const)
+                : ('incomplete' as const),
+        }
+      }
+      const price = expected ?? {
+        amountMinor: '0',
+        currency: 'USD',
+        interval: 'month',
+        intervalCount: 1,
+      }
+      const start = now()
+      const record: DeterministicSubscriptionRecord = {
+        subscriptionReference: refFor('det_sub', `sub:${request.idempotencyKey}`),
+        customerReference: refFor(
+          'det_cus',
+          `cus:${request.metadata.renegade_member_id ?? request.customerEmail ?? request.idempotencyKey}`,
+        ),
+        checkoutReference: refFor('det_scs', `sub-checkout:${request.idempotencyKey}`),
+        priceReference: request.priceReference,
+        state: request.trialDays && request.trialDays > 0 ? 'trialing' : 'incomplete',
+        currentPeriodStart: start.toISOString(),
+        currentPeriodEnd: plusInterval(start, price.interval, price.intervalCount).toISOString(),
+        cancelAtPeriodEnd: false,
+        amountMinor: price.amountMinor,
+        currency: price.currency,
+        interval: price.interval,
+        intervalCount: price.intervalCount,
+      }
+      subscriptions.set(record.subscriptionReference, record)
+      subscriptionIdempotency.set(request.idempotencyKey, record.subscriptionReference)
+      return {
+        providerReference: record.checkoutReference,
+        customerReference: record.customerReference,
+        subscriptionReference: record.subscriptionReference,
+        actionUrl: `/checkout/test/${encodeURIComponent(record.checkoutReference)}`,
+        state: record.state === 'trialing' ? ('trialing' as const) : ('incomplete' as const),
+      }
+    },
+    async createCustomerPortal(request) {
+      return `/billing/test/${encodeURIComponent(request.customerReference)}`
+    },
+    async previewSubscriptionChange(request) {
+      subscriptionRecord(request.subscriptionReference)
+      const price = prices.get(request.priceReference)
+      if (!price)
+        throw new PaymentProviderError(
+          'configuration',
+          'Deterministic fixture has no registered price for that reference.',
+          false,
+          true,
+        )
+      return {
+        amountMinor: price.amountMinor,
+        currency: price.currency,
+        expiresAt: new Date(now().getTime() + 15 * 60000).toISOString(),
+      }
+    },
+    async resolveSubscriptionPayment(request) {
+      const found =
+        (request.invoiceReference ? invoices.get(request.invoiceReference) : undefined) ??
+        (request.chargeReference ? invoices.get(request.chargeReference) : undefined)
+      return found ?? { subscriptionReference: null, fullyRefunded: false }
+    },
+    async reconcileSubscription(subscriptionReference) {
+      const record = subscriptionRecord(subscriptionReference)
+      return {
+        state: record.state,
+        customerReference: record.customerReference,
+        currentPeriodStart: record.currentPeriodStart,
+        currentPeriodEnd: record.currentPeriodEnd,
+        cancelAtPeriodEnd: record.cancelAtPeriodEnd,
+        priceReference: record.priceReference,
+      }
+    },
+    normalizeSignedSubscriptionWebhook(rawBody, signature) {
+      const expected = createHmac('sha256', input.secret).update(rawBody).digest('hex')
+      if (
+        signature.length !== expected.length ||
+        !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+      )
+        return null
+      try {
+        const value = JSON.parse(rawBody) as Record<string, unknown>
+        if (
+          !value ||
+          typeof value.providerEventId !== 'string' ||
+          !value.providerEventId ||
+          typeof value.kind !== 'string' ||
+          !subscriptionEventKinds.includes(value.kind as NormalizedSubscriptionEvent['kind']) ||
+          typeof value.occurredAt !== 'string' ||
+          !Number.isFinite(Date.parse(value.occurredAt))
+        )
+          return null
+        const optionalString = (field: string) =>
+          typeof value[field] === 'string' && value[field] ? (value[field] as string) : undefined
+        const evidence: Record<string, string | number | boolean | null> = {}
+        if (value.evidence && typeof value.evidence === 'object' && !Array.isArray(value.evidence))
+          for (const [key, entry] of Object.entries(value.evidence as Record<string, unknown>))
+            if (
+              typeof entry === 'string' ||
+              typeof entry === 'number' ||
+              typeof entry === 'boolean' ||
+              entry === null
+            )
+              evidence[key] = entry
+        return {
+          providerEventId: value.providerEventId,
+          ...(optionalString('subscriptionReference')
+            ? { subscriptionReference: optionalString('subscriptionReference') }
+            : {}),
+          ...(optionalString('subscriptionId')
+            ? { subscriptionId: optionalString('subscriptionId') }
+            : {}),
+          ...(optionalString('customerReference')
+            ? { customerReference: optionalString('customerReference') }
+            : {}),
+          ...(optionalString('priceReference')
+            ? { priceReference: optionalString('priceReference') }
+            : {}),
+          ...(optionalString('invoiceReference')
+            ? { invoiceReference: optionalString('invoiceReference') }
+            : {}),
+          ...(optionalString('chargeReference')
+            ? { chargeReference: optionalString('chargeReference') }
+            : {}),
+          kind: value.kind as NormalizedSubscriptionEvent['kind'],
+          ...(typeof value.status === 'string' ? { status: value.status } : {}),
+          ...(optionalString('currentPeriodStart')
+            ? { currentPeriodStart: optionalString('currentPeriodStart') }
+            : {}),
+          ...(optionalString('currentPeriodEnd')
+            ? { currentPeriodEnd: optionalString('currentPeriodEnd') }
+            : {}),
+          ...(typeof value.cancelAtPeriodEnd === 'boolean'
+            ? { cancelAtPeriodEnd: value.cancelAtPeriodEnd }
+            : {}),
+          occurredAt: value.occurredAt,
+          ...(typeof value.sequence === 'number' && Number.isFinite(value.sequence)
+            ? { sequence: value.sequence }
+            : {}),
+          evidence,
+        }
+      } catch {
+        return null
+      }
+    },
+    setSubscriptionState(reference, patch) {
+      const record = subscriptionRecord(reference)
+      subscriptions.set(reference, { ...record, ...patch })
+    },
+    setSubscriptionPrice(priceReference, price) {
+      assertPrice(price)
+      prices.set(priceReference, price)
+    },
+    setInvoice(reference, resolution) {
+      invoices.set(reference, resolution)
+    },
+    signSubscriptionEvent(event) {
+      const raw = JSON.stringify(event)
+      return { raw, signature: createHmac('sha256', input.secret).update(raw).digest('hex') }
     },
   }
 }
