@@ -86,7 +86,7 @@ export async function GET(request: Request) {
                 !grant.scope,
             )
             .map((grant: any) => ({
-              path: `/api/commerce/subscriptions/download/${String(grant.resource).slice(5)}`,
+              path: `/api/commerce/subscriptions/download/${String(grant.resource).slice(6)}`,
             })),
           currentPeriodStart: sub.currentPeriodStart,
           currentPeriodEnd: sub.currentPeriodEnd,
