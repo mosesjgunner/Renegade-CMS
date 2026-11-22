@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createHash } from 'node:crypto'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { loadConfig } from '../../src/modules/core/config'
 import { mediaStorage, s3MediaStorage } from '../../src/modules/media/storage'
@@ -93,6 +97,38 @@ describe('MED-01 S3-compatible storage adapter & SigV4 verification', () => {
     await expect(storage.get('site-1/error.png')).rejects.toThrow(
       'Object storage GET failed with 500.',
     )
+  })
+
+  it('streams a staged object using its known length and checksum, and checks existence with HEAD', async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'renegade-s3-stream-'))
+    const filename = path.join(directory, 'original')
+    try {
+      await writeFile(filename, png)
+      const digest = createHash('sha256').update(png).digest('hex')
+      globalThis.fetch = vi.fn(async (_input, init?: RequestInit & { duplex?: string }) => {
+        if (init?.method === 'HEAD') return new Response(null, { status: 200 })
+        expect(init?.method).toBe('PUT')
+        expect(init?.duplex).toBe('half')
+        expect(init?.body).toBeInstanceOf(ReadableStream)
+        const headers = new Headers(init?.headers)
+        expect(headers.get('content-length')).toBe(String(png.length))
+        expect(headers.get('x-amz-content-sha256')).toBe(digest)
+        expect(headers.get('authorization')).toContain('SignedHeaders=content-length;')
+        expect(new Uint8Array(await new Response(init?.body).arrayBuffer())).toEqual(png)
+        return new Response(null, { status: 200 })
+      })
+      const storage = s3MediaStorage(s3Config)
+      await storage.putFile(
+        'site-1/stream.png',
+        filename,
+        'image/png',
+        png.length,
+        'sha256:' + digest,
+      )
+      await expect(storage.exists('site-1/stream.png')).resolves.toBe(true)
+    } finally {
+      await rm(directory, { recursive: true, force: true })
+    }
   })
 
   it('signs and executes DELETE requests and handles errors', async () => {

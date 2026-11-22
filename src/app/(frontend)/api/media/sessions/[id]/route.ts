@@ -10,12 +10,13 @@ import {
   writeUploadChunk,
 } from '@/modules/media/upload-sessions'
 import { MediaWorkflowError } from '@/modules/media/workflow'
+import { readBoundedUploadBody, uploadChunkLimit } from '@/modules/media/upload-staging'
 
 export const runtime = 'nodejs'
 const respond = (error: unknown) =>
   NextResponse.json(
-    { error: error instanceof Error ? error.message : 'Upload request failed.' },
-    { status: error instanceof MediaWorkflowError ? error.status : 400 },
+    { error: error instanceof MediaWorkflowError ? error.message : 'Upload request failed.' },
+    { status: error instanceof MediaWorkflowError ? error.status : 500 },
   )
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -36,13 +37,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   try {
     const range = request.headers.get('content-range')?.match(/^bytes (\d+)-(\d+)\/(\d+)$/)
     const index = Number(
-      request.headers.get('x-upload-chunk-index') ?? request.headers.get('x-chunk-index'),
+      request.headers.get('x-upload-chunk-index') ?? request.headers.get('x-chunk-index') ?? NaN,
     )
     if (!range)
       throw new MediaWorkflowError('Content-Range is required for a resumable upload chunk.')
-    const bytes = new Uint8Array(await request.arrayBuffer())
-    if (bytes.byteLength !== Number(range[2]) - Number(range[1]) + 1)
-      throw new MediaWorkflowError('Chunk body does not match Content-Range.')
+    const expected = Number(range[2]) - Number(range[1]) + 1
+    if (!Number.isSafeInteger(expected) || expected < 1 || expected > uploadChunkLimit)
+      throw new MediaWorkflowError('Chunk exceeds the allowed size.', 413)
+    // Reject unauthorized sessions before accepting the body.
+    await readUploadSession(payload, auth.user as never, (await params).id)
+    const bytes = await readBoundedUploadBody(request, uploadChunkLimit, expected)
     const result = await writeUploadChunk(
       payload,
       loadConfig(),
@@ -69,7 +73,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       auth.user as never,
       (await params).id,
     )
-    return NextResponse.json({ asset, url: `/media/${asset.id}` })
+    return NextResponse.json({ asset: { id: asset.id }, url: `/media/${asset.id}` })
   } catch (error) {
     return respond(error)
   }

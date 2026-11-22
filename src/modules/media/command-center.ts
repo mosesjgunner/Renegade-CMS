@@ -6,6 +6,7 @@ import type { AppConfig } from '../core/config'
 import { mediaStorage } from './storage'
 import { validatePodcastFeed } from './publishing'
 import { cleanupExpiredUploadSessions } from './upload-sessions'
+import { uploadDirectory, uploadSessionLock, withUploadLock } from './upload-staging'
 import {
   assertMediaPermission,
   deleteOrphanedMedia,
@@ -407,7 +408,7 @@ export async function getMediaCommandCenterOverview(
     } as never),
     payload.find({
       collection: 'media-upload-sessions' as never,
-      where: { site: { equals: siteId } },
+      where: { and: [{ site: { equals: siteId } }, { creatorKey: { exists: false } }] },
       limit: 50,
       sort: '-createdAt',
       depth: 0,
@@ -938,19 +939,28 @@ export async function executeCommandCenterAction(
 
       if (sessionId) {
         const safeId = String(sessionId)
-        if (/^[a-f0-9-]{16,64}$/i.test(safeId) && config?.storage?.mediaDir) {
-          await rm(path.join(config.storage.mediaDir, '.upload-sessions', safeId), {
-            recursive: true,
-            force: true,
-          }).catch(() => undefined)
-        }
-        await payload.update({
-          collection: 'media-upload-sessions' as never,
-          id: safeId,
-          data: { state: 'aborted' } as never,
-          overrideAccess: true,
+        return withUploadLock(payload, uploadSessionLock(safeId), async () => {
+          const session = await payload
+            .findByID({
+              collection: 'media-upload-sessions',
+              id: safeId,
+              depth: 0,
+              overrideAccess: true,
+            })
+            .catch(() => null)
+          if (!session || session.creatorKey || id(session.site) !== siteId)
+            throw new MediaWorkflowError('Upload session unavailable.', 404)
+          if (session.state === 'completed')
+            throw new MediaWorkflowError('Completed uploads cannot be cancelled.', 409)
+          await payload.update({
+            collection: 'media-upload-sessions',
+            id: safeId,
+            data: { state: 'aborted' },
+            overrideAccess: true,
+          })
+          if (config) await rm(uploadDirectory(config, safeId), { recursive: true, force: true })
+          return { cancelled: true, target: 'upload-session' }
         })
-        return { cancelled: true, target: 'upload-session' }
       }
 
       throw new MediaWorkflowError('No valid cancellable target specified.')
@@ -958,7 +968,7 @@ export async function executeCommandCenterAction(
 
     case 'cleanup-sessions': {
       await assertMediaPermission(payload, user as never, scope, 'content.edit')
-      const cleaned = await cleanupExpiredUploadSessions(payload, config)
+      const cleaned = await cleanupExpiredUploadSessions(payload, config, siteId)
       return { cleaned: true, count: cleaned }
     }
 

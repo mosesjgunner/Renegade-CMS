@@ -723,6 +723,12 @@ export const MediaUploadSessions: CollectionConfig = {
     { name: 'chunkSize', type: 'number', required: true, min: 1 },
     { name: 'receivedBytes', type: 'number', required: true, defaultValue: 0, min: 0 },
     { name: 'receivedChunks', type: 'json', required: true, defaultValue: [] },
+    { name: 'chunkManifest', type: 'json' },
+    { name: 'creatorKey', type: 'text', unique: true, access: { read: () => false } },
+    { name: 'creatorTarget', type: 'text', index: true },
+    { name: 'reviewStatus', type: 'text', index: true },
+    { name: 'creatorDetails', type: 'json', access: { read: () => false } },
+    { name: 'stagingClearedAt', type: 'date' },
     {
       name: 'state',
       type: 'select',
@@ -1044,7 +1050,32 @@ export const Content: CollectionConfig = {
   },
   hooks: {
     beforeOperation: [lockEditorialOperation],
-    beforeChange: [guardEditorialReviewWrite, guardContentHierarchy, trackPublicModification],
+    beforeChange: [
+      ({ req, originalDoc, operation, data }) => {
+        const guard = req.context?.creatorDraftGuard as
+          | { siteId: string; memberId: string; spaceId: string; updatedAt: string }
+          | undefined
+        if (guard && operation === 'update') {
+          const id = (value: unknown) =>
+            typeof value === 'object' && value !== null && 'id' in value
+              ? String(value.id)
+              : String(value ?? '')
+          if (
+            !originalDoc ||
+            originalDoc.status !== 'draft' ||
+            id(originalDoc.site) !== guard.siteId ||
+            id(originalDoc.owner) !== guard.memberId ||
+            id(originalDoc.space) !== guard.spaceId ||
+            originalDoc.updatedAt !== guard.updatedAt
+          )
+            throw new Error('Draft unavailable.')
+        }
+        return data
+      },
+      guardEditorialReviewWrite,
+      guardContentHierarchy,
+      trackPublicModification,
+    ],
     beforeDelete: [protectHierarchyDelete('content')],
     beforeValidate: [
       async ({ data, originalDoc, req }) => {

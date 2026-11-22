@@ -1,29 +1,31 @@
-import { createHash } from 'node:crypto'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import path from 'node:path'
+import { rm } from 'node:fs/promises'
 import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
-import { assertMediaPermission, MediaWorkflowError, uploadMedia } from './workflow'
+import { withExecutionLock } from '../operations/execution-lock'
+import {
+  assembleUpload,
+  creatorAssetDirectory,
+  sha256,
+  stageUploadChunk,
+  uploadChunkSize,
+  uploadDirectory,
+  uploadLifetimeMs,
+  uploadSessionLock,
+  withUploadLock,
+} from './upload-staging'
+import { assertMediaPermission, MediaWorkflowError, uploadMediaFile } from './workflow'
 
 type Doc = Record<string, unknown>
 type Session = Doc & { id: string; state: string; asset?: string }
 type Asset = Doc & { id: string }
 const id = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: unknown } | null)?.id ?? '')
-const chunkLimit = 8 * 1024 * 1024
-const sessionLifetimeMs = 24 * 60 * 60 * 1000
 const safeFilename = (value: string) =>
   value
     .replace(/[\u0000-\u001f\\/]/g, '_')
     .trim()
     .slice(0, 255)
-const sessionRoot = (config: AppConfig) => path.join(config.storage.mediaDir, '.upload-sessions')
-const chunkPath = (config: AppConfig, sessionId: string, index: number) => {
-  if (!/^[a-f0-9-]{16,64}$/i.test(sessionId) || !Number.isInteger(index) || index < 0)
-    throw new MediaWorkflowError('Invalid upload session or chunk.', 400)
-  return path.join(sessionRoot(config), sessionId, `${index}.part`)
-}
 
 async function resolveSessionOwnerMemberId(
   payload: Payload,
@@ -64,18 +66,6 @@ async function resolveSessionOwnerMemberId(
         } catch {
           // ignore
         }
-      }
-    }
-    if (!owner && allowCreate) {
-      const anyMember = await payload
-        .find({
-          collection: 'members',
-          limit: 1,
-          overrideAccess: true,
-        })
-        .catch(() => ({ docs: [] as Doc[] }))
-      if (anyMember.docs[0]) {
-        owner = String(anyMember.docs[0].id)
       }
     }
   }
@@ -135,7 +125,7 @@ export async function createUploadSession(
   }
   const owner = await resolveSessionOwnerMemberId(payload, input.user, true)
   if (!owner) throw new MediaWorkflowError('A staff member identity is required.', 403)
-  const chunkSize = Math.min(chunkLimit, Math.max(256 * 1024, Math.ceil(input.size / 100)))
+  const chunkSize = uploadChunkSize(input.size)
   return payload.create({
     collection: 'media-upload-sessions',
     overrideAccess: true,
@@ -153,8 +143,9 @@ export async function createUploadSession(
       chunkSize,
       receivedBytes: 0,
       receivedChunks: [],
+      chunkManifest: {},
       state: 'open',
-      expiresAt: new Date(Date.now() + sessionLifetimeMs).toISOString(),
+      expiresAt: new Date(Date.now() + uploadLifetimeMs).toISOString(),
     },
   } as never) as unknown as Promise<Session>
 }
@@ -168,7 +159,7 @@ async function ownedSession(payload: Payload, user: Doc | null | undefined, sess
       overrideAccess: true,
     } as never)
     .catch(() => undefined)) as unknown as Session | undefined
-  if (!session) throw new MediaWorkflowError('Upload session not found.', 404)
+  if (!session || session.creatorKey) throw new MediaWorkflowError('Upload session not found.', 404)
   // An account's role grants access to the Media Library, but never to another
   // publisher's resumable bytes.  A site owner is not a bypass here: session
   // IDs can be retained by a browser across restarts, so this must remain an
@@ -176,9 +167,20 @@ async function ownedSession(payload: Payload, user: Doc | null | undefined, sess
   const ownerMemberId = await resolveSessionOwnerMemberId(payload, user, false)
   if (!user || !ownerMemberId || ownerMemberId !== id(session.owner))
     throw new MediaWorkflowError('Upload session access denied.', 403)
+  await assertMediaPermission(
+    payload,
+    user,
+    {
+      kind: 'site',
+      siteId: id(session.site),
+      publicationId: id(session.publication) || null,
+      spaceId: id(session.space) || null,
+    },
+    'content.edit',
+  )
   if (
     new Date(String(session.expiresAt)).getTime() < Date.now() &&
-    (session.state === 'open' || session.state === 'failed')
+    ['open', 'failed', 'finalizing', 'expired'].includes(session.state)
   )
     throw new MediaWorkflowError('Upload session expired. Start a new upload.', 410)
   return session
@@ -194,56 +196,50 @@ export async function writeUploadChunk(
   total: number,
   bytes: Uint8Array,
 ) {
-  const session = await ownedSession(payload, user, sessionId)
-  if (session.state !== 'open' && session.state !== 'failed')
-    throw new MediaWorkflowError('Upload session is not accepting chunks.', 409)
-  if (
-    total !== Number(session.expectedSize) ||
-    start !== index * Number(session.chunkSize) ||
-    !bytes.byteLength ||
-    bytes.byteLength > Number(session.chunkSize) ||
-    start + bytes.byteLength > total
-  )
-    throw new MediaWorkflowError('Invalid chunk range.', 400)
-  const target = chunkPath(config, sessionId, index)
-  await mkdir(path.dirname(target), { recursive: true })
-  let existing: Uint8Array | undefined
-  try {
-    existing = await readFile(target)
-  } catch {
-    /* new chunk */
-  }
-  if (existing) {
-    if (Buffer.compare(Buffer.from(existing), Buffer.from(bytes)) !== 0)
+  return withUploadLock(payload, uploadSessionLock(sessionId), async () => {
+    const session = await ownedSession(payload, user, sessionId)
+    if (session.state !== 'open' && session.state !== 'failed')
+      throw new MediaWorkflowError('Upload session is not accepting chunks.', 409)
+    if (
+      !Number.isSafeInteger(index) ||
+      index < 0 ||
+      total !== Number(session.expectedSize) ||
+      start !== index * Number(session.chunkSize) ||
+      start >= total
+    )
+      throw new MediaWorkflowError('Invalid chunk range.', 400)
+    const manifest = (session.chunkManifest ?? {}) as Record<string, unknown>
+    if (manifest[index] && manifest[index] !== sha256(bytes))
       throw new MediaWorkflowError('Chunk retry bytes do not match the original chunk.', 409)
-  } else await writeFile(target, bytes, { flag: 'wx' })
-  const chunks = Array.isArray(session.receivedChunks) ? session.receivedChunks.map(Number) : []
-  const wasReceived = chunks.includes(index)
-  if (!wasReceived || session.state === 'failed') {
-    if (!wasReceived) {
-      chunks.push(index)
-      chunks.sort((a, b) => a - b)
+    if (bytes.byteLength !== Math.min(Number(session.chunkSize), total - start))
+      throw new MediaWorkflowError('Invalid chunk range.', 400)
+    const hash = await stageUploadChunk(uploadDirectory(config, sessionId), index, bytes)
+    const chunks = Array.isArray(session.receivedChunks) ? session.receivedChunks.map(Number) : []
+    const wasReceived = chunks.includes(index)
+    const receivedBytes = Number(session.receivedBytes) + (wasReceived ? 0 : bytes.byteLength)
+    if (!wasReceived || !manifest[index] || session.state === 'failed') {
+      if (!wasReceived) {
+        chunks.push(index)
+        chunks.sort((a, b) => a - b)
+      }
+      await payload.update({
+        collection: 'media-upload-sessions',
+        id: sessionId,
+        overrideAccess: true,
+        data: {
+          state: 'open',
+          receivedChunks: chunks,
+          chunkManifest: { ...manifest, [index]: hash },
+          receivedBytes,
+        },
+      } as never)
     }
-    await payload.update({
-      collection: 'media-upload-sessions',
-      id: sessionId,
-      overrideAccess: true,
-      data: {
-        state: 'open',
-        receivedChunks: chunks,
-        receivedBytes: wasReceived
-          ? Number(session.receivedBytes)
-          : Number(session.receivedBytes) + bytes.byteLength,
-      },
-    } as never)
-  }
-  return {
-    received: wasReceived ? 0 : bytes.byteLength,
-    receivedBytes: existing
-      ? Number(session.receivedBytes)
-      : Number(session.receivedBytes) + bytes.byteLength,
-    complete: start + bytes.byteLength === total,
-  }
+    return {
+      received: wasReceived ? 0 : bytes.byteLength,
+      receivedBytes,
+      complete: start + bytes.byteLength === total,
+    }
+  })
 }
 
 /** Safe resume metadata; this deliberately excludes filenames' physical paths and object keys. */
@@ -272,82 +268,111 @@ export async function finalizeUploadSession(
   user: Doc | null | undefined,
   sessionId: string,
 ): Promise<Asset> {
-  const session = await ownedSession(payload, user, sessionId)
-  if (session.state === 'completed' && session.asset)
-    return (await payload.findByID({
-      collection: 'media-assets',
-      id: session.asset,
-      depth: 0,
-      overrideAccess: true,
-    } as never)) as unknown as Asset
-  // Finalization is deliberately restart-safe. Staged chunks are immutable and
-  // idempotent, so a process dying after the state transition must not strand a
-  // publisher with bytes that can neither be resumed nor finalized.
-  if (!['open', 'finalizing', 'failed'].includes(String(session.state)))
-    throw new MediaWorkflowError('Upload session cannot be finalized.', 409)
-  const expectedSize = Number(session.expectedSize),
-    chunkSize = Number(session.chunkSize),
-    count = Math.ceil(expectedSize / chunkSize)
-  const chunks = Array.isArray(session.receivedChunks) ? session.receivedChunks.map(Number) : []
-  if (
-    chunks.length !== count ||
-    !Array.from({ length: count }, (_, i) => chunks.includes(i)).every(Boolean)
-  )
-    throw new MediaWorkflowError('Upload is incomplete; resume the missing chunks.', 409)
-  if (session.state !== 'finalizing')
-    await payload.update({
-      collection: 'media-upload-sessions',
-      id: sessionId,
-      overrideAccess: true,
-      data: { state: 'finalizing', failureReason: null },
-    } as never)
-  try {
-    const parts = await Promise.all(
-      Array.from({ length: count }, (_, index) => readFile(chunkPath(config, sessionId, index))),
+  return withUploadLock(payload, uploadSessionLock(sessionId), async () => {
+    const session = await ownedSession(payload, user, sessionId)
+    if (session.state === 'completed' && session.asset) {
+      const asset = (await payload.findByID({
+        collection: 'media-assets',
+        id: session.asset,
+        depth: 0,
+        overrideAccess: true,
+      } as never)) as unknown as Asset
+      if (!asset || id(asset.site) !== id(session.site) || id(asset.owner) !== id(session.owner))
+        throw new MediaWorkflowError('Upload asset access denied.', 403)
+      return asset
+    }
+    // Finalization is deliberately restart-safe. Staged chunks are immutable and
+    // idempotent, so a process dying after the state transition must not strand a
+    // publisher with bytes that can neither be resumed nor finalized.
+    if (!['open', 'finalizing', 'failed'].includes(String(session.state)))
+      throw new MediaWorkflowError('Upload session cannot be finalized.', 409)
+    const expectedSize = Number(session.expectedSize),
+      chunkSize = Number(session.chunkSize),
+      count = Math.ceil(expectedSize / chunkSize)
+    const chunks = Array.isArray(session.receivedChunks) ? session.receivedChunks.map(Number) : []
+    if (
+      chunks.length !== count ||
+      !Array.from({ length: count }, (_, i) => chunks.includes(i)).every(Boolean)
     )
-    const bytes = Buffer.concat(parts)
-    if (bytes.byteLength !== expectedSize)
-      throw new MediaWorkflowError('Uploaded byte count does not match the declared size.', 400)
-    const checksum = `sha256:${createHash('sha256').update(bytes).digest('hex')}`
-    if (session.expectedChecksum && checksum !== session.expectedChecksum)
-      throw new MediaWorkflowError('Uploaded checksum does not match. Retry the upload.', 400)
-    const asset = (await uploadMedia(payload, config, {
-      user,
-      scope: {
-        kind: 'site',
-        siteId: id(session.site),
-        publicationId: id(session.publication) || null,
-        spaceId: id(session.space) || null,
-      },
-      title: String(session.title),
-      altText: typeof session.altText === 'string' ? session.altText : undefined,
-      caption: typeof session.caption === 'string' ? session.caption : undefined,
-      originalFilename: String(session.filename),
-      bytes,
-    })) as unknown as Asset
-    await payload.update({
-      collection: 'media-upload-sessions',
-      id: sessionId,
-      overrideAccess: true,
-      data: { state: 'completed', asset: asset.id, receivedBytes: expectedSize },
-    } as never)
-    await rm(path.join(sessionRoot(config), sessionId), { recursive: true, force: true })
-    return asset
-  } catch (error) {
-    await payload
-      .update({
+      throw new MediaWorkflowError('Upload is incomplete; resume the missing chunks.', 409)
+    if (session.state !== 'finalizing')
+      await payload.update({
         collection: 'media-upload-sessions',
         id: sessionId,
         overrideAccess: true,
-        data: {
-          state: 'failed',
-          failureReason:
-            error instanceof Error ? error.message.slice(0, 500) : 'Finalization failed.',
-        },
+        data: { state: 'finalizing', failureReason: null },
       } as never)
-      .catch(() => undefined)
-    throw error
-  }
+    try {
+      const directory = uploadDirectory(config, sessionId)
+      const assembled = await assembleUpload(
+        directory,
+        expectedSize,
+        chunkSize,
+        (session.chunkManifest ?? {}) as Record<string, unknown>,
+        false,
+      )
+      if (
+        typeof session.expectedChecksum === 'string' &&
+        assembled.checksum !== session.expectedChecksum.toLowerCase()
+      )
+        throw new MediaWorkflowError('Uploaded checksum does not match. Retry the upload.', 400)
+      await ownedSession(payload, user, sessionId)
+      const asset = (await uploadMediaFile(
+        payload,
+        config,
+        {
+          user: { ...user, member: id(session.owner) },
+          scope: {
+            kind: 'site',
+            siteId: id(session.site),
+            publicationId: id(session.publication) || null,
+            spaceId: id(session.space) || null,
+          },
+          title: String(session.title),
+          altText: typeof session.altText === 'string' ? session.altText : undefined,
+          caption: typeof session.caption === 'string' ? session.caption : undefined,
+          originalFilename: String(session.filename),
+        },
+        { ...assembled, size: expectedSize },
+      )) as unknown as Asset
+      if (id(asset.site) !== id(session.site) || id(asset.owner) !== id(session.owner))
+        throw new MediaWorkflowError('Upload asset access denied.', 403)
+      await payload.update({
+        collection: 'media-upload-sessions',
+        id: sessionId,
+        overrideAccess: true,
+        data: { state: 'completed', asset: asset.id, receivedBytes: expectedSize },
+      } as never)
+      try {
+        await rm(directory, { recursive: true, force: true })
+        await payload.update({
+          collection: 'media-upload-sessions',
+          id: sessionId,
+          overrideAccess: true,
+          data: { stagingClearedAt: new Date().toISOString() },
+        })
+      } catch {
+        // The cleanup worker retries after the successful asset commit.
+      }
+      return asset
+    } catch (error) {
+      await payload
+        .update({
+          collection: 'media-upload-sessions',
+          id: sessionId,
+          overrideAccess: true,
+          data: {
+            state: 'failed',
+            failureReason:
+              error instanceof MediaWorkflowError
+                ? error.message
+                : 'Finalization failed. Retry the upload.',
+          },
+        } as never)
+        .catch(() => undefined)
+      throw error
+    }
+  })
 }
 
 export async function cancelUploadSession(
@@ -356,41 +381,78 @@ export async function cancelUploadSession(
   user: Doc | null | undefined,
   sessionId: string,
 ) {
-  const session = await ownedSession(payload, user, sessionId)
-  if (session.state === 'completed')
-    throw new MediaWorkflowError('Completed uploads cannot be cancelled.', 409)
-  await rm(path.join(sessionRoot(config), sessionId), { recursive: true, force: true })
-  return payload.update({
-    collection: 'media-upload-sessions',
-    id: sessionId,
-    overrideAccess: true,
-    data: { state: 'cancelled' },
-  } as never)
+  return withUploadLock(payload, uploadSessionLock(sessionId), async () => {
+    const session = await ownedSession(payload, user, sessionId)
+    if (session.state === 'completed')
+      throw new MediaWorkflowError('Completed uploads cannot be cancelled.', 409)
+    await rm(uploadDirectory(config, sessionId), { recursive: true, force: true })
+    return payload.update({
+      collection: 'media-upload-sessions',
+      id: sessionId,
+      overrideAccess: true,
+      data: { state: 'cancelled', stagingClearedAt: new Date().toISOString() },
+    } as never)
+  })
 }
 
 /** Worker-safe cleanup: only expired incomplete staging directories are removed. */
-export async function cleanupExpiredUploadSessions(payload: Payload, config: AppConfig) {
+export async function cleanupExpiredUploadSessions(
+  payload: Payload,
+  config: AppConfig,
+  staffSiteId?: string,
+) {
   const result = (await payload.find({
     collection: 'media-upload-sessions',
     where: {
       and: [
-        { expiresAt: { less_than: new Date().toISOString() } },
-        { state: { in: ['open', 'failed', 'cancelled', 'expired'] } },
+        ...(staffSiteId
+          ? [{ site: { equals: staffSiteId } }, { creatorKey: { exists: false } }]
+          : []),
+        { stagingClearedAt: { exists: false } },
+        {
+          or: [
+            { state: { in: ['completed', 'cancelled', 'aborted', 'expired'] } },
+            {
+              and: [
+                { expiresAt: { less_than: new Date().toISOString() } },
+                { state: { in: ['open', 'failed', 'finalizing'] } },
+              ],
+            },
+          ],
+        },
       ],
     },
     limit: 500,
     depth: 0,
     overrideAccess: true,
   } as never)) as unknown as { docs: Session[] }
-  for (const session of result.docs) {
-    await rm(path.join(sessionRoot(config), String(session.id)), { recursive: true, force: true })
-    if (session.state === 'open')
+  let cleaned = 0
+  for (const candidate of result.docs) {
+    await withExecutionLock(payload, uploadSessionLock(candidate.id), async () => {
+      const session = await payload.findByID({
+        collection: 'media-upload-sessions',
+        id: candidate.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (session.stagingClearedAt) return
+      const incomplete = ['open', 'failed', 'finalizing'].includes(session.state)
+      if (incomplete && Date.parse(session.expiresAt) > Date.now()) return
+      const dir = uploadDirectory(config, session.id)
+      await rm(dir, { recursive: true, force: true })
+      if (session.creatorKey && session.state !== 'completed')
+        await rm(creatorAssetDirectory(config, session.id), { recursive: true, force: true })
       await payload.update({
         collection: 'media-upload-sessions',
         id: session.id,
         overrideAccess: true,
-        data: { state: 'expired' },
-      } as never)
+        data: {
+          ...(incomplete ? { state: 'expired' } : {}),
+          stagingClearedAt: new Date().toISOString(),
+        },
+      })
+      cleaned++
+    })
   }
-  return result.docs.length
+  return cleaned
 }

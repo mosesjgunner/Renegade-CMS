@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { open } from 'node:fs/promises'
 
 import { canRenderPublic, type PublicState } from '../public/contracts'
 import { isPublicPageLayout } from '../public/layout-visibility'
@@ -143,24 +144,64 @@ export async function uploadMedia(
     bytes: Uint8Array
   },
 ) {
+  return persistMediaUpload(payload, config, input, input.bytes.byteLength)
+}
+
+export async function uploadMediaFile(
+  payload: Payload,
+  config: AppConfig,
+  input: Omit<Parameters<typeof uploadMedia>[2], 'bytes'>,
+  file: { filename: string; size: number; checksum: string },
+) {
+  const handle = await open(file.filename, 'r')
+  try {
+    const prefix = Buffer.alloc(Math.min(file.size, 5 * 1024 * 1024))
+    const { bytesRead } = await handle.read(prefix, 0, prefix.length, 0)
+    return await persistMediaUpload(
+      payload,
+      config,
+      { ...input, bytes: prefix.subarray(0, bytesRead) },
+      file.size,
+      file,
+    )
+  } finally {
+    await handle.close()
+  }
+}
+
+async function persistMediaUpload(
+  payload: Payload,
+  config: AppConfig,
+  input: Parameters<typeof uploadMedia>[2],
+  size: number,
+  file?: { filename: string; checksum: string },
+) {
   await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
   const title = cleanText(input.title, 'Media title', 180)
   if (!title) throw new MediaWorkflowError('A media title is required.')
   const altText = cleanText(input.altText, 'Alt text', 500)
   const caption = cleanText(input.caption, 'Caption', 2_000)
-  if (input.bytes.byteLength > config.storage.maxUploadBytes)
+  if (size > config.storage.maxUploadBytes)
     throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
   let inspection
   try {
     inspection = inspectMedia(input.bytes)
+    if (file) inspection.sha256 = file.checksum
   } catch (error) {
     throw new MediaWorkflowError(
       error instanceof Error ? error.message : 'Unsupported or corrupt media file.',
       415,
     )
   }
-  if (inspection.mimeType === 'text/vtt') validateWebVtt(input.bytes)
-  const audioMetadata = inspection.kind === 'audio' ? inspectAudioMetadata(input.bytes) : undefined
+  if (inspection.mimeType === 'text/vtt' || inspection.mimeType === 'image/svg+xml') {
+    if (size !== input.bytes.byteLength)
+      throw new MediaWorkflowError('Text media exceeds the safe validation limit.', 413)
+    if (inspection.mimeType === 'text/vtt') validateWebVtt(input.bytes)
+  }
+  const audioMetadata =
+    inspection.kind === 'audio'
+      ? inspectAudioMetadata(input.bytes, file && { sizeBytes: size, checksum: inspection.sha256 })
+      : undefined
   if (
     input.focalPoint &&
     (input.focalPoint.x < 0 ||
@@ -171,6 +212,10 @@ export async function uploadMedia(
     throw new MediaWorkflowError('Focal point coordinates must be between 0 and 1.')
   const key = mediaObjectKey(input.scope.siteId, inspection.extension)
   const storage = mediaStorage(config)
+  const put = (object: string) =>
+    file
+      ? storage.putFile(object, file.filename, inspection.mimeType, size, file.checksum)
+      : storage.put(object, input.bytes, inspection.mimeType)
   // A blob is the physical object; an asset is the editorial identity. Dedup is
   // deliberately site-scoped so one tenant cannot infer another tenant's files.
   const known = await payload
@@ -190,7 +235,7 @@ export async function uploadMedia(
   let blob = (known.docs as unknown as Doc[])[0]
   let wroteObject = false
   if (!blob) {
-    await storage.put(key, input.bytes, inspection.mimeType)
+    await put(key)
     wroteObject = true
     try {
       blob = (await payload.create({
@@ -204,7 +249,7 @@ export async function uploadMedia(
           storageKey: key,
           storageProvider: storage.provider,
           mimeType: inspection.mimeType,
-          sizeBytes: input.bytes.byteLength,
+          sizeBytes: size,
           state: 'ready',
         },
       } as never)) as unknown as Doc
@@ -230,10 +275,10 @@ export async function uploadMedia(
       wroteObject = false
     }
   } else {
-    const existingBytes = await storage.get(String(blob.storageKey)).catch(() => undefined)
-    if (!existingBytes) {
-      await storage.put(String(blob.storageKey), input.bytes, inspection.mimeType)
-    }
+    const exists = file
+      ? await storage.exists(String(blob.storageKey)).catch(() => false)
+      : await storage.get(String(blob.storageKey)).then(Boolean, () => false)
+    if (!exists) await put(String(blob.storageKey))
   }
   try {
     const asset = await payload.create({
@@ -251,7 +296,7 @@ export async function uploadMedia(
         originalBlob: blob.id,
         originalFilename: cleanText(input.originalFilename, 'Original filename', 255) || null,
         mimeType: inspection.mimeType,
-        sizeBytes: input.bytes.byteLength,
+        sizeBytes: size,
         width: inspection.width,
         height: inspection.height,
         durationSeconds: audioMetadata?.durationSeconds,
@@ -259,7 +304,7 @@ export async function uploadMedia(
           ? {
               ...audioMetadata,
               mimeType: inspection.mimeType,
-              sizeBytes: input.bytes.byteLength,
+              sizeBytes: size,
               checksum: inspection.sha256,
             }
           : undefined,

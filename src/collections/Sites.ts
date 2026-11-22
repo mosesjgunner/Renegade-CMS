@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { protectSiteHierarchyDelete } from '../modules/editorial/hierarchy'
 import { resolveOperatorGrantContext } from '../modules/operations/operator-grants'
 import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
+import { creatorQuotaKeys } from '../modules/creator-studio/policy-values'
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
@@ -182,6 +183,56 @@ export const Sites: CollectionConfig = {
     ],
   },
   fields: [
+    {
+      name: 'creatorPolicy',
+      type: 'json',
+      admin: {
+        description:
+          'JSON object: enabled, selfServiceSpaces, quotas, and submissionTargets. Creator access is denied by default.',
+      },
+      validate: (value: unknown) => {
+        if (value == null) return true
+        if (typeof value !== 'object' || Array.isArray(value)) return 'Use a creator policy object.'
+        const policy = value as Record<string, unknown>
+        if (
+          Object.keys(policy).some(
+            (key) => !['enabled', 'selfServiceSpaces', 'quotas', 'submissionTargets'].includes(key),
+          ) ||
+          ['enabled', 'selfServiceSpaces'].some(
+            (key) => policy[key] !== undefined && typeof policy[key] !== 'boolean',
+          )
+        )
+          return 'Use boolean enabled and selfServiceSpaces settings.'
+        const targets = policy.submissionTargets
+        if (
+          targets !== undefined &&
+          (!Array.isArray(targets) ||
+            targets.length > 100 ||
+            targets.some(
+              (target) =>
+                typeof target !== 'string' ||
+                !/^(gallery|content|theater|room):[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(target),
+            ))
+        )
+          return 'Use up to 100 submission targets in kind:UUID format.'
+        const quotas = policy.quotas
+        if (
+          quotas !== undefined &&
+          (quotas === null ||
+            typeof quotas !== 'object' ||
+            Array.isArray(quotas) ||
+            Object.entries(quotas).some(
+              ([key, limit]) =>
+                !(creatorQuotaKeys as readonly string[]).includes(key) ||
+                typeof limit !== 'number' ||
+                !Number.isSafeInteger(limit) ||
+                limit < 0,
+            ))
+        )
+          return 'Use nonnegative integer creator quota limits.'
+        return true
+      },
+    },
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
     { name: 'description', type: 'textarea' },

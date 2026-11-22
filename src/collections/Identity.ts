@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { creatorCapabilities, creatorQuotaKeys } from '../modules/creator-studio/policy-values'
 import {
   operatorAllSitesAccess,
   operatorSiteReadAccess,
@@ -138,7 +139,7 @@ export const Members: CollectionConfig = {
 /** Site-scoped community roles are distinct from the Payload administrator `users.role`. */
 export const MemberSiteRoles: CollectionConfig = {
   slug: 'member-site-roles',
-  admin: { useAsTitle: 'role', group: 'Community', hidden: true },
+  admin: { useAsTitle: 'role', group: 'Community' },
   access: {
     create: async (args) => args.req.user?.role === 'owner' && operatorSiteCreateAccess(args),
     delete: async (args) => args.req.user?.role === 'owner' && operatorSiteReadAccess(args),
@@ -154,9 +155,21 @@ export const MemberSiteRoles: CollectionConfig = {
             : String(value ?? '')
         const before =
           operation === 'update' && previousDoc
-            ? { site: id(previousDoc.site), member: id(previousDoc.member), role: previousDoc.role }
+            ? {
+                site: id(previousDoc.site),
+                member: id(previousDoc.member),
+                role: previousDoc.role,
+                creatorCapabilities: previousDoc.creatorCapabilities,
+                creatorQuotaOverride: previousDoc.creatorQuotaOverride,
+              }
             : null
-        const after = { site: id(doc.site), member: id(doc.member), role: doc.role }
+        const after = {
+          site: id(doc.site),
+          member: id(doc.member),
+          role: doc.role,
+          creatorCapabilities: doc.creatorCapabilities,
+          creatorQuotaOverride: doc.creatorQuotaOverride,
+        }
         if (JSON.stringify(before) === JSON.stringify(after)) return doc
         await req.payload.create({
           collection: 'identity-audit-events',
@@ -207,6 +220,41 @@ export const MemberSiteRoles: CollectionConfig = {
       options: ['member', 'trusted', 'contributor', 'moderator', 'community-manager'],
     },
     { name: 'grantedByUserId', type: 'text' },
+    {
+      name: 'creatorCapabilities',
+      type: 'json',
+      admin: {
+        description: `JSON array of explicitly granted names: ${creatorCapabilities.join(', ')}.`,
+      },
+      validate: (value: unknown) =>
+        value == null ||
+        (Array.isArray(value) &&
+          value.every(
+            (item) =>
+              typeof item === 'string' && (creatorCapabilities as readonly string[]).includes(item),
+          ) &&
+          new Set(value).size === value.length) ||
+        'Use a JSON array of unique creator capability names.',
+    },
+    {
+      name: 'creatorQuotaOverride',
+      type: 'json',
+      admin: {
+        description: `Optional JSON object with nonnegative integer limits: ${creatorQuotaKeys.join(', ')}.`,
+      },
+      validate: (value: unknown) =>
+        value == null ||
+        (typeof value === 'object' &&
+          !Array.isArray(value) &&
+          Object.entries(value).every(
+            ([key, limit]) =>
+              (creatorQuotaKeys as readonly string[]).includes(key) &&
+              typeof limit === 'number' &&
+              Number.isSafeInteger(limit) &&
+              limit >= 0,
+          )) ||
+        'Use nonnegative integer creator quota limits.',
+    },
   ],
   indexes: [{ fields: ['site', 'member'], unique: true }],
 }
@@ -390,6 +438,7 @@ export const Spaces: CollectionConfig = {
     // visibility, fieldAudience, layoutTheme) live on the profile and
     // are never duplicated here; resolve them through this relation.
     { name: 'profile', type: 'relationship', relationTo: 'profiles', required: true, index: true },
+    { name: 'creatorDescription', type: 'textarea', maxLength: 2000 },
     {
       name: 'canonicalPath',
       type: 'text',

@@ -108,9 +108,10 @@ export function measurePcmLoudness(pcmSamples: Int16Array): AudioLoudness {
 export function extractAudioMetadata(
   bytes: Uint8Array,
   declaredMimeType?: string,
+  source?: { sizeBytes: number; checksum: string },
 ): AudioMetadata | undefined {
-  const checksum = `sha256:${createHash('sha256').update(bytes).digest('hex')}`
-  const sizeBytes = bytes.byteLength
+  const checksum = source?.checksum ?? `sha256:${createHash('sha256').update(bytes).digest('hex')}`
+  const sizeBytes = source?.sizeBytes ?? bytes.byteLength
 
   // 1. WAV / RIFF
   if (ascii(bytes, 0, 'RIFF') && ascii(bytes, 8, 'WAVE')) {

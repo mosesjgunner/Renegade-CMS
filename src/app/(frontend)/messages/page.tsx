@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, Suspense, type FormEvent } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 type Conversation = {
   id: string
@@ -36,6 +37,7 @@ function MessagesContent() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [selected, setSelected] = useState('')
   const [messages, setMessages] = useState<Message[]>([])
+  const [submissionTarget, setSubmissionTarget] = useState('')
   const [recipients, setRecipients] = useState(initialRecipient)
   const [groupTitle, setGroupTitle] = useState('')
   const [body, setBody] = useState('')
@@ -55,7 +57,9 @@ function MessagesContent() {
     const query = new URLSearchParams({ siteId: site, conversationId })
     const response = await fetch(`/api/community/messages?${query}`, { cache: 'no-store' })
     if (!response.ok) return setStatus((await response.json()).error ?? 'Could not load messages.')
-    setMessages((await response.json()).messages ?? [])
+    const data = await response.json()
+    setMessages(data.messages ?? [])
+    setSubmissionTarget(data.submissionTarget ?? '')
   }, [])
 
   useEffect(() => {
@@ -264,6 +268,14 @@ function MessagesContent() {
                   Refresh
                 </button>
               </div>
+              {submissionTarget === `room:${selected}` && (
+                <Link
+                  className="underline"
+                  href={`/studio/submissions?target=${encodeURIComponent(submissionTarget)}`}
+                >
+                  Community submissions
+                </Link>
+              )}
 
               {isPendingRequest && isRecipient ? (
                 <div className="mt-4 p-4 rounded-xl border border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950/40">

@@ -179,6 +179,11 @@ export default function NotificationsPage() {
                   <p className="mt-1 text-sm text-stone-800 dark:text-stone-200 line-clamp-2">
                     {text}
                   </p>
+                  {n.kind === 'creator.submission.reviewed' && (
+                    <Link href="/studio/submissions" className="text-sm underline">
+                      View submission
+                    </Link>
+                  )}
                   {dateStr ? (
                     <time dateTime={n.createdAt} className="mt-2 block text-xs text-stone-400">
                       {dateStr}

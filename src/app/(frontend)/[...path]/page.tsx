@@ -24,6 +24,7 @@ import {
   type RedirectRule,
 } from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
+import { SubmissionTargetLink } from '@/modules/creator-studio/SubmissionTargetLink'
 import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { PublicForm } from '@/modules/audience/PublicForm'
 import { loadPublicForm } from '@/modules/audience/form-runtime'
@@ -308,6 +309,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         />
         <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
         <ContentArchiveLinks payload={payload} contentId={editorialArticle.contentId} />
+        <SubmissionTargetLink payload={payload} siteId={siteId} target={`content:${editorialArticle.contentId}`} />
         {editorialArticle.contentType === 'article' ? (
           <section aria-label="Article discussion" className="mx-auto max-w-4xl px-6 pb-16">
             <CommentSection
@@ -743,6 +745,9 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             </section>
           ) : null}
         </article>
+        {collection === 'content' || collection === 'albums' ? (
+          <SubmissionTargetLink payload={payload} siteId={siteId} target={`${collection === 'albums' ? 'gallery' : 'content'}:${String(record.id)}`} />
+        ) : null}
         {collection === 'content' ? (
           <CommentSection
             attachedToId={String(record.id)}

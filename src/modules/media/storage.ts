@@ -1,6 +1,8 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
-import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
+import { createReadStream } from 'node:fs'
+import { copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+import { Readable } from 'node:stream'
 
 import type { AppConfig } from '../core/config'
 import { extractAudioMetadata, type AudioMetadata } from './audio'
@@ -65,8 +67,11 @@ function jpegDimensions(bytes: Uint8Array) {
  * Extracts container-level and audio facts without changing the uploaded original.
  * Accurate loudness and any conversion are worker-owned, versioned recipes.
  */
-export function inspectAudioMetadata(bytes: Uint8Array): AudioMetadata | undefined {
-  return extractAudioMetadata(bytes)
+export function inspectAudioMetadata(
+  bytes: Uint8Array,
+  source?: { sizeBytes: number; checksum: string },
+): AudioMetadata | undefined {
+  return extractAudioMetadata(bytes, undefined, source)
 }
 
 /** Content sniffing is deliberately allow-list based; headers and extensions are never trusted. */
@@ -184,6 +189,17 @@ export type MediaStorage = {
   remove(key: string): Promise<void>
 }
 
+type StreamingMediaStorage = MediaStorage & {
+  putFile(
+    key: string,
+    filename: string,
+    mimeType: string,
+    size: number,
+    checksum: string,
+  ): Promise<void>
+  exists(key: string): Promise<boolean>
+}
+
 /** A browser PUT capability.  Its signature binds the key, MIME type, and expiry;
  * no application endpoint ever receives the upload stream. */
 export function presignS3Put(
@@ -247,7 +263,7 @@ export function presignS3Put(
   }
 }
 
-export function localMediaStorage(mediaDir: string): MediaStorage {
+export function localMediaStorage(mediaDir: string): StreamingMediaStorage {
   return {
     provider: 'local',
     capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
@@ -257,6 +273,26 @@ export function localMediaStorage(mediaDir: string): MediaStorage {
       const temporary = `${target}.${randomUUID()}.uploading`
       await writeFile(temporary, bytes, { flag: 'wx' })
       await rename(temporary, target)
+    },
+    async putFile(key, filename) {
+      const target = localPath(mediaDir, key)
+      await mkdir(path.dirname(target), { recursive: true })
+      const temporary = `${target}.${randomUUID()}.uploading`
+      try {
+        await copyFile(filename, temporary)
+        await rename(temporary, target)
+      } finally {
+        await rm(temporary, { force: true })
+      }
+    },
+    async exists(key) {
+      return stat(localPath(mediaDir, key)).then(
+        (info) => info.isFile(),
+        (error: NodeJS.ErrnoException) => {
+          if (error.code === 'ENOENT') return false
+          throw error
+        },
+      )
     },
     async get(key) {
       try {
@@ -273,19 +309,24 @@ export function localMediaStorage(mediaDir: string): MediaStorage {
 }
 
 // The adapter intentionally uses the S3-compatible REST protocol so MinIO/R2/S3 do not need a second asset model.
-export function s3MediaStorage(config: NonNullable<AppConfig['storage']['s3']>): MediaStorage {
+export function s3MediaStorage(
+  config: NonNullable<AppConfig['storage']['s3']>,
+): StreamingMediaStorage {
   const endpoint = new URL(config.endpoint)
   const request = async (
-    method: 'PUT' | 'GET' | 'DELETE',
+    method: 'PUT' | 'GET' | 'HEAD' | 'DELETE',
     key: string,
     body?: Uint8Array,
     mimeType?: string,
+    file?: { filename: string; size: number; checksum: string },
   ) => {
     const objectPath = `${endpoint.pathname.replace(/\/$/, '')}/${encodeURIComponent(config.bucket)}/${key.split('/').map(encodeURIComponent).join('/')}`
     const url = new URL(objectPath, endpoint)
-    const payloadHash = createHash('sha256')
-      .update(body ?? '')
-      .digest('hex')
+    const payloadHash =
+      file?.checksum.replace(/^sha256:/, '') ??
+      createHash('sha256')
+        .update(body ?? '')
+        .digest('hex')
     const now = new Date()
     const amzDate = now.toISOString().replace(/[-:]|\.\d{3}/g, '')
     const date = amzDate.slice(0, 8)
@@ -295,6 +336,7 @@ export function s3MediaStorage(config: NonNullable<AppConfig['storage']['s3']>):
       'x-amz-date': amzDate,
     }
     if (mimeType) headers['content-type'] = mimeType
+    if (file) headers['content-length'] = String(file.size)
     const signedHeaderNames = Object.keys(headers).sort()
     const canonicalHeaders = signedHeaderNames.map((name) => `${name}:${headers[name]}\n`).join('')
     const signedHeaders = signedHeaderNames.join(';')
@@ -320,25 +362,39 @@ export function s3MediaStorage(config: NonNullable<AppConfig['storage']['s3']>):
       'aws4_request',
     )
     headers.authorization = `AWS4-HMAC-SHA256 Credential=${config.accessKeyId}/${scope}, SignedHeaders=${signedHeaders}, Signature=${createHmac('sha256', signingKey).update(stringToSign).digest('hex')}`
-    const response = await fetch(url, {
+    const stream = file ? createReadStream(file.filename) : undefined
+    const init: RequestInit & { duplex?: 'half' } = {
       method,
       headers,
-      body: body ? Buffer.from(body) : undefined,
+      body: stream
+        ? (Readable.toWeb(stream) as ReadableStream<Uint8Array>)
+        : body
+          ? Buffer.from(body)
+          : undefined,
+      ...(stream ? { duplex: 'half' as const } : {}),
+    }
+    const response = await fetch(url, init).catch((error) => {
+      stream?.destroy()
+      throw error
     })
-    if (response.status === 404 && method === 'GET') return undefined
+    if (response.status === 404 && (method === 'GET' || method === 'HEAD')) return undefined
     if (!response.ok) throw new Error(`Object storage ${method} failed with ${response.status}.`)
+    if (method === 'HEAD') return new Uint8Array(0)
     return method === 'GET' ? new Uint8Array(await response.arrayBuffer()) : undefined
   }
   return {
     provider: 's3',
     capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
     put: (key, bytes, mimeType) => request('PUT', key, bytes, mimeType).then(() => undefined),
+    putFile: (key, filename, mimeType, size, checksum) =>
+      request('PUT', key, undefined, mimeType, { filename, size, checksum }).then(() => undefined),
+    exists: (key) => request('HEAD', key).then((response) => response !== undefined),
     get: (key) => request('GET', key),
     remove: (key) => request('DELETE', key).then(() => undefined),
   }
 }
 
-export function mediaStorage(config: AppConfig): MediaStorage {
+export function mediaStorage(config: AppConfig): StreamingMediaStorage {
   return config.storage.driver === 's3' && config.storage.s3
     ? s3MediaStorage(config.storage.s3)
     : localMediaStorage(config.storage.mediaDir)

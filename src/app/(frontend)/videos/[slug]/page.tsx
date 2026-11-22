@@ -1,7 +1,10 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound, permanentRedirect } from 'next/navigation'
+import { headers } from 'next/headers'
 import { isRegisteredCollection } from '@/modules/public/registered-collections'
+import { communitySiteForHost } from '@/modules/community/site-scope'
+import { SubmissionTargetLink } from '@/modules/creator-studio/SubmissionTargetLink'
 import type { Metadata } from 'next'
 
 import { VideoPlayer } from '@/modules/media/VideoPlayer'
@@ -48,6 +51,10 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
   } as never)
   const video = found.docs[0] as unknown as Record<string, unknown> | undefined
   if (!video) notFound()
+  const siteId = await communitySiteForHost(payload, (await headers()).get('host')).catch(() => '')
+  const submissions = siteId
+    ? <SubmissionTargetLink payload={payload} siteId={siteId} target={`theater:${String(video.id)}`} />
+    : null
   // Externally hosted videos (YouTube/Vimeo/etc.) have no native asset; they
   // render through their provider embed instead of 404ing while the sitemap
   // advertises them. Only https embed URLs are honored.
@@ -85,6 +92,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
         {video.body ? (
           <article className="prose max-w-none whitespace-pre-wrap">{String(video.body)}</article>
         ) : null}
+        {submissions}
       </main>
     )
   }
@@ -148,6 +156,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
           <p>The publisher-provided transcript is available with this video.</p>
         </section>
       ) : null}
+      {submissions}
     </main>
   )
 }

@@ -57,6 +57,18 @@ describe('MED-01 durable upload sessions', () => {
       filename: '../spoof.png',
       size: png.length,
     })
+    await expect(
+      writeUploadChunk(
+        payload as never,
+        config,
+        { role: 'owner', member: 'member' },
+        session.id,
+        0,
+        0,
+        png.length,
+        png.slice(0, 1),
+      ),
+    ).rejects.toMatchObject({ status: 400 })
     await writeUploadChunk(
       payload as never,
       config,
@@ -92,6 +104,15 @@ describe('MED-01 durable upload sessions', () => {
         session.id,
       ),
     ).resolves.toMatchObject({ id: asset.id })
+    records[asset.id].site = 'other-site'
+    await expect(
+      finalizeUploadSession(
+        payload as never,
+        config,
+        { role: 'owner', member: 'member' },
+        session.id,
+      ),
+    ).rejects.toMatchObject({ status: 403 })
   })
 
   it('recovers a session left finalizing by an interrupted process', async () => {

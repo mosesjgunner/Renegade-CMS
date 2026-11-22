@@ -54,6 +54,7 @@ RUN npm install --global npm@12.2.0 && \
     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici && \
     rm -rf /opt/npm-patches
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+RUN apk add --no-cache ffmpeg poppler-utils
 RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
 # The web server uses Next's standalone output. Payload's migration and worker
 # CLIs require runtime dependencies (including tsx for the worker), but NOT
@@ -78,9 +79,8 @@ USER nextjs
 EXPOSE 3000
 CMD ["node", "standalone/server.js"]
 
-# Optional target used only by the media-heavy worker. The ordinary web and
-# publishing worker image remains free of FFmpeg and cannot transcode requests.
+# Optional target used by the media-heavy worker for text rendering.
 FROM runner AS media-heavy
 USER root
-RUN apk add --no-cache ffmpeg font-dejavu
+RUN apk add --no-cache font-dejavu
 USER nextjs

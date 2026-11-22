@@ -3,6 +3,7 @@ import { verifyCsrf } from '@/modules/identity/member-identity'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { CommunityError, resolveCommunityActor } from '@/modules/community/service'
+import { submissionTarget } from '@/modules/creator-studio/submission-targets'
 import {
   ConversationError,
   listConversationMessages,
@@ -37,7 +38,16 @@ export async function GET(request: Request) {
       conversationId,
       memberId: actor.memberId,
     })
-    return Response.json({ messages }, { headers: { 'cache-control': 'private, no-store' } })
+    const target = await submissionTarget(
+      payload,
+      { siteId, memberId: actor.memberId },
+      `room:${conversationId}`,
+      'read',
+    ).catch(() => null)
+    return Response.json(
+      { messages, ...(target ? { submissionTarget: target.key } : {}) },
+      { headers: { 'cache-control': 'private, no-store' } },
+    )
   } catch (err: unknown) {
     if (err instanceof CommunityError || err instanceof ConversationError) {
       return Response.json({ error: err.message, code: err.code }, { status: err.status })

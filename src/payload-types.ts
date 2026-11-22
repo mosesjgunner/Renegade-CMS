@@ -651,6 +651,18 @@ export interface Member {
  */
 export interface Site {
   id: string;
+  /**
+   * JSON object: enabled, selfServiceSpaces, and quotas. Creator access is denied by default.
+   */
+  creatorPolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   name: string;
   slug: string;
   description?: string | null;
@@ -908,6 +920,7 @@ export interface Space {
   id: string;
   site: string | Site;
   profile: string | Profile;
+  creatorDescription?: string | null;
   canonicalPath: string;
   capabilities?:
     | {
@@ -1995,6 +2008,30 @@ export interface MemberSiteRole {
   member: string | Member;
   role: 'member' | 'trusted' | 'contributor' | 'moderator' | 'community-manager';
   grantedByUserId?: string | null;
+  /**
+   * JSON array of explicitly granted names: media.upload, media.edit-own, media.publish-own, media.submit, portfolio.manage-own, live.host, live.join-stage, room.moderate-own, provider.connect, commerce.manage-own, space.manage-own, content.draft-own.
+   */
+  creatorCapabilities?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional JSON object with nonnegative integer limits: bytes, uploadCount, concurrentRecordings, processingMinutes, liveMinutes, audienceCap, exportJobs, retentionDays.
+   */
+  creatorQuotaOverride?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -3053,6 +3090,12 @@ export interface MediaVariant {
  * via the `definition` "media-upload-sessions".
  */
 export interface MediaUploadSession {
+  stagingClearedAt?: string | null;
+  chunkManifest?: Record<string, unknown> | null;
+  creatorKey?: string | null;
+  creatorTarget?: string | null;
+  reviewStatus?: string | null;
+  creatorDetails?: Record<string, unknown> | null;
   id: string;
   site: string | Site;
   /**
@@ -11760,6 +11803,7 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "sites_select".
  */
 export interface SitesSelect<T extends boolean = true> {
+  creatorPolicy?: T;
   name?: T;
   slug?: T;
   description?: T;
@@ -12124,6 +12168,8 @@ export interface MemberSiteRolesSelect<T extends boolean = true> {
   member?: T;
   role?: T;
   grantedByUserId?: T;
+  creatorCapabilities?: T;
+  creatorQuotaOverride?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12160,6 +12206,7 @@ export interface ProfilesSelect<T extends boolean = true> {
 export interface SpacesSelect<T extends boolean = true> {
   site?: T;
   profile?: T;
+  creatorDescription?: T;
   canonicalPath?: T;
   capabilities?:
     | T
@@ -12605,6 +12652,12 @@ export interface MediaVariantsSelect<T extends boolean = true> {
  * via the `definition` "media-upload-sessions_select".
  */
 export interface MediaUploadSessionsSelect<T extends boolean = true> {
+  stagingClearedAt?: T;
+  chunkManifest?: T;
+  creatorKey?: T;
+  creatorTarget?: T;
+  reviewStatus?: T;
+  creatorDetails?: T;
   site?: T;
   publication?: T;
   space?: T;

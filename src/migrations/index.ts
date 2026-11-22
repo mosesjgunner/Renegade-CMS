@@ -943,7 +943,25 @@ export const migrations = [
     down: rc314Repurpose.down,
     name: '20261121_200000_rc314_repurpose',
   },
+  {
+    up: cre01CreatorPolicy.up,
+    down: cre01CreatorPolicy.down,
+    name: '20261122_120000_cre01_creator_policy',
+  },
+  {
+    up: cre01SpaceDescription.up,
+    down: cre01SpaceDescription.down,
+    name: '20261122_130000_cre01_space_description',
+  },
+  {
+    up: cre02Submissions.up,
+    down: cre02Submissions.down,
+    name: '20261122_140000_cre02_submissions',
+  },
 ]
+import * as cre01CreatorPolicy from './20261122_120000_cre01_creator_policy'
+import * as cre01SpaceDescription from './20261122_130000_cre01_space_description'
+import * as cre02Submissions from './20261122_140000_cre02_submissions'
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
 import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
 import * as rc315aThreadNotificationDispatch from './20261121_120000_rc315a_thread_notification_dispatch'
