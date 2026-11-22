@@ -1,3 +1,6 @@
+import type { Album, MediaAsset } from '@/payload-types'
+import { publishedPortfolio, resolvePortfolioAsset } from '../creator-studio/portfolio-public'
+import { portfolioMediaKind } from '../creator-studio/portfolio-service'
 import type { Payload } from 'payload'
 import type { HydratedGalleryItem, PresentationDocument } from './contracts'
 import { canDiscoverPublic } from '../public/contracts'
@@ -146,21 +149,20 @@ async function resolveGalleryBlock(payload: Payload, siteId: string, block: Layo
     overrideAccess: true,
   } as never)
   const album = (found.docs as unknown as StoreDoc[])[0]
-  if (!album || album.visibility !== 'public') {
+  const page =
+    album && (await publishedPortfolio(payload, 'albums', album as unknown as Album, siteId))
+  if (!page || page.draft.visibility !== 'public') {
     block.props.galleryUnavailable = 'The selected album is not available on this site.'
     return
   }
-  const items = [...(Array.isArray(album.items) ? (album.items as StoreDoc[]) : [])].sort(
-    (a, b) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0),
-  )
+  const items = page.draft.sections
+    .flatMap((section) => section.blocks)
+    .filter((block) => block.kind === 'image')
   const galleryItems: HydratedGalleryItem[] = []
   for (const item of items.slice(0, MAX_GALLERY_ITEMS)) {
-    const mediaId =
-      typeof item.media === 'string'
-        ? item.media
-        : String((item.media as { id?: unknown })?.id ?? '')
+    const mediaId = item.media
     if (!mediaId) continue
-    const asset = (await payload
+    const rawAsset = (await payload
       .findByID({
         collection: 'media-assets',
         id: mediaId,
@@ -168,20 +170,23 @@ async function resolveGalleryBlock(payload: Payload, siteId: string, block: Layo
         overrideAccess: true,
       } as never)
       .catch(() => null)) as StoreDoc | null
-    if (!asset || docSite(asset) !== siteId) continue
+    const asset =
+      rawAsset && (await resolvePortfolioAsset(payload, page, rawAsset as unknown as MediaAsset))
+    if (!asset || portfolioMediaKind(asset) !== 'image') continue
     const variantResult = await payload.find({
       collection: 'media-variants',
-      where: { asset: { equals: mediaId } },
+      where: { asset: { equals: asset.id } },
       limit: 100,
       depth: 0,
       overrideAccess: true,
     } as never)
     galleryItems.push({
+      accessQuery: new URLSearchParams({ portfolio: `albums:${page.doc.id}` }).toString(),
       media: {
         id: mediaId,
         title: typeof asset.title === 'string' ? asset.title : null,
         altText:
-          (typeof item.altText === 'string' && item.altText) ||
+          (typeof item.alt === 'string' && item.alt) ||
           (typeof asset.altText === 'string' ? asset.altText : null),
         width: typeof asset.width === 'number' ? asset.width : null,
         height: typeof asset.height === 'number' ? asset.height : null,
@@ -198,7 +203,7 @@ async function resolveGalleryBlock(payload: Payload, siteId: string, block: Layo
       caption:
         (typeof item.caption === 'string' && item.caption) ||
         (typeof asset.caption === 'string' ? asset.caption : undefined),
-      credits: typeof item.credits === 'string' && item.credits ? item.credits : undefined,
+      credits: typeof item.credit === 'string' && item.credit ? item.credit : undefined,
     })
   }
   if (!galleryItems.length) {

@@ -1,3 +1,6 @@
+import { createHash } from 'node:crypto'
+import { createReadStream } from 'node:fs'
+import sharp from 'sharp'
 import { rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 import type { Payload, Where } from 'payload'
@@ -15,7 +18,7 @@ import {
   uploadSessionLock,
   withUploadLock,
 } from '../media/upload-staging'
-import { MediaWorkflowError } from '../media/workflow'
+import { MediaWorkflowError, persistReviewedCreatorMedia } from '../media/workflow'
 import { authorizeCreator, type CreatorCapability } from './policy'
 import { prepareSubmissionSource, scanSubmissionSource, type SourceScan } from './submission-source'
 import {
@@ -45,6 +48,7 @@ const actorWhere = (actor: SubmissionActor): Where[] => [
   { site: { equals: actor.siteId } },
   { owner: { equals: actor.memberId } },
   { creatorKey: { exists: true } },
+  { creatorTarget: { exists: true } },
 ]
 const clean = (value: unknown, max: number) =>
   typeof value === 'string'
@@ -53,6 +57,22 @@ const clean = (value: unknown, max: number) =>
         .trim()
         .slice(0, max)
     : ''
+
+async function portfolioSubmissionAsset(payload: Payload, row: MediaUploadSession) {
+  const { docs } = await payload.find({
+    collection: 'media-assets',
+    ...access,
+    limit: 1,
+    where: {
+      and: [
+        { source: { equals: `creator-submission:${row.id}` } },
+        { site: { equals: relationId(row.site) } },
+        { owner: { equals: relationId(row.owner) } },
+      ],
+    },
+  })
+  return docs[0]
+}
 
 async function authorize(payload: Payload, actor: SubmissionActor, capability: CreatorCapability) {
   try {
@@ -65,7 +85,7 @@ async function authorize(payload: Payload, actor: SubmissionActor, capability: C
 async function findSubmission(payload: Payload, siteId: string, id: string) {
   if (!uuid.test(id)) throw unavailable()
   const row = await payload.findByID({ collection, id, ...access }).catch(() => null)
-  if (!row?.creatorKey || relationId(row.site) !== siteId) throw unavailable()
+  if (!row?.creatorKey || !row.creatorTarget || relationId(row.site) !== siteId) throw unavailable()
   return row
 }
 
@@ -499,6 +519,16 @@ export async function updateSubmission(
     }
     const at = new Date().toISOString()
     const updated = await releaseTransaction(payload, async (tx) => {
+      if (input.action === 'withdraw') {
+        const asset = await portfolioSubmissionAsset(tx, row)
+        if (asset)
+          await tx.update({
+            collection: 'media-assets',
+            id: asset.id,
+            ...access,
+            data: { publicPolicy: 'private' },
+          })
+      }
       const changed = await tx.update({
         collection,
         id,
@@ -601,4 +631,87 @@ export async function submissionFile(
     throw unavailable()
   })
   return { filename, size, mimeType: source.mimeType }
+}
+
+export async function listPortfolioSubmissions(payload: Payload, actor: SubmissionActor) {
+  const { docs } = await payload.find({
+    collection,
+    ...access,
+    limit: 200,
+    sort: '-updatedAt',
+    where: {
+      and: [
+        ...actorWhere(actor),
+        { reviewStatus: { equals: 'published' } },
+        { state: { equals: 'completed' } },
+        { asset: { exists: false } },
+      ],
+    },
+  })
+  return docs
+    .filter((row) => ['image', 'audio', 'video'].includes(details(row).source?.kind ?? ''))
+    .map(({ id, title }) => ({ id, title }))
+}
+
+export async function addPortfolioSubmission(
+  payload: Payload,
+  config: AppConfig,
+  actor: SubmissionActor,
+  spaceId: string,
+  id: string,
+) {
+  await authorizeCreator(payload, { ...actor, spaceId, capability: 'portfolio.manage-own' })
+  return withUploadLock(payload, uploadSessionLock(id), async () => {
+    const row = await owned(payload, actor, id)
+    const source = details(row).source
+    if (
+      row.reviewStatus !== 'published' ||
+      row.state !== 'completed' ||
+      !source ||
+      !(source.kind === 'image' || source.kind === 'audio' || source.kind === 'video')
+    )
+      throw unavailable()
+    const { filename, size, mimeType } = await submissionFile(payload, config, actor, id, false)
+    const sourceRef = `creator-submission:${id}`
+    const previous = await portfolioSubmissionAsset(payload, row)
+    if (previous && relationId(previous.space) !== spaceId) throw unavailable()
+    let assetId = previous?.id
+    if (!assetId) {
+      const hash = createHash('sha256')
+      for await (const chunk of createReadStream(filename)) hash.update(chunk)
+      const checksum = 'sha256:' + hash.digest('hex')
+      const image = source.kind === 'image' ? await sharp(filename).metadata() : null
+      const extension =
+        mimeType === 'audio/mpeg'
+          ? 'mp3'
+          : mimeType === 'audio/mp4'
+            ? 'm4a'
+            : mimeType.split('/')[1]
+      const asset = await persistReviewedCreatorMedia(
+        payload,
+        config,
+        {
+          user: { member: actor.memberId },
+          scope: { kind: 'space', siteId: actor.siteId, spaceId },
+          title: row.title,
+          originalFilename: row.filename,
+          altText: row.altText ?? undefined,
+          caption: row.caption ?? undefined,
+        },
+        { filename, size, checksum },
+        {
+          kind: source.kind,
+          mimeType,
+          extension,
+          width: image?.width,
+          height: image?.height,
+          source: sourceRef,
+        },
+      )
+      assetId = asset.id
+    }
+    if (relationId(row.asset) !== assetId)
+      await payload.update({ collection, id, ...access, data: { asset: assetId } })
+    return { id: assetId }
+  })
 }

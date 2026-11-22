@@ -44,6 +44,7 @@ function makeStore() {
         site: 'site-a',
         visibility: 'public',
         title: 'Field work',
+        kind: 'album',
         items: [
           { media: 'media-2', displayOrder: 2 },
           { media: 'media-1', displayOrder: 1, altText: 'Override alt', credits: 'Jane' },
@@ -56,13 +57,23 @@ function makeStore() {
         id: 'media-1',
         site: 'site-a',
         title: 'Sunset',
+        kind: 'image',
+        processingState: 'ready',
         altText: 'Asset alt',
         caption: 'Asset caption',
         width: 800,
         height: 600,
         mimeType: 'image/jpeg',
       },
-      { id: 'media-2', site: 'site-a', title: 'Crew', altText: 'Second alt' },
+      {
+        id: 'media-2',
+        site: 'site-a',
+        title: 'Crew',
+        altText: 'Second alt',
+        kind: 'image',
+        mimeType: 'image/jpeg',
+        processingState: 'ready',
+      },
     ],
     'media-variants': [
       {

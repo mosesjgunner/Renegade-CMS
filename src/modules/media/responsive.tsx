@@ -23,6 +23,7 @@ export type ResponsiveImageProps = {
   className?: string
   sizes?: string
   alt?: string
+  accessQuery?: string
 }
 
 /**
@@ -36,6 +37,7 @@ export function getResponsiveImageAttrs(
     priority?: boolean
     sizes?: string
     alt?: string
+    accessQuery?: string
   },
 ) {
   const isString = typeof mediaInput === 'string'
@@ -72,7 +74,9 @@ export function getResponsiveImageAttrs(
     width = fallback.width
     height = fallback.height
   }
-  const variantUrl = (format: VariantFormat) => mediaVariantUrl(id, variantKey, format)
+  const query = options?.accessQuery
+  const variantUrl = (format: VariantFormat) =>
+    mediaVariantUrl(id, variantKey, format) + (query ? `&${query}` : '')
   const hasFormat = (format: VariantFormat) => ready.some((variant) => variant.format === format)
   const sources = (['avif', 'webp'] as const).filter(hasFormat).map((format) => ({
     type: `image/${format}`,
@@ -80,7 +84,7 @@ export function getResponsiveImageAttrs(
   }))
   const fallbackSrc = fallbackFormat
     ? variantUrl(fallbackFormat)
-    : `/media/${encodeURIComponent(id)}`
+    : `/media/${encodeURIComponent(id)}${query ? `?${query}` : ''}`
   const fallbackSrcSet = fallbackFormat ? `${fallbackSrc} ${width}w` : undefined
 
   return {
@@ -108,10 +112,11 @@ export function ResponsiveMedia({
   className = 'max-w-full h-auto',
   sizes,
   alt,
+  accessQuery,
 }: ResponsiveImageProps) {
   if (!media) return null
 
-  const attrs = getResponsiveImageAttrs(media, { variant, priority, sizes, alt })
+  const attrs = getResponsiveImageAttrs(media, { variant, priority, sizes, alt, accessQuery })
 
   return (
     <picture>

@@ -76,6 +76,7 @@ export async function assertSemanticPathAvailable(input: {
     'events',
     'timelines',
     'albums',
+    'creator-projects',
     'books',
     'products',
     'discussions',

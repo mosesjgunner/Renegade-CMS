@@ -1,17 +1,28 @@
-﻿import config from '@payload-config'
+import config from '@payload-config'
 import { getPayload } from 'payload'
 import { readBoundedUploadBody } from '@/modules/media/upload-staging'
+import { loadConfig } from '@/modules/core/config'
+import { addPortfolioSubmission } from '@/modules/creator-studio/submissions'
 import { MediaWorkflowError } from '@/modules/media/workflow'
 import { submissionActor, privateHeaders } from '@/modules/creator-studio/submission-http'
 import { exportPortfolio, importPortfolio } from '@/modules/creator-studio/portfolio-portability'
-import { listPortfolios, ownPortfolio, portfolioCollection, portfolioEditorEntry, savePortfolio } from '@/modules/creator-studio/portfolio-service'
+import {
+  listPortfolios,
+  ownPortfolio,
+  portfolioCollection,
+  portfolioEditorEntry,
+  portfolioSpace,
+  savePortfolio,
+} from '@/modules/creator-studio/portfolio-service'
 import { PortfolioError, record } from '@/modules/creator-studio/portfolio-validation'
 
 function failure(error: unknown) {
   const known = error instanceof PortfolioError || error instanceof MediaWorkflowError
   if (!known) console.error('Creator portfolio request failed', error)
-  return Response.json({ error: known ? error.message : 'Portfolio request failed. Please retry.' },
-    { status: known ? error.status : 500, headers: privateHeaders })
+  return Response.json(
+    { error: known ? error.message : 'Portfolio request failed. Please retry.' },
+    { status: known ? error.status : 500, headers: privateHeaders },
+  )
 }
 
 export async function GET(request: Request) {
@@ -24,7 +35,10 @@ export async function GET(request: Request) {
     const collection = portfolioCollection(params.get('collection'))
     if (params.has('export')) {
       return Response.json(await exportPortfolio(payload, actor, collection, id), {
-        headers: { ...privateHeaders, 'content-disposition': 'attachment; filename="renegade-portfolio.json"' },
+        headers: {
+          ...privateHeaders,
+          'content-disposition': 'attachment; filename="renegade-portfolio.json"',
+        },
       })
     }
     const doc = await ownPortfolio(payload, actor, collection, id)
@@ -40,10 +54,22 @@ export async function POST(request: Request) {
     const actor = await submissionActor(payload, request)
     const bytes = await readBoundedUploadBody(request, 2 * 1024 * 1024)
     let data: Record<string, unknown>
-    try { data = record(JSON.parse(bytes.toString('utf8'))) }
-    catch { throw new PortfolioError('Invalid portfolio request.') }
+    try {
+      data = record(JSON.parse(bytes.toString('utf8')))
+    } catch {
+      throw new PortfolioError('Invalid portfolio request.')
+    }
+    if (data.action === 'add-reviewed-media' && typeof data.id === 'string') {
+      const space = await portfolioSpace(payload, actor)
+      return Response.json(
+        await addPortfolioSubmission(payload, loadConfig(), actor, space, data.id),
+        { headers: privateHeaders },
+      )
+    }
     if (data.action === 'import')
-      return Response.json(await importPortfolio(payload, actor, data.bundle), { headers: privateHeaders })
+      return Response.json(await importPortfolio(payload, actor, data.bundle), {
+        headers: privateHeaders,
+      })
     if (!['save', 'publish', 'unpublish'].includes(String(data.action)))
       throw new PortfolioError('Select a valid portfolio action.')
     return Response.json(await savePortfolio(payload, actor, data), { headers: privateHeaders })

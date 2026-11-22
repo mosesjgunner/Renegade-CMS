@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { copyFile, mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, open, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 
@@ -198,6 +198,7 @@ type StreamingMediaStorage = MediaStorage & {
     checksum: string,
   ): Promise<void>
   exists(key: string): Promise<boolean>
+  open(key: string, start: number, end: number): Promise<ReadableStream<Uint8Array> | null>
 }
 
 /** A browser PUT capability.  Its signature binds the key, MIME type, and expiry;
@@ -302,6 +303,10 @@ export function localMediaStorage(mediaDir: string): StreamingMediaStorage {
         throw error
       }
     },
+    async open(key, start, end) {
+      const file = await open(localPath(mediaDir, key), 'r')
+      return Readable.toWeb(file.createReadStream({ start, end })) as ReadableStream<Uint8Array>
+    },
     async remove(key) {
       await rm(localPath(mediaDir, key), { force: true })
     },
@@ -319,6 +324,7 @@ export function s3MediaStorage(
     body?: Uint8Array,
     mimeType?: string,
     file?: { filename: string; size: number; checksum: string },
+    range?: string,
   ) => {
     const objectPath = `${endpoint.pathname.replace(/\/$/, '')}/${encodeURIComponent(config.bucket)}/${key.split('/').map(encodeURIComponent).join('/')}`
     const url = new URL(objectPath, endpoint)
@@ -337,6 +343,7 @@ export function s3MediaStorage(
     }
     if (mimeType) headers['content-type'] = mimeType
     if (file) headers['content-length'] = String(file.size)
+    if (range) headers.range = range
     const signedHeaderNames = Object.keys(headers).sort()
     const canonicalHeaders = signedHeaderNames.map((name) => `${name}:${headers[name]}\n`).join('')
     const signedHeaders = signedHeaderNames.join(';')
@@ -379,8 +386,7 @@ export function s3MediaStorage(
     })
     if (response.status === 404 && (method === 'GET' || method === 'HEAD')) return undefined
     if (!response.ok) throw new Error(`Object storage ${method} failed with ${response.status}.`)
-    if (method === 'HEAD') return new Uint8Array(0)
-    return method === 'GET' ? new Uint8Array(await response.arrayBuffer()) : undefined
+    return response
   }
   return {
     provider: 's3',
@@ -389,7 +395,25 @@ export function s3MediaStorage(
     putFile: (key, filename, mimeType, size, checksum) =>
       request('PUT', key, undefined, mimeType, { filename, size, checksum }).then(() => undefined),
     exists: (key) => request('HEAD', key).then((response) => response !== undefined),
-    get: (key) => request('GET', key),
+    async get(key) {
+      const response = await request('GET', key)
+      return response ? new Uint8Array(await response.arrayBuffer()) : undefined
+    },
+    async open(key, start, end) {
+      const response = await request(
+        'GET',
+        key,
+        undefined,
+        undefined,
+        undefined,
+        `bytes=${start}-${end}`,
+      )
+      if (response && response.status !== 206) {
+        await response.body?.cancel()
+        throw new Error('Object storage did not honor the media byte range.')
+      }
+      return response?.body ?? null
+    },
     remove: (key) => request('DELETE', key).then(() => undefined),
   }
 }

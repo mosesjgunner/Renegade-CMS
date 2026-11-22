@@ -7,7 +7,11 @@ export const portfolioSnapshotFields = (): Field[] => [
     name: 'portfolioDraft',
     type: 'json',
     admin: { readOnly: true, description: 'Edit in Creator Studio.' },
-    access: { create: () => false, update: () => false, read: async (args) => Boolean(await operatorSiteReadAccess({ req: args.req })) },
+    access: {
+      create: () => false,
+      update: () => false,
+      read: async (args) => Boolean(await operatorSiteReadAccess({ req: args.req })),
+    },
   },
   {
     name: 'portfolioPublished',
@@ -35,7 +39,11 @@ export const readAlbums: Access = async (args) => {
 export const CreatorProjects: CollectionConfig = {
   slug: 'creator-projects',
   labels: { singular: 'Creator Project', plural: 'Creator Projects' },
-  admin: { useAsTitle: 'title', group: 'Publishing', description: 'Projects are authored in Creator Studio.' },
+  admin: {
+    useAsTitle: 'title',
+    group: 'Publishing',
+    description: 'Projects are authored in Creator Studio.',
+  },
   lockDocuments: false,
   access: {
     read: operatorSiteReadAccess,

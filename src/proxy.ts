@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
   }
   // Resolve database-managed redirects before rendering so all four HTTP codes are exact.
   const path = request.nextUrl.pathname
-  if (path.startsWith('/preview/article/')) {
+  if (path.startsWith('/preview/article/') || path.startsWith('/studio/portfolio/preview/')) {
     const response = NextResponse.next()
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     response.headers.set('Cache-Control', 'private, no-store')

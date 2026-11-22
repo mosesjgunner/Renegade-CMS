@@ -23,6 +23,7 @@ import type { FormField } from '../audience/contracts'
  */
 export type HydratedGalleryItem = {
   media: ResponsiveMediaInput
+  accessQuery?: string
   caption?: string
   credits?: string
 }

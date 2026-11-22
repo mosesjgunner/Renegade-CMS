@@ -92,9 +92,10 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
       if (!access.allowed)
         return { title: access.siteName, robots: { index: false, follow: false } }
       const portfolio = await lookupPortfolio(payload, path, siteId, hdrs)
-      if (portfolio.found) return portfolio.page
-        ? portfolioMetadata(payload, portfolio.page, access.visibility === 'public')
-        : { robots: { index: false, follow: false } }
+      if (portfolio.found)
+        return portfolio.page
+          ? portfolioMetadata(payload, portfolio.page, access.visibility === 'public')
+          : { robots: { index: false, follow: false } }
     }
     if (siteId && /^\/(authors|tags)\//.test(path)) {
       const archive = await loadContentArchive(payload, siteId, path)
@@ -315,7 +316,11 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         />
         <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
         <ContentArchiveLinks payload={payload} contentId={editorialArticle.contentId} />
-        <SubmissionTargetLink payload={payload} siteId={siteId} target={`content:${editorialArticle.contentId}`} />
+        <SubmissionTargetLink
+          payload={payload}
+          siteId={siteId}
+          target={`content:${editorialArticle.contentId}`}
+        />
         {editorialArticle.contentType === 'article' ? (
           <section aria-label="Article discussion" className="mx-auto max-w-4xl px-6 pb-16">
             <CommentSection
@@ -399,10 +404,19 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const portfolio = await lookupPortfolio(payload, path, siteId, await requestHeaders())
   if (portfolio.found) {
     if (!portfolio.page) notFound()
-    if (portfolio.page.doc.portfolioPublished || !('kind' in portfolio.page.doc) ||
-        !portfolio.page.doc.category || portfolio.page.draft.sections.some((section) => section.blocks.length) ||
-        portfolio.page.draft.cover) {
-      return <PortfolioView payload={payload} page={portfolio.page} siteIsPublic={siteAccess.visibility === 'public'} />
+    if (
+      portfolio.page.doc.portfolioPublished ||
+      !('kind' in portfolio.page.doc) ||
+      !portfolio.page.doc.category ||
+      portfolio.page.draft.visibility !== 'public'
+    ) {
+      return (
+        <PortfolioView
+          payload={payload}
+          page={portfolio.page}
+          siteIsPublic={siteAccess.visibility === 'public'}
+        />
+      )
     }
   }
 
@@ -469,7 +483,13 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           graph={hierarchy}
           kind="collection"
           node={collectionNode}
-        />
+        >
+          {portfolio.page &&
+          (portfolio.page.draft.cover ||
+            portfolio.page.draft.sections.some((section) => section.blocks.length > 0)) ? (
+            <PortfolioView payload={payload} page={portfolio.page} embedded />
+          ) : null}
+        </HierarchyView>
       </>
     )
   }
@@ -762,7 +782,11 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           ) : null}
         </article>
         {collection === 'content' || collection === 'albums' ? (
-          <SubmissionTargetLink payload={payload} siteId={siteId} target={`${collection === 'albums' ? 'gallery' : 'content'}:${String(record.id)}`} />
+          <SubmissionTargetLink
+            payload={payload}
+            siteId={siteId}
+            target={`${collection === 'albums' ? 'gallery' : 'content'}:${String(record.id)}`}
+          />
         ) : null}
         {collection === 'content' ? (
           <CommentSection

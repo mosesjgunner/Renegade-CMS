@@ -5,47 +5,114 @@
   display: grid;
   gap: var(--presentation-spacing-relaxed, 2rem);
 }
-.header, .section, .works {
+.embedded {
   display: grid;
   gap: var(--presentation-spacing-normal, 1.5rem);
   min-inline-size: 0;
 }
-.header h1 { font-size: clamp(2rem, 7vw, 4rem); line-height: 1.08; overflow-wrap: anywhere; }
-.portfolio h2 { font-size: clamp(1.5rem, 4vw, 2.5rem); }
-.cover, .work { margin: 0; min-inline-size: 0; overflow-wrap: anywhere; }
-.cover img, .work img, .work video, .work iframe, .work audio {
+.header,
+.section,
+.works {
+  display: grid;
+  gap: var(--presentation-spacing-normal, 1.5rem);
+  min-inline-size: 0;
+}
+.header h1 {
+  font-size: clamp(2rem, 7vw, 4rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+.portfolio h2 {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+}
+.cover,
+.work {
+  margin: 0;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.cover img,
+.work img,
+.work video,
+.work iframe,
+.work audio {
   display: block;
   inline-size: 100%;
   block-size: auto;
-  border-radius: var(--presentation-radii-normal, .5rem);
+  border-radius: var(--presentation-radii-normal, 0.5rem);
 }
-.work iframe { aspect-ratio: 16 / 9; border: 0; }
-.work figcaption, .cover figcaption { margin-block: .5rem; }
-.work small + small { margin-inline-start: .5rem; }
-.copy { white-space: pre-line; overflow-wrap: anywhere; }
-.tags { display: flex; flex-wrap: wrap; gap: .75rem; }
-.tags li { background: var(--presentation-surface, transparent); padding: .2rem .55rem; border-radius: var(--presentation-radii-normal, .5rem); }
-.portfolio a { text-decoration: underline; }
+.work iframe {
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+.work figcaption,
+.cover figcaption {
+  margin-block: 0.5rem;
+}
+.work small + small {
+  margin-inline-start: 0.5rem;
+}
+.copy {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.tags li {
+  background: var(--presentation-surface, transparent);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--presentation-radii-normal, 0.5rem);
+}
+.portfolio a {
+  text-decoration: underline;
+}
 .portfolio[data-layout='music-catalog'] .work,
 .portfolio[data-layout='exhibition'] .work {
   background: var(--presentation-surface, transparent);
-  border-radius: var(--presentation-radii-normal, .5rem);
+  border-radius: var(--presentation-radii-normal, 0.5rem);
   padding: var(--presentation-spacing-normal, 1.5rem);
 }
-.portfolio[data-layout='case-study'] .section { border-block-start: 1px solid var(--presentation-muted, currentColor); padding-block-start: 1rem; }
-.portfolio[data-layout='case-study'] .copy, .portfolio[data-layout='film-reel'] .work > p { max-inline-size: 70ch; }
-.portfolio[data-layout='hero'] .cover { grid-row: 1; }
-.portfolio[data-layout='hero'] .cover img { max-block-size: 70vh; object-fit: cover; }
-.portfolio[data-layout='film-reel'] .works { gap: var(--presentation-spacing-relaxed, 2rem); }
+.portfolio[data-layout='case-study'] .section {
+  border-block-start: 1px solid var(--presentation-muted, currentColor);
+  padding-block-start: 1rem;
+}
+.portfolio[data-layout='case-study'] .copy,
+.portfolio[data-layout='film-reel'] .work > p {
+  max-inline-size: 70ch;
+}
+.portfolio[data-layout='hero'] .cover {
+  grid-row: 1;
+}
+.portfolio[data-layout='hero'] .cover img {
+  max-block-size: 70vh;
+  object-fit: cover;
+}
+.portfolio[data-layout='film-reel'] .works {
+  gap: var(--presentation-spacing-relaxed, 2rem);
+}
 
 @media (min-width: 640px) {
-  .portfolio[data-layout='grid'] .works, .portfolio[data-layout='exhibition'] .works {
+  .portfolio[data-layout='grid'] .works,
+  .portfolio[data-layout='exhibition'] .works {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .portfolio[data-layout='masonry'] .works { display: block; columns: 2; }
-  .portfolio[data-layout='masonry'] .work { break-inside: avoid; margin-block-end: 1.5rem; }
+  .portfolio[data-layout='masonry'] .works {
+    display: block;
+    columns: 2;
+  }
+  .portfolio[data-layout='masonry'] .work {
+    break-inside: avoid;
+    margin-block-end: 1.5rem;
+  }
 }
 @media (min-width: 1024px) {
-  .portfolio[data-layout='grid'] .works { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .portfolio[data-layout='masonry'] .works { columns: 3; }
+  .portfolio[data-layout='grid'] .works {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .portfolio[data-layout='masonry'] .works {
+    columns: 3;
+  }
 }

@@ -277,6 +277,17 @@ if (command === 'export') {
             `${collection}/${id}`,
           ) as Record<string, unknown>,
         )
+        if ((collection === 'albums' || collection === 'creator-projects') && data.portfolioDraft) {
+          const pointers = Object.fromEntries(
+            ['portfolioDraft', 'portfolioPublished', 'visibility']
+              .filter((field) => data[field] !== undefined)
+              .map((field) => [field, data[field]]),
+          )
+          deferredPointers.set(`${collection}/${id}`, pointers)
+          delete remappedData.portfolioDraft
+          delete remappedData.portfolioPublished
+          if (collection === 'albums') remappedData.visibility = 'private'
+        }
         if (collection === 'article-family-content') {
           const pointers: Record<string, unknown> = {}
           for (const field of ['currentRevision', 'latestPublishedRevision']) {

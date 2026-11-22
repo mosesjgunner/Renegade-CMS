@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import type { ReactNode } from 'react'
 import { archivePageNumber, paginateArchive, ArchivePagination } from './archive-pagination'
 import type { HierarchyGraph, HierarchyNode } from './hierarchy'
 import { hierarchyTrail } from './hierarchy'
@@ -30,11 +31,13 @@ export function HierarchyView({
   kind,
   node,
   page: rawPage,
+  children: gallery,
 }: {
   graph: HierarchyGraph
   page?: string | null
   kind?: 'section' | 'category' | 'collection'
   node?: HierarchyNode
+  children?: ReactNode
 }) {
   const children = !kind
     ? graph.sections
@@ -69,6 +72,7 @@ export function HierarchyView({
         }
       />
       <h1 className="text-3xl font-semibold">{node?.name ?? graph.site.name}</h1>
+      {gallery}
       <p>
         {kind === 'collection'
           ? 'Published content in this collection.'

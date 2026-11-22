@@ -144,6 +144,7 @@ export async function uploadMedia(
     bytes: Uint8Array
   },
 ) {
+  await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
   return persistMediaUpload(payload, config, input, input.bytes.byteLength)
 }
 
@@ -153,6 +154,7 @@ export async function uploadMediaFile(
   input: Omit<Parameters<typeof uploadMedia>[2], 'bytes'>,
   file: { filename: string; size: number; checksum: string },
 ) {
+  await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
   const handle = await open(file.filename, 'r')
   try {
     const prefix = Buffer.alloc(Math.min(file.size, 5 * 1024 * 1024))
@@ -169,14 +171,43 @@ export async function uploadMediaFile(
   }
 }
 
+type ReviewedSource = {
+  kind: 'image' | 'audio' | 'video'
+  mimeType: string
+  extension: string
+  width?: number
+  height?: number
+  source: string
+  private?: boolean
+  durationSeconds?: number
+}
+
+/** Copies a reviewed Creator Studio derivative into the canonical media library. */
+export function persistReviewedCreatorMedia(
+  payload: Payload,
+  config: AppConfig,
+  input: Omit<Parameters<typeof uploadMedia>[2], 'bytes'>,
+  file: { filename: string; size: number; checksum: string },
+  source: ReviewedSource,
+) {
+  return persistMediaUpload(
+    payload,
+    config,
+    { ...input, bytes: new Uint8Array() },
+    file.size,
+    file,
+    source,
+  )
+}
+
 async function persistMediaUpload(
   payload: Payload,
   config: AppConfig,
   input: Parameters<typeof uploadMedia>[2],
   size: number,
   file?: { filename: string; checksum: string },
+  reviewed?: ReviewedSource,
 ) {
-  await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
   const title = cleanText(input.title, 'Media title', 180)
   if (!title) throw new MediaWorkflowError('A media title is required.')
   const altText = cleanText(input.altText, 'Alt text', 500)
@@ -185,7 +216,7 @@ async function persistMediaUpload(
     throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
   let inspection
   try {
-    inspection = inspectMedia(input.bytes)
+    inspection = reviewed ? { ...reviewed, sha256: file!.checksum } : inspectMedia(input.bytes)
     if (file) inspection.sha256 = file.checksum
   } catch (error) {
     throw new MediaWorkflowError(
@@ -199,7 +230,7 @@ async function persistMediaUpload(
     if (inspection.mimeType === 'text/vtt') validateWebVtt(input.bytes)
   }
   const audioMetadata =
-    inspection.kind === 'audio'
+    inspection.kind === 'audio' && !reviewed
       ? inspectAudioMetadata(input.bytes, file && { sizeBytes: size, checksum: inspection.sha256 })
       : undefined
   if (
@@ -299,7 +330,7 @@ async function persistMediaUpload(
         sizeBytes: size,
         width: inspection.width,
         height: inspection.height,
-        durationSeconds: audioMetadata?.durationSeconds,
+        durationSeconds: audioMetadata?.durationSeconds ?? reviewed?.durationSeconds,
         audioMetadata: audioMetadata
           ? {
               ...audioMetadata,
@@ -311,12 +342,13 @@ async function persistMediaUpload(
         checksum: inspection.sha256,
         altText: altText || null,
         caption: caption || null,
+        ...(reviewed ? { source: reviewed.source } : {}),
         ...(input.focalPoint ? { focalPoint: input.focalPoint } : {}),
         retentionMode: 'permanent',
         retentionHold: 'none',
         removeFromDiscovery: false,
         processingState: 'ready',
-        publicPolicy: 'published-use',
+        publicPolicy: reviewed?.private ? 'private' : 'published-use',
       },
     } as never)
     if (

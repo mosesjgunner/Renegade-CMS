@@ -40,7 +40,12 @@ export function creatorAssetDirectory(config: AppConfig, sessionId: string) {
   return path.join(config.storage.mediaDir, '.creator-assets', sessionId)
 }
 
-export async function stageUploadChunk(directory: string, index: number, bytes: Uint8Array) {
+export async function stageUploadChunk(
+  directory: string,
+  index: number,
+  bytes: Uint8Array,
+  flush = false,
+) {
   const filename = path.join(directory, `${index}.part`)
   await mkdir(directory, { recursive: true, mode: 0o700 })
   const existing = await readFile(filename).catch((error: NodeJS.ErrnoException) => {
@@ -53,7 +58,7 @@ export async function stageUploadChunk(directory: string, index: number, bytes: 
       throw new MediaWorkflowError('Chunk retry bytes do not match the original chunk.', 409)
   } else {
     const temporary = filename + '.incoming'
-    await writeFile(temporary, bytes, { mode: 0o600 })
+    await writeFile(temporary, bytes, { mode: 0o600, flush })
     await rename(temporary, filename)
   }
   return hash

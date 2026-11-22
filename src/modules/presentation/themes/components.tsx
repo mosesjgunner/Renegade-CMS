@@ -259,10 +259,11 @@ starterComponents['publisher.album-and-gallery'] = {
         'publisher.album-and-gallery',
         props,
         <div className="rg-gallery" data-variant={text(props, 'galleryLayout', 'grid')}>
-          {items.map((item) => (
-            <figure key={item.media.id}>
+          {items.map((item, index) => (
+            <figure key={`${item.media.id}:${index}`}>
               <ResponsiveMedia
                 media={item.media}
+                accessQuery={item.accessQuery}
                 variant="inline"
                 className="max-w-full h-auto rounded-lg"
               />
