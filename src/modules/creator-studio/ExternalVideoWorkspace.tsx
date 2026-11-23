@@ -150,10 +150,14 @@ export function ExternalVideoWorkspace({
                         {item.title || `Video ${item.externalId}`} ({item.availability})
                       </span>
                       <button
-                        disabled={busy || !spaceId}
+                        disabled={busy}
                         onClick={() =>
                           void perform(async () => {
-                            await send({ action: 'import', externalId: item.externalId, spaceId })
+                            await send({
+                              action: 'import',
+                              externalId: item.externalId,
+                              spaceId: spaceId || undefined,
+                            })
                             await load()
                             setMessage('Source linked to a video draft.')
                           })
@@ -181,7 +185,7 @@ export function ExternalVideoWorkspace({
           </section>
           <section className="space-y-3">
             <h2 className="text-xl font-semibold">Add an external video</h2>
-            {spaceId && workspace.canManage ? (
+            {workspace.canManage ? (
               <form
                 className="grid max-w-xl gap-2"
                 onSubmit={(event) => {
@@ -189,7 +193,7 @@ export function ExternalVideoWorkspace({
                   const form = event.currentTarget
                   const fields = Object.fromEntries(new FormData(form))
                   void perform(async () => {
-                    await send({ action: 'manual', spaceId, ...fields })
+                    await send({ action: 'manual', spaceId: spaceId || undefined, ...fields })
                     form.reset()
                     await load()
                     setMessage('Source linked to a video draft.')
@@ -205,17 +209,13 @@ export function ExternalVideoWorkspace({
                   </select>
                 </label>
                 <label>
-                  Renegade title <input name="title" required maxLength={200} />
+                  Title <input name="title" required maxLength={200} />
                 </label>
                 <label>
                   Video URL <input name="url" type="url" required maxLength={1500} />
                 </label>
                 <button disabled={busy}>Add to a draft</button>
               </form>
-            ) : workspace.canManage ? (
-              <p>
-                Create your Space in <Link href="/studio">Creator Studio</Link> to import a draft.
-              </p>
             ) : (
               <p>External provider access is required.</p>
             )}

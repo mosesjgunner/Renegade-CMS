@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload documents are runtime-shaped at this read boundary. */
+import { CreatorCatalogLinks } from '@/modules/creator-catalog/CreatorCatalogLinks'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
@@ -408,6 +409,13 @@ export default async function PodcastEpisodePage({
           )}
         </section>
       )}
+      {!allowedInPreview &&
+        (await CreatorCatalogLinks({
+          payload,
+          siteId: value(episode.site),
+          kind: 'podcast-episodes',
+          id: String(episode.id),
+        }))}
     </main>
   )
 }

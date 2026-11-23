@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
 import type { MediaAsset, MediaEditProject } from '@/payload-types'
+import { releaseTransaction } from '../releases/transaction'
 import { recordMediaUsage } from '../media/usage'
 import { MediaWorkflowError } from '../media/workflow'
 import { withUploadLock } from '../media/upload-staging'
@@ -228,7 +229,11 @@ export async function editUsage(
   })
 }
 
-export async function createEditProject(payload: Payload, actor: SubmissionActor) {
+export async function createEditProject(
+  payload: Payload,
+  actor: SubmissionActor,
+  recipe: unknown = editStart(),
+) {
   return withUploadLock(payload, `creator-edits:${actor.siteId}:${actor.memberId}`, async () => {
     const { totalDocs } = await payload.count({
       collection: 'media-edit-projects',
@@ -236,9 +241,9 @@ export async function createEditProject(payload: Payload, actor: SubmissionActor
       where: { and: [{ site: { equals: actor.siteId } }, { owner: { equals: actor.memberId } }] },
     })
     if (totalDocs >= 100) throw editConflict('This account has reached its 100 project limit.')
-    const first = await snapshot(payload, actor, editStart())
-    return editProjectView(
-      await payload.create({
+    const first = await snapshot(payload, actor, recipe)
+    return releaseTransaction(payload, async (tx) => {
+      const project = await tx.create({
         collection: 'media-edit-projects',
         ...editAccessOptions,
         data: {
@@ -248,8 +253,11 @@ export async function createEditProject(payload: Payload, actor: SubmissionActor
           revision: 1,
           history: { cursor: 0, versions: [first] },
         },
-      }),
-    )
+      })
+      for (const dependency of first.dependencies)
+        await editUsage(tx, actor, project.id, dependency.id, 'source')
+      return editProjectView(project)
+    })
   })
 }
 

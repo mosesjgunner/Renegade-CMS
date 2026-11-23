@@ -5,6 +5,11 @@ export const metadata = {
   robots: { index: false, follow: false },
 }
 
-export default function PortfolioStudioPage() {
-  return <PortfolioWorkspace />
+export default async function PortfolioStudioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ template?: string }>
+}) {
+  const { template } = await searchParams
+  return <PortfolioWorkspace key={template ?? ''} template={template} />
 }

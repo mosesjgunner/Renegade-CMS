@@ -17,6 +17,7 @@ import {
   type EditRecipe,
   type ExportProfile,
 } from './media-edit-recipe'
+import { ProjectExportFiles } from './ProjectExportFiles'
 import type { EditProjectView, EditSource } from './media-edit-projects'
 import {
   parseSrt,
@@ -699,6 +700,37 @@ export function MediaEditWorkspace({
         >
           New project
         </button>
+        <label className={label}>
+          Import project
+          <input
+            className={field}
+            type="file"
+            accept=".json,application/json"
+            disabled={busy || dirty}
+            onChange={(event) => {
+              const file = event.currentTarget.files?.[0]
+              event.currentTarget.value = ''
+              if (!file) return
+              void perform(async () => {
+                if (file.size > 246 * 1024) throw new Error('The project file is too large.')
+                const bundle = JSON.parse(await file.text())
+                const restored = await captureRequest<EditProjectView>(endpoint, 'POST', {
+                  action: 'import',
+                  bundle,
+                })
+                await open(restored.id, restored)
+                await refresh()
+              })
+            }}
+          />
+        </label>
+        {project && !dirty && (
+          <ProjectExportFiles
+            key={project.id + ':' + project.revision}
+            endpoint={endpoint}
+            project={project.id}
+          />
+        )}
         {project && (
           <button
             type="button"

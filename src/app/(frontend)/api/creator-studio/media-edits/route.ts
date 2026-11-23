@@ -1,3 +1,8 @@
+import {
+  exportEditBundle,
+  importEditBundle,
+  portableAsset,
+} from '@/modules/creator-studio/edit-portability'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
@@ -43,7 +48,11 @@ export async function GET(request: Request) {
     const asset = params.get('asset')
     if (asset && params.has('transcript')) return json(await captionSource(payload, actor, asset))
     if (asset) {
-      const { dependency, key } = await ownedEditSource(payload, actor, asset)
+      const { dependency, key } = await (params.has('portable') ? portableAsset : ownedEditSource)(
+        payload,
+        actor,
+        asset,
+      )
       const { size, mimeType } = dependency
       const range = parseByteRange(request.headers.get('range'), size)
       const headers = new Headers({
@@ -61,7 +70,15 @@ export async function GET(request: Request) {
       if (range) headers.set('content-range', `bytes ${from}-${to}/${size}`)
       if (params.has('download')) {
         const extension =
-          mimeType === 'video/mp4' ? 'mp4' : mimeType === 'image/jpeg' ? 'jpg' : 'bin'
+          mimeType === 'image/jpeg'
+            ? 'jpg'
+            : mimeType === 'audio/mpeg'
+              ? 'mp3'
+              : mimeType === 'audio/mp4'
+                ? 'm4a'
+                : mimeType === 'audio/x-wav'
+                  ? 'wav'
+                  : mimeType.split('/')[1] || 'bin'
         headers.set(
           'content-disposition',
           `attachment; filename="creator-edit-${asset}.${extension}"`,
@@ -73,6 +90,13 @@ export async function GET(request: Request) {
       if (!stream && request.method !== 'HEAD') throw editNotFound()
       return new Response(stream, { status: range ? 206 : 200, headers })
     }
+    if (id && params.has('bundle'))
+      return Response.json(await exportEditBundle(payload, actor, id), {
+        headers: {
+          ...privateHeaders,
+          'content-disposition': 'attachment; filename="studio-project.json"',
+        },
+      })
     if (id && params.has('exports')) return json(await listEditExports(payload, actor, id))
     if (id) return json(editProjectView(await ownEditProject(payload, actor, id)))
     const [projects, sources] = await Promise.all([
@@ -107,6 +131,8 @@ export async function POST(request: Request) {
     }
     const transcript = params.get('transcript')
     if (transcript) return json(await captionAction(payload, actor, transcript, input))
+    if (input.action === 'import')
+      return json(await importEditBundle(payload, actor, input.bundle), 201)
     if (input.action === 'create') return json(await createEditProject(payload, actor), 201)
     if (!id) throw editNotFound()
     if (input.action === 'export')

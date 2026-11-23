@@ -14,6 +14,7 @@ import {
   type PortfolioCollection,
   type PortfolioKind,
 } from './portfolio-contract'
+import { portfolioFromTemplate } from './studio-templates'
 import styles from './PortfolioWorkspace.module.css'
 
 type Entry = {
@@ -259,12 +260,16 @@ function BlockEditor({
   )
 }
 
-export function PortfolioWorkspace() {
+export function PortfolioWorkspace({ template }: { template?: string } = {}) {
   const [library, setLibrary] = useState<Library>()
   const [entry, setEntry] = useState<Entry>()
-  const [collection, setCollection] = useState<PortfolioCollection>('albums')
+  const [collection, setCollection] = useState<PortfolioCollection>(
+    template ? 'creator-projects' : 'albums',
+  )
   const [kind, setKind] = useState<PortfolioKind>('portfolio')
-  const [draft, setDraft] = useState<Portfolio>(emptyPortfolio)
+  const [draft, setDraft] = useState<Portfolio>(() =>
+    template ? portfolioFromTemplate(template) : emptyPortfolio(),
+  )
   const [message, setMessage] = useState('Loading portfolios…')
   const [busy, setBusy] = useState(false)
   const drag = useRef<Target | null>(null)
@@ -368,7 +373,7 @@ export function PortfolioWorkspace() {
 
   return (
     <main className={styles.workspace}>
-      <h1 className="font-display text-4xl">Portfolios and projects</h1>
+      <h1 className="font-display text-4xl">My Portfolio</h1>
       <p>
         <Link href="/studio">Creator Studio</Link> ·{' '}
         <Link href="/studio/submissions">Upload media for review</Link>
@@ -483,41 +488,46 @@ export function PortfolioWorkspace() {
                     rows={3}
                   />
                 </label>
-                <label>
-                  Presentation
-                  <select
-                    value={draft.layout}
-                    onChange={(event) =>
-                      change('layout', event.target.value as Portfolio['layout'])
-                    }
-                  >
-                    {portfolioLayouts.map((layout) => (
-                      <option key={layout} value={layout}>
-                        {portfolioLabels[layout]}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Audience
-                  <select
-                    value={draft.visibility}
-                    onChange={(event) =>
-                      change('visibility', event.target.value as Portfolio['visibility'])
-                    }
-                  >
-                    {portfolioVisibilities.map((visibility) => (
-                      <option key={visibility}>{visibility}</option>
-                    ))}
-                  </select>
-                </label>
-                <ChoiceSelect
-                  label="Cover or featured artwork"
-                  value={draft.cover}
-                  choices={artwork}
-                  onChange={(id) => change('cover', id)}
-                />
               </div>
+              <details>
+                <summary>Layout, audience and cover</summary>
+                <div className={styles.fields}>
+                  <label>
+                    Presentation
+                    <select
+                      value={draft.layout}
+                      onChange={(event) =>
+                        change('layout', event.target.value as Portfolio['layout'])
+                      }
+                    >
+                      {portfolioLayouts.map((layout) => (
+                        <option key={layout} value={layout}>
+                          {portfolioLabels[layout]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label>
+                    Audience
+                    <select
+                      value={draft.visibility}
+                      onChange={(event) =>
+                        change('visibility', event.target.value as Portfolio['visibility'])
+                      }
+                    >
+                      {portfolioVisibilities.map((visibility) => (
+                        <option key={visibility}>{visibility}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <ChoiceSelect
+                    label="Cover or featured artwork"
+                    value={draft.cover}
+                    choices={artwork}
+                    onChange={(id) => change('cover', id)}
+                  />
+                </div>
+              </details>
               <details>
                 <summary>Credits, dates, tags and source rights</summary>
                 <div className={styles.fields}>

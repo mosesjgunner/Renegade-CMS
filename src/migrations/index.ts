@@ -1004,6 +1004,11 @@ export const migrations = [
     down: rc319AutomationResumeTask.down,
     name: '20261122_160000_rc319_automation_resume_task',
   },
+  {
+    up: cre13ReleaseCatalog.up,
+    down: cre13ReleaseCatalog.down,
+    name: '20261123_110000_cre13_release_catalog',
+  },
 ]
 import * as cre05MediaEdits from './20261122_160000_cre05_media_edits'
 import * as cre03Portfolios from './20261122_150000_cre03_portfolios'
@@ -1025,3 +1030,4 @@ import * as cre10Destinations from './20261122_200000_cre10_destinations'
 import * as cre11LiveEvents from './20261123_090000_cre11_live_events'
 import * as cre12CaptionWorkers from './20261123_100000_cre12_caption_workers'
 import * as rc319AutomationResumeTask from './20261122_160000_rc319_automation_resume_task'
+import * as cre13ReleaseCatalog from './20261123_110000_cre13_release_catalog'

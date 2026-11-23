@@ -1,3 +1,4 @@
+import { StudioNavigation } from '@/modules/creator-studio/StudioNavigation'
 import { CreatorWorkspace } from '@/modules/creator-studio/CreatorWorkspace'
 
 export default async function MemberStudioPage({
@@ -6,5 +7,10 @@ export default async function MemberStudioPage({
   params: Promise<{ handle: string }>
 }) {
   const { handle } = await params
-  return <CreatorWorkspace handle={handle} />
+  return (
+    <>
+      <StudioNavigation />
+      <CreatorWorkspace handle={handle} />
+    </>
+  )
 }

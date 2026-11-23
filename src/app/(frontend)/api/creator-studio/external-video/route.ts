@@ -1,3 +1,4 @@
+import { createCreatorSpace } from '@/modules/creator-studio/workspace'
 import { downloadVideoExport } from '@/modules/creator-studio/video-export'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -92,9 +93,18 @@ export async function POST(request: Request) {
       await detachVideo(payload, actor, id)
       return json({ detached: true })
     }
-    if (typeof spaceId !== 'string' || !uuid.test(spaceId)) throw invalid()
+    if (spaceId !== undefined && (typeof spaceId !== 'string' || !uuid.test(spaceId)))
+      throw invalid()
+    const ownedSpace = async () => {
+      if (typeof spaceId === 'string') return spaceId
+      await authorizeCreator(payload, { ...actor, capability: 'provider.connect' })
+      await authorizeCreator(payload, { ...actor, capability: 'content.draft-own' })
+      return createCreatorSpace(payload, actor.siteId, actor.memberId)
+    }
     if (action === 'import' && typeof externalId === 'string' && youtubeVideoId.test(externalId))
-      return json(await importYouTube(payload, actor, { spaceId, externalId, title }))
+      return json(
+        await importYouTube(payload, actor, { spaceId: await ownedSpace(), externalId, title }),
+      )
     if (
       action === 'manual' &&
       isManualProvider(input.provider) &&
@@ -103,7 +113,7 @@ export async function POST(request: Request) {
     )
       return json(
         await addManualVideo(payload, actor, {
-          spaceId,
+          spaceId: await ownedSpace(),
           title,
           provider: input.provider,
           url: input.url,

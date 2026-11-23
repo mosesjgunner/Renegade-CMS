@@ -51,7 +51,15 @@ export async function exportPortfolio(
     version: 1,
     collection,
     kind: 'kind' in doc ? doc.kind : 'project',
-    draft,
+    draft: {
+      ...draft,
+      sections: draft.sections.map((section) => ({
+        ...section,
+        blocks: section.blocks.map((block) =>
+          block.kind === 'embed' ? { ...block, url: '' } : block,
+        ),
+      })),
+    },
     media: media.map(({ id, title, checksum }) => ({
       id,
       title,

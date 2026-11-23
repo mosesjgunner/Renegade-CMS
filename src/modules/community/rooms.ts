@@ -270,6 +270,17 @@ async function assertAttendeesInAudience(
   }
 }
 
+async function isCreatorTheaterHost(query: Query, siteId: string, memberId: string) {
+  const { rows } = await query(
+    `SELECT 1 FROM member_site_roles r JOIN sites s ON s.id=r.site_id
+       WHERE r.site_id=$1 AND r.member_id=$2 AND s.lifecycle='active'
+       AND s.creator_policy->'enabled'='true'::jsonb
+       AND jsonb_typeof(r.creator_capabilities)='array' AND r.creator_capabilities ? 'live.host'`,
+    [siteId, memberId],
+  )
+  return rows.length > 0
+}
+
 export async function createRoom(
   payload: Payload,
   input: {
@@ -285,6 +296,7 @@ export async function createRoom(
     accessPolicy?: RoomAccessPolicy
     contentId?: string
     discussionId?: string
+    creatorTheater?: true
     participantLimit?: number
     startsAt?: string
     endsAt?: string
@@ -382,7 +394,18 @@ export async function createRoom(
           403,
           'GROUP_ADMIN_REQUIRED',
         )
-    } else if (!(await isSiteStaff(query, input.siteId, input.creatorMemberId))) {
+    } else if (
+      !(await isSiteStaff(query, input.siteId, input.creatorMemberId)) &&
+      !(
+        input.creatorTheater &&
+        mode === 'theater' &&
+        ['public', 'members'].includes(accessPolicy) &&
+        !input.eventId &&
+        !input.contentId &&
+        !input.discussionId &&
+        (await isCreatorTheaterHost(query, input.siteId, input.creatorMemberId))
+      )
+    ) {
       throw new CommunityError(
         'Site staff permission is required to open a site room.',
         403,
@@ -523,7 +546,15 @@ export async function canManageRoom(
       (moderate && authority.role === 'moderator')
     )
   }
-  return false
+  return (
+    binding.mode === 'theater' &&
+    binding.createdByMemberId === actorMemberId &&
+    !binding.eventId &&
+    !binding.contentId &&
+    !binding.discussionId &&
+    ['members', 'public'].includes(binding.accessPolicy) &&
+    isCreatorTheaterHost(query, binding.siteId, actorMemberId)
+  )
 }
 
 async function requireRoomManager(query: Query, binding: RoomBinding, actorMemberId: string) {

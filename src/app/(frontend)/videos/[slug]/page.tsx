@@ -1,3 +1,4 @@
+import { CreatorCatalogLinks } from '@/modules/creator-catalog/CreatorCatalogLinks'
 import { ExternalVideoPlayer } from '@/modules/creator-studio/ExternalVideoPlayer'
 import {
   isManualProvider,
@@ -112,6 +113,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
           <article className="prose max-w-none whitespace-pre-wrap">{String(video.body)}</article>
         ) : null}
         {submissions}
+        {await CreatorCatalogLinks({ payload, siteId, kind: 'videos', id: String(video.id) })}
       </main>
     )
   }
@@ -176,6 +178,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
         </section>
       ) : null}
       {submissions}
+      {await CreatorCatalogLinks({ payload, siteId, kind: 'videos', id: String(video.id) })}
     </main>
   )
 }

@@ -146,9 +146,13 @@ export async function prepareSubmissionSource(filename: string, size: number, cl
     let sourceMime: string = sniffed.mimeType
     let mimeType: string = sourceMime
     let kind: string = sniffed.kind
+    let durationSeconds: number | undefined
     if (kind === 'image') {
       if ((sniffed.width ?? 1) * (sniffed.height ?? 1) > pixelLimit) throw unsupported()
-      const image = sharp(filename, { limitInputPixels: pixelLimit, failOn: 'warning' })
+      const image = sharp(await readFile(filename), {
+        limitInputPixels: pixelLimit,
+        failOn: 'warning',
+      })
       const metadata = await image.metadata()
       if ((metadata.pages ?? 1) > 1 || metadata.width * metadata.height > pixelLimit)
         throw unsupported()
@@ -222,6 +226,7 @@ export async function prepareSubmissionSource(filename: string, size: number, cl
             )))
       )
         throw unsupported()
+      durationSeconds = duration
       if (format === 'mov' && !video) sourceMime = 'audio/mp4'
       if (format === 'matroska' && !video) sourceMime = 'audio/webm'
       kind = video ? 'video' : 'audio'
@@ -297,7 +302,7 @@ export async function prepareSubmissionSource(filename: string, size: number, cl
       !(claimedType === 'text/plain' && sourceMime === 'text/vtt')
     )
       throw unsupported()
-    return { kind, sourceMime, mimeType }
+    return { kind, sourceMime, mimeType, durationSeconds }
   } catch (error) {
     await rm(derivative, { force: true })
     const code = (error as { code?: string | number }).code

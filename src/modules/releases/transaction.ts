@@ -1,8 +1,11 @@
-import { createLocalReq, type Payload } from 'payload'
+import { createLocalReq, type Payload, type PayloadRequest } from 'payload'
 import { transactionPayload } from '../core/transaction-payload'
 
 /** Atomically persist release scheduling and its worker job, or email rows and their jobs. */
-export async function releaseTransaction<T>(payload: Payload, action: (tx: Payload) => Promise<T>) {
+export async function releaseTransaction<T>(
+  payload: Payload,
+  action: (tx: Payload, req?: PayloadRequest) => Promise<T>,
+) {
   // Unit doubles have no database. Actual adapters must provide transactions.
   if (!payload.db) return action(payload)
   const transactionID = await payload.db.beginTransaction()
@@ -10,7 +13,7 @@ export async function releaseTransaction<T>(payload: Payload, action: (tx: Paylo
   const req = await createLocalReq({}, payload)
   req.transactionID = transactionID
   try {
-    const result = await action(transactionPayload(payload, req))
+    const result = await action(transactionPayload(payload, req), req)
     await payload.db.commitTransaction(transactionID)
     return result
   } catch (error) {

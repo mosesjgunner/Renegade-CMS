@@ -395,7 +395,7 @@ export async function detachVideo(payload: Payload, actor: SubmissionActor, id: 
   })
 }
 
-export async function listExternalVideos(payload: Payload, actor: SubmissionActor) {
+export async function listExternalVideos(payload: Payload, actor: SubmissionActor, limit = 100) {
   const claim = await claimFor(payload, actor)
   const canManage = await requireProvider(payload, actor).then(
     () => true,
@@ -410,7 +410,7 @@ export async function listExternalVideos(payload: Payload, actor: SubmissionActo
   const result = await payload.find({
     collection: 'external-video-sources',
     ...access,
-    limit: 100,
+    limit,
     sort: '-updatedAt',
     where: { and: ownWhere(actor) },
   })

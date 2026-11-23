@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { StudioOverview } from './StudioOverview'
+import type { studioOverview } from './studio-overview'
 
 type Workspace = {
+  overview: Awaited<ReturnType<typeof studioOverview>>
   handle: string
   space: { id: string; description: string } | null
   drafts: Array<{ id: string; title: string }>
@@ -25,9 +28,8 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
   const [description, setDescription] = useState('')
   const [busy, setBusy] = useState(false)
   const load = useCallback(async () => {
-    const me = await fetch('/api/member-auth/me', { cache: 'no-store' })
-    if (!me.ok) throw new Error('Please sign in to open your studio.')
     const response = await fetch('/api/creator-studio', { cache: 'no-store' })
+    if (response.status === 401) throw new Error('Please sign in to open your studio.')
     if (!response.ok)
       throw new Error('Studio access is not available for this account on this site.')
     const data: Workspace = await response.json()
@@ -119,49 +121,51 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
   }
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
-      <h1 className="text-3xl font-bold">Creator Studio</h1>
-      {workspace && (
-        <p>
-          <Link href="/studio/record">Record audio, camera or screen</Link>
-        </p>
-      )}
-      {workspace && (
-        <p>
-          <Link href="/studio/media-edit">Edit media</Link>
-        </p>
-      )}
-      <p>
-        <Link href="/studio/portfolio">Portfolios and projects</Link>
-      </p>
-      <p>
-        <Link href="/studio/external-video">External videos and distribution</Link>
-      </p>
-      <Link href="/studio/submissions">Community submissions</Link>
+      <h1 className="text-3xl font-bold">My Studio</h1>
       {message && <p role="status">{message}</p>}
+      {workspace && (
+        <>
+          <StudioOverview overview={workspace.overview} />
+          <div className="flex flex-wrap gap-4">
+            <Link className="underline" href="/studio/catalog-release">
+              Catalog releases
+            </Link>
+            <Link className="underline" href="/studio/media-edit">
+              Edit and export projects
+            </Link>
+            <Link className="underline" href="/studio/portability">
+              Export my Studio data
+            </Link>
+          </div>
+        </>
+      )}
       {workspace && !workspace.space && (
         <section>
-          <p>Create your Space to start a draft.</p>
+          <p>Start a writing draft by opening your personal space.</p>
           <button disabled={busy} onClick={createSpace}>
-            Create Space
+            Open my writing space
           </button>
         </section>
       )}
       {workspace?.space && (
         <>
-          <form onSubmit={saveSpace} className="space-y-2">
-            <label className="block">
-              About my Space
-              <textarea
-                maxLength={2000}
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                className="block w-full border p-2"
-              />
-            </label>
-            <button disabled={busy} type="submit">
-              Save Space
-            </button>
-          </form>
+          <details>
+            <summary>About my space</summary>
+            <form onSubmit={saveSpace} className="space-y-2">
+              <label className="block">
+                About my Space
+                <textarea
+                  maxLength={2000}
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  className="block w-full border p-2"
+                />
+              </label>
+              <button disabled={busy} type="submit">
+                Save description
+              </button>
+            </form>
+          </details>
           <section>
             <h2 className="text-xl font-semibold">My drafts</h2>
             <button

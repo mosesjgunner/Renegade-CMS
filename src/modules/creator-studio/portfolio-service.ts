@@ -1,3 +1,4 @@
+import { createCreatorSpace } from './workspace'
 import { randomUUID } from 'node:crypto'
 import type { Payload, Where } from 'payload'
 import type { Album, CreatorProject, MediaAsset } from '@/payload-types'
@@ -43,7 +44,7 @@ async function authorize(
   }
 }
 
-export async function portfolioSpace(payload: Payload, actor: PortfolioActor) {
+async function existingPortfolioSpace(payload: Payload, actor: PortfolioActor) {
   await authorize(payload, actor)
   const {
     docs: [profile],
@@ -62,9 +63,19 @@ export async function portfolioSpace(payload: Payload, actor: PortfolioActor) {
     limit: 1,
     where: { and: [{ site: { equals: actor.siteId } }, { profile: { equals: profile.id } }] },
   })
-  if (!space) throw new PortfolioError('Create your Space in Creator Studio first.', 403)
+  if (!space) return null
   await authorize(payload, actor, space.id)
   return space.id
+}
+
+export async function portfolioSpace(payload: Payload, actor: PortfolioActor) {
+  const existing = await existingPortfolioSpace(payload, actor)
+  if (existing) return existing
+  const id = await createCreatorSpace(payload, actor.siteId, actor.memberId).catch(() => {
+    throw new PortfolioError('Your site does not allow you to create a portfolio space.', 403)
+  })
+  await authorize(payload, actor, id)
+  return id
 }
 
 export async function findPortfolio(payload: Payload, collection: PortfolioCollection, id: string) {
@@ -91,7 +102,7 @@ export async function ownPortfolio(
 }
 
 export async function listPortfolios(payload: Payload, actor: PortfolioActor) {
-  const space = await portfolioSpace(payload, actor)
+  const space = await existingPortfolioSpace(payload, actor)
   const where: Where = {
     and: [
       { site: { equals: actor.siteId } },
@@ -101,20 +112,24 @@ export async function listPortfolios(payload: Payload, actor: PortfolioActor) {
     ],
   }
   const [albums, projects, media, content, products, submissions] = await Promise.all([
-    payload.find({
-      collection: 'albums',
-      ...portfolioAccess,
-      limit: 100,
-      where,
-      sort: '-updatedAt',
-    }),
-    payload.find({
-      collection: 'creator-projects',
-      ...portfolioAccess,
-      limit: 100,
-      where,
-      sort: '-updatedAt',
-    }),
+    space
+      ? payload.find({
+          collection: 'albums',
+          ...portfolioAccess,
+          limit: 100,
+          where,
+          sort: '-updatedAt',
+        })
+      : null,
+    space
+      ? payload.find({
+          collection: 'creator-projects',
+          ...portfolioAccess,
+          limit: 100,
+          where,
+          sort: '-updatedAt',
+        })
+      : null,
     payload.find({
       collection: 'media-assets',
       ...portfolioAccess,
@@ -147,8 +162,8 @@ export async function listPortfolios(payload: Payload, actor: PortfolioActor) {
     listPortfolioSubmissions(payload, actor),
   ])
   const entries = [
-    ...albums.docs.map((doc) => portfolioListEntry(doc, 'albums')),
-    ...projects.docs.map((doc) => portfolioListEntry(doc, 'creator-projects')),
+    ...(albums?.docs ?? []).map((doc) => portfolioListEntry(doc, 'albums')),
+    ...(projects?.docs ?? []).map((doc) => portfolioListEntry(doc, 'creator-projects')),
   ].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
   return {
     entries,

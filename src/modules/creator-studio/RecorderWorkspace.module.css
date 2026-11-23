@@ -1,0 +1,23 @@
+﻿.recorder select {
+  max-width: 100%;
+  min-height: 2.75rem;
+}
+
+.recorder button {
+  min-height: 2.75rem;
+}
+
+.recorder :is(button, a, select, input):focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recorder *,
+  .recorder *::before,
+  .recorder *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

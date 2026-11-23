@@ -1,3 +1,4 @@
+import { CreatorCatalogLinks } from '@/modules/creator-catalog/CreatorCatalogLinks'
 import type { Payload } from 'payload'
 import type { Metadata } from 'next'
 import type { MediaAsset } from '@/payload-types'
@@ -316,6 +317,13 @@ export async function PortfolioView({
           </ul>
         )}
       </header>
+      {!page.preview &&
+        (await CreatorCatalogLinks({
+          payload,
+          siteId: relationId(doc.site),
+          kind: page.collection,
+          id: doc.id,
+        }))}
       {cover && (
         <figure className={styles.cover} data-component="publisher.hero">
           <PortfolioImage page={page} id={draft.cover} art={cover} priority />

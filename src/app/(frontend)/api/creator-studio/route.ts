@@ -1,3 +1,4 @@
+import { studioOverview } from '@/modules/creator-studio/studio-overview'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity/member-identity'
@@ -27,7 +28,10 @@ export async function GET(request: Request) {
     const draftId = new URL(request.url).searchParams.get('draft')
     const data = draftId
       ? await readCreatorDraft(actor.payload, { ...actor, draftId })
-      : await creatorWorkspace(actor.payload, actor.siteId, actor.memberId)
+      : {
+          ...(await creatorWorkspace(actor.payload, actor.siteId, actor.memberId)),
+          overview: await studioOverview(actor.payload, actor),
+        }
     return Response.json(data, { headers: noStore })
   } catch {
     return Response.json({ error: 'Studio unavailable.' }, { status: 403, headers: noStore })

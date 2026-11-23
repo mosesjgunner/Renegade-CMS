@@ -15,6 +15,8 @@ import {
 } from './capture-contract'
 import { deleteLocalTake, listLocalTakes, openCaptureJournal } from './capture-local'
 import { captureEndpoint, captureRequest, captureURL, RecordingJournal } from './capture-sync'
+import styles from './RecorderWorkspace.module.css'
+import Link from 'next/link'
 import { prepareTake, type ActiveTake } from './capture-take'
 
 const modes = [
@@ -46,6 +48,11 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
   const [phase, setPhase] = useState<Phase>('setup')
   const [seconds, setSeconds] = useState(0)
   const [message, setMessage] = useState('')
+  const [permissionError, setPermissionError] = useState('')
+  const permissionNotice = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    if (permissionError) permissionNotice.current?.focus()
+  }, [permissionError])
   const [notice, setNotice] = useState('')
   const [level, setLevel] = useState(0)
   const [sources, setSources] = useState<CaptureSources | null>(null)
@@ -173,6 +180,7 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
     take.current = null
     setPhase('setup')
     setMessage('')
+    setPermissionError('')
     setFiles([])
     setReviewed(false)
     setConsent(false)
@@ -185,6 +193,7 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
     const generation = selection.current
     setPhase('opening')
     setMessage('')
+    setPermissionError('')
     try {
       const opened = await acquireCapture(mode, mic, micId, cameraId, systemAudio)
       if (!mounted.current || generation !== selection.current) return opened.close()
@@ -222,7 +231,7 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
     } catch (error) {
       if (generation !== selection.current) return
       setPhase('setup')
-      setMessage(deviceError(error))
+      setPermissionError(deviceError(error))
     }
   }
 
@@ -263,7 +272,7 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
     } catch (error) {
       if (!mounted.current) return
       setPhase(sourceRef.current ? 'preview' : 'setup')
-      setMessage(deviceError(error))
+      setPermissionError(deviceError(error))
     }
   }
 
@@ -387,10 +396,10 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
   const showSetup = phase !== 'review'
 
   return (
-    <div className="space-y-5">
+    <div className={`space-y-5 ${styles.recorder}`}>
       {showSetup && (
-        <section className="surface-card space-y-4 p-5" aria-label="Recorder">
-          <div className="flex flex-wrap gap-4">
+        <section className="surface-card space-y-4 p-3 sm:p-5" aria-label="Recorder">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <label className="grid gap-1">
               Recording mode
               <select
@@ -755,7 +764,17 @@ export function RecorderWorkspace({ scope }: { scope: string }) {
           </button>
         </p>
       )}
+      {permissionError && (
+        <p ref={permissionNotice} role="alert" tabIndex={-1}>
+          {permissionError}
+        </p>
+      )}
       {message && <p role="status">{message}</p>}
+      {currentRemote?.state === 'completed' && (
+        <Link className="underline" href="/studio/media-edit">
+          Edit your recording or add captions
+        </Link>
+      )}
       {recoveryKeys.size > 0 && (
         <section className="surface-card space-y-3 p-5" aria-label="Saved recordings">
           <h2 className="text-xl font-bold">Saved recordings</h2>
