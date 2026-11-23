@@ -25,6 +25,7 @@
  *   with an override and an exclusion, read through the product's own
  *   public timeline functions on real records.
  */
+import { resolveFfmpegBinary } from '../../src/modules/media/ffmpeg'
 import { execFile } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
@@ -407,7 +408,7 @@ describe('RC3-18 media desk journeys', () => {
     expect(guest).toBeTruthy()
 
     const mp3Path = path.join(tmpDir, `interview-${suffix}.mp3`)
-    await execFileAsync('ffmpeg', [
+    await execFileAsync(resolveFfmpegBinary(), [
       '-hide_banner',
       '-loglevel',
       'error',
