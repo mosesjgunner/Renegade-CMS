@@ -1,0 +1,23 @@
+[
+  {
+    "browser": "chromium",
+    "version": "151.0.7922.34",
+    "studio": 200,
+    "api": 200,
+    "anonymous": 401
+  },
+  {
+    "browser": "firefox",
+    "version": "153.0",
+    "studio": 200,
+    "api": 200,
+    "anonymous": 401
+  },
+  {
+    "browser": "webkit",
+    "version": "26.5",
+    "studio": 200,
+    "api": 200,
+    "anonymous": 401
+  }
+]

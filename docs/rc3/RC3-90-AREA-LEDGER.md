@@ -19,6 +19,10 @@ later RC3 pass is measured with.
   the two supplementary rows CF and NEO4J are marked and are not part
   of the 90).
 
+## Creator Studio release reconciliation
+
+Areas **12 (Media Studio)**, **16 (Video & livestreaming)**, and **18 (Events & timelines)** have scoped Creator evidence for private media, native video delivery, and protected Theater recovery. Whole-area grades are held. Native live, recording, and paid delivery remain beta for supervised use, with third-party rollout disabled pending E3. The release notes identify the candidate, provider boundaries, and open verification gates. [Creator release notes](../creator-studio/CRE-16-RELEASE-NOTES.md)
+
 **Method — the no-relabeling rule, applied**
 
 - E-levels follow the governing plan's ladder literally (E0
