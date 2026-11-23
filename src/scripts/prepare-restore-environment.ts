@@ -6,10 +6,22 @@ const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
   args.includes(name) ? args[args.indexOf(name) + 1] : fallback
 const envFile = path.resolve(value('--env-file', '.env.restore')!)
-const appUrl = value('--app-url', 'http://127.0.0.1:3300')!
+const appUrl = value('--app-url', 'https://restore.renegade.test')!
 const imageTag = value('--image-tag', 'local')!
 const version = value('--app-version', '0.1.0')!
-if (!URL.canParse(appUrl)) throw new Error('--app-url must be a complete isolated URL.')
+const origin = URL.canParse(appUrl) ? new URL(appUrl) : null
+if (
+  !origin ||
+  origin.protocol !== 'https:' ||
+  ['localhost', '127.0.0.1', '[::1]'].includes(origin.hostname) ||
+  origin.pathname !== '/' ||
+  origin.username ||
+  origin.password ||
+  origin.search ||
+  origin.hash
+) {
+  throw new Error('--app-url must be an isolated HTTPS origin with a non-loopback hostname.')
+}
 try {
   await access(envFile)
   throw new Error(`${envFile} already exists; refusing to overwrite restore credentials.`)

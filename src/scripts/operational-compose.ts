@@ -12,9 +12,14 @@ export type ComposeTarget = {
 /** Application services that can write the database or governed media. */
 export function runningBackupWriters(services: string): string[] {
   const running = new Set(services.split(/\r?\n/).map((service) => service.trim()))
-  return ['renegade-web', 'renegade-worker', 'media-heavy', 'live-relay'].filter((service) =>
-    running.has(service),
-  )
+  return [
+    'renegade-web',
+    'renegade-worker',
+    'email-account-worker',
+    'media-worker',
+    'media-heavy',
+    'live-relay',
+  ].filter((service) => running.has(service))
 }
 
 export function projectNameFromEnvFile(
@@ -84,6 +89,22 @@ export function captureDocker(target: ComposeTarget, command: string[]) {
           ),
     )
   })
+}
+
+export async function assertOptionalWritersPaused(target: ComposeTarget) {
+  const services = await captureDocker(target, [
+    '--profile',
+    '*',
+    'ps',
+    '--status',
+    'running',
+    '--services',
+  ])
+  const optional = runningBackupWriters(services).filter(
+    (service) => service !== 'renegade-web' && service !== 'renegade-worker',
+  )
+  if (optional.length)
+    throw new Error(`Pause active optional writers first: ${optional.join(', ')}.`)
 }
 
 export async function migrationState(target: ComposeTarget) {

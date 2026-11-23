@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload collection documents are runtime-shaped. */
 import { randomUUID, timingSafeEqual } from 'node:crypto'
 
-import { isPrivateAddress, readBoundedText, safeFetch } from '../core/external-boundary'
+import {
+  assertAllowedOutboundOrigin,
+  isPrivateAddress,
+  readBoundedText,
+  safeFetch,
+} from '../core/external-boundary'
 import type { ExecutionEvent } from '../execution/contracts'
 import {
   MAX_WEBHOOK_PAYLOAD_BYTES,
@@ -30,7 +35,9 @@ const webhookRequest: typeof fetch = (input, init) =>
   safeFetch(String(input), init, {
     maxRedirects: 0,
     maxBytes: MAX_WEBHOOK_PAYLOAD_BYTES,
-    ...(isWebhookTestEnv() ? { allowHttp: true, allowPrivate: true } : {}),
+    ...(isLocalWebhookFixture(new URL(String(input)))
+      ? { allowHttp: true, allowPrivate: true }
+      : {}),
   })
 
 type Store = {
@@ -50,21 +57,25 @@ export const resolveWebhookSecret: WebhookSecretResolver = async (reference) => 
 
 const id = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : value)
+const isLocalWebhookFixture = (url: URL) =>
+  isWebhookTestEnv() && ['127.0.0.1', '[::1]'].includes(url.hostname)
+
 export const supportedTarget = (target: string) => {
   const url = new URL(target)
-  const isTest = isWebhookTestEnv()
-  if (url.protocol !== 'https:' && !(isTest && url.protocol === 'http:'))
+  const fixture = isLocalWebhookFixture(url)
+  if (url.protocol !== 'https:' && !(fixture && url.protocol === 'http:'))
     throw new Error('Webhook targets must use HTTPS.')
   if (
     url.username ||
     url.password ||
-    (!isTest &&
+    (!fixture &&
       (['localhost', '127.0.0.1', '[::1]', 'metadata.google.internal', 'instance-data'].includes(
         url.hostname.toLowerCase(),
       ) ||
         isPrivateAddress(url.hostname)))
   )
     throw new Error('Webhook target is not permitted.')
+  if (!isWebhookTestEnv()) assertAllowedOutboundOrigin(url, process.env.WEBHOOK_ALLOWED_ORIGINS)
   return url
 }
 

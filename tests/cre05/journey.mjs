@@ -52,7 +52,7 @@ const fetchBytes = async (id) => {
 const post = (url, data) =>
   owner.request.post(url, {
     data,
-    headers: { 'x-member-csrf': fixture.owner.csrf },
+    headers: { origin: new URL(url).origin, 'x-member-csrf': fixture.owner.csrf },
   })
 const editPage = origin + '/studio/media-edit'
 const section = (title) =>

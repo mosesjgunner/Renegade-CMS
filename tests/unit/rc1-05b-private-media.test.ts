@@ -13,12 +13,18 @@ const mocks = vi.hoisted(() => ({
 }))
 vi.mock('payload', () => ({ getPayload: async () => mocks.payload }))
 vi.mock('@payload-config', () => ({ default: {} }))
+vi.mock('../../src/modules/core/site-settings', () => ({
+  resolveSiteSettings: async () => ({
+    canonicalOrigin: 'https://alpha.example.test',
+    canonicalOriginsBySite: { alpha: 'https://alpha.example.test' },
+  }),
+}))
 import { GET, POST } from '../../src/app/(frontend)/api/media/[id]/variants/route'
 import { GET as videoBytes } from '../../src/app/(frontend)/video-media/[id]/[filename]/route'
 import { GET as captionBytes } from '../../src/app/(frontend)/video-captions/[id]/route'
 
 beforeEach(() => {
-  vi.clearAllMocks()
+  vi.resetAllMocks()
   mocks.payload.auth.mockResolvedValue({
     user: {
       id: 'operator',
@@ -41,15 +47,20 @@ describe('05B private media boundaries', () => {
       mocks.payload.findByID
         .mockResolvedValueOnce({ site: 'alpha', sourceAsset: 'source' })
         .mockResolvedValueOnce({ id: 'source', site: 'alpha', ...policy })
-      const video = await videoBytes(new Request('http://localhost/video-media/id/baseline.mp4'), {
-        params: Promise.resolve({ id: 'id', filename: 'baseline.mp4' }),
+      const request = (url: string) =>
+        new Request('https://alpha.example.test' + url, {
+          headers: { host: 'alpha.example.test' },
+        })
+      const id = '00000000-0000-4000-8000-000000000001'
+      const video = await videoBytes(request(`/video-media/${id}/baseline.mp4`), {
+        params: Promise.resolve({ id, filename: 'baseline.mp4' }),
       })
       expect(video.status).toBe(404)
       expect(await video.text()).toBe('Not found')
       mocks.payload.findByID
         .mockResolvedValueOnce({ video: 'video', asset: 'caption' })
         .mockResolvedValueOnce({ site: 'alpha', ...policy })
-      const caption = await captionBytes(new Request('http://localhost/video-captions/id'), {
+      const caption = await captionBytes(request('/video-captions/id'), {
         params: Promise.resolve({ id: 'id' }),
       })
       expect(caption.status).toBe(404)

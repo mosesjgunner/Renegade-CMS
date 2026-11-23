@@ -3,35 +3,36 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { loadConfig } from '@/modules/core/config'
+import { parseByteRange } from '@/modules/media/range-serving'
 import { mediaStorage } from '@/modules/media/storage'
 import { publicMediaPolicyAllows } from '@/modules/media/workflow'
 import { canRenderPublic } from '@/modules/public/contracts'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 
 const identifier = (value: unknown) => String((value as { id?: string } | null)?.id ?? value ?? '')
 
-const range = (header: string | null, size: number) => {
-  if (!header) return undefined
-  const match = /^bytes=(\d*)-(\d*)$/.exec(header)
-  if (!match) return null
-  const from = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2] || 0))
-  const to = match[1] ? Math.min(match[2] ? Number(match[2]) : size - 1, size - 1) : size - 1
-  return Number.isInteger(from) && Number.isInteger(to) && from >= 0 && from <= to && from < size
-    ? { from, to }
-    : null
-}
+const missing = () =>
+  new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string; filename: string }> },
 ) {
   const { id, filename } = await params
-  if (!/^[a-zA-Z0-9._-]+$/.test(filename)) return new NextResponse('Not found', { status: 404 })
+  if (
+    !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id) ||
+    !/^[a-zA-Z0-9._-]+$/.test(filename)
+  )
+    return missing()
   const payload = await getPayload({ config })
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId) return missing()
   const videos = await payload.find({
     collection: 'videos' as never,
     where: {
       and: [
         { videoAsset: { equals: id } },
+        { site: { equals: siteId } },
         { status: { equals: 'published' } },
         { visibility: { in: ['public', 'unlisted'] } },
       ],
@@ -41,11 +42,12 @@ export async function GET(
     overrideAccess: true,
   } as never)
   if (!videos.docs.some((video) => canRenderPublic({ ...video, visibility: 'public' } as never)))
-    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
+    return missing()
   const asset = (await payload.findByID({
     collection: 'video-assets' as never,
     id,
     depth: 0,
+    disableErrors: true,
     overrideAccess: true,
   } as never)) as unknown as {
     processingState?: string
@@ -53,7 +55,8 @@ export async function GET(
     site?: unknown
     outputs?: Array<Record<string, unknown>>
     lastGoodOutputs?: Array<Record<string, unknown>>
-  }
+  } | null
+  if (!asset) return missing()
   const source = (await payload
     .findByID({
       collection: 'media-assets',
@@ -71,41 +74,54 @@ export async function GET(
         identifier((video as unknown as Record<string, unknown>).site) === identifier(source.site),
     )
   )
-    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
+    return missing()
   const outputs =
     asset.processingState === 'ready' && Array.isArray(asset.outputs)
       ? asset.outputs
       : asset.lastGoodOutputs
   const output = outputs?.find((item) => item.filename === filename)
-  if (!output) return new NextResponse('Not found', { status: 404 })
-  const bytes = await mediaStorage(loadConfig()).get(String(output.storageKey))
-  if (!bytes) return new NextResponse('Not found', { status: 404 })
+  if (!output) return missing()
+  const storage = mediaStorage(loadConfig())
+  const key = String(output.storageKey)
+  const recordedSize = Number(output.sizeBytes)
+  // Existing output records can lack a byte count. Keep those readable using
+  // the stored bytes, while current renditions use a bounded streaming read.
+  const knownSize = Number.isSafeInteger(recordedSize) && recordedSize > 0
+  const legacyBytes = knownSize ? undefined : await storage.get(key)
+  if (!knownSize && !legacyBytes) return missing()
+  const size = knownSize ? recordedSize : legacyBytes!.byteLength
   const headers: Record<string, string> = {
     'Content-Type': String(output.mimeType),
-    'Content-Length': String(bytes.byteLength),
     'Accept-Ranges': 'bytes',
     'Cache-Control': 'public, max-age=0, must-revalidate',
     ETag: String(output.checksum),
     'X-Content-Type-Options': 'nosniff',
   }
-  const selection = range(request.headers.get('range'), bytes.byteLength)
+  const requestedRange = request.headers.get('range')
+  const selection =
+    requestedRange && !requestedRange.startsWith('bytes=')
+      ? null
+      : parseByteRange(requestedRange, size)
   if (selection === null)
     return new NextResponse(null, {
       status: 416,
-      headers: { ...headers, 'Content-Range': `bytes */${bytes.byteLength}` },
+      headers: { ...headers, 'Content-Range': `bytes */${size}`, 'Cache-Control': 'no-store' },
     })
-  if (selection) {
-    const body = bytes.slice(selection.from, selection.to + 1)
-    return new NextResponse(Buffer.from(body), {
-      status: 206,
-      headers: {
-        ...headers,
-        'Content-Length': String(body.byteLength),
-        'Content-Range': `bytes ${selection.from}-${selection.to}/${bytes.byteLength}`,
-      },
-    })
+  const { from, to } = selection ?? { from: 0, to: size - 1 }
+  headers['Content-Length'] = String(to - from + 1)
+  if (selection) headers['Content-Range'] = `bytes ${from}-${to}/${size}`
+  const status = selection ? 206 : 200
+  if (request.method === 'HEAD') {
+    if (!legacyBytes && !(await storage.exists(key))) return missing()
+    return new NextResponse(null, { status, headers })
   }
-  return new NextResponse(Buffer.from(bytes), { headers })
+  const body = legacyBytes
+    ? Buffer.from(legacyBytes.subarray(from, to + 1))
+    : await storage.open(key, from, to).catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return undefined
+        throw error
+      })
+  return body ? new NextResponse(body, { status, headers }) : missing()
 }
 
 export async function HEAD(

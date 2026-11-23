@@ -27,6 +27,11 @@ import {
   roomQuery,
 } from '../../src/modules/community/rooms'
 import { mediaStorage } from '../../src/modules/media/storage'
+import { consumeMagicLink, issueMagicLink } from '../../src/modules/identity/member-identity'
+import {
+  GET as readCapture,
+  POST as createCapture,
+} from '../../src/app/(frontend)/api/creator/capture-sessions/route'
 
 it('onboards member creators, restores matching project files, and enforces export rights', async () => {
   const payload = await getPayload({ config })
@@ -86,6 +91,80 @@ it('onboards member creators, restores matching project files, and enforces expo
     }
     const author = await member('author')
     const recipient = await member('recipient')
+    const origin = `https://studio-${key}.example.test`
+    const target = origin + '/api/creator/capture-sessions'
+    const settings = await payload.findGlobal({ slug: 'site-settings', ...access })
+    const canonicalOrigins = (settings.canonicalOriginsBySite ?? {}) as Record<string, string>
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      ...access,
+      data: {
+        canonicalOriginsBySite: { ...canonicalOrigins, [site.id]: origin },
+      },
+    })
+    try {
+      const issued = await issueMagicLink(payload as never, 'author' + key + '@example.test')
+      const session = await consumeMagicLink(payload as never, issued.token!)
+      expect(session?.sessionToken).toBeTruthy()
+      const csrf = randomUUID()
+      const headers = {
+        host: new URL(origin).host,
+        cookie: `renegade-member=${session!.sessionToken}; renegade-member-csrf=${csrf}`,
+        'x-member-csrf': csrf,
+      }
+      const createRequest = (callerOrigin?: string) =>
+        new Request(target, {
+          method: 'POST',
+          headers: { ...headers, ...(callerOrigin ? { origin: callerOrigin } : {}) },
+          body: '{}',
+        })
+      expect((await createCapture(createRequest('https://foreign.example.test'))).status).toBe(403)
+      expect((await createCapture(createRequest())).status).toBe(403)
+      expect((await createCapture(createRequest(origin))).status).toBe(400)
+      expect(
+        (await readCapture(new Request(target, { headers: { host: headers.host } }))).status,
+      ).toBe(401)
+      expect(
+        (await readCapture(new Request(target + '?id=' + randomUUID(), { headers }))).status,
+      ).toBe(404)
+      const query = roomQuery(payload)
+      const {
+        rows: [ban],
+      } = await query<{ id: string }>(
+        `WITH action AS (
+          INSERT INTO moderation_actions(site_id,actor,target_type,target_id,action,scope,reason,details)
+          VALUES ($1,'studio-fixture','member',$2::uuid::text,'ban_member','site_global','Boundary fixture','{}')
+          RETURNING id
+        )
+        INSERT INTO member_sanctions(site_id,member_id,action_id,sanction_type,scope)
+        SELECT $1,$2::uuid,id,'ban_member','site_global' FROM action RETURNING id`,
+        [site.id, author.memberId],
+      )
+      try {
+        expect((await readCapture(new Request(target, { headers }))).status).toBe(403)
+      } finally {
+        await query('UPDATE member_sanctions SET revoked_at=now() WHERE id=$1', [ban.id])
+      }
+      await payload.update({
+        collection: 'members',
+        id: author.memberId,
+        ...access,
+        data: { status: 'suspended' },
+      })
+      expect((await readCapture(new Request(target, { headers }))).status).toBe(401)
+    } finally {
+      await payload.update({
+        collection: 'members',
+        id: author.memberId,
+        ...access,
+        data: { status: 'active' },
+      })
+      await payload.updateGlobal({
+        slug: 'site-settings',
+        ...access,
+        data: { canonicalOriginsBySite: canonicalOrigins },
+      })
+    }
     const live = {
       siteId: site.id,
       title: 'My live room',

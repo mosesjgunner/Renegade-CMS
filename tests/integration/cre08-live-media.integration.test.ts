@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process'
+import { get } from 'node:http'
 import { setTimeout as delay } from 'node:timers/promises'
 import { promisify } from 'node:util'
 import { getPayload, type Payload } from 'payload'
@@ -124,6 +125,21 @@ function report(event: string, fields: Record<string, unknown> = {}) {
   console.log(JSON.stringify({ event, at: new Date().toISOString(), ...fields }))
 }
 
+function gatewayStatus(url: string, host: string, cookie?: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const request = get(
+      url,
+      { headers: { Host: host, ...(cookie ? { Cookie: cookie } : {}) }, timeout: 10_000 },
+      (response) => {
+        response.resume()
+        resolve(response.statusCode ?? 0)
+      },
+    )
+    request.once('timeout', () => request.destroy(new Error('Gateway probe timed out.')))
+    request.once('error', reject)
+  })
+}
+
 it.skipIf(!port || !control)(
   'broadcasts from the host controls to a protected Theater and reconnects one persisted show with replay',
   async () => {
@@ -141,6 +157,7 @@ it.skipIf(!port || !control)(
     const viewer = remote
       ? await chromium.connectOverCDP(remote, { timeout: 15000 })
       : await chromium.launch({
+          executablePath: process.env.CRE08_VIEWER_EXECUTABLE,
           args: [`--host-resolver-rules=MAP *.localhost ${viewerGateway}`, '--no-proxy-server'],
         })
     const ownerContext = await owner.newContext()
@@ -241,18 +258,14 @@ it.skipIf(!port || !control)(
         )
       const [{ id }] = (await readSessions()).rows
       const localAsset = `http://127.0.0.1:${port}/live-media/${id}/hls/index.m3u8`
-      const naked = await fetch(localAsset, { headers: { Host: `b.localhost:${port}` } })
-      expect(naked.status).toBe(403)
+      expect(await gatewayStatus(localAsset, `b.localhost:${port}`)).toBe(403)
       const viewerCookies = await viewerContext.cookies(`${origin}/live-media/${id}/hls/index.m3u8`)
       const signedCookies = viewerCookies
         .filter(({ name }) => name === 'renegade-live-playback' || name === 'renegade-member')
         .map(({ name, value }) => `${name}=${value}`)
         .join('; ')
       expect(signedCookies).toContain('renegade-live-playback=')
-      const crossSite = await fetch(localAsset, {
-        headers: { Host: `a.localhost:${port}`, Cookie: signedCookies },
-      })
-      expect(crossSite.status).toBe(403)
+      expect(await gatewayStatus(localAsset, `a.localhost:${port}`, signedCookies)).toBe(403)
       const started = Date.now()
       let prior = await counts(player)
       report('watching', {
@@ -299,7 +312,7 @@ it.skipIf(!port || !control)(
       await delay(Math.max(0, outage * 1000 - (Date.now() - offline)))
       report('reconnect-attempt', { session: id, offlineSeconds: (Date.now() - offline) / 1000 })
       publisher = await host()
-      await publisher.getByRole('button', { name: 'Reconnect camera' }).click()
+      await publisher.getByRole('button', { name: 'Reconnect source' }).click()
       await player
         .getByText('Live · Playback may be several seconds behind the host.')
         .waitFor({ timeout: 55_000 })

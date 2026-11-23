@@ -9,7 +9,13 @@ import type { AppConfig } from '../core/config'
 import { assertTeamPermission, type TeamScope } from '../collaboration/service'
 import { checkOperatorSiteAccess } from '../operations/operator-grants'
 import { findIfRegistered } from '../public/registered-collections'
-import { inspectAudioMetadata, inspectMedia, mediaObjectKey, mediaStorage } from './storage'
+import {
+  inspectAudioMetadata,
+  inspectMedia,
+  MediaCapacityError,
+  mediaObjectKey,
+  mediaStorage,
+} from './storage'
 import { queueAssetVariantGeneration } from './variants'
 import { recordMediaUsage } from './usage'
 import { validateWebVtt } from './video'
@@ -243,10 +249,16 @@ async function persistMediaUpload(
     throw new MediaWorkflowError('Focal point coordinates must be between 0 and 1.')
   const key = mediaObjectKey(input.scope.siteId, inspection.extension)
   const storage = mediaStorage(config)
-  const put = (object: string) =>
-    file
-      ? storage.putFile(object, file.filename, inspection.mimeType, size, file.checksum)
-      : storage.put(object, input.bytes, inspection.mimeType)
+  const put = async (object: string) => {
+    try {
+      if (file)
+        await storage.putFile(object, file.filename, inspection.mimeType, size, file.checksum)
+      else await storage.put(object, input.bytes, inspection.mimeType)
+    } catch (error) {
+      if (error instanceof MediaCapacityError) throw new MediaWorkflowError(error.message, 507)
+      throw error
+    }
+  }
   // A blob is the physical object; an asset is the editorial identity. Dedup is
   // deliberately site-scoped so one tenant cannot infer another tenant's files.
   const known = await payload

@@ -63,7 +63,8 @@ services:
     environment:
       <<: *app_environment
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/heartbeat.json
-    command: ['npm', 'run', 'jobs:worker']
+    command: ['node', '--import', 'tsx', 'src/scripts/run-jobs-worker.ts']
+    stop_grace_period: 35s
     volumes: [renegade_restore_media:/app/media]
     depends_on:
       migrate:

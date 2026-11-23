@@ -200,7 +200,7 @@ try {
     const url = origin + api(active.id)
     const noReview = await owner.request.post(url, {
       data: { count: active.received },
-      headers: { 'x-member-csrf': fixture.author.csrf },
+      headers: { origin, 'x-member-csrf': fixture.author.csrf },
     })
     assert.equal(noReview.status(), 400)
     const noCSRF = await owner.request.post(url, {
@@ -337,14 +337,14 @@ try {
     (
       await stranger.request.post(url, {
         data: { reviewed: true },
-        headers: { 'x-member-csrf': fixture.other.csrf },
+        headers: { origin, 'x-member-csrf': fixture.other.csrf },
       })
     ).status(),
     404,
   )
   const repeat = await owner.request.post(url, {
     data: { reviewed: true, count: final.received },
-    headers: { 'x-member-csrf': fixture.author.csrf },
+    headers: { origin, 'x-member-csrf': fixture.author.csrf },
   })
   assert.equal((await repeat.json()).asset, final.asset)
   const manifest = await (await owner.request.get(url + '&manifest=1')).json()

@@ -9,6 +9,7 @@ const pollInterval = Number(process.env.WORKER_POLL_INTERVAL_MS ?? 10_000)
 const mediaStaleClaimMs = Number(process.env.MEDIA_STALE_CLAIM_MS ?? 15 * 60_000)
 const heartbeatFile = process.env.WORKER_HEARTBEAT_FILE ?? '/tmp/renegade-worker/heartbeat.json'
 const workerProfile = process.env.WORKER_PROFILE ?? 'default'
+const videoJobConcurrency = Number(process.env.VIDEO_JOB_CONCURRENCY ?? 1)
 const workerId = `worker-${randomUUID()}`
 
 if (!Number.isInteger(pollInterval) || pollInterval < 1_000 || pollInterval > 60_000) {
@@ -20,6 +21,13 @@ if (
   mediaStaleClaimMs > 24 * 60 * 60_000
 ) {
   throw new Error('MEDIA_STALE_CLAIM_MS must be an integer between 1000 and 86400000')
+}
+
+if (
+  workerProfile === 'media-heavy' &&
+  (!Number.isInteger(videoJobConcurrency) || videoJobConcurrency < 1 || videoJobConcurrency > 4)
+) {
+  throw new Error('VIDEO_JOB_CONCURRENCY must be an integer between 1 and 4')
 }
 
 const payload = await getPayload({ config })
@@ -37,6 +45,42 @@ const registeredJobs: Where = registrations.length
 let nextExternalVideoSweep = 0
 let stopping = false
 let timer: NodeJS.Timeout | undefined
+let inFlight: Promise<void> | undefined
+
+function logMediaFailure(error: unknown) {
+  payload.logger.error({ err: error, event: 'media.worker.batch_failed', workerProfile })
+}
+
+async function reportHeartbeat() {
+  await mkdir(path.dirname(heartbeatFile), { recursive: true })
+  await writeFile(
+    heartbeatFile,
+    JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid, workerProfile }),
+  )
+}
+
+async function runMediaQueue() {
+  await payload.jobs.handleSchedules({ queue: 'media' })
+  if (
+    workerProfile !== 'audience' &&
+    payload.collections['external-video-sources'] &&
+    Date.now() >= nextExternalVideoSweep
+  ) {
+    nextExternalVideoSweep = Date.now() + 15 * 60 * 1000
+    const { purgeExpiredVideoSnapshots, recheckYouTubeAuthorizations } = await import(
+      '../modules/creator-studio/external-video'
+    )
+    await purgeExpiredVideoSnapshots(payload).catch(logMediaFailure)
+    await recheckYouTubeAuthorizations(payload).catch(logMediaFailure)
+  }
+  if (payload.collections['media-assets']) {
+    const { recoverStaleMediaVariantJobs } = await import('../modules/media/tasks')
+    await recoverStaleMediaVariantJobs(payload as never, mediaStaleClaimMs).catch(logMediaFailure)
+  }
+  await payload.jobs
+    .run({ queue: 'media', limit: 2, sequential: true, where: registeredJobs })
+    .catch(logMediaFailure)
+}
 
 async function cycle(): Promise<void> {
   try {
@@ -49,11 +93,37 @@ async function cycle(): Promise<void> {
         const { recoverAccountEmailOutbox } = await import('../modules/email/outbox')
         await recoverAccountEmailOutbox(payload as never)
       }
-      await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
-      await writeFile(
-        heartbeatFile,
-        JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),
+      await reportHeartbeat()
+      return
+    }
+    if (workerProfile === 'media') {
+      await runMediaQueue()
+      await reportHeartbeat()
+      return
+    }
+    if (workerProfile === 'media-heavy') {
+      const { recoverCreatorCaptionJobs } = await import(
+        '../modules/creator-studio/caption-worker-recovery'
       )
+      await recoverCreatorCaptionJobs(payload).catch((error) => {
+        payload.logger.error({ err: error, event: 'creator.caption_recovery_failed' })
+      })
+      const { recoverCreatorMediaExports } = await import(
+        '../modules/creator-studio/media-edit-exports'
+      )
+      await recoverCreatorMediaExports(payload).catch((error) => {
+        payload.logger.error({ err: error, event: 'creator.media_export_recovery_failed' })
+      })
+      const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
+      await recoverStaleVideoJobs(payload).catch(logMediaFailure)
+      await payload.jobs
+        .run({
+          queue: 'media-heavy',
+          limit: videoJobConcurrency,
+          where: registeredJobs,
+        })
+        .catch(logMediaFailure)
+      await reportHeartbeat()
       return
     }
     if (workerProfile !== 'commerce-only') {
@@ -84,25 +154,7 @@ async function cycle(): Promise<void> {
         const { recoverSocialOutbox } = await import('../modules/social/tasks')
         await recoverSocialOutbox(payload)
       }
-      if (
-        workerProfile !== 'audience' &&
-        payload.collections['external-video-sources'] &&
-        Date.now() >= nextExternalVideoSweep
-      ) {
-        nextExternalVideoSweep = Date.now() + 15 * 60 * 1000
-        const { purgeExpiredVideoSnapshots, recheckYouTubeAuthorizations } = await import(
-          '../modules/creator-studio/external-video'
-        )
-        await purgeExpiredVideoSnapshots(payload)
-        await recheckYouTubeAuthorizations(payload)
-      }
-      if (payload.collections['media-assets']) {
-        const { recoverStaleMediaVariantJobs } = await import('../modules/media/tasks')
-        await recoverStaleMediaVariantJobs(payload as never, mediaStaleClaimMs).catch(
-          () => undefined,
-        )
-      }
-      await payload.jobs.run({ queue: 'media', where: registeredJobs }).catch(() => undefined)
+      if (process.env.WORKER_DELEGATE_MEDIA !== 'true') await runMediaQueue()
     }
     if (payload.collections['payment-webhook-events']) {
       const { recoverStaleCommerceJobs } = await import('../modules/commerce/tasks')
@@ -110,29 +162,6 @@ async function cycle(): Promise<void> {
     }
     await payload.jobs.handleSchedules({ queue: 'commerce' })
     await payload.jobs.run({ queue: 'commerce', limit: 1, where: registeredJobs })
-    if (workerProfile === 'media-heavy') {
-      const { recoverCreatorCaptionJobs } = await import(
-        '../modules/creator-studio/caption-worker-recovery'
-      )
-      await recoverCreatorCaptionJobs(payload).catch((error) => {
-        payload.logger.error({ err: error, event: 'creator.caption_recovery_failed' })
-      })
-      const { recoverCreatorMediaExports } = await import(
-        '../modules/creator-studio/media-edit-exports'
-      )
-      await recoverCreatorMediaExports(payload).catch((error) => {
-        payload.logger.error({ err: error, event: 'creator.media_export_recovery_failed' })
-      })
-      const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
-      await recoverStaleVideoJobs(payload).catch(() => undefined)
-      await payload.jobs
-        .run({
-          queue: 'media-heavy',
-          limit: Number(process.env.VIDEO_JOB_CONCURRENCY || 1),
-          where: registeredJobs,
-        })
-        .catch(() => undefined)
-    }
     // Presence is intentionally short-lived operational state, never an analytics log.
     const stalePresence = await payload
       .find({
@@ -149,16 +178,17 @@ async function cycle(): Promise<void> {
           id: entry.id,
           overrideAccess: true,
         } as never)
-    await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
-    await writeFile(
-      heartbeatFile,
-      JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),
-    )
+    await reportHeartbeat()
   } catch (error) {
     payload.logger.error({ err: error, event: 'operations.worker.cycle_failed' })
   } finally {
-    if (!stopping) timer = setTimeout(cycle, pollInterval)
+    if (!stopping) timer = setTimeout(startCycle, pollInterval)
   }
+}
+
+function startCycle() {
+  inFlight = cycle()
+  return inFlight
 }
 
 async function shutdown(signal: string): Promise<void> {
@@ -166,10 +196,19 @@ async function shutdown(signal: string): Promise<void> {
   stopping = true
   if (timer) clearTimeout(timer)
   payload.logger.info({ event: 'operations.worker.stopping', signal })
-  await payload.destroy()
+  const deadline = setTimeout(() => {
+    payload.logger.error({ event: 'operations.worker.shutdown_deadline', signal, workerProfile })
+    process.exit(1)
+  }, 25_000)
+  try {
+    await inFlight
+    await payload.destroy()
+  } finally {
+    clearTimeout(deadline)
+  }
   process.exit(0)
 }
 
 process.once('SIGTERM', () => void shutdown('SIGTERM'))
 process.once('SIGINT', () => void shutdown('SIGINT'))
-await cycle()
+await startCycle()

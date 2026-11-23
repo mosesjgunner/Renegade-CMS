@@ -372,9 +372,11 @@ describe('Stage 05: Authenticated Security Negative Matrix', () => {
     it('validates webhook targets against private and cloud metadata destinations', () => {
       const originalEnv = process.env.NODE_ENV
       const originalVitest = process.env.VITEST
+      const originalOrigins = process.env.WEBHOOK_ALLOWED_ORIGINS
       try {
         ;(process.env as any).NODE_ENV = 'production'
         process.env.VITEST = 'false'
+        process.env.WEBHOOK_ALLOWED_ORIGINS = 'https://webhook.site'
         expect(() => supportedTarget('http://example.com/webhook')).toThrow('HTTPS')
         expect(() => supportedTarget('https://localhost/webhook')).toThrow('not permitted')
         expect(() => supportedTarget('https://127.0.0.1/webhook')).toThrow('not permitted')
@@ -385,6 +387,8 @@ describe('Stage 05: Authenticated Security Negative Matrix', () => {
       } finally {
         ;(process.env as any).NODE_ENV = originalEnv
         process.env.VITEST = originalVitest
+        if (originalOrigins === undefined) delete process.env.WEBHOOK_ALLOWED_ORIGINS
+        else process.env.WEBHOOK_ALLOWED_ORIGINS = originalOrigins
       }
     })
   })

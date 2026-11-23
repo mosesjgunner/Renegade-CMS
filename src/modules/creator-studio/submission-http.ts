@@ -3,6 +3,7 @@ import { Readable } from 'node:stream'
 import type { Payload } from 'payload'
 import { communitySiteForHost } from '../community/site-scope'
 import { currentMember, readMemberSession, verifyCsrf } from '../identity/member-identity'
+import { samePublicOrigin } from '../public/site-scope'
 import { readBoundedUploadBody } from '../media/upload-staging'
 import { MediaWorkflowError } from '../media/workflow'
 
@@ -15,6 +16,8 @@ export async function submissionActor(payload: Payload, request: Request, requir
   const siteId = await communitySiteForHost(payload, request.headers.get('host')).catch(() => {
     throw new MediaWorkflowError('Site unavailable.', 404)
   })
+  if (modifying && !(await samePublicOrigin(payload, request, true)))
+    throw new MediaWorkflowError('Request origin is not allowed.', 403)
   const memberId = await currentMember(payload as never, readMemberSession(request.headers))
   if ((required || modifying) && !memberId) throw new MediaWorkflowError('Sign in required.', 401)
   return { siteId, memberId: memberId ?? '' }

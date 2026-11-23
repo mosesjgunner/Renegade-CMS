@@ -3,6 +3,7 @@ services:
     environment:
       LIVE_DESTINATION_ENCRYPTION_KEY: ${LIVE_DESTINATION_ENCRYPTION_KEY:?Set the destination encryption key}
       LIVE_DESTINATION_ENDPOINTS: ${LIVE_DESTINATION_ENDPOINTS:?Set trusted destination endpoints}
+      LIVE_DESTINATION_FIXTURE_ENDPOINTS: ${LIVE_DESTINATION_FIXTURE_ENDPOINTS:-}
 
   live-mediamtx:
     environment:
@@ -21,6 +22,7 @@ services:
       DATABASE_URL: postgresql://renegade:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}@postgres:5432/renegade
       LIVE_DESTINATION_ENCRYPTION_KEY: ${LIVE_DESTINATION_ENCRYPTION_KEY:?Set the destination encryption key}
       LIVE_DESTINATION_ENDPOINTS: ${LIVE_DESTINATION_ENDPOINTS:?Set trusted destination endpoints}
+      LIVE_DESTINATION_FIXTURE_ENDPOINTS: ${LIVE_DESTINATION_FIXTURE_ENDPOINTS:-}
       LIVE_RELAY_RTSP_URL: rtsp://live-mediamtx:8554
     networks: [default, live-control]
     depends_on:

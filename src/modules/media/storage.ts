@@ -1,6 +1,16 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto'
 import { createReadStream } from 'node:fs'
-import { copyFile, mkdir, open, readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
+import {
+  copyFile,
+  mkdir,
+  open,
+  readFile,
+  rename,
+  rm,
+  stat,
+  statfs,
+  writeFile,
+} from 'node:fs/promises'
 import path from 'node:path'
 import { Readable } from 'node:stream'
 
@@ -264,6 +274,21 @@ export function presignS3Put(
   }
 }
 
+export class MediaCapacityError extends Error {
+  constructor() {
+    super('Media storage has reached its free-space reserve.')
+  }
+}
+
+export async function assertLocalMediaCapacity(directory: string, bytes: number) {
+  const reserve = Number(process.env.MEDIA_MIN_FREE_BYTES ?? 0)
+  if (!Number.isSafeInteger(reserve) || reserve < 0)
+    throw new Error('MEDIA_MIN_FREE_BYTES must be a non-negative integer.')
+  if (reserve === 0) return
+  const { bavail, bsize } = await statfs(directory, { bigint: true })
+  if (bavail * bsize - BigInt(bytes) < BigInt(reserve)) throw new MediaCapacityError()
+}
+
 export function localMediaStorage(mediaDir: string): StreamingMediaStorage {
   return {
     provider: 'local',
@@ -271,13 +296,20 @@ export function localMediaStorage(mediaDir: string): StreamingMediaStorage {
     async put(key, bytes) {
       const target = localPath(mediaDir, key)
       await mkdir(path.dirname(target), { recursive: true })
+      await assertLocalMediaCapacity(path.dirname(target), bytes.byteLength)
       const temporary = `${target}.${randomUUID()}.uploading`
-      await writeFile(temporary, bytes, { flag: 'wx' })
-      await rename(temporary, target)
+      try {
+        await writeFile(temporary, bytes, { flag: 'wx' })
+        await rename(temporary, target)
+      } finally {
+        await rm(temporary, { force: true })
+      }
     },
     async putFile(key, filename) {
       const target = localPath(mediaDir, key)
       await mkdir(path.dirname(target), { recursive: true })
+      if (process.env.MEDIA_MIN_FREE_BYTES)
+        await assertLocalMediaCapacity(path.dirname(target), (await stat(filename)).size)
       const temporary = `${target}.${randomUUID()}.uploading`
       try {
         await copyFile(filename, temporary)

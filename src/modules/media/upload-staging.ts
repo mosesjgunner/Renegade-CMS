@@ -6,6 +6,7 @@ import { pipeline } from 'node:stream/promises'
 import type { Payload } from 'payload'
 import type { AppConfig } from '../core/config'
 import { withExecutionLock } from '../operations/execution-lock'
+import { assertLocalMediaCapacity, MediaCapacityError } from './storage'
 import { MediaWorkflowError } from './workflow'
 
 export const uploadChunkLimit = 8 * 1024 * 1024
@@ -40,6 +41,15 @@ export function creatorAssetDirectory(config: AppConfig, sessionId: string) {
   return path.join(config.storage.mediaDir, '.creator-assets', sessionId)
 }
 
+async function requireStagingCapacity(directory: string, bytes: number) {
+  try {
+    await assertLocalMediaCapacity(directory, bytes)
+  } catch (error) {
+    if (error instanceof MediaCapacityError) throw new MediaWorkflowError(error.message, 507)
+    throw error
+  }
+}
+
 export async function stageUploadChunk(
   directory: string,
   index: number,
@@ -57,9 +67,14 @@ export async function stageUploadChunk(
     if (sha256(existing) !== hash)
       throw new MediaWorkflowError('Chunk retry bytes do not match the original chunk.', 409)
   } else {
+    await requireStagingCapacity(directory, bytes.byteLength)
     const temporary = filename + '.incoming'
-    await writeFile(temporary, bytes, { mode: 0o600, flush })
-    await rename(temporary, filename)
+    try {
+      await writeFile(temporary, bytes, { mode: 0o600, flush })
+      await rename(temporary, filename)
+    } finally {
+      await rm(temporary, { force: true })
+    }
   }
   return hash
 }
@@ -73,6 +88,7 @@ export async function assembleUpload(
   destination = directory,
 ) {
   await mkdir(destination, { recursive: true, mode: 0o700 })
+  await requireStagingCapacity(destination, size)
   const filename = path.join(destination, 'original')
   const temporary = filename + '.incoming'
   const hash = createHash('sha256')

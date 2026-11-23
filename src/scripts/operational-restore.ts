@@ -4,7 +4,7 @@ import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
 import { assertRestoreVersionCompatibility } from '../modules/operations/lifecycle'
 import { assertOperationalEnv } from './operational-env'
-import { projectNameFromEnvFile } from './operational-compose'
+import { projectNameFromEnvFile, runningBackupWriters } from './operational-compose'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -72,11 +72,7 @@ await run(
   path.join(root, 'media.tar.gz'),
 )
 const running = await capture([...composeArgs, 'ps', '--status', 'running', '--services'])
-if (
-  running
-    .split(/\r?\n/)
-    .some((service) => service === 'renegade-web' || service === 'renegade-worker')
-)
+if (runningBackupWriters(running).length)
   throw new Error('Restore refuses an isolated target with an application service already running.')
 await run([...composeArgs, 'up', '-d', '--wait', 'postgres'])
 const tableCount = await capture([

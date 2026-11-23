@@ -1,4 +1,5 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
+import { isPrivateAddress } from '../core/external-boundary'
 
 export type DestinationProvider = 'custom' | 'youtube' | 'twitch'
 type Credential = { ingest: string; key: string }
@@ -21,6 +22,11 @@ export function validateTarget(provider: DestinationProvider, ingest: string, ke
   const url = new URL(ingest.replace(/\/$/, ''))
   const port = Number(url.port || (url.protocol === 'rtmps:' ? 443 : 1935))
   const endpoint = `${url.protocol}//${url.hostname}:${port}`
+  const localFixture =
+    provider === 'custom' &&
+    process.env.LIVE_DESTINATION_FIXTURE_ENDPOINTS?.split(',')
+      .map((value) => value.trim())
+      .includes(endpoint) === true
   if (
     !port ||
     !process.env.LIVE_DESTINATION_ENDPOINTS?.split(',')
@@ -28,6 +34,11 @@ export function validateTarget(provider: DestinationProvider, ingest: string, ke
       .includes(endpoint)
   )
     throw new Error('Unapproved destination')
+  if (
+    !localFixture &&
+    (url.protocol !== 'rtmps:' || url.hostname === 'localhost' || isPrivateAddress(url.hostname))
+  )
+    throw new Error('Destination must use RTMPS on a public endpoint')
   if (
     (provider === 'youtube' &&
       (url.protocol !== 'rtmps:' ||
@@ -38,7 +49,7 @@ export function validateTarget(provider: DestinationProvider, ingest: string, ke
         url.pathname !== '/app'))
   )
     throw new Error('Invalid provider destination')
-  return { url, port, key }
+  return { url, port, key, localFixture }
 }
 
 export function encryptDestination(key: Buffer, id: string, credential: Credential) {

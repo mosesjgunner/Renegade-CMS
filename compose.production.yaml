@@ -1,5 +1,15 @@
 name: ${RENEGADE_INSTANCE:-renegade-cms}
 
+x-creator-adapters: &creator_adapters
+  CREATOR_TRANSCRIPT_ASSIST_COMMAND: ${CREATOR_TRANSCRIPT_ASSIST_COMMAND:-}
+  CREATOR_TRANSCRIPT_ASSIST_ENDPOINT: ${CREATOR_TRANSCRIPT_ASSIST_ENDPOINT:-}
+  CREATOR_TRANSCRIPT_ASSIST_ALLOWED_ORIGINS: ${CREATOR_TRANSCRIPT_ASSIST_ALLOWED_ORIGINS:-}
+  CREATOR_DUB_COMMAND: ${CREATOR_DUB_COMMAND:-}
+  CREATOR_DUB_ENDPOINT: ${CREATOR_DUB_ENDPOINT:-}
+  CREATOR_DUB_ALLOWED_ORIGINS: ${CREATOR_DUB_ALLOWED_ORIGINS:-}
+  CREATOR_DUB_KEY: ${CREATOR_DUB_KEY:-}
+  CREATOR_DUB_VERIFIED_VOICES: ${CREATOR_DUB_VERIFIED_VOICES:-}
+
 services:
   postgres:
     image: postgres:17.6-alpine
@@ -38,8 +48,10 @@ services:
       STORAGE_DRIVER: local
       MEDIA_DIR: /app/media
       MEDIA_MAX_UPLOAD_BYTES: ${MEDIA_MAX_UPLOAD_BYTES:-26214400}
+      MEDIA_MIN_FREE_BYTES: ${MEDIA_MIN_FREE_BYTES:-0}
       CREATOR_UPLOAD_SCANNER: ${CREATOR_UPLOAD_SCANNER:-}
       CREATOR_UPLOAD_REQUIRE_SCANNER: ${CREATOR_UPLOAD_REQUIRE_SCANNER:-false}
+      WEBHOOK_ALLOWED_ORIGINS: ${WEBHOOK_ALLOWED_ORIGINS:-}
       EMAIL_MODE: ${EMAIL_MODE:-disabled}
       EMAIL_FROM: ${EMAIL_FROM:-}
       SMTP_HOST: ${SMTP_HOST:-}
@@ -92,7 +104,8 @@ services:
   renegade-web:
     image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     restart: unless-stopped
-    environment: *app_environment
+    environment:
+      <<: [*app_environment, *creator_adapters]
     ports:
       - '${RENEGADE_WEB_BIND:-127.0.0.1:3000}:3000'
     volumes:
@@ -119,10 +132,12 @@ services:
     restart: unless-stopped
     environment:
       <<: *app_environment
+      WORKER_DELEGATE_MEDIA: ${WORKER_DELEGATE_MEDIA:-false}
       WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-10000}
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/heartbeat.json
       WORKER_HEARTBEAT_MAX_AGE_MS: ${WORKER_HEARTBEAT_MAX_AGE_MS:-45000}
-    command: ['npm', 'run', 'jobs:worker']
+    command: ['node', '--import', 'tsx', 'src/scripts/run-jobs-worker.ts']
+    stop_grace_period: 35s
     volumes:
       - renegade_media:/app/media
       - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro
@@ -150,7 +165,8 @@ services:
       WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-10000}
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/account-heartbeat.json
       WORKER_HEARTBEAT_MAX_AGE_MS: ${WORKER_HEARTBEAT_MAX_AGE_MS:-45000}
-    command: ['npm', 'run', 'jobs:worker']
+    command: ['node', '--import', 'tsx', 'src/scripts/run-jobs-worker.ts']
+    stop_grace_period: 35s
     volumes:
       - renegade_media:/app/media
     depends_on:
@@ -163,6 +179,34 @@ services:
       retries: 12
       start_period: 20s
 
+  media-worker:
+    profiles: ['media-worker']
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *app_environment
+      WORKER_PROFILE: media
+      WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/media-heartbeat.json
+    command: ['node', '--import', 'tsx', 'src/scripts/run-jobs-worker.ts']
+    stop_grace_period: 35s
+    volumes:
+      - renegade_media:/app/media
+      - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', 'docker/worker-healthcheck.mjs']
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '${MEDIA_WORKER_CPU_LIMIT:-1.0}'
+          memory: ${MEDIA_WORKER_MEMORY_LIMIT:-768M}
+
   media-heavy:
     profiles: ['media-heavy']
     build:
@@ -174,14 +218,16 @@ services:
     image: ${RENEGADE_MEDIA_HEAVY_IMAGE:-renegade-cms-media-heavy}:${RENEGADE_IMAGE_TAG:-local}
     restart: unless-stopped
     environment:
-      <<: *app_environment
+      <<: [*app_environment, *creator_adapters]
       WORKER_PROFILE: media-heavy
       WORKER_POLL_INTERVAL_MS: ${MEDIA_HEAVY_POLL_INTERVAL_MS:-10000}
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/media-heavy-heartbeat.json
       VIDEO_JOB_CONCURRENCY: ${VIDEO_JOB_CONCURRENCY:-1}
       VIDEO_FFMPEG_THREADS: ${VIDEO_FFMPEG_THREADS:-1}
       VIDEO_PROCESSOR: ${VIDEO_PROCESSOR:-local-ffmpeg}
-    command: ['npm', 'run', 'jobs:worker']
+      CREATOR_TRANSCRIPT_ASSIST_KEY: ${CREATOR_TRANSCRIPT_ASSIST_KEY:-}
+    command: ['node', '--import', 'tsx', 'src/scripts/run-jobs-worker.ts']
+    stop_grace_period: 35s
     volumes:
       - renegade_media:/app/media
       - ./vendor/ffmpeg:/app/vendor/ffmpeg:ro

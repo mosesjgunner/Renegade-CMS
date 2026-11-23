@@ -1,5 +1,5 @@
 import { assertDestructiveOperationAuthorized } from '../modules/operations/lifecycle'
-import { has, runDocker, value } from './operational-compose'
+import { assertOptionalWritersPaused, has, runDocker, value } from './operational-compose'
 
 const target = {
   composeFile: value('--compose-file', 'compose.production.yaml')!,
@@ -16,6 +16,7 @@ if (has('--enable')) {
     operation: 'upgrade',
     maintenanceWindowConfirmed: has('--maintenance-window-confirmed'),
   })
+  await assertOptionalWritersPaused(target)
   await runDocker(target, ['stop', 'renegade-web', 'renegade-worker'])
   console.log('Maintenance mode enabled: web and worker are stopped; PostgreSQL remains running.')
 } else {

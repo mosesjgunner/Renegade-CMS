@@ -1,5 +1,5 @@
 import { createHmac } from 'node:crypto'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import {
   assertSafeOutboundUrl,
@@ -9,6 +9,8 @@ import {
   safeRelativeRedirect,
 } from '../../src/modules/core/external-boundary'
 import { safeUploadMetadata } from '../../src/modules/audience/contracts'
+import { validateTarget } from '../../src/modules/live-media/destination-credentials'
+import { supportedTarget } from '../../src/modules/integrations/webhooks'
 import {
   createDevelopmentAdapter,
   sameCommerceScope,
@@ -18,6 +20,26 @@ import {
 const publicDns = async () => [{ address: '93.184.216.34' }]
 
 describe('external boundary hardening', () => {
+  it('requires an explicit production webhook origin and a separately approved local relay fixture', () => {
+    try {
+      vi.stubEnv('NODE_ENV', 'production')
+      vi.stubEnv('VITEST', 'false')
+      vi.stubEnv('WEBHOOK_ALLOWED_ORIGINS', 'https://approved.example.test')
+      expect(supportedTarget('https://approved.example.test/webhook').pathname).toBe('/webhook')
+      expect(() => supportedTarget('https://other.example.test/webhook')).toThrow('allowlisted')
+      expect(() => supportedTarget('http://127.0.0.1:8888/webhook')).toThrow('HTTPS')
+      vi.stubEnv('LIVE_DESTINATION_ENDPOINTS', 'rtmp://receiver:1935,rtmps://live.example.test:443')
+      vi.stubEnv('LIVE_DESTINATION_FIXTURE_ENDPOINTS', '')
+      expect(() => validateTarget('custom', 'rtmp://receiver/live', 'fixture')).toThrow('RTMPS')
+      expect(
+        validateTarget('custom', 'rtmps://live.example.test/live', 'fixture').localFixture,
+      ).toBe(false)
+      vi.stubEnv('LIVE_DESTINATION_FIXTURE_ENDPOINTS', 'rtmp://receiver:1935')
+      expect(validateTarget('custom', 'rtmp://receiver/live', 'fixture').localFixture).toBe(true)
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
   it('rejects bracketed, mapped and link-local IPv6 private destinations', async () => {
     for (const address of [
       '[::1]',
@@ -25,12 +47,46 @@ describe('external boundary hardening', () => {
       '[::ffff:7f00:1]',
       '::ffff:a00:1',
       'fea0::1',
+      '100.64.0.1',
+      '192.0.0.1',
+      '198.18.0.1',
+      '64:ff9b::a00:1',
+      '::10.0.0.1',
+      '0:0:0:0:0:ffff:0a00:1',
+      '2002:a00:1::',
+      'ff02::1',
     ]) {
       expect(isPrivateAddress(address)).toBe(true)
     }
     for (const host of ['[::1]', '[::ffff:127.0.0.1]', '[::ffff:10.0.0.1]']) {
       await expect(assertSafeOutboundUrl(`https://${host}/`, publicDns)).rejects.toThrow('private')
     }
+    expect(isPrivateAddress('2606:4700::1111')).toBe(false)
+    expect(isPrivateAddress('fcdn.example.test')).toBe(false)
+  })
+
+  it('checks exact configured origins before DNS and rejects mixed public and private results', async () => {
+    const resolve = vi.fn(publicDns)
+    const fetcher = vi.fn<typeof fetch>()
+    await expect(
+      safeFetch(
+        'https://allowed.example.test:8443/',
+        {},
+        {
+          resolve,
+          fetcher,
+          allowedOrigins: 'https://allowed.example.test',
+        },
+      ),
+    ).rejects.toThrow('allowlisted')
+    expect(resolve).not.toHaveBeenCalled()
+    expect(fetcher).not.toHaveBeenCalled()
+    await expect(
+      assertSafeOutboundUrl('https://allowed.example.test', async () => [
+        { address: '93.184.216.34' },
+        { address: '::ffff:127.0.0.1' },
+      ]),
+    ).rejects.toThrow('private')
   })
 
   it('rejects cross-origin redirects before forwarding provider credentials', async () => {

@@ -3,6 +3,7 @@ import { createServer, connect, type Socket } from 'node:net'
 import { connect as connectTls } from 'node:tls'
 import { setTimeout as delay } from 'node:timers/promises'
 import { Client } from 'pg'
+import { safeSocketLookup } from '../modules/core/external-boundary'
 import {
   decryptDestination,
   destinationKey,
@@ -54,7 +55,11 @@ function targetFor(destination: Destination) {
 }
 
 function dial(target: Target, ready: () => void) {
-  const options = { host: target.url.hostname, port: target.port }
+  const options = {
+    host: target.url.hostname,
+    port: target.port,
+    lookup: safeSocketLookup(target.localFixture),
+  }
   return target.url.protocol === 'rtmps:'
     ? connectTls({ ...options, servername: options.host, rejectUnauthorized: true }, ready)
     : connect(options, ready)

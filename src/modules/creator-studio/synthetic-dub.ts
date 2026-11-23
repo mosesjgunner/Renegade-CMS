@@ -310,18 +310,26 @@ export async function dubAction(
 async function synthesize(input: Scope, parts: Awaited<ReturnType<typeof verifiedInputs>>) {
   const body = JSON.stringify({ ...parts, voice: input.voice })
   if (input.adapter === 'byo-http') {
-    const response = await fetch(process.env.CREATOR_DUB_ENDPOINT!, {
-      method: 'POST',
-      redirect: 'error',
-      signal: AbortSignal.timeout(180_000),
-      headers: {
-        'content-type': 'application/json',
-        ...(process.env.CREATOR_DUB_KEY
-          ? { authorization: 'Bearer ' + process.env.CREATOR_DUB_KEY }
-          : {}),
+    const { safeFetch } = await import('../core/external-boundary')
+    const response = await safeFetch(
+      process.env.CREATOR_DUB_ENDPOINT!,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          ...(process.env.CREATOR_DUB_KEY
+            ? { authorization: 'Bearer ' + process.env.CREATOR_DUB_KEY }
+            : {}),
+        },
+        body,
       },
-      body,
-    })
+      {
+        allowedOrigins: process.env.CREATOR_DUB_ALLOWED_ORIGINS ?? '',
+        maxRedirects: 0,
+        maxBytes: maxAudioBytes,
+        timeoutMs: 180_000,
+      },
+    )
     if (!response.ok || !response.body) throw new Error('Dub provider failed.')
     return readBoundedUploadBody(
       new Request('http://local.invalid/', {

@@ -1,4 +1,4 @@
-import { isIP } from 'node:net'
+import { isIP, type LookupFunction } from 'node:net'
 import { lookup } from 'node:dns/promises'
 import { Agent } from 'undici'
 
@@ -23,33 +23,71 @@ export function isPrivateAddress(address: string): boolean {
   }
   if (address.startsWith('::ffff:')) return isPrivateAddress(address.slice(7))
   if (isIP(address) === 4) {
-    const [a, b] = address.split('.').map(Number)
+    const [a, b, c] = address.split('.').map(Number)
     return (
       a === 0 ||
       a === 10 ||
       a === 127 ||
       a >= 224 ||
+      (a === 192 && b === 0 && (c === 0 || c === 2)) ||
+      (a === 192 && b === 88 && c === 99) ||
+      (a === 198 && (b === 18 || b === 19)) ||
+      (a === 198 && b === 51 && c === 100) ||
+      (a === 203 && b === 0 && c === 113) ||
       (a === 169 && b === 254) ||
       (a === 172 && b >= 16 && b <= 31) ||
       (a === 100 && b >= 64 && b <= 127) ||
       (a === 192 && b === 168)
     )
   }
-  const normalized = address
+  if (isIP(address) !== 6) return false
+  const normalized = new URL(`https://[${address}]/`).hostname.slice(1, -1)
+  if (normalized.startsWith('::ffff:')) return isPrivateAddress(normalized)
+  const [first, second] = normalized.split(':').map((group) => parseInt(group, 16) || 0)
   return (
-    normalized === '::1' ||
-    normalized === '::' ||
-    normalized.startsWith('fc') ||
-    normalized.startsWith('fd') ||
-    /^fe[89ab][0-9a-f]:/.test(normalized)
+    first < 0x2000 ||
+    first > 0x3fff ||
+    first === 0x2002 ||
+    first === 0x3fff ||
+    (first === 0x2001 && (second < 0x0200 || second === 0x0db8))
   )
+}
+
+export function assertAllowedOutboundOrigin(url: URL, configuredOrigins: string | undefined) {
+  const allowed = configuredOrigins?.split(',').map((origin) => origin.trim())
+  if (!allowed?.includes(url.origin)) throw new Error('Outbound origin is not allowlisted.')
+}
+
+export function safeSocketLookup(allowPrivate = false): LookupFunction {
+  return (hostname, options, callback) => {
+    lookup(hostname, { all: true, verbatim: true })
+      .then((addresses) => {
+        if (
+          !addresses.length ||
+          (!allowPrivate && addresses.some(({ address }) => isPrivateAddress(address)))
+        ) {
+          callback(new Error('Outbound URL resolves to a private destination.'), '', 0)
+          return
+        }
+        const candidates = options.family
+          ? addresses.filter(({ family }) => family === options.family)
+          : addresses
+        if (!candidates.length) {
+          callback(new Error('Outbound destination has no usable address family.'), '', 0)
+          return
+        }
+        if (options.all) callback(null, candidates)
+        else callback(null, candidates[0].address, candidates[0].family)
+      })
+      .catch((error: Error) => callback(error, '', 0))
+  }
 }
 
 /** Validates every hop before a server-side request. DNS is resolved first to block SSRF. */
 export async function assertSafeOutboundUrl(
   value: string,
   resolve: Lookup = lookup,
-  options: { allowHttp?: boolean; allowPrivate?: boolean } = {},
+  options: { allowHttp?: boolean; allowPrivate?: boolean; allowedOrigins?: string } = {},
 ): Promise<URL> {
   let url: URL
   try {
@@ -66,10 +104,16 @@ export async function assertSafeOutboundUrl(
     url.password
   )
     throw new Error('Outbound URL must be an unauthenticated HTTPS URL.')
-  const addresses = await resolve(url.hostname, { all: true, verbatim: true })
+  if (options.allowedOrigins !== undefined) assertAllowedOutboundOrigin(url, options.allowedOrigins)
+  const hostname = url.hostname.replace(/^\[|\]$/g, '')
+  const addresses = isIP(hostname)
+    ? [{ address: hostname }]
+    : await resolve(hostname, { all: true, verbatim: true })
   if (
     !addresses.length ||
-    (!options.allowPrivate && addresses.some(({ address }) => isPrivateAddress(address)))
+    addresses.some(
+      ({ address }) => !isIP(address) || (!options.allowPrivate && isPrivateAddress(address)),
+    )
   )
     throw new Error('Outbound URL resolves to a private destination.')
   return url
@@ -88,6 +132,7 @@ export async function safeFetch(
     allowedContentTypes?: readonly string[]
     retries?: number
     maxRedirects?: number
+    allowedOrigins?: string
   } = {},
 ): Promise<Response> {
   const fetcher = options.fetcher ?? fetch
@@ -104,22 +149,7 @@ export async function safeFetch(
       ? undefined
       : new Agent({
           connect: {
-            lookup: (hostname, lookupOptions, callback) => {
-              lookup(hostname, { all: true, verbatim: true })
-                .then((addresses) => {
-                  if (
-                    !addresses.length ||
-                    (!options.allowPrivate &&
-                      addresses.some(({ address }) => isPrivateAddress(address)))
-                  ) {
-                    callback(new Error('Outbound URL resolves to a private destination.'), [], 4)
-                    return
-                  }
-                  if (lookupOptions.all) callback(null, addresses)
-                  else callback(null, addresses[0].address, addresses[0].family)
-                })
-                .catch((error: Error) => callback(error, [], 4))
-            },
+            lookup: safeSocketLookup(options.allowPrivate),
           },
         })
     let response: Response
@@ -134,14 +164,18 @@ export async function safeFetch(
       void agent?.close()
     }
     if (![301, 302, 303, 307, 308].includes(response.status)) {
-      if (Number(response.headers.get('content-length') ?? 0) > maxBytes)
+      if (Number(response.headers.get('content-length') ?? 0) > maxBytes) {
+        await response.body?.cancel()
         throw new Error('Outbound response exceeds the size limit.')
+      }
       const contentType = response.headers.get('content-type')?.split(';')[0].toLowerCase()
       if (
         options.allowedContentTypes &&
         (!contentType || !options.allowedContentTypes.includes(contentType))
-      )
+      ) {
+        await response.body?.cancel()
         throw new Error('Outbound response has an unsupported content type.')
+      }
       return response
     }
     const location = response.headers.get('location')

@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { mkdtemp, readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { loadConfig } from '../../src/modules/core/config'
 import {
   inspectAudioMetadata,
   inspectMedia,
   localMediaStorage,
+  MediaCapacityError,
   mediaObjectKey,
 } from '../../src/modules/media/storage'
 import {
@@ -23,6 +24,23 @@ const png = Uint8Array.from([
 ])
 
 describe('media storage', () => {
+  it('preserves existing objects when the local volume reaches its reserve', async () => {
+    const directory = await mkdtemp(path.join(os.tmpdir(), 'media-capacity-'))
+    try {
+      const storage = localMediaStorage(directory)
+      vi.stubEnv('MEDIA_MIN_FREE_BYTES', '0')
+      await storage.put('original.png', png, 'image/png')
+      vi.stubEnv('MEDIA_MIN_FREE_BYTES', String(Number.MAX_SAFE_INTEGER))
+      await expect(storage.put('variant.png', png, 'image/png')).rejects.toBeInstanceOf(
+        MediaCapacityError,
+      )
+      expect(await storage.get('original.png')).toEqual(Buffer.from(png))
+      expect(await readdir(directory)).toEqual(['original.png'])
+    } finally {
+      vi.unstubAllEnvs()
+      await rm(directory, { recursive: true, force: true })
+    }
+  })
   it('sniffs bytes rather than trusting a filename and reports image metadata', () => {
     expect(inspectMedia(png)).toMatchObject({ mimeType: 'image/png', width: 2, height: 3 })
     expect(() => inspectMedia(new TextEncoder().encode('<script>alert(1)</script>'))).toThrow(

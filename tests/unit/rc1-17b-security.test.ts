@@ -89,16 +89,23 @@ describe('assertSafeOutboundUrl', () => {
 })
 
 describe('supportedTarget posture', () => {
-  const saved = { vitest: process.env.VITEST, nodeEnv: process.env.NODE_ENV }
+  const saved = {
+    vitest: process.env.VITEST,
+    nodeEnv: process.env.NODE_ENV,
+    allowedOrigins: process.env.WEBHOOK_ALLOWED_ORIGINS,
+  }
   afterEach(() => {
     if (saved.vitest === undefined) delete process.env.VITEST
     else process.env.VITEST = saved.vitest
     env.NODE_ENV = saved.nodeEnv
+    if (saved.allowedOrigins === undefined) delete process.env.WEBHOOK_ALLOWED_ORIGINS
+    else process.env.WEBHOOK_ALLOWED_ORIGINS = saved.allowedOrigins
   })
 
   it('production posture rejects loopback HTTP, private and metadata targets but accepts public HTTPS', () => {
     delete process.env.VITEST
     env.NODE_ENV = 'development'
+    process.env.WEBHOOK_ALLOWED_ORIGINS = 'https://hooks.example.com'
     expect(() => supportedTarget('http://127.0.0.1:39177/hook')).toThrow()
     expect(() => supportedTarget('https://169.254.169.254/hook')).toThrow()
     expect(() => supportedTarget('https://10.0.0.9/hook')).toThrow()

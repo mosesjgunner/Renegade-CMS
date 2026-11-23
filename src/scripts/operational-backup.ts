@@ -43,6 +43,10 @@ const composeArgs = [
   ]),
   '--profile',
   'media-heavy',
+  '--profile',
+  'media-worker',
+  '--profile',
+  'email-account',
 ]
 await assertOperationalEnv(envFile)
 

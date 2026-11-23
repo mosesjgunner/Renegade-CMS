@@ -6,10 +6,11 @@
 import { request as httpRequest } from 'node:http'
 import { request as httpsRequest } from 'node:https'
 
-import { assertSafeOutboundUrl, type Lookup } from '../core/external-boundary'
+import { assertSafeOutboundUrl, safeSocketLookup, type Lookup } from '../core/external-boundary'
 
 export const DISCOVERY_AUDIT_RULE_VERSION = '1.0.0'
 const REDIRECTS = new Set([301, 302, 303, 307, 308])
+const MAX_RENDERED_PAGE_BYTES = 2 * 1024 * 1024
 
 export type AuditSeverity = 'informational' | 'warning' | 'publication_blocking'
 export type RenderedAuditIssue = {
@@ -286,10 +287,11 @@ export function inspectRenderedHtml(
 }
 
 /** GET via node:http/https so a Host header can be presented; fetch cannot set one. */
-function requestWithHostHeader(
+function requestRenderedPage(
   url: URL,
-  hostHeader: string,
+  hostHeader: string | undefined,
   timeoutMs: number,
+  allowPrivate: boolean | undefined,
 ): Promise<{ status: number; html: string }> {
   return new Promise((resolvePromise, rejectPromise) => {
     const transport = url.protocol === 'https:' ? httpsRequest : httpRequest
@@ -297,21 +299,35 @@ function requestWithHostHeader(
       url,
       {
         method: 'GET',
-        headers: { Host: hostHeader, Accept: 'text/html,application/xhtml+xml' },
+        headers: {
+          ...(hostHeader ? { Host: hostHeader } : {}),
+          Accept: 'text/html,application/xhtml+xml',
+        },
+        lookup: safeSocketLookup(allowPrivate),
+        signal: AbortSignal.timeout(timeoutMs),
+        agent: false,
       },
       (res) => {
         const status = res.statusCode || 0
         if (REDIRECTS.has(status)) {
-          res.resume()
+          res.destroy()
           resolvePromise({ status, html: '' })
           return
         }
-        let body = ''
-        res.setEncoding('utf8')
-        res.on('data', (chunk: string) => {
-          body += chunk
+        const chunks: Buffer[] = []
+        let bytes = 0
+        res.on('data', (chunk: Buffer) => {
+          bytes += chunk.length
+          if (bytes > MAX_RENDERED_PAGE_BYTES) {
+            res.destroy(new Error('Rendered page exceeds the audit size limit.'))
+            return
+          }
+          chunks.push(chunk)
         })
-        res.on('end', () => resolvePromise({ status, html: body }))
+        res.on('error', rejectPromise)
+        res.on('end', () =>
+          resolvePromise({ status, html: Buffer.concat(chunks).toString('utf8') }),
+        )
       },
     )
     req.setTimeout(timeoutMs, () =>
@@ -350,8 +366,13 @@ async function request(
   const canonicalOrigin = new URL(url).origin
   const finalUrl =
     safe.origin === fetchBase ? `${canonicalOrigin}${safe.pathname}${safe.search}` : safe.toString()
-  if (!options.fetcher && hostOverride) {
-    const response = await requestWithHostHeader(safe, hostOverride, options.timeoutMs || 10_000)
+  if (!options.fetcher) {
+    const response = await requestRenderedPage(
+      safe,
+      hostOverride,
+      options.timeoutMs || 10_000,
+      options.allowPrivate,
+    )
     return { status: response.status, finalUrl, html: response.html }
   }
   const response = await (options.fetcher || fetch)(safe, {

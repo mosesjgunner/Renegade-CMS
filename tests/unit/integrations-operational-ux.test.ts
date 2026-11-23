@@ -290,7 +290,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       let signatureReceived: string | null = null
 
       const mockLocalReceiver: typeof fetch = async (url, init) => {
-        expect(url.toString()).toContain('localhost')
+        expect(url.toString()).toContain('127.0.0.1')
         const headers = init?.headers as Record<string, string>
         signatureReceived = headers['x-renegade-signature']
         const body = JSON.parse(String(init?.body))
@@ -302,7 +302,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       }
 
       await verifyWebhookEndpoint(
-        'http://localhost:3000/api/webhook-receiver',
+        'http://127.0.0.1:3000/api/webhook-receiver',
         'test-secret-key',
         mockLocalReceiver,
       )
@@ -316,7 +316,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
         new Response('Unauthorized', { status: 401 })
 
       await expect(
-        verifyWebhookEndpoint('http://localhost:3000/bad-receiver', 'secret', failingReceiver),
+        verifyWebhookEndpoint('http://127.0.0.1:3000/bad-receiver', 'secret', failingReceiver),
       ).rejects.toThrow(/HTTP 401/)
     })
   })

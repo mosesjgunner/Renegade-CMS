@@ -5,6 +5,7 @@ import {
 } from '../modules/operations/lifecycle'
 import { verifyOperationalBackup } from '../modules/operations/backup'
 import {
+  assertOptionalWritersPaused,
   has,
   imageSourceSha,
   migrationState,
@@ -35,6 +36,7 @@ const rollbackTarget: ComposeTarget = {
   imageTag: targetImageTag,
   appVersion: targetVersion,
 }
+await assertOptionalWritersPaused(target)
 const backup = await verifyOperationalBackup(archive)
 assertRestoreVersionCompatibility({ archiveVersion: backup.renegade.version, targetVersion })
 assertRollbackSchemaCompatibility({
@@ -44,6 +46,7 @@ assertRollbackSchemaCompatibility({
 
 await runDocker(rollbackTarget, ['pull', 'renegade-web', 'renegade-worker'])
 rollbackTarget.buildSha = await imageSourceSha(rollbackTarget)
+await assertOptionalWritersPaused(target)
 await runDocker(target, ['stop', 'renegade-web', 'renegade-worker'])
 try {
   await runDocker(rollbackTarget, [

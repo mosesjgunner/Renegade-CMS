@@ -52,7 +52,10 @@ async function controlRequest(resource, method = 'GET', body) {
 const host = await chromium.launch({
   args: ['--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'],
 })
-const viewer = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] })
+const viewer = await chromium.launch({
+  executablePath: process.env.CRE08_VIEWER_EXECUTABLE,
+  args: ['--autoplay-policy=no-user-gesture-required'],
+})
 await new Promise((resolve) => server.listen(3908, '127.0.0.1', resolve))
 try {
   const response = await fetch(`${control}/v3/config/paths/get/${path}`)
@@ -75,11 +78,21 @@ try {
   const play = () =>
     player.evaluate((url) => {
       const video = document.querySelector('video')
-      window.hls?.destroy()
-      window.hls = new window.Hls()
-      window.hls.loadSource(url)
-      window.hls.attachMedia(video)
-      video.play().catch(() => {})
+      clearTimeout(window.playbackRetry)
+      const connect = () => {
+        window.hls?.destroy()
+        window.hls = new window.Hls()
+        window.hls.on(window.Hls.Events.ERROR, (_, data) => {
+          if (data.fatal) {
+            clearTimeout(window.playbackRetry)
+            window.playbackRetry = setTimeout(connect, 3000)
+          }
+        })
+        window.hls.loadSource(url)
+        window.hls.attachMedia(video)
+        video.play().catch(() => {})
+      }
+      connect()
     }, `${delivery}/${path}/index.m3u8`)
   const waitForSource = () =>
     publisher.waitForFunction(() => window.publisher?.peer.connectionState === 'connected', {

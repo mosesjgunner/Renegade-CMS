@@ -6,6 +6,7 @@ import {
   type UpgradeBackup,
 } from '../modules/operations/lifecycle'
 import {
+  assertOptionalWritersPaused,
   captureDocker,
   has,
   imageSourceSha,
@@ -78,6 +79,7 @@ assertDestructiveOperationAuthorized({
   operation: 'upgrade',
   maintenanceWindowConfirmed: has('--maintenance-window-confirmed'),
 })
+await assertOptionalWritersPaused(target)
 if (backup.kind === 'existing') await verifyOperationalBackup(backup.archive)
 else await createBackup()
 
@@ -87,6 +89,7 @@ try {
   // Derive the new runtime identity only after the old installation's backup.
   // The operator's existing env file still describes the predecessor image.
   upgradedTarget.buildSha = await imageSourceSha(upgradedTarget)
+  await assertOptionalWritersPaused(target)
   await runDocker(target, ['stop', 'renegade-web', 'renegade-worker'])
   maintenanceActive = true
   await runDocker(upgradedTarget, ['run', '--rm', '--no-deps', 'migrate'])

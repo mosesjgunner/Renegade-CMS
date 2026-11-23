@@ -1,12 +1,12 @@
 # External live destinations
 
-The MediaMTX profile can send a public Theater broadcast to custom RTMP or RTMPS ingest, YouTube Live with a Live Control Room encoder key, or Twitch with an authorized Creator Dashboard key. The destination credential and recorded operator authorization govern broadcast access independently of social publishing connections. [YouTube RTMPS setup](https://support.google.com/youtube/answer/10364924) · [Twitch stream keys](https://help.twitch.tv/s/article/twitch-stream-key-faq?language=en_US)
+The MediaMTX profile can send a public Theater broadcast to custom RTMPS ingest and supported RTMPS endpoints with an authorized provider key. The destination credential and recorded operator authorization govern broadcast access independently of social publishing connections. [YouTube RTMPS setup](https://support.google.com/youtube/answer/10364924) · [Twitch stream keys](https://help.twitch.tv/s/article/twitch-stream-key-faq?language=en_US)
 
 ## Enable the worker
 
 Set `LIVE_DESTINATION_ENCRYPTION_KEY` to a dedicated random 32-byte value encoded as 64 hex characters. Inject the same value into the web and relay services. Keep it outside application backups. When rotating the encryption key, revoke the old configurations and add new ones using the new encryption key.
 
-Set `LIVE_DESTINATION_ENDPOINTS` to the comma-separated operator-approved `scheme://hostname:port` entries. Include default port numbers explicitly and approve hosts with trusted DNS and network destinations. Use RTMPS for Internet destinations that support it. Plain RTMP carries the key and media without transport encryption.
+Set `LIVE_DESTINATION_ENDPOINTS` to the comma-separated operator-approved `rtmps://hostname:port` entries. Include default port numbers explicitly. The relay rejects non-public DNS answers and checks the TLS certificate. An isolated local receiver needs an additional exact entry in `LIVE_DESTINATION_FIXTURE_ENDPOINTS` and must use the custom provider. Use that setting only for fixtures on a dedicated network. Plain RTMP carries the key and media without transport encryption.
 
 ```sh
 docker compose --env-file .env.production \
@@ -30,7 +30,7 @@ Operational backups keep destination settings and history and exclude the creden
 
 Use a dedicated `cre10_release_acceptance` database and the live gateway with non-media requests proxied to Renegade. With Next dev, forward WebSocket upgrades as well. Set `CRE10_GATEWAY_PORT` to the gateway port and `CRE10_WEB_LOG` to the development web log path to include it in redaction checks. The test uses Docker network `cre10-proof` with containers named `cre10-proof-db`, `cre10-source`, `cre10-gateway`, `cre10-relay`, `cre10-receiver-a`, and `cre10-receiver-b`. Each receiver listens privately on RTMP port 1935 and Control API port 9997 with fixture publish and API access. Expose the source replay API on loopback port 4596. Set `CRE10_FIXTURE_IMAGE` to a local image with FFmpeg available on PATH, or use `renegade-cms:local`.
 
-To run the encrypted receiver variant, set `CRE10_RECEIVER_B_INGEST=rtmps://cre10-receiver-b:1936/live`. Configure receiver B for strict RTMPS with a certificate for its container hostname. Add the endpoint to both services' allowlists and trust the fixture CA in the relay process. [MediaMTX configuration](https://mediamtx.org/docs/references/configuration-file)
+Configure both the web service and relay with the fixture receiver endpoints in `LIVE_DESTINATION_ENDPOINTS` and `LIVE_DESTINATION_FIXTURE_ENDPOINTS`. To run the encrypted receiver variant, set `CRE10_RECEIVER_B_INGEST=rtmps://cre10-receiver-b:1936/live`. Configure receiver B for strict RTMPS with a certificate for its container hostname. Add that endpoint to both allowlists and trust the fixture CA in the relay process. [MediaMTX configuration](https://mediamtx.org/docs/references/configuration-file)
 
 ```powershell
 npm.cmd run test:integration -- tests/integration/cre10-destinations.integration.test.ts

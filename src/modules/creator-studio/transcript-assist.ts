@@ -5,7 +5,7 @@ import path from 'node:path'
 import { promisify } from 'node:util'
 import type { Payload, TaskConfig } from 'payload'
 import { z } from 'zod'
-import { readBoundedJson } from '../core/external-boundary'
+import { readBoundedJson, safeFetch } from '../core/external-boundary'
 import { transcriptChecksum } from '../media/contracts'
 import { withUploadLock } from '../media/upload-staging'
 import { MediaWorkflowError } from '../media/workflow'
@@ -149,18 +149,25 @@ async function runAdapter(input: Assist, segments: ReturnType<typeof revisionSeg
       await rm(directory, { recursive: true, force: true })
     }
   }
-  const response = await fetch(process.env.CREATOR_TRANSCRIPT_ASSIST_ENDPOINT!, {
-    method: 'POST',
-    redirect: 'error',
-    signal: AbortSignal.timeout(120_000),
-    headers: {
-      'content-type': 'application/json',
-      ...(process.env.CREATOR_TRANSCRIPT_ASSIST_KEY
-        ? { authorization: 'Bearer ' + process.env.CREATOR_TRANSCRIPT_ASSIST_KEY }
-        : {}),
+  const response = await safeFetch(
+    process.env.CREATOR_TRANSCRIPT_ASSIST_ENDPOINT!,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        ...(process.env.CREATOR_TRANSCRIPT_ASSIST_KEY
+          ? { authorization: 'Bearer ' + process.env.CREATOR_TRANSCRIPT_ASSIST_KEY }
+          : {}),
+      },
+      body: request,
     },
-    body: request,
-  })
+    {
+      allowedOrigins: process.env.CREATOR_TRANSCRIPT_ASSIST_ALLOWED_ORIGINS ?? '',
+      maxRedirects: 0,
+      maxBytes: limit,
+      timeoutMs: 120_000,
+    },
+  )
   if (!response.ok) throw new Error('Transcript provider rejected the request.')
   return readBoundedJson(response, limit)
 }

@@ -50,6 +50,8 @@ import {
 import type { StreamProfile } from '../../src/modules/podcast-studio/live/stream-profile'
 import { createFfmpegRelaySpawner } from '../../src/modules/podcast-studio/live/relay-process'
 import { GET as captionsRouteGET } from '../../src/app/(frontend)/video-captions/[id]/route'
+import { GET as renditionRouteGET } from '../../src/app/(frontend)/video-media/[id]/[filename]/route'
+import { HEAD as renditionRouteHEAD } from '../../src/app/(frontend)/video-media/[id]/[filename]/route'
 
 const execFileAsync = promisify(execFile)
 
@@ -62,6 +64,10 @@ let scope: { kind: 'site'; siteId: string }
 let suffix: string
 let tmpDir: string
 let createdVideoAssetId: string | undefined
+let otherSiteId: string | undefined
+let priorOrigins: Record<string, string> | undefined
+const videoHost = () => `video-${suffix}.example.test`
+const otherHost = () => `other-${suffix}.example.test`
 
 const findOne = async (collection: string, where: Record<string, unknown>) => {
   const result = (await payload.find({
@@ -107,6 +113,24 @@ afterAll(async () => {
     }).catch(() => undefined)
   }
   if (tmpDir) await rm(tmpDir, { recursive: true, force: true }).catch(() => undefined)
+  if (priorOrigins)
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: { canonicalOriginsBySite: priorOrigins },
+      overrideAccess: true,
+    })
+  if (otherSiteId) {
+    const publications = await payload.find({
+      collection: 'publications',
+      where: { site: { equals: otherSiteId } },
+      depth: 0,
+      pagination: false,
+      overrideAccess: true,
+    })
+    for (const publication of publications.docs)
+      await payload.delete({ collection: 'publications', id: publication.id, overrideAccess: true })
+    await payload.delete({ collection: 'sites', id: otherSiteId, overrideAccess: true })
+  }
   await payload?.db.destroy?.()
 })
 
@@ -268,12 +292,69 @@ describe('RC3-18 #16 video journey', () => {
         String(caption.id),
       )
 
-      // The real captions route serves the WebVTT bytes for a published video…
-      const response = await captionsRouteGET(new Request('http://localhost/'), {
-        params: Promise.resolve({ id: String(caption.id) }),
+      const otherSite = await payload.create({
+        collection: 'sites',
+        data: {
+          name: 'Other video tenant',
+          slug: `other-video-${suffix}`,
+          lifecycle: 'active',
+          communityRegistrationPolicy: 'disabled',
+          commentReactionCodes: [],
+        },
+        overrideAccess: true,
       })
+      otherSiteId = otherSite.id
+      const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })
+      priorOrigins = (settings.canonicalOriginsBySite ?? {}) as Record<string, string>
+      await payload.updateGlobal({
+        slug: 'site-settings',
+        data: {
+          canonicalOriginsBySite: {
+            ...priorOrigins,
+            [site.id]: `https://${videoHost()}`,
+            [otherSite.id]: `https://${otherHost()}`,
+          },
+        },
+        overrideAccess: true,
+      })
+      const mediaRequest = (host: string) =>
+        new Request(`https://${host}/`, { headers: { host, range: 'bytes=0-63' } })
+      const captionParams = { params: Promise.resolve({ id: String(caption.id) }) }
+      const videoParams = {
+        params: Promise.resolve({ id: String(videoAsset.id), filename: 'baseline.mp4' }),
+      }
+      const response = await captionsRouteGET(mediaRequest(videoHost()), captionParams)
       expect(response.status).toBe(200)
       expect(await response.text()).toContain('Hello from the RC318 caption track.')
+      const rendition = await renditionRouteGET(mediaRequest(videoHost()), videoParams)
+      expect(rendition.status).toBe(206)
+      expect(Buffer.from(await rendition.arrayBuffer())).toEqual(
+        Buffer.from(baselineBytes!.slice(0, 64)),
+      )
+      const head = await renditionRouteHEAD(
+        new Request(`https://${videoHost()}/`, { method: 'HEAD', headers: { host: videoHost() } }),
+        videoParams,
+      )
+      expect(head.status).toBe(200)
+      expect(head.headers.get('content-length')).toBe(String(baselineBytes!.byteLength))
+      expect(head.body).toBeNull()
+      const invalidRange = await renditionRouteGET(
+        new Request(`https://${videoHost()}/`, {
+          headers: { host: videoHost(), range: `bytes=${baselineBytes!.byteLength}-` },
+        }),
+        videoParams,
+      )
+      expect(invalidRange.status).toBe(416)
+      expect(invalidRange.headers.get('content-length')).toBeNull()
+      expect(
+        (
+          await renditionRouteGET(mediaRequest(videoHost()), {
+            params: Promise.resolve({ id: randomUUID(), filename: 'baseline.mp4' }),
+          })
+        ).status,
+      ).toBe(404)
+      expect((await captionsRouteGET(mediaRequest(otherHost()), captionParams)).status).toBe(404)
+      expect((await renditionRouteGET(mediaRequest(otherHost()), videoParams)).status).toBe(404)
 
       // …and 404s once the video leaves publication.
       await payload.update({
@@ -282,10 +363,9 @@ describe('RC3-18 #16 video journey', () => {
         data: { status: 'draft' },
         overrideAccess: true,
       } as never)
-      const gone = await captionsRouteGET(new Request('http://localhost/'), {
-        params: Promise.resolve({ id: String(caption.id) }),
-      })
+      const gone = await captionsRouteGET(mediaRequest(videoHost()), captionParams)
       expect(gone.status).toBe(404)
+      expect((await renditionRouteGET(mediaRequest(videoHost()), videoParams)).status).toBe(404)
     },
     180_000,
   )

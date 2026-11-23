@@ -22,6 +22,9 @@ describe('operational Compose targeting', () => {
       'media-heavy',
     ])
     expect(runningBackupWriters('postgres\nrenegade-worker\n')).toEqual(['renegade-worker'])
+    expect(
+      runningBackupWriters('postgres\r\nemail-account-worker\r\nmedia-worker\r\nlive-relay'),
+    ).toEqual(['email-account-worker', 'media-worker', 'live-relay'])
     expect(runningBackupWriters('postgres\n')).toEqual([])
   })
   it('uses the instance persisted with the production environment for every operational command', async () => {

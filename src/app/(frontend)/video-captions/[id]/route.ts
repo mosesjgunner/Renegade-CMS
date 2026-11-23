@@ -6,11 +6,15 @@ import { loadConfig } from '@/modules/core/config'
 import { mediaStorage } from '@/modules/media/storage'
 import { publicMediaPolicyAllows } from '@/modules/media/workflow'
 import { canRenderPublic } from '@/modules/public/contracts'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 
 const identifier = (value: unknown) => String((value as { id?: string } | null)?.id ?? value ?? '')
 
-export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({ config })
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId)
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const caption = (await payload
     .findByID({
       collection: 'video-captions' as never,
@@ -25,6 +29,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     where: {
       and: [
         { id: { equals: identifier(caption.video) } },
+        { site: { equals: siteId } },
         { status: { equals: 'published' } },
         { visibility: { in: ['public', 'unlisted'] } },
       ],
@@ -39,17 +44,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     collection: 'media-assets',
     id: identifier(caption.asset),
     depth: 1,
+    disableErrors: true,
     overrideAccess: true,
-  } as never)) as unknown as Record<string, unknown>
-  if (
-    !publicMediaPolicyAllows(asset) ||
-    !videos.docs.some(
-      (video) =>
-        identifier((video as unknown as Record<string, unknown>).site) === identifier(asset.site),
-    )
-  )
+  } as never)) as unknown as Record<string, unknown> | null
+  if (!asset || identifier(asset.site) !== siteId || !publicMediaPolicyAllows(asset))
     return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
-  const blob = asset.originalBlob as Record<string, unknown>
+  const blob = asset.originalBlob as Record<string, unknown> | undefined
+  if (!blob || identifier(blob.site) !== siteId)
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const bytes = await mediaStorage(loadConfig()).get(String(blob.storageKey))
   if (!bytes) return new NextResponse('Not found', { status: 404 })
   return new NextResponse(Buffer.from(bytes), {

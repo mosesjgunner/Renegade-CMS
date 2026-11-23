@@ -1,6 +1,6 @@
 # Solo live broadcasting
 
-Open a theater as a room manager and expand **Broadcast from this browser**. Check camera, microphone and provider, confirm the muted local preview, choose whether to record, then start. An audience sees a lobby while waiting, a live indicator once the provider receives media, and a reconnecting state when the source drops. Reopening the host room and choosing **Reconnect camera** uses the same session.
+Open a theater as a room manager and expand **Broadcast from this browser**. Check camera, microphone and provider, confirm the muted local preview, choose whether to record, then start. An audience sees a lobby while waiting, a live indicator once the provider receives media, and a reconnecting state when the source drops. Reopening the host room and choosing **Reconnect source** uses the same session.
 
 The browser publishes H.264 and Opus over WHIP. The theater uses HLS, so buffering and keyframe intervals add several seconds of latency and audience chat may arrive before the corresponding video. Test publishing and playback on the browsers and networks in use. [MediaMTX browser publishing](https://mediamtx.org/docs/publish/webrtc-clients) · [MediaMTX HLS codecs](https://mediamtx.org/docs/read/hls)
 
