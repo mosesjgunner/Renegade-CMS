@@ -110,7 +110,11 @@ export function computePeaksFromPcm(
   }
 }
 
-const runFfmpegDecodeToPcm = async (inputPath: string, ffmpeg: string): Promise<Float32Array> =>
+const runFfmpegDecodeToPcm = async (
+  inputPath: string,
+  ffmpeg: string,
+  videoDemuxer?: string,
+): Promise<Float32Array> =>
   await new Promise((resolve, reject) => {
     // Decode to the working format (48 kHz, mono mix-down for the
     // overview lane) as signed 16-bit PCM on stdout.
@@ -119,8 +123,10 @@ const runFfmpegDecodeToPcm = async (inputPath: string, ffmpeg: string): Promise<
       [
         '-v',
         'error',
+        ...(videoDemuxer ? ['-protocol_whitelist', 'file', '-f', videoDemuxer] : []),
         '-i',
         inputPath,
+        ...(videoDemuxer ? ['-t', '120', '-vn'] : []),
         '-ac',
         '1',
         '-ar',
@@ -162,7 +168,7 @@ const runFfmpegDecodeToPcm = async (inputPath: string, ffmpeg: string): Promise<
  */
 export async function generatePeaksForBytes(
   bytes: Uint8Array,
-  options: { ffmpeg?: string; sourceChecksum?: string } = {},
+  options: { ffmpeg?: string; sourceChecksum?: string; videoDemuxer?: string } = {},
 ): Promise<WaveformPeaksData> {
   const sourceChecksum =
     options.sourceChecksum ?? `sha256:${createHash('sha256').update(bytes).digest('hex')}`
@@ -170,7 +176,11 @@ export async function generatePeaksForBytes(
   const input = path.join(directory, 'source')
   try {
     await writeFile(input, bytes)
-    const pcm = await runFfmpegDecodeToPcm(input, resolveFfmpegBinary(options.ffmpeg))
+    const pcm = await runFfmpegDecodeToPcm(
+      input,
+      resolveFfmpegBinary(options.ffmpeg),
+      options.videoDemuxer,
+    )
     if (pcm.length === 0) throw new MediaWorkflowError('Audio decoded to zero samples.', 422)
     return computePeaksFromPcm([pcm], PEAKS_SAMPLE_RATE, sourceChecksum)
   } finally {
@@ -199,7 +209,8 @@ export async function generatePeaksForAsset(
   } as never)) as unknown as Record<string, unknown> | null
 
   if (!asset) throw new MediaWorkflowError('Media asset not found.', 404)
-  if (asset.kind !== 'audio') throw new MediaWorkflowError('Asset is not an audio file.', 400)
+  if (asset.kind !== 'audio' && asset.kind !== 'video')
+    throw new MediaWorkflowError('Asset has no supported audio source.', 400)
 
   const existing = asset.waveformPeaks as WaveformPeaksData | undefined
   if (
@@ -231,11 +242,23 @@ export async function generatePeaksForAsset(
   }
   if (key.startsWith('local://')) key = key.slice('local://'.length)
 
+  const videoDemuxer =
+    asset.kind === 'video'
+      ? ({ 'video/mp4': 'mov', 'video/webm': 'matroska' } as Record<string, string>)[
+          String(asset.mimeType)
+        ]
+      : undefined
+  if (
+    asset.kind === 'video' &&
+    (!videoDemuxer || !(Number(asset.durationSeconds) > 0 && Number(asset.durationSeconds) <= 120))
+  )
+    throw new MediaWorkflowError('Unsupported video waveform source.', 400)
   const originalBytes = await storage.get(key)
   if (!originalBytes)
     throw new MediaWorkflowError('Original audio file is missing from storage.', 404)
 
   const peaks = await generatePeaksForBytes(originalBytes, {
+    videoDemuxer,
     sourceChecksum:
       typeof asset.checksum === 'string' && asset.checksum ? asset.checksum : undefined,
   })

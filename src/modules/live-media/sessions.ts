@@ -3,12 +3,14 @@ import type { Payload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
 import type { RoomViewer } from '@/modules/community/room-participation'
 import {
+  appendRoomNotice,
   canManageRoom,
   loadRoomBinding,
   requireRoomAccess,
   roomQuery,
   roomTransaction,
 } from '@/modules/community/rooms'
+import { loadLiveEvent } from '@/modules/community/live-events'
 import { configuredProvider, liveMediaProvider, managedInputForRoom } from './config'
 import {
   LiveMediaError,
@@ -74,7 +76,7 @@ function projection(row?: SessionRow) {
 
 export const liveMediaEnabled = () => providerIds.some((id) => liveMediaProvider(id) !== null)
 
-async function hostAccess(query: Query, viewer: Host) {
+export async function hostAccess(query: Query, viewer: Host) {
   const binding = await loadRoomBinding(query, viewer.conversationId)
   if (!binding || binding.siteId !== viewer.siteId || binding.mode !== 'theater')
     throw new LiveMediaError('Theater not found.', 404)
@@ -119,24 +121,34 @@ async function refresh(query: Query, row: SessionRow, force = false) {
       WHERE id=$1 RETURNING *`,
     [row.id, state],
   )
+  if (state === 'live' && !row.went_live_at) {
+    const event = await loadLiveEvent(query, row.room_id)
+    if (event?.session_id === row.id)
+      await appendRoomNotice(query, row.room_id, 'event-live', 'The show is live.')
+  }
   return updated
 }
 
 export async function liveHostView(viewer: Host) {
   const query = roomQuery(viewer.payload)
   await hostAccess(query, viewer)
+  const event = await loadLiveEvent(query, viewer.conversationId)
   const {
     rows: [session],
   } = await query<SessionRow>(latest, [viewer.conversationId])
   const providers = await Promise.all(
     providerIds.map(async (id) => {
+      if (event && (event.source !== 'broadcast' || id !== 'mediamtx')) return null
       const provider = liveMediaProvider(id)
       if (!provider) return null
       const health = await provider.health().catch(() => ({ ready: false }))
       return { id, ready: health.ready, capabilities: provider.capabilities }
     }),
   )
-  return { session: projection(session), providers: providers.filter(Boolean) }
+  return {
+    session: projection(event && event.session_id !== session?.id ? undefined : session),
+    providers: providers.filter(Boolean),
+  }
 }
 
 export async function startBroadcast(
@@ -151,6 +163,18 @@ export async function startBroadcast(
     await query('SELECT conversation_id FROM room_bindings WHERE conversation_id=$1 FOR UPDATE', [
       viewer.conversationId,
     ])
+    const event = await loadLiveEvent(query, viewer.conversationId)
+    if (
+      event &&
+      (event.source !== 'broadcast' ||
+        event.ended_at ||
+        options.provider !== 'mediamtx' ||
+        !options.recording)
+    )
+      throw new LiveMediaError(
+        'This event requires a recorded MediaMTX broadcast and can only start once.',
+        409,
+      )
     const {
       rows: [current],
     } = await query<SessionRow>(
@@ -179,6 +203,11 @@ export async function startBroadcast(
     )
     if (!created)
       throw new LiveMediaError('This managed input already belongs to a broadcast.', 409)
+    if (event)
+      await query('UPDATE live_events SET session_id=$2 WHERE room_id=$1', [
+        viewer.conversationId,
+        id,
+      ])
     return created
   })
   return roomTransaction(viewer.payload, async (query) => {
@@ -217,11 +246,19 @@ export async function operateBroadcast(
           WHERE id=$1 RETURNING *`,
         [id, action === 'revoke'],
       )
+      if (action === 'revoke')
+        await query(
+          'UPDATE live_events SET replay_published_at=NULL, replay_drafted_at=NULL WHERE session_id=$1',
+          [id],
+        )
       return { row: ended }
     }
     if (current.ended_at) throw new LiveMediaError('This broadcast has ended.', 409)
     if (current.host_member_id !== viewer.memberId)
       throw new LiveMediaError('Only the broadcast host can connect or change the source.', 403)
+    const event = await loadLiveEvent(query, viewer.conversationId)
+    if (event?.session_id === id && action === 'record' && !recording)
+      throw new LiveMediaError('Event broadcasts require a recording.', 409)
     const provider = configuredProvider(current.provider)
     if (current.provider === 'cloudflare') {
       await managedRoom(query, viewer)
@@ -262,6 +299,15 @@ export async function operateBroadcast(
       'UPDATE live_media_sessions SET provider_stopped_at=now() WHERE id=$1 RETURNING *',
       [id],
     )
+    await query(
+      `UPDATE live_events SET ended_at=COALESCE(ended_at,now()),
+        replay_drafted_at=CASE WHEN $2 THEN COALESCE(replay_drafted_at,now()) ELSE replay_drafted_at END
+        WHERE session_id=$1`,
+      [id, stopped.recording && !stopped.revoked_at],
+    )
+    const event = await loadLiveEvent(query, viewer.conversationId)
+    if (event?.session_id === id)
+      await appendRoomNotice(query, viewer.conversationId, 'event-ended', 'The show has ended.')
     return { session: projection(stopped) }
   })
 }
@@ -306,6 +352,15 @@ function validCredential(
   )
 }
 
+export async function eventRecordingReady(query: Query, roomId: string, sessionId: string) {
+  const {
+    rows: [row],
+  } = await query<SessionRow>(`${byId} FOR SHARE`, [sessionId, roomId])
+  if (!row?.provider_stopped_at || row.revoked_at || !row.recording) return false
+  const provider = liveMediaProvider(row.provider)
+  return Boolean(provider && (await provider.getPlayback(providerSession(row))).replays.length)
+}
+
 export async function liveAudiencePlayback(viewer: Viewer) {
   if (!liveMediaEnabled()) return null
   const row = await roomTransaction(viewer.payload, async (query) => {
@@ -314,7 +369,8 @@ export async function liveAudiencePlayback(viewer: Viewer) {
     const {
       rows: [session],
     } = await query<SessionRow>(`${latest} FOR UPDATE`, [viewer.conversationId])
-    if (!session) return null
+    const event = await loadLiveEvent(query, viewer.conversationId)
+    if (!session || (event && event.session_id !== session.id)) return null
     if (session.provider === 'cloudflare') {
       await managedRoom(query, viewer)
       managedInputForRoom(viewer.conversationId, session.provider_ref)
@@ -322,8 +378,18 @@ export async function liveAudiencePlayback(viewer: Viewer) {
     return await refresh(query, session)
   })
   if (!row) return null
+  const query = roomQuery(viewer.payload)
+  const event = await loadLiveEvent(query, viewer.conversationId)
+  const draftPreview = Boolean(
+    event?.replay_drafted_at &&
+      !event.replay_published_at &&
+      viewer.memberId &&
+      (await hostAccess(query, { ...viewer, memberId: viewer.memberId }).catch(() => null)),
+  )
   const playback =
-    row.revoked_at || (row.ended_at && !row.provider_stopped_at)
+    row.revoked_at ||
+    (row.ended_at &&
+      (!row.provider_stopped_at || (event && !event.replay_published_at && !draftPreview)))
       ? { live: null, replays: [] }
       : await configuredProvider(row.provider).getPlayback(providerSession(row))
   const headers = new Headers({
@@ -336,7 +402,12 @@ export async function liveAudiencePlayback(viewer: Viewer) {
       `${playbackCookie}=${credential(row, viewer, 'watch')}; Path=/live-media/${row.id}/; Max-Age=${tokenTtl}; HttpOnly; SameSite=Strict${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`,
     )
   return Response.json(
-    { ...playback, replay: playback.replays[0]?.href ?? null, broadcast: projection(row) },
+    {
+      ...playback,
+      draftPreview,
+      replay: playback.replays[0]?.href ?? null,
+      broadcast: projection(row),
+    },
     { headers },
   )
 }
@@ -379,7 +450,13 @@ export async function authorizeGateway(
     action === 'watch' ? row.ended_at : !row.ended_at || !row.provider_stopped_at || !row.recording
   )
     throw deny()
+  const event = await loadLiveEvent(query, row.room_id)
+  if (event && event.session_id !== row.id) throw deny()
   const token = (headers.get('cookie') ?? '').match(/(?:^|;\s*)renegade-live-playback=([^;]+)/)?.[1]
   if (!validCredential(row, viewer, 'watch', token)) throw deny()
   await requireRoomAccess(query, viewer, 'read')
+  if (action === 'replay' && event && !event.replay_published_at) {
+    if (!event.replay_drafted_at || !viewer.memberId) throw deny()
+    await hostAccess(query, { ...viewer, memberId: viewer.memberId })
+  }
 }

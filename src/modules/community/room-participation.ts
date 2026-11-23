@@ -15,8 +15,18 @@ type RoomMember = RoomViewer & { memberId: string }
 
 export async function listSiteRooms(payload: Payload, siteId: string, memberId: string | null) {
   const query = roomQuery(payload)
-  const { rows } = await query<{ id: string; title: string; mode: string }>(
-    `SELECT c.id, c.title, b.mode FROM room_bindings b JOIN conversations c ON c.id=b.conversation_id
+  const { rows } = await query<{
+    id: string
+    title: string
+    mode: string
+    event_title: string | null
+    event_starts_at: Date | null
+    event_announcement: string | null
+  }>(
+    `SELECT c.id, c.title, b.mode, e.title AS event_title, e.starts_at AS event_starts_at,
+       e.announcement AS event_announcement
+     FROM room_bindings b JOIN conversations c ON c.id=b.conversation_id
+     LEFT JOIN live_events e ON e.room_id=b.conversation_id AND e.ended_at IS NULL
      WHERE b.site_id=$1 AND c.site_id=$1 AND c.status='active'
        AND EXISTS (SELECT 1 FROM room_audience(c.id,$2) WHERE can_read)
      ORDER BY c.created_at DESC LIMIT 100`,

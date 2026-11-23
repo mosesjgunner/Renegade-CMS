@@ -24,6 +24,16 @@ export default async function RoomsPage() {
           {directory.rooms.map((room) => (
             <li key={room.id}>
               <Link href={`/rooms/${room.id}`}>{room.title}</Link>
+              {room.event_title && room.event_starts_at && (
+                <p>
+                  {room.event_title}
+                  {' · '}
+                  <time dateTime={room.event_starts_at.toISOString()}>
+                    {room.event_starts_at.toISOString().slice(0, 16).replace('T', ' ')} UTC
+                  </time>
+                </p>
+              )}
+              {room.event_announcement && <p>{room.event_announcement}</p>}
             </li>
           ))}
         </ul>

@@ -28,6 +28,8 @@
  * audiogram profile into a media draft attached to the episode —
  * the episode itself is never touched by a render.
  */
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { createHash } from 'node:crypto'
 import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
@@ -35,6 +37,7 @@ import path from 'node:path'
 
 import { loadConfig, type AppConfig } from '../../core/config'
 import { transcriptChecksum } from '../../media/contracts'
+import { resolveFfmpegBinary } from '../../media/ffmpeg'
 import type { MediaPublishingStore } from '../../media/publishing'
 import { mediaStorage, type MediaStorage } from '../../media/storage'
 import { renderProject } from '../render/render-service'
@@ -86,6 +89,8 @@ const EXTENSION_BY_MIME: Record<string, string> = {
   'audio/ogg': 'ogg',
   'audio/mp4': 'm4a',
   'audio/flac': 'flac',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
 }
 
 async function loadAssetBytes(
@@ -155,6 +160,7 @@ export async function runTranscriptionJob(
     provider?: TranscriptionProvider
     providerConfig?: TranscriptionConfig
     createdBy?: string
+    creatorVideo?: boolean
   },
 ): Promise<TranscriptionJobResult> {
   const appConfig = config ?? loadConfig()
@@ -166,7 +172,11 @@ export async function runTranscriptionJob(
       `Media asset "${input.mediaAssetId}" has no readable bytes to transcribe.`,
     )
   const audioChecksum = createHash('sha256').update(loaded.bytes).digest('hex')
-  const idempotencyKey = transcriptionIdempotencyKey(input.mediaAssetId, audioChecksum)
+  const idempotencyKey =
+    transcriptionIdempotencyKey(input.mediaAssetId, audioChecksum) +
+    (input.creatorVideo
+      ? `:creator-audio:${input.provider?.id ?? input.providerConfig?.providerId ?? 'configured'}`
+      : '')
 
   const existing = await findMediaJob(payload, idempotencyKey)
   if (existing && existing.status === 'completed' && existing.output?.transcriptRevisionId) {
@@ -235,8 +245,54 @@ export async function runTranscriptionJob(
   const extension = EXTENSION_BY_MIME[String(loaded.asset.mimeType ?? '')] ?? 'audio'
   const tempDir = await mkdtemp(path.join(os.tmpdir(), 'pod14-transcribe-'))
   try {
-    const audioPath = path.join(tempDir, `audio.${extension}`)
+    let audioPath = path.join(tempDir, `source.${extension}`)
+    let mimeType = String(loaded.asset.mimeType ?? '')
     await writeFile(audioPath, loaded.bytes)
+    if (input.creatorVideo && mimeType.startsWith('video/')) {
+      const wav = path.join(tempDir, 'audio.wav')
+      try {
+        const demuxer =
+          mimeType === 'video/mp4' ? 'mov' : mimeType === 'video/webm' ? 'matroska' : null
+        if (!demuxer) throw new Error('Unsupported video type.')
+        await promisify(execFile)(
+          resolveFfmpegBinary(),
+          [
+            '-nostdin',
+            '-v',
+            'error',
+            '-protocol_whitelist',
+            'file',
+            '-f',
+            demuxer,
+            ...(demuxer === 'mov' ? ['-enable_drefs', '0', '-use_absolute_path', '0'] : []),
+            '-i',
+            audioPath,
+            '-map',
+            '0:a:0',
+            '-t',
+            '120',
+            '-vn',
+            '-ac',
+            '1',
+            '-ar',
+            '16000',
+            '-c:a',
+            'pcm_s16le',
+            wav,
+          ],
+          { timeout: 120_000, maxBuffer: 16_384 },
+        )
+      } catch {
+        return await fail(
+          new TranscriptionError(
+            'TRANSCRIPTION_AUDIO_MISSING',
+            'Unable to extract audio from the selected video.',
+          ),
+        )
+      }
+      audioPath = wav
+      mimeType = 'audio/wav'
+    }
     const durationSec = await probeDurationSec(audioPath).catch(() => {
       const declared = Number(loaded.asset.durationSeconds ?? loaded.asset.durationSec ?? 0)
       return declared > 0 ? declared : 0
@@ -246,7 +302,7 @@ export async function runTranscriptionJob(
       result = await provider.transcribe({
         path: audioPath,
         durationSec,
-        mimeType: String(loaded.asset.mimeType ?? ''),
+        mimeType,
         origin: input.mediaAssetId,
       })
     } catch (error) {
@@ -321,11 +377,19 @@ export async function queueTranscriptionTask(
   payload: MediaPublishingStore & {
     jobs: { queue: (args: any) => Promise<{ id: string | number }> }
   },
-  input: { mediaAssetId: string; episodeId?: string; providerId?: string },
+  input: {
+    mediaAssetId: string
+    episodeId?: string
+    providerId?: string
+    queue?: string
+    creator?: { siteId: string; memberId: string }
+  },
 ): Promise<{ id: string; queued: boolean; idempotencyKey: string }> {
   // The job-level key is asset-scoped here; the run re-derives the
   // checksum-precise key for the media-jobs record.
-  const idempotencyKey = `transcribe-task:${input.mediaAssetId}:${input.providerId ?? 'configured'}`
+  const idempotencyKey =
+    `transcribe-task:${input.mediaAssetId}:${input.providerId ?? 'configured'}` +
+    (input.creator ? `:${input.creator.siteId}:${input.creator.memberId}` : '')
   const existing = await payload
     .find({
       collection: 'payload-jobs',
@@ -344,11 +408,15 @@ export async function queueTranscriptionTask(
   if (active) return { id: String(active.id), queued: false, idempotencyKey }
   const job = await payload.jobs.queue({
     task: PODCAST_TRANSCRIBE_TASK,
+    ...(input.queue ? { queue: input.queue } : {}),
     input: {
       mediaAssetId: input.mediaAssetId,
       episodeId: input.episodeId,
       providerId: input.providerId,
       idempotencyKey,
+      ...(input.creator
+        ? { creatorSite: input.creator.siteId, creatorMember: input.creator.memberId }
+        : {}),
     },
   } as never)
   return { id: String(job.id), queued: true, idempotencyKey }

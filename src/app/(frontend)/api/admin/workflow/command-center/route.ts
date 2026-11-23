@@ -11,6 +11,7 @@ import {
 import { getLocalizationEngine } from '@/modules/editorial/localization/service'
 import { sanitizeErrorLog } from '@/modules/editorial/scheduler'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { listTheaterCalendar } from '@/modules/community/live-events'
 
 export const runtime = 'nodejs'
 
@@ -284,6 +285,10 @@ export async function GET(request: Request) {
     }
 
     const calendarEntries = [
+      ...(await listTheaterCalendar(payload, siteIds)).map((event) => ({
+        ...event,
+        directLink: event.editHref,
+      })),
       ...jobsList.map((job) => ({
         id: `job-${job.jobId}`,
         sourceType: 'content',

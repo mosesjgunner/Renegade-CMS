@@ -39,6 +39,8 @@
  * fabricates word timings.
  */
 import { execFile } from 'node:child_process'
+import { parseSrt, parseVtt, segmentsToSrt, segmentsToVtt } from './caption-codec'
+export { parseSrt, parseVtt, segmentsToSrt, segmentsToVtt } from './caption-codec'
 
 import { assertTranscriptSegments, type TranscriptSegment } from '../../media/contracts'
 
@@ -356,83 +358,6 @@ export const resolveTranscriptionProvider = (
 // SRT / WebVTT / JSON import + export (word timing preserved, never invented)
 // ---------------------------------------------------------------------------
 
-const parseTimestamp = (value: string): number => {
-  const match = value.trim().match(/^(?:(\d+):)?(\d{1,2}):(\d{2})[.,](\d{1,3})$/)
-  if (!match) return Number.NaN
-  const [, hours, minutes, seconds, millis] = match
-  return (
-    Number(hours ?? 0) * 3600 +
-    Number(minutes) * 60 +
-    Number(seconds) +
-    Number(millis.padEnd(3, '0')) / 1000
-  )
-}
-
-const formatTimestamp = (seconds: number, separator: ',' | '.'): string => {
-  const value = Math.max(0, Number(seconds) || 0)
-  const hours = Math.floor(value / 3600)
-  const minutes = Math.floor((value % 3600) / 60)
-  const secs = Math.floor(value % 60)
-  const millis = Math.round((value - Math.floor(value)) * 1000)
-  const pad = (n: number, width = 2) => String(n).padStart(width, '0')
-  return `${pad(hours)}:${pad(minutes)}:${pad(secs)}${separator}${pad(millis, 3)}`
-}
-
-const TIMING_LINE = /^(\S+)\s+-->\s+(\S+)/
-
-const parseCueBlocks = (text: string): TimedSegment[] => {
-  const blocks = text.replace(/\r\n/g, '\n').split(/\n\n+/)
-  const segments: TimedSegment[] = []
-  for (const block of blocks) {
-    const lines = block.split('\n').filter((line) => line.trim().length > 0)
-    const timingIndex = lines.findIndex((line) => TIMING_LINE.test(line.trim()))
-    if (timingIndex < 0) continue
-    const match = lines[timingIndex].trim().match(TIMING_LINE)!
-    const start = parseTimestamp(match[1])
-    const end = parseTimestamp(match[2])
-    if (!Number.isFinite(start) || !Number.isFinite(end)) continue
-    let body = lines
-      .slice(timingIndex + 1)
-      .join(' ')
-      .trim()
-    let speaker: string | undefined
-    const voice = body.match(/^<v\s+([^>]+)>([\s\S]*?)(?:<\/v>)?$/)
-    if (voice) {
-      speaker = voice[1].trim()
-      body = voice[2].trim()
-    }
-    body = body.replace(/<[^>]+>/g, '').trim()
-    if (!body) continue
-    segments.push({
-      id: `seg-${segments.length + 1}`,
-      startSeconds: round3(start),
-      endSeconds: round3(Math.max(end, start)),
-      text: body,
-      ...(speaker ? { speaker } : {}),
-    })
-  }
-  assertTranscriptSegments(segments)
-  return segments
-}
-
-export const parseSrt = (text: string): TimedSegment[] => parseCueBlocks(text)
-export const parseVtt = (text: string): TimedSegment[] =>
-  parseCueBlocks(text.replace(/^WEBVTT[^\n]*\n/, ''))
-
-export const segmentsToSrt = (segments: readonly TimedSegment[]): string => {
-  if (!segments.length) return ''
-  return (
-    segments
-      .map(
-        (segment, index) =>
-          // SRT carries no speaker channel in the POD-01 serialisation
-          // either; speakers round-trip through VTT (<v> spans) and JSON.
-          `${index + 1}\n${formatTimestamp(segment.startSeconds, ',')} --> ${formatTimestamp(segment.endSeconds, ',')}\n${segment.text}`,
-      )
-      .join('\n\n') + '\n'
-  )
-}
-
 /**
  * POD-21 (POD-18 gap): the clip-range SRT for audiogram caption
  * burn-in. Keeps the segments that OVERLAP `[startSec, endSec)`,
@@ -461,17 +386,6 @@ export const segmentsToClipSrt = (
   }
   clipped.sort((a, b) => a.startSeconds - b.startSeconds)
   return { srt: segmentsToSrt(clipped), segmentCount: clipped.length }
-}
-
-export const segmentsToVtt = (segments: readonly TimedSegment[]): string => {
-  if (!segments.length) return 'WEBVTT\n'
-  const cues = segments
-    .map(
-      (segment) =>
-        `${formatTimestamp(segment.startSeconds, '.')} --> ${formatTimestamp(segment.endSeconds, '.')}\n${segment.speaker ? `<v ${segment.speaker}>${segment.text}</v>` : segment.text}`,
-    )
-    .join('\n\n')
-  return `WEBVTT\n\n${cues}\n`
 }
 
 /** Podcast-JSON transcript shape (the POD-01 transcript.json serialisation). */

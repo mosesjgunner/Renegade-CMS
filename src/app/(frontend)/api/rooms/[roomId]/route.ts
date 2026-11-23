@@ -1,3 +1,4 @@
+import { changeTheaterEvent, theaterCalendar, theaterEvent } from '@/modules/community/live-events'
 import { sendConversationMessage } from '@/modules/community/conversation-composer'
 import {
   roomBody,
@@ -36,6 +37,14 @@ export async function GET(request: Request, { params }: Context) {
           }),
         )
       }
+      case 'event-calendar':
+        return await theaterCalendar(
+          payload,
+          viewer,
+          new URL(`/rooms/${viewer.conversationId}`, request.url).href,
+        )
+      case 'event':
+        return roomJson(await theaterEvent(payload, viewer))
       case 'attendees':
         return roomJson(await roomAttendees(payload, viewer))
       default:
@@ -52,6 +61,13 @@ export async function POST(request: Request, { params }: Context) {
     const body = await roomBody(request)
     const action = body.action
     switch (action) {
+      case 'schedule-event':
+      case 'announce-event':
+      case 'end-event':
+      case 'publish-event-replay':
+      case 'rsvp':
+      case 'cancel-rsvp':
+        return roomJson(await changeTheaterEvent(payload, viewer, body))
       case 'join':
       case 'leave':
         return roomJson(await participateInRoom(payload, viewer, action === 'leave'))

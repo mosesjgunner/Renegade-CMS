@@ -23,6 +23,10 @@ import { createServer, type Server } from 'node:http'
 import os from 'node:os'
 import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import {
+  GET as getGuestSignals,
+  POST as postGuestSignal,
+} from '../../src/app/(frontend)/api/podcast-studio/guests/signalling/route'
 
 import { hasFfmpegBinaries } from '../helpers/ffmpeg-availability'
 import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
@@ -126,6 +130,7 @@ import {
   postSignalMessage,
   registerGuestClip,
   resolveSignallingCredential,
+  revokeGuestInvite,
 } from '../../src/modules/podcast-studio/guests/service'
 import {
   evaluateReconnect,
@@ -1316,11 +1321,19 @@ describe('JP-8 — remote guest show', () => {
     expect(JSON.stringify(stored)).not.toContain(token)
 
     // Pre-admission, media negotiation over signalling is refused.
-    const joined = await joinGuest(payload as never, {
-      token,
-      displayName: 'Ada Guest',
-      headphones: 'headphones',
-    })
+    const join = () =>
+      joinGuest(payload as never, {
+        token,
+        displayName: 'Ada Guest',
+        headphones: 'headphones',
+      })
+    const results = await Promise.allSettled([join(), join()])
+    expect(results.filter(({ status }) => status === 'fulfilled')).toHaveLength(1)
+    const failure = results.find((result) => result.status === 'rejected')
+    expect(failure?.reason).toMatchObject({ code: 'invite-already-used' })
+    const success = results.find((result) => result.status === 'fulfilled')
+    if (!success) throw new Error('Guest did not join.')
+    const joined = success.value
     expect(joined.invite.state).toBe('waiting')
     const credentialDoc = await resolveSignallingCredential(
       payload as never,
@@ -1350,6 +1363,34 @@ describe('JP-8 — remote guest show', () => {
       sessionId: record.id,
     })
     expect(offered.id).toBeTruthy()
+
+    const signalUrl = 'http://localhost/api/podcast-studio/guests/signalling'
+    const guestHeaders = {
+      Authorization: `Bearer ${joined.signallingCredential}`,
+      'Content-Type': 'application/json',
+    }
+    const ownRoom = new URLSearchParams({ sessionId: record.id, inviteId: invite.id })
+    const roomPoll = await getGuestSignals(
+      new Request(`${signalUrl}?${ownRoom}`, { headers: guestHeaders }),
+    )
+    expect(roomPoll.status).toBe(200)
+    expect(await roomPoll.json()).toMatchObject({ lobbyState: 'admitted' })
+    const otherInvite = { inviteId: crypto.randomUUID(), sessionId: record.id }
+    const otherRoom = { inviteId: invite.id, sessionId: crypto.randomUUID() }
+    for (const target of [otherInvite, otherRoom]) {
+      const wrongPoll = await getGuestSignals(
+        new Request(`${signalUrl}?${new URLSearchParams(target)}`, { headers: guestHeaders }),
+      )
+      expect(wrongPoll.status).toBe(403)
+      const wrongPost = await postGuestSignal(
+        new Request(signalUrl, {
+          method: 'POST',
+          headers: guestHeaders,
+          body: JSON.stringify({ ...target, type: 'answer', payload: {} }),
+        }),
+      )
+      expect(wrongPost.status).toBe(403)
+    }
 
     // Mix-minus, tone-verified in the POD-07 core: the guest's own return
     // alone renders EXACTLY zero in their receive; host is audible;
@@ -1419,6 +1460,13 @@ describe('JP-8 — remote guest show', () => {
     })
     expect(plan.rateCorrection.rateCorrectionPpm).toBeCloseTo(80, 0)
     expect(plan.report.residualEstimateMs).toBeLessThan(5)
+
+    await revokeGuestInvite(payload as never, invite.id)
+    const revokedPoll = await getGuestSignals(
+      new Request(`${signalUrl}?${ownRoom}`, { headers: guestHeaders }),
+    )
+    expect(revokedPoll.status).toBe(401)
+    expect(await revokedPoll.json()).toMatchObject({ code: 'invite-revoked' })
   }, 120_000)
 })
 

@@ -1,318 +1,297 @@
 'use client'
 
-/**
- * POD-10 guest join client (functional-minimal): preflight (display
- * name, mic device check on the POD-06 cores, headphone declaration,
- * and the audio-pass sound check — a measured room/mic diagnostic
- * that warns in plain language and never blocks the join), waiting
- * room, then the live view (big mute button, connection state,
- * talkback indicator, diagnostics log).
- *
- * Device check: saved per-participant prefs are resolved FAIL-CLOSED
- * through POD-06's assertSavedDevicesPresent — a saved mic that is no
- * longer present blocks the join with the device named; a different
- * device is never silently substituted.
- *
- * The WebRTC adapter wiring (peer-browser.ts) is UNVERIFIED in a real
- * browser — see docs/podcast-studio/GUESTS.md.
- */
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
+import { cameraTrackId } from '@/modules/podcast-studio/recording/camera-tracks'
 import {
-  assertSavedDevicesPresent,
-  ParticipantDevicePrefsStore,
-  type CaptureDeviceInfo,
-  type PrefsStorage,
-} from '@/modules/podcast-studio/capture/devices'
-import {
-  startGuestBrowserRecording,
-  type GuestBrowserRecording,
-} from '@/modules/podcast-studio/guests/guest-recording-browser'
+  setStageTrackEnabled,
+  stageConnection,
+  stageDescription,
+  stageSignal,
+} from '@/modules/podcast-studio/guests/stage-browser'
+import type { IceConfig } from '@/modules/podcast-studio/guests/peer-session'
 import { SoundCheck } from '../../SoundCheck'
+import { StageDevices, StageVideo, useStageDevices } from '../../StageMedia'
 
-const localStoragePrefs: PrefsStorage = {
-  get: (key) => window.localStorage.getItem(key),
-  set: (key, value) => window.localStorage.setItem(key, value),
-  remove: (key) => window.localStorage.removeItem(key),
+type Joined = {
+  invite: { id: string; sessionId: string }
+  signallingCredential: string
+  ice: IceConfig
 }
 
-type Phase = 'preflight' | 'waiting' | 'live' | 'ended' | 'error'
-
 export function GuestJoinClient({ token }: { token: string }) {
-  const [phase, setPhase] = useState<Phase>('preflight')
+  const setup = useStageDevices()
   const [name, setName] = useState('')
-  const [headphones, setHeadphones] = useState<'headphones' | 'no-headphones-fallback' | ''>('')
-  const [devices, setDevices] = useState<CaptureDeviceInfo[]>([])
-  const [deviceError, setDeviceError] = useState('')
-  const [muted, setMuted] = useState(false)
-  const [talkback, setTalkback] = useState(false)
-  const [peerState, setPeerState] = useState('invited')
-  const [log, setLog] = useState<string[]>([])
-  const credentialRef = useRef('')
-  const sessionIdRef = useRef('')
-  const inviteIdRef = useRef('')
-  const afterRef = useRef<string | undefined>(undefined)
-  // POD-11: the guest's own local recording (journal + resumable
-  // upload + conform on the server). Starts on admit, stops on
-  // leave/drop. Browser behaviour UNVERIFIED — see GUESTS.md.
-  const recordingRef = useRef<GuestBrowserRecording | null>(null)
-  const recordingStartedRef = useRef(false)
-  const [recordingState, setRecordingState] = useState('not started')
+  const [headphones, setHeadphones] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [joined, setJoined] = useState<Joined | null>(null)
+  const [joining, setJoining] = useState(false)
+  const [ended, setEnded] = useState(false)
+  const [error, setError] = useState('')
+  const [status, setStatus] = useState('')
+  const [remote, setRemote] = useState<MediaStream | null>(null)
+  const [recording, setRecording] = useState<boolean | null>(null)
+  const [selfMuted, setSelfMuted] = useState(false)
+  const [hostMuted, setHostMuted] = useState(false)
+  const mic = setup.stream?.getAudioTracks()[0]
+  const camera = setup.stream?.getVideoTracks()[0]
+  const [cameraWithdrawn, setCameraWithdrawn] = useState(false)
+  const muteRef = useRef(false)
+  const withdrawRef = useRef<(() => void) | null>(null)
 
-  const note = useCallback((line: string) => {
-    setLog((prev) => [...prev.slice(-49), `${new Date().toLocaleTimeString()} ${line}`])
-  }, [])
-
-  // Device check (POD-06 cores): enumerate, then fail-closed on saved prefs.
   useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      if (!navigator.mediaDevices?.enumerateDevices) {
-        setDeviceError('This browser cannot list audio devices; joining is blocked.')
-        return
-      }
-      const found = await navigator.mediaDevices.enumerateDevices().catch(() => [])
-      if (cancelled) return
-      const mapped: CaptureDeviceInfo[] = found.map((d) => ({
-        deviceId: d.deviceId,
-        kind: d.kind as CaptureDeviceInfo['kind'],
-        label: d.label,
-        groupId: d.groupId,
-      }))
-      setDevices(mapped)
-      const store = new ParticipantDevicePrefsStore(localStoragePrefs)
-      const prefs = store.load(`guest:${token.slice(0, 8)}`)
-      const check = assertSavedDevicesPresent(prefs, mapped)
-      if (!check.ok) {
-        setDeviceError(
-          `Saved device missing: ${check.errors.map((e) => `${e.role} "${e.savedDeviceLabel}"`).join(', ')}. Reconnect it or clear the saved choice in the studio.`,
-        )
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [token])
+    if (mic) setStageTrackEnabled(mic, !selfMuted && !hostMuted)
+    muteRef.current = selfMuted
+  }, [mic, selfMuted, hostMuted])
 
-  const join = async () => {
-    if (deviceError) return
-    const res = await fetch('/api/podcast-studio/guests/join', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, displayName: name, headphones }),
+  useEffect(() => {
+    if (!joined || !mic || ended) return
+    const liveMic = mic
+    const ice = joined.ice
+    const inviteId = joined.invite.id
+    const signalling = stageSignal({
+      sessionId: joined.invite.sessionId,
+      inviteId: joined.invite.id,
+      credential: joined.signallingCredential,
     })
-    const body = (await res.json().catch(() => ({}))) as {
-      error?: string
-      signallingCredential?: string
-      invite?: { id: string; sessionId: string }
-      ice?: { limitation?: string | null }
+    const abort = new AbortController()
+    let pc: RTCPeerConnection | undefined
+    let attempt: unknown
+    let hostMute = false
+    let lastControls: Record<string, unknown> = {}
+    withdrawRef.current = () => {
+      void signalling
+        .send('hello', { attempt, cameraWithdrawn: true }, abort.signal)
+        .catch(() => undefined)
     }
-    if (!res.ok || !body.signallingCredential) {
-      note(body.error ?? `Join failed (${res.status}).`)
-      setPhase('error')
-      return
+    const readControls = (controls: Record<string, unknown>) => {
+      lastControls = controls
+      hostMute = controls.muted === true
+      setHostMuted(hostMute)
+      setRecording(controls.recording === true)
+      setStageTrackEnabled(liveMic, !hostMute && !muteRef.current)
     }
-    credentialRef.current = body.signallingCredential
-    sessionIdRef.current = body.invite?.sessionId ?? ''
-    inviteIdRef.current = body.invite?.id ?? ''
-    if (body.ice?.limitation) note(`Connection note: ${body.ice.limitation}`)
-    note('Joined. You are in the waiting room — nothing is transmitted until the host admits you.')
-    setPhase('waiting')
-  }
-
-  // Long-poll loop: lobby state + talkback indicator + diagnostics.
-  useEffect(() => {
-    if (phase !== 'waiting' && phase !== 'live') return
-    let cancelled = false
-    void (async () => {
-      while (!cancelled) {
-        const res = await fetch(
-          `/api/podcast-studio/guests/signalling?waitMs=10000${
-            afterRef.current ? `&after=${encodeURIComponent(afterRef.current)}` : ''
-          }`,
-          { headers: { Authorization: `Bearer ${credentialRef.current}` } },
-        ).catch(() => null)
-        if (!res || !res.ok) {
-          if (!cancelled) {
-            setPeerState('reconnecting')
-            await new Promise((r) => setTimeout(r, 2_000))
-          }
-          continue
-        }
-        const body = (await res.json()) as {
-          lobbyState: string
-          messages: Array<{ type: string; payload: Record<string, unknown>; createdAt: string }>
-        }
-        if (body.lobbyState === 'admitted') {
-          setPeerState('admitted')
-          setPhase('live')
-        } else if (body.lobbyState === 'dropped' || body.lobbyState === 'left') {
-          setPeerState('dropped')
-          setPhase('ended')
-          note('The host ended your guest session.')
-          return
-        }
-        for (const message of body.messages) {
-          afterRef.current = message.createdAt
-          if (message.type === 'talkback') setTalkback(Boolean(message.payload.active))
-          if (message.type === 'bye') {
-            setPhase('ended')
+    async function run() {
+      while (!abort.signal.aborted) {
+        try {
+          const room = await signalling.poll(abort.signal)
+          if (abort.signal.aborted) return
+          if (room.lobbyState === 'left' || room.lobbyState === 'dropped') {
+            liveMic.stop()
+            camera?.stop()
+            setEnded(true)
             return
           }
+          if (room.lobbyState === 'admitted' && !pc) setStatus('Admitted. Waiting for host media.')
+          for (const message of room.messages) {
+            const { payload } = message
+            if (
+              room.lobbyState === 'admitted' &&
+              message.type === 'offer' &&
+              typeof payload.sdp === 'string' &&
+              payload.attempt !== attempt
+            ) {
+              pc?.close()
+              setRemote(null)
+              readControls(payload)
+              const next = stageConnection(ice)
+              pc = next
+              const tracks = new MediaStream()
+              next.ontrack = ({ track }) => {
+                if (abort.signal.aborted || pc !== next) return
+                tracks.addTrack(track)
+                setRemote(new MediaStream(tracks.getTracks()))
+              }
+              next.onconnectionstatechange = () => {
+                if (abort.signal.aborted || pc !== next) return
+                if (next.connectionState === 'connected') readControls(lastControls)
+                else setRecording(null)
+                setStatus(
+                  next.connectionState === 'connected'
+                    ? 'Connected to stage'
+                    : next.connectionState,
+                )
+              }
+              await next.setRemoteDescription({ type: 'offer', sdp: payload.sdp })
+              const audio = next
+                .getTransceivers()
+                .find((item) => item.receiver.track.kind === 'audio')
+              const video = next
+                .getTransceivers()
+                .find((item) => item.receiver.track.kind === 'video')
+              if (!audio || !video) throw new Error('Host offer is missing stage tracks.')
+              audio.direction = 'sendrecv'
+              setStageTrackEnabled(liveMic, !hostMute && !muteRef.current)
+              await audio.sender.replaceTrack(liveMic)
+              const outgoingCamera = camera?.readyState === 'live' ? camera : null
+              video.direction = outgoingCamera ? 'sendrecv' : 'recvonly'
+              if (outgoingCamera) await video.sender.replaceTrack(outgoingCamera)
+              const sdp = await stageDescription(next, await next.createAnswer(), abort.signal)
+              await signalling.send(
+                'answer',
+                {
+                  sdp,
+                  attempt: payload.attempt,
+                  cameraMid: outgoingCamera ? video.mid : null,
+                  cameraTrackId: cameraTrackId(inviteId),
+                  cameraConsent: outgoingCamera?.readyState === 'live' && consent,
+                },
+                abort.signal,
+              )
+              attempt = payload.attempt
+            }
+            if (
+              message.type === 'hello' &&
+              payload.attempt === attempt &&
+              payload.stageControls &&
+              typeof payload.stageControls === 'object'
+            ) {
+              readControls(payload.stageControls as Record<string, unknown>)
+            }
+            signalling.consumed(message)
+          }
+        } catch {
+          if (!abort.signal.aborted) {
+            pc?.close()
+            pc = undefined
+            setRemote(null)
+            setRecording(null)
+            setStatus('Reconnecting to studio')
+          }
         }
+        await new Promise((resolve) => setTimeout(resolve, 650))
       }
-    })()
-    return () => {
-      cancelled = true
     }
-  }, [phase, note])
+    void run()
+    return () => {
+      abort.abort()
+      withdrawRef.current = null
+      pc?.close()
+    }
+  }, [joined, mic, camera, consent, ended])
 
-  // POD-11 local recording lifecycle: start on admit (the live
-  // phase), stop + resumable upload when the session ends. The head
-  // sync pair is captured at start: guest sample 0 against the host
-  // timeline position the host's signalling hello last reported (0
-  // until the host reports one — the correspondence model is data in
-  // the conform core; real two-browser capture is UNVERIFIED).
-  useEffect(() => {
-    if (phase !== 'live' || recordingStartedRef.current) return
-    recordingStartedRef.current = true
-    void (async () => {
-      try {
-        recordingRef.current = await startGuestBrowserRecording({
-          credential: credentialRef.current,
-          // The local journal's session key; the server re-derives the
-          // canonical session doc id from the session record.
-          sessionId: sessionIdRef.current,
-          sessionRecordId: sessionIdRef.current,
-          inviteId: inviteIdRef.current,
-          headSync: { guestTrackSamples: 0, hostTimelineSamples: 0 },
-          onTelemetry: (telemetry) =>
-            note(
-              `Local recording: ${String(telemetry.phase ?? '')} (${String(telemetry.chunksJournaled ?? 0)} chunks journaled).`,
-            ),
-        })
-        setRecordingState('recording locally (this device keeps the master track)')
-        note('Local recording started — your own track is being recorded on this device.')
-      } catch {
-        setRecordingState('local recording unavailable — the live capture is the fallback')
-        note(
-          'Local recording could not start; the host still hears you live (fallback ladder rung 2).',
-        )
-      }
-    })()
-  }, [phase, note])
-
-  useEffect(() => {
-    if (phase !== 'ended' || !recordingRef.current) return
-    const recording = recordingRef.current
-    recordingRef.current = null
-    void (async () => {
-      try {
-        const frames = recording.recorder.guestSample
-        await recording.stopAndUpload({
-          guestTrackSamples: frames,
-          hostTimelineSamples: frames,
-        })
-        setRecordingState('uploaded — the host will conform your track to the show timeline')
-        note('Local recording stopped and uploaded for conform.')
-      } catch {
-        setRecordingState('upload incomplete — it resumes from the server received list')
-        note('Upload did not finish; the journal on this device resumes where it stopped.')
-      }
-    })()
-  }, [phase, note])
-
-  const micCount = devices.filter((d) => d.kind === 'audioinput').length
+  async function join() {
+    setJoining(true)
+    setError('')
+    try {
+      const response = await fetch('/api/podcast-studio/guests/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, displayName: name, headphones }),
+      })
+      const body = await response.json()
+      if (!response.ok) throw new Error(body.error ?? 'Could not join the studio.')
+      setJoined(body)
+      setStatus('Backstage. Your devices are private until the host admits you.')
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not join the studio.')
+    } finally {
+      setJoining(false)
+    }
+  }
 
   return (
     <div className="mt-4 space-y-4 text-sm">
-      {phase === 'preflight' && (
-        <section className="space-y-3" aria-label="Guest preflight">
+      {!joined && (
+        <fieldset className="space-y-3" disabled={joining}>
+          <legend>Guest preflight</legend>
           <label className="block">
-            Display name
+            Display name <input value={name} onChange={(event) => setName(event.target.value)} />
+          </label>
+          <StageDevices setup={setup} />
+          <label className="block">
+            Headphones{' '}
+            <select value={headphones} onChange={(event) => setHeadphones(event.target.value)}>
+              <option value="">Select your setup</option>
+              <option value="headphones">I am wearing headphones</option>
+              <option value="no-headphones-fallback">Speaker fallback (keep volume low)</option>
+            </select>
+          </label>
+          <label className="block">
             <input
-              className="border rounded px-2 py-1 block mt-1 w-full"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="How the host should introduce you"
-            />
+              type="checkbox"
+              checked={consent}
+              onChange={(event) => setConsent(event.target.checked)}
+            />{' '}
+            Allow this camera in the recorded and public program
           </label>
           <p>
-            Microphones found: {micCount}.{' '}
-            {deviceError ? (
-              <span role="alert">{deviceError}</span>
-            ) : (
-              'Device check passed (saved devices verified fail-closed).'
-            )}
+            Your camera can be visible to the host with this box cleared. Your microphone may be
+            included in the recorded and public program after admission.
           </p>
-          <fieldset className="space-y-1">
-            <legend className="font-medium">Headphones</legend>
-            <label className="block">
-              <input
-                type="radio"
-                name="headphones"
-                checked={headphones === 'headphones'}
-                onChange={() => setHeadphones('headphones')}
-              />{' '}
-              I am wearing headphones
-            </label>
-            <label className="block">
-              <input
-                type="radio"
-                name="headphones"
-                checked={headphones === 'no-headphones-fallback'}
-                onChange={() => setHeadphones('no-headphones-fallback')}
-              />{' '}
-              No headphones — use the fallback (keep speakers low; echo risk noted)
-            </label>
-          </fieldset>
           <SoundCheck token={token} />
           <button
             type="button"
             className="btn btn-primary"
-            disabled={!name.trim() || !headphones || Boolean(deviceError)}
+            disabled={!mic || !name.trim() || !headphones || setup.checking}
             onClick={() => void join()}
           >
-            Join the waiting room
+            Join backstage
           </button>
-        </section>
+        </fieldset>
       )}
-
-      {phase === 'waiting' && (
-        <p role="status">Waiting room — the host can see you. Please wait to be admitted.</p>
-      )}
-
-      {phase === 'live' && (
-        <section className="space-y-3" aria-label="Live guest view">
-          <p role="status">You are live. Connection: {peerState}.</p>
-          <p role="status">Local recording: {recordingState}.</p>
-          {talkback && (
-            <p className="font-bold" role="alert">
-              The host is talking to you off-air (talkback — not recorded or streamed).
-            </p>
-          )}
+      {joined && !ended && (
+        <section className="space-y-3" aria-label="Guest stage">
+          <p role="status">{status}</p>
+          <p role="status">
+            Program recording:{' '}
+            {recording === null ? 'awaiting host status' : recording ? 'active' : 'off'}.
+          </p>
+          <p>
+            Camera program consent:{' '}
+            {cameraWithdrawn
+              ? 'withdrawn (camera off)'
+              : camera && consent
+                ? 'granted for this join'
+                : 'denied'}
+            .
+          </p>
+          {joined.ice.limitation && <p>{joined.ice.limitation}</p>}
+          {remote && <StageVideo stream={remote} label="Studio program and mix-minus return" />}
           <button
             type="button"
-            className="btn btn-primary text-lg px-6 py-3"
-            aria-pressed={muted}
-            onClick={() => setMuted((m) => !m)}
+            className="btn btn-secondary"
+            disabled={hostMuted}
+            aria-pressed={selfMuted || hostMuted}
+            onClick={() => setSelfMuted(!selfMuted)}
           >
-            {muted ? 'Unmute' : 'Mute'}
+            {hostMuted ? 'Muted by host' : selfMuted ? 'Unmute microphone' : 'Mute microphone'}
+          </button>{' '}
+          {camera && !cameraWithdrawn && (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => {
+                // Disable capture for the rest of this join, including any future negotiation.
+                camera.stop()
+                withdrawRef.current?.()
+                setCameraWithdrawn(true)
+              }}
+            >
+              Turn off camera and withdraw video consent
+            </button>
+          )}{' '}
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              void stageSignal({
+                ...joined.invite,
+                inviteId: joined.invite.id,
+                credential: joined.signallingCredential,
+              })
+                .send('bye', {}, AbortSignal.timeout(5000))
+                .catch(() => undefined)
+              setup.setStream(null)
+              setEnded(true)
+            }}
+          >
+            Leave stage
           </button>
         </section>
       )}
-
-      {phase === 'ended' && <p role="status">Your guest session has ended. Thanks for joining.</p>}
-      {phase === 'error' && <p role="alert">Join failed — see the diagnostics log below.</p>}
-
-      <section aria-label="Connection diagnostics">
-        <h2 className="font-bold">Diagnostics</h2>
-        <ul className="font-mono text-xs space-y-1">
-          {log.map((line, i) => (
-            <li key={i}>{line}</li>
-          ))}
-        </ul>
-      </section>
+      {ended && <p role="status">Your guest session has ended.</p>}
+      {error && <p role="alert">{error}</p>}
     </div>
   )
 }

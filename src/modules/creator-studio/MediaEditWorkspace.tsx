@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ImageEditorModal } from '../media/image-editor/ImageEditorModal'
 import { captureRequest } from './capture-sync'
+import { SourceTranscript } from './SourceTranscript'
 import { RecorderWorkspace } from './RecorderWorkspace'
 import {
   maxTimelineSeconds,
@@ -17,6 +18,12 @@ import {
   type ExportProfile,
 } from './media-edit-recipe'
 import type { EditProjectView, EditSource } from './media-edit-projects'
+import {
+  parseSrt,
+  parseVtt,
+  segmentsToSrt,
+  segmentsToVtt,
+} from '../podcast-studio/intelligence/caption-codec'
 import type { EditExportView } from './media-edit-exports'
 
 const endpoint = '/api/creator-studio/media-edits'
@@ -273,18 +280,25 @@ function ClipPreview({
   start,
   layers,
   onTime,
+  seek,
+  captions,
 }: {
   clip: EditClip
   source?: EditSource
   start: number
   layers: Layer[]
   onTime: (time: number) => void
+  seek?: { time: number }
+  captions: EditRecipe['captions']
 }) {
   const [elapsed, setElapsed] = useState(0)
   const video = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     if (video.current && video.current.readyState > 0) video.current.currentTime = clip.in
   }, [clip.in])
+  useEffect(() => {
+    if (seek && video.current) video.current.currentTime = clip.in + seek.time - start
+  }, [seek, clip.in, start])
   const style = {
     objectFit: clip.fit,
     filter: looks[clip.look],
@@ -313,7 +327,7 @@ function ClipPreview({
           style={style}
           className="h-full w-full"
           onLoadedMetadata={(event) => {
-            event.currentTarget.currentTime = clip.in
+            event.currentTarget.currentTime = seek ? clip.in + seek.time - start : clip.in
           }}
           onPlay={(event) => {
             const element = event.currentTarget
@@ -329,6 +343,16 @@ function ClipPreview({
           }}
         />
       )}
+      {captions
+        .filter((cue) => cue.start <= start + elapsed && cue.end > start + elapsed)
+        .map((cue) => (
+          <p
+            key={cue.start}
+            className="pointer-events-none absolute bottom-12 left-4 right-4 mx-auto w-fit bg-black/80 px-2 text-center text-white"
+          >
+            {cue.text}
+          </p>
+        ))}
       {layers
         .filter(({ start: from, end }) => from <= start + elapsed && end > start + elapsed)
         .map((layer, index) => (
@@ -409,6 +433,14 @@ export function MediaEditWorkspace({
   const [message, setMessage] = useState('Loading projects…')
   const [onlineRetry, setOnlineRetry] = useState(0)
   const [selected, setSelected] = useState(0)
+  const [seek, setSeek] = useState<{ time: number }>()
+  const [subtitleTrack, setSubtitleTrack] = useState('captions')
+  const [revisionPreview, setRevisionPreview] = useState<{
+    clip: EditClip
+    project: string
+    title: string
+    captions: EditRecipe['captions']
+  }>()
   const [assetId, setAssetId] = useState('')
   const [still, setStill] = useState<EditSource | null>(null)
   const [record, setRecord] = useState(false)
@@ -539,12 +571,45 @@ export function MediaEditWorkspace({
   const update = (changes: Partial<EditRecipe>) => setRecipe((old) => old && { ...old, ...changes })
   const clip = recipe?.clips[selected]
   const clipStart = recipe ? timelineDuration({ clips: recipe.clips.slice(0, selected) }) : 0
+  const preview =
+    revisionPreview?.clip === clip && revisionPreview?.project === project?.id
+      ? revisionPreview
+      : undefined
   const duration = recipe ? timelineDuration(recipe) : 0
   const validation = dirty && recipe ? recipeSchema.safeParse(recipe) : null
   const validationError =
     validation && !validation.success ? validation.error.issues[0]?.message : ''
   const canExport = !busy && !dirty && Boolean(recipe?.clips.length)
   const at = Math.min(Math.max(0, playhead), Math.max(0, duration - 0.1))
+
+  function jumpTo(time: number) {
+    if (!recipe) return
+    let end = 0
+    const index = recipe.clips.findIndex((item) => {
+      end += item.out - item.in
+      return time < end
+    })
+    if (index < 0) return
+    setSelected(index)
+    setSeek({ time })
+  }
+
+  function downloadCaptions(format: 'srt' | 'vtt') {
+    if (!recipe) return
+    const segments = recipe.captions.map(({ start, end, text }, index) => ({
+      id: String(index),
+      startSeconds: start,
+      endSeconds: end,
+      text,
+    }))
+    const text = format === 'srt' ? segmentsToSrt(segments) : segmentsToVtt(segments)
+    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain' }))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `creator-captions.${format}`
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
+  }
 
   function addClip(asset: EditSource) {
     if (!recipe) return
@@ -570,6 +635,7 @@ export function MediaEditWorkspace({
     if (destination < 0 || destination >= clips.length) return
     ;[clips[selected], clips[destination]] = [clips[destination], clip]
     update({ clips })
+    setSeek(undefined)
     setSelected(destination)
     setPlayhead(timelineDuration({ clips: clips.slice(0, destination) }))
   }
@@ -740,6 +806,22 @@ export function MediaEditWorkspace({
                   source={sources.find(({ id }) => id === clip.asset)}
                   layers={recipe.layers}
                   onTime={setPlayhead}
+                  captions={
+                    subtitleTrack === 'off'
+                      ? []
+                      : subtitleTrack === 'revision' && preview
+                        ? preview.captions.map((cue) => ({
+                            ...cue,
+                            start: cue.start + clipStart,
+                            end: cue.end + clipStart,
+                          }))
+                        : recipe.captions
+                  }
+                  seek={
+                    seek && seek.time >= clipStart && seek.time < clipStart + clip.out - clip.in
+                      ? seek
+                      : undefined
+                  }
                 />
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-2">
@@ -862,6 +944,22 @@ export function MediaEditWorkspace({
                         Voice correction
                       </label>
                     </div>
+                    <label className={label}>
+                      Voiceover playback
+                      <select
+                        className={field}
+                        value={voice.mode ?? 'mix'}
+                        onChange={(event) =>
+                          set({
+                            ...voice,
+                            mode: event.target.value === 'replace' ? 'replace' : 'mix',
+                          })
+                        }
+                      >
+                        <option value="mix">Mix with source audio</option>
+                        <option value="replace">Replace audio (manual dub)</option>
+                      </select>
+                    </label>
                     <AudioControls item={voice} set={set} />
                   </>
                 )
@@ -968,6 +1066,77 @@ export function MediaEditWorkspace({
 
           <details className={panel}>
             <summary>Captions and chapters</summary>
+            {clip && sources.find((item) => item.id === clip.asset)?.kind === 'video' && (
+              <SourceTranscript
+                key={project?.id + clip.asset}
+                project={project.id}
+                onPreview={(title, captions) => {
+                  setRevisionPreview({ project: project.id, clip, title, captions })
+                  setSubtitleTrack('revision')
+                }}
+                clip={clip}
+                recipe={recipe}
+                apply={(captions) => update({ captions })}
+                seek={(seconds) => jumpTo(clipStart + seconds)}
+              />
+            )}
+            <label className={label}>
+              Preview subtitle track
+              <select
+                className={field}
+                value={subtitleTrack === 'revision' && !preview ? 'captions' : subtitleTrack}
+                onChange={(event) => setSubtitleTrack(event.target.value)}
+              >
+                <option value="captions">Creator captions</option>
+                {preview && <option value="revision">{preview.title}</option>}
+                <option value="off">Off</option>
+              </select>
+            </label>
+            <label className={label}>
+              Import WebVTT or SRT (replaces timeline captions)
+              <input
+                type="file"
+                accept=".vtt,.srt"
+                onChange={async (event) => {
+                  const file = event.currentTarget.files?.[0]
+                  event.currentTarget.value = ''
+                  if (!file) return
+                  try {
+                    if (file.size > 256 * 1024)
+                      throw new Error('Caption files must be under 256 KiB.')
+                    const raw = await file.text()
+                    const segments = file.name.toLowerCase().endsWith('.vtt')
+                      ? parseVtt(raw)
+                      : parseSrt(raw)
+                    if (!segments.length) throw new Error('No caption cues found.')
+                    const captions = segments.map(({ startSeconds, endSeconds, text }) => ({
+                      start: startSeconds,
+                      end: endSeconds,
+                      text,
+                    }))
+                    const checked = recipeSchema.safeParse({ ...recipe, captions })
+                    if (!checked.success) throw new Error(checked.error.issues[0]?.message)
+                    setError('')
+                    update({ captions })
+                  } catch (error) {
+                    setError(error instanceof Error ? error.message : 'Caption import failed.')
+                  }
+                }}
+              />
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {(['vtt', 'srt'] as const).map((format) => (
+                <button
+                  key={format}
+                  type="button"
+                  className={button}
+                  disabled={!recipe.captions.length}
+                  onClick={() => downloadCaptions(format)}
+                >
+                  Download {format.toUpperCase()}
+                </button>
+              ))}
+            </div>
             <Rows name="Caption" items={recipe.captions} set={(captions) => update({ captions })}>
               {(caption, set) => (
                 <div className={grid}>
@@ -986,6 +1155,9 @@ export function MediaEditWorkspace({
                     value={caption.end}
                     set={(end) => set({ ...caption, end })}
                   />
+                  <button type="button" className={button} onClick={() => jumpTo(caption.start)}>
+                    Seek to {caption.start.toFixed(3)}s
+                  </button>
                 </div>
               )}
             </Rows>

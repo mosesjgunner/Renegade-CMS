@@ -18,6 +18,8 @@ import {
   saveEditProject,
 } from '@/modules/creator-studio/media-edit-projects'
 import { listEditExports, queueEditExport } from '@/modules/creator-studio/media-edit-exports'
+import { captionSource, captionAction } from '@/modules/creator-studio/media-edit-captions'
+import { dubAudio } from '@/modules/creator-studio/synthetic-dub'
 import { saveEditedStill } from '@/modules/creator-studio/media-edit-stills'
 
 export const runtime = 'nodejs'
@@ -36,7 +38,10 @@ export async function GET(request: Request) {
     await requireEdit(payload, actor)
     const params = new URL(request.url).searchParams
     const id = params.get('id')
+    const dub = params.get('dub')
+    if (dub) return await dubAudio(payload, actor, dub, params.has('download'))
     const asset = params.get('asset')
+    if (asset && params.has('transcript')) return json(await captionSource(payload, actor, asset))
     if (asset) {
       const { dependency, key } = await ownedEditSource(payload, actor, asset)
       const { size, mimeType } = dependency
@@ -100,6 +105,8 @@ export async function POST(request: Request) {
     } catch {
       throw new MediaWorkflowError('Invalid media edit request.')
     }
+    const transcript = params.get('transcript')
+    if (transcript) return json(await captionAction(payload, actor, transcript, input))
     if (input.action === 'create') return json(await createEditProject(payload, actor), 201)
     if (!id) throw editNotFound()
     if (input.action === 'export')

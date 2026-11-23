@@ -89,7 +89,7 @@ export class LiveIngestUploader {
    * Starts uploading the graph's program bus. One uploader per
    * session; calling attach twice is refused rather than double-tapping.
    */
-  async attach(context: AudioContext, graph: MixerGraphHandle): Promise<void> {
+  async attach(context: AudioContext, graph: Pick<MixerGraphHandle, 'programDestination'>): Promise<void> {
     if (this.handle) throw new Error('Live ingest uploader is already attached.')
     this.stopped = false
     this.handle = await connectCaptureNode(context, graph.programDestination.stream, (message) => {

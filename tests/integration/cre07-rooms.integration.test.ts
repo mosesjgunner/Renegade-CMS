@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { cp, mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
+import { createServer } from 'node:http'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { getPayload, type Payload } from 'payload'
@@ -9,9 +10,13 @@ import config from '../../src/payload.config'
 import { POST as create } from '../../src/app/(frontend)/api/rooms/route'
 import { GET as read, POST as act } from '../../src/app/(frontend)/api/rooms/[roomId]/route'
 import { GET as token } from '../../src/app/(frontend)/api/rooms/[roomId]/token/route'
+import { POST as broadcastAction } from '../../src/app/(frontend)/api/rooms/[roomId]/broadcast/route'
 import { GET as media } from '../../src/app/(frontend)/api/rooms/[roomId]/playback/[file]/route'
 import { GET as communityMessages } from '../../src/app/(frontend)/api/community/messages/route'
 import { roomTransaction } from '../../src/modules/community/rooms'
+import { listSiteRooms } from '../../src/modules/community/room-participation'
+import { listUnifiedCalendar } from '../../src/modules/calendar/service'
+import { authorizeGateway } from '../../src/modules/live-media/sessions'
 import { resolveLiveRoomBinding } from '../../src/modules/podcast-studio/live/live-room'
 import { setLiveRoomBinding } from '../../src/modules/podcast-studio/live/live-service'
 import {
@@ -111,6 +116,210 @@ const fetchMedia = (
     params: Promise.resolve({ roomId, file }),
   })
 const cookie = (response: Response) => response.headers.get('set-cookie')?.split(';')[0]
+
+it('finishes a live theater event once and protects replay at the media gateway', async () => {
+  const site = world.siteB
+  const roomId = await theater(site, 'public')
+  const host = site.admin.memberId
+  const member = site.member.memberId
+  let ready = false
+  let stops = 0
+  const provider = createServer((req, res) => {
+    if (req.method === 'DELETE') stops += 1
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify(
+        req.url?.startsWith('/list?')
+          ? [{ start: '2026-01-01T00:00:00Z', duration: 5 }]
+          : { ready },
+      ),
+    )
+  })
+  await new Promise<void>((resolve) => provider.listen(0, '127.0.0.1', resolve))
+  const address = provider.address()
+  if (!address || typeof address === 'string') throw new Error('Missing provider fixture address')
+  const keys = ['LIVE_MEDIAMTX_CONTROL_URL', 'LIVE_MEDIAMTX_RECORDINGS_URL'] as const
+  const previous = keys.map((key) => process.env[key])
+  for (const key of keys) process.env[key] = `http://127.0.0.1:${address.port}`
+  const broadcast = (body: unknown) =>
+    broadcastAction(
+      request(site, `${endpoint(roomId)}/broadcast`, { memberId: host, body }),
+      route(roomId),
+    )
+  try {
+    expect(
+      (
+        await action(site, roomId, host, {
+          action: 'schedule-event',
+          title: 'Town hall',
+          source: 'broadcast',
+          startsAt: new Date(Date.now() + 60_000).toISOString(),
+          timeZone: 'UTC',
+        })
+      ).status,
+    ).toBe(200)
+    expect(await (await overview(site, roomId, undefined, 'event')).json()).toMatchObject({
+      lobby: true,
+    })
+    const start = await broadcast({ action: 'start', provider: 'mediamtx', recording: true })
+    expect(start.status).toBe(200)
+    const { session } = await start.json()
+    expect(await (await issue(site, roomId)).json()).toMatchObject({
+      live: null,
+      broadcast: { state: 'starting' },
+    })
+    ready = true
+    expect(
+      await (await broadcast({ action: 'heartbeat', sessionId: session.id })).json(),
+    ).toMatchObject({ session: { state: 'live' } })
+    expect((await action(site, roomId, member, { action: 'join' })).status).toBe(200)
+    expect(
+      (
+        await action(site, roomId, member, {
+          action: 'send',
+          body: 'Audience question',
+          question: true,
+          idempotencyKey: randomUUID(),
+        })
+      ).status,
+    ).toBe(201)
+    const chat = await (await overview(site, roomId, undefined, 'chat')).json()
+    expect(chat.messages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ body_html: 'The show is live.' }),
+        expect.objectContaining({ room_question: true }),
+      ]),
+    )
+    const end = { action: 'end', sessionId: session.id }
+    for (const response of await Promise.all([broadcast(end), broadcast(end)]))
+      expect(response.status).toBe(200)
+    expect(stops).toBe(1)
+    expect(await (await overview(site, roomId, host, 'event')).json()).toMatchObject({
+      replayDraft: true,
+      published: false,
+    })
+    const playback = await issue(site, roomId)
+    expect(await playback.json()).toMatchObject({ replays: [] })
+    const credential = playback.headers
+      .getSetCookie()
+      .find((value) => value.startsWith('renegade-live-playback='))
+      ?.split(';')[0]
+    expect(credential).toBeTruthy()
+    const context = { payload, siteId: site.siteId, memberId: null }
+    const headers = new Headers({ cookie: credential! })
+    await expect(authorizeGateway(context, session.id, 'replay', headers)).rejects.toMatchObject({
+      status: 403,
+    })
+    expect((await action(site, roomId, host, { action: 'publish-event-replay' })).status).toBe(200)
+    expect(await (await issue(site, roomId)).json()).toMatchObject({
+      replays: [{ contentType: 'mp4' }],
+    })
+    await authorizeGateway(context, session.id, 'replay', headers)
+  } finally {
+    keys.forEach((key, index) => {
+      if (previous[index]) process.env[key] = previous[index]
+      else delete process.env[key]
+    })
+    await new Promise<void>((resolve) => provider.close(() => resolve()))
+  }
+})
+
+it('exposes an external watch party as an audience-scoped link with no local playback', async () => {
+  const site = world.siteB
+  const roomId = await theater(site, 'public')
+  const host = site.admin.memberId
+  const schedule = {
+    action: 'schedule-event',
+    source: 'external',
+    title: 'Watch together',
+    startsAt: new Date(Date.now() + 60_000).toISOString(),
+    timeZone: 'UTC',
+  }
+  expect(
+    (await action(site, roomId, host, { ...schedule, providerUrl: 'http://example.test' })).status,
+  ).toBe(422)
+  const providerUrl = 'https://example.test/watch'
+  expect((await action(site, roomId, host, { ...schedule, providerUrl })).status).toBe(200)
+  expect((await listSiteRooms(payload, site.siteId, null)).rooms).toEqual(
+    expect.arrayContaining([expect.objectContaining({ id: roomId, event_title: schedule.title })]),
+  )
+  expect(await listUnifiedCalendar(payload, { siteId: site.siteId })).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ sourceId: roomId, sourceType: 'livestream' }),
+    ]),
+  )
+  expect(await (await overview(site, roomId, undefined, 'event')).json()).toMatchObject({
+    lobby: true,
+    providerUrl: null,
+  })
+  await roomTransaction(payload, (query) =>
+    query("UPDATE live_events SET starts_at=now()-interval '1 second' WHERE room_id=$1", [roomId]),
+  )
+  expect(await (await overview(site, roomId, undefined, 'event')).json()).toMatchObject({
+    lobby: false,
+    providerUrl,
+    synchronizedControl: false,
+  })
+  expect(await (await issue(site, roomId)).json()).toMatchObject({ live: null, replay: null })
+  expect((await overview(world.siteA, roomId, undefined, 'event')).status).toBe(403)
+})
+
+it('keeps a theater premiere private before launch and between end and explicit publish', async () => {
+  const site = world.siteB
+  const host = site.admin.memberId
+  const member = site.member.memberId
+  const roomId = await theater(site, 'members')
+  const folder = join(root, site.siteId, roomId)
+  await mkdir(folder, { recursive: true })
+  await writeFile(join(folder, 'premiere.mp4'), 'owned VOD fixture')
+  const schedule = {
+    action: 'schedule-event',
+    source: 'premiere',
+    title: 'Premiere',
+    startsAt: new Date(Date.now() + 60_000).toISOString(),
+    timeZone: 'UTC',
+    rsvpEnabled: true,
+  }
+  expect((await action(site, roomId, member, schedule)).status).toBe(403)
+  expect((await action(site, roomId, host, schedule)).status).toBe(200)
+  expect((await issue(site, roomId)).status).toBe(403)
+  expect(await (await overview(site, roomId, member, 'event')).json()).toMatchObject({
+    lobby: true,
+  })
+  expect(await (await overview(site, roomId, member, 'event-calendar')).text()).toContain(
+    'SUMMARY:Premiere',
+  )
+  expect(await (await action(site, roomId, member, { action: 'rsvp' })).json()).toMatchObject({
+    attending: true,
+  })
+  const playback = cookie(await issue(site, roomId, member))
+  expect(playback).toBeTruthy()
+  expect((await fetchMedia(site, roomId, 'premiere.mp4', member, playback)).status).toBe(404)
+  await roomTransaction(payload, async (query) => {
+    await query("UPDATE live_events SET starts_at=now()-interval '10 seconds' WHERE room_id=$1", [
+      roomId,
+    ])
+  })
+  expect(await (await issue(site, roomId, member)).json()).toMatchObject({
+    live: `${endpoint(roomId)}/playback/premiere.mp4`,
+    premiereStart: expect.any(String),
+  })
+  const range = await fetchMedia(site, roomId, 'premiere.mp4', member, playback, 'bytes=0-4')
+  expect(range.status).toBe(206)
+  expect(await range.text()).toBe('owned')
+  const ends = await Promise.all([
+    action(site, roomId, host, { action: 'end-event' }),
+    action(site, roomId, host, { action: 'end-event' }),
+  ])
+  for (const response of ends)
+    expect(await response.json()).toMatchObject({ replayDraft: true, published: false })
+  expect((await fetchMedia(site, roomId, 'premiere.mp4', member, playback)).status).toBe(404)
+  expect((await action(site, roomId, member, { action: 'publish-event-replay' })).status).toBe(403)
+  expect((await action(site, roomId, host, { action: 'publish-event-replay' })).status).toBe(200)
+  expect(await (await fetchMedia(site, roomId, 'premiere.mp4', member, playback)).text()).toBe(
+    'owned VOD fixture',
+  )
+})
 
 async function theater(
   site: Rc2SiteWorld,

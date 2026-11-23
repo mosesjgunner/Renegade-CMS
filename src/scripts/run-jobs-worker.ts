@@ -111,7 +111,15 @@ async function cycle(): Promise<void> {
     await payload.jobs.handleSchedules({ queue: 'commerce' })
     await payload.jobs.run({ queue: 'commerce', limit: 1, where: registeredJobs })
     if (workerProfile === 'media-heavy') {
-      const { recoverCreatorMediaExports } = await import('../modules/creator-studio/media-edit-exports')
+      const { recoverCreatorCaptionJobs } = await import(
+        '../modules/creator-studio/caption-worker-recovery'
+      )
+      await recoverCreatorCaptionJobs(payload).catch((error) => {
+        payload.logger.error({ err: error, event: 'creator.caption_recovery_failed' })
+      })
+      const { recoverCreatorMediaExports } = await import(
+        '../modules/creator-studio/media-edit-exports'
+      )
       await recoverCreatorMediaExports(payload).catch((error) => {
         payload.logger.error({ err: error, event: 'creator.media_export_recovery_failed' })
       })

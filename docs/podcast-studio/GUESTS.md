@@ -1,5 +1,7 @@
 # Podcast Studio — Remote Guests (POD-10)
 
+See [Interactive Podcast Studio](INTERACTIVE_STAGE.md) for the current browser stage, mixed program outputs, and verification scope. This document records the original guest service and ISO capture work.
+
 Guests join a live studio session from a link. They have **no account**
 and never create one: the invite link is the credential, the guest
 types a display name, and everything after that runs on server-side

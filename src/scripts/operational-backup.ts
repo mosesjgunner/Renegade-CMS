@@ -23,7 +23,9 @@ const destinationKind =
     ? 'operator-configured-remote'
     : 'local-disk'
 const destinationRemoteType = value('--destination-remote-type')
-const compose = value('--compose-file', 'compose.production.yaml')!
+const composeFiles = args.flatMap((arg, index) =>
+  arg === '--compose-file' && args[index + 1] ? [args[index + 1]] : [],
+)
 const envFile = value('--env-file', '.env.production')!
 const backupRoot = path.resolve(
   output,
@@ -35,8 +37,10 @@ const composeArgs = [
   projectNameFromEnvFile(envFile),
   '--env-file',
   envFile,
-  '-f',
-  compose,
+  ...(composeFiles.length ? composeFiles : ['compose.production.yaml']).flatMap((file) => [
+    '-f',
+    file,
+  ]),
   '--profile',
   'media-heavy',
 ]
@@ -78,6 +82,7 @@ try {
       '-T',
       'postgres',
       'pg_dump',
+      '--exclude-table-data=public.live_destination_credentials',
       '-U',
       'renegade',
       '-Fc',

@@ -23,6 +23,10 @@
  * layer, not merely flagged in a UI. Guests with no guest-book record
  * are evaluated as "no appearance on file" under the same policy.
  */
+import { sql } from '@payloadcms/db-postgres'
+import { createLocalReq, type Payload } from 'payload'
+
+import { transactionPayload } from '../../core/transaction-payload'
 import {
   assertGuestAdmissionReady,
   evaluateGuestAdmission,
@@ -190,6 +194,53 @@ export async function resolveSignallingCredential(
 // Invite lifecycle
 // ---------------------------------------------------------------------------
 
+async function mutateLobby<T>(
+  payload: Payload,
+  sessionId: string,
+  change: (transaction: Payload) => Promise<T>,
+): Promise<T> {
+  const req = await createLocalReq({}, payload)
+  const transactionId = await payload.db.beginTransaction()
+  if (!transactionId) throw new Error('Guest lobby requires transactional storage.')
+  req.transactionID = transactionId
+  try {
+    const adapter = payload.db as unknown as {
+      sessions: Record<string, { db: { execute(statement: unknown): Promise<unknown> } }>
+    }
+    await adapter.sessions[transactionId].db.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtextextended(${'podcast-guest-lobby:' + sessionId}, 0))`,
+    )
+    const result = await change(transactionPayload(payload, req))
+    await payload.db.commitTransaction(transactionId)
+    return result
+  } catch (error) {
+    await payload.db.rollbackTransaction(transactionId)
+    throw error
+  }
+}
+
+async function loadGuestInvite(payload: Payload, inviteId: string) {
+  const doc = await payload
+    .findByID({
+      collection: PODCAST_GUEST_INVITE_COLLECTION,
+      id: inviteId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)
+  if (!doc) throw new PodcastGuestError('invite-not-found', 'Guest invite not found.')
+  return doc as any
+}
+
+async function mutateInvite<T>(
+  payload: Payload,
+  inviteId: string,
+  change: (transaction: Payload) => Promise<T>,
+) {
+  const invite = await loadGuestInvite(payload, inviteId)
+  return mutateLobby(payload, relationId(invite.session), change)
+}
+
 /**
  * Issues an invite for a studio session record. Issuing a replacement
  * for the same (session, guest) revokes the previous active invite
@@ -199,58 +250,64 @@ export async function issueGuestInvite(
   payload: any,
   input: { sessionRecordId: string; guestId?: string | null; ttlMs?: number; nowMs?: number },
 ): Promise<{ invite: GuestInviteRecord; token: string }> {
-  const record = await loadStudioSessionRecord(payload, input.sessionRecordId)
-  if (!record) throw new PodcastGuestError('session-not-found', 'Studio session not found.')
-  const nowMs = input.nowMs ?? Date.now()
-  if (input.guestId) {
-    const existing = await payload.find({
-      collection: PODCAST_GUEST_INVITE_COLLECTION,
-      where: {
-        and: [
-          { session: { equals: input.sessionRecordId } },
-          { guest: { equals: input.guestId } },
-          { state: { in: ['invited', 'preflight', 'waiting'] } },
-        ],
-      },
-      limit: 100,
-      depth: 0,
-      overrideAccess: true,
-    })
-    for (const stale of existing.docs as any[]) {
-      await payload.update({
+  return mutateLobby(payload, input.sessionRecordId, async (payload) => {
+    const record = await loadStudioSessionRecord(payload, input.sessionRecordId)
+    if (!record) throw new PodcastGuestError('session-not-found', 'Studio session not found.')
+    const nowMs = input.nowMs ?? Date.now()
+    if (input.guestId) {
+      const existing = await payload.find({
         collection: PODCAST_GUEST_INVITE_COLLECTION,
-        id: stale.id,
-        data: { revokedAt: new Date(nowMs).toISOString(), state: 'dropped', dropReason: 'rotated' },
+        where: {
+          and: [
+            { session: { equals: input.sessionRecordId } },
+            { guest: { equals: input.guestId } },
+            { state: { in: ['invited', 'preflight', 'waiting'] } },
+          ],
+        },
+        limit: 100,
+        depth: 0,
         overrideAccess: true,
       })
+      for (const stale of existing.docs as any[]) {
+        await payload.update({
+          collection: PODCAST_GUEST_INVITE_COLLECTION,
+          id: stale.id,
+          data: {
+            revokedAt: new Date(nowMs).toISOString(),
+            state: 'dropped',
+            dropReason: 'rotated',
+          },
+          overrideAccess: true,
+        })
+      }
     }
-  }
-  const token = generateGuestToken()
-  const doc = await payload.create({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    data: {
-      purpose: 'guest-invite',
-      session: input.sessionRecordId,
-      show: record.showId,
-      site: record.siteId,
-      ...(input.guestId ? { guest: input.guestId } : {}),
-      tokenHash: hashGuestToken(token),
-      state: 'invited',
-      stripId: '',
-      expiresAt: new Date(nowMs + (input.ttlMs ?? GUEST_INVITE_DEFAULT_TTL_MS)).toISOString(),
-    },
-    overrideAccess: true,
+    const token = generateGuestToken()
+    const doc = await payload.create({
+      collection: PODCAST_GUEST_INVITE_COLLECTION,
+      data: {
+        purpose: 'guest-invite',
+        session: input.sessionRecordId,
+        show: record.showId,
+        site: record.siteId,
+        ...(input.guestId ? { guest: input.guestId } : {}),
+        tokenHash: hashGuestToken(token),
+        state: 'invited',
+        stripId: '',
+        expiresAt: new Date(nowMs + (input.ttlMs ?? GUEST_INVITE_DEFAULT_TTL_MS)).toISOString(),
+      },
+      overrideAccess: true,
+    })
+    const invite = toInviteRecord(doc)
+    invite.stripId = `guest-${invite.id.slice(0, 8)}`
+    await payload.update({
+      collection: PODCAST_GUEST_INVITE_COLLECTION,
+      id: doc.id,
+      data: { stripId: invite.stripId },
+      overrideAccess: true,
+    })
+    logGuestEvent('issued', { inviteId: invite.id, sessionId: input.sessionRecordId })
+    return { invite, token }
   })
-  const invite = toInviteRecord(doc)
-  invite.stripId = `guest-${invite.id.slice(0, 8)}`
-  await payload.update({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    id: doc.id,
-    data: { stripId: invite.stripId },
-    overrideAccess: true,
-  })
-  logGuestEvent('issued', { inviteId: invite.id, sessionId: input.sessionRecordId })
-  return { invite, token }
 }
 
 /**
@@ -276,30 +333,39 @@ export async function joinGuest(
       'Declare headphones or the no-headphones fallback before joining.',
     )
   }
-  const doc = await resolveInviteToken(payload, input.token, { forJoin: true, nowMs: input.nowMs })
-  const preflight = transitionLobby('invited', 'preflight')
-  if (!preflight.ok) throw new PodcastGuestError(preflight.code, preflight.message)
-  const waiting = transitionLobby('preflight', 'waiting')
-  if (!waiting.ok) throw new PodcastGuestError(waiting.code, waiting.message)
-  const credential = generateGuestToken()
-  const updated = await payload.update({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    id: doc.id,
-    data: {
-      state: 'waiting',
-      displayName: name,
-      headphones: input.headphones,
-      signallingTokenHash: hashGuestToken(credential),
-      joinedAt: new Date(input.nowMs ?? Date.now()).toISOString(),
-    },
-    overrideAccess: true,
+  const candidate = await resolveInviteToken(payload, input.token, {
+    forJoin: true,
+    nowMs: input.nowMs,
   })
-  logGuestEvent('joined', { inviteId: String(doc.id), sessionId: relationId(doc.session) })
-  return {
-    invite: toInviteRecord(updated),
-    signallingCredential: credential,
-    ice: buildIceConfigFromEnv(process.env),
-  }
+  return mutateLobby(payload, relationId(candidate.session), async (payload) => {
+    const doc = await resolveInviteToken(payload, input.token, {
+      forJoin: true,
+      nowMs: input.nowMs,
+    })
+    const preflight = transitionLobby('invited', 'preflight')
+    if (!preflight.ok) throw new PodcastGuestError(preflight.code, preflight.message)
+    const waiting = transitionLobby('preflight', 'waiting')
+    if (!waiting.ok) throw new PodcastGuestError(waiting.code, waiting.message)
+    const credential = generateGuestToken()
+    const updated = await payload.update({
+      collection: PODCAST_GUEST_INVITE_COLLECTION,
+      id: doc.id,
+      data: {
+        state: 'waiting',
+        displayName: name,
+        headphones: input.headphones,
+        signallingTokenHash: hashGuestToken(credential),
+        joinedAt: new Date(input.nowMs ?? Date.now()).toISOString(),
+      },
+      overrideAccess: true,
+    })
+    logGuestEvent('joined', { inviteId: String(doc.id), sessionId: relationId(doc.session) })
+    return {
+      invite: toInviteRecord(updated),
+      signallingCredential: credential,
+      ice: buildIceConfigFromEnv(process.env),
+    }
+  })
 }
 
 async function mirrorGuestIntoSessionDoc(
@@ -343,95 +409,89 @@ export async function admitGuest(
   payload: any,
   inviteId: string,
 ): Promise<{ invite: GuestInviteRecord; warnings: string[] }> {
-  const doc = await payload
-    .findByID({
+  return mutateInvite(payload, inviteId, async (payload) => {
+    const doc = await loadGuestInvite(payload, inviteId)
+    const invite = toInviteRecord(doc)
+    const transition = transitionLobby(invite.state, 'admitted')
+    if (!transition.ok) throw new PodcastGuestError(transition.code, transition.message)
+    if (doc.revokedAt)
+      throw new PodcastGuestError('invite-revoked', 'Guest invite has been revoked.')
+    if (doc.expiresAt && Date.parse(doc.expiresAt) <= Date.now()) {
+      throw new PodcastGuestError('invite-expired', 'Guest invite has expired.')
+    }
+    // Consent gate (POD-04): block policy refuses here.
+    const record = await loadStudioSessionRecord(payload, invite.sessionId)
+    if (!record) throw new PodcastGuestError('session-not-found', 'Studio session not found.')
+    const show = await payload
+      .findByID({ collection: 'podcast-shows', id: record.showId, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    if (!show) throw new PodcastGuestError('show-not-found', 'Podcast show not found.')
+    let warnings: string[] = []
+    if (invite.guestId) {
+      const admission = await assertGuestAdmissionReady(payload, show, invite.guestId)
+      warnings = admission.warnings
+    } else {
+      const admission = evaluateGuestAdmission(show.guestConsentPolicy, [])
+      if (!admission.ready) {
+        throw new PodcastGuestConsentError(
+          String(show.id),
+          invite.id,
+          admission.missingAppearanceIds,
+        )
+      }
+      warnings = admission.warnings
+    }
+    // Mesh bound: host + ≤ MAX_REMOTE_GUESTS admitted.
+    const admitted = await payload.find({
       collection: PODCAST_GUEST_INVITE_COLLECTION,
-      id: inviteId,
+      where: {
+        and: [{ session: { equals: invite.sessionId } }, { state: { equals: 'admitted' } }],
+      },
+      limit: 100,
       depth: 0,
       overrideAccess: true,
     })
-    .catch(() => null)
-  if (!doc) throw new PodcastGuestError('invite-not-found', 'Guest invite not found.')
-  const invite = toInviteRecord(doc)
-  const transition = transitionLobby(invite.state, 'admitted')
-  if (!transition.ok) throw new PodcastGuestError(transition.code, transition.message)
-  if (doc.revokedAt) throw new PodcastGuestError('invite-revoked', 'Guest invite has been revoked.')
-  if (doc.expiresAt && Date.parse(doc.expiresAt) <= Date.now()) {
-    throw new PodcastGuestError('invite-expired', 'Guest invite has expired.')
-  }
-  // Consent gate (POD-04): block policy refuses here.
-  const record = await loadStudioSessionRecord(payload, invite.sessionId)
-  if (!record) throw new PodcastGuestError('session-not-found', 'Studio session not found.')
-  const show = await payload
-    .findByID({ collection: 'podcast-shows', id: record.showId, depth: 0, overrideAccess: true })
-    .catch(() => null)
-  if (!show) throw new PodcastGuestError('show-not-found', 'Podcast show not found.')
-  let warnings: string[] = []
-  if (invite.guestId) {
-    const admission = await assertGuestAdmissionReady(payload, show, invite.guestId)
-    warnings = admission.warnings
-  } else {
-    const admission = evaluateGuestAdmission(show.guestConsentPolicy, [])
-    if (!admission.ready) {
-      throw new PodcastGuestConsentError(String(show.id), invite.id, admission.missingAppearanceIds)
+    if (!lobbyBoundAllows(admitted.docs.length)) {
+      throw new PodcastGuestError(
+        'lobby-bound',
+        `Lobby is full: at most ${MAX_REMOTE_GUESTS} remote guests can be admitted alongside the host.`,
+      )
     }
-    warnings = admission.warnings
-  }
-  // Mesh bound: host + ≤ MAX_REMOTE_GUESTS admitted.
-  const admitted = await payload.find({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    where: {
-      and: [{ session: { equals: invite.sessionId } }, { state: { equals: 'admitted' } }],
-    },
-    limit: 100,
-    depth: 0,
-    overrideAccess: true,
+    const updated = await payload.update({
+      collection: PODCAST_GUEST_INVITE_COLLECTION,
+      id: inviteId,
+      data: { state: 'admitted', admittedAt: new Date().toISOString() },
+      overrideAccess: true,
+    })
+    const admittedInvite = toInviteRecord(updated)
+    await mirrorGuestIntoSessionDoc(payload, admittedInvite, 'admitted')
+    logGuestEvent('admitted', { inviteId, sessionId: invite.sessionId })
+    return { invite: admittedInvite, warnings }
   })
-  if (!lobbyBoundAllows(admitted.docs.length)) {
-    throw new PodcastGuestError(
-      'lobby-bound',
-      `Lobby is full: at most ${MAX_REMOTE_GUESTS} remote guests can be admitted alongside the host.`,
-    )
-  }
-  const updated = await payload.update({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    id: inviteId,
-    data: { state: 'admitted', admittedAt: new Date().toISOString() },
-    overrideAccess: true,
-  })
-  const admittedInvite = toInviteRecord(updated)
-  await mirrorGuestIntoSessionDoc(payload, admittedInvite, 'admitted')
-  logGuestEvent('admitted', { inviteId, sessionId: invite.sessionId })
-  return { invite: admittedInvite, warnings }
 }
 
 export async function revokeGuestInvite(
   payload: any,
   inviteId: string,
 ): Promise<GuestInviteRecord> {
-  const doc = await payload
-    .findByID({
+  return mutateInvite(payload, inviteId, async (payload) => {
+    const doc = await loadGuestInvite(payload, inviteId)
+    const terminal =
+      doc.state === 'admitted' || doc.state === 'waiting' || doc.state === 'preflight'
+    const updated = await payload.update({
       collection: PODCAST_GUEST_INVITE_COLLECTION,
       id: inviteId,
-      depth: 0,
+      data: {
+        revokedAt: new Date().toISOString(),
+        ...(terminal ? { state: 'dropped', dropReason: 'revoked' } : {}),
+      },
       overrideAccess: true,
     })
-    .catch(() => null)
-  if (!doc) throw new PodcastGuestError('invite-not-found', 'Guest invite not found.')
-  const terminal = doc.state === 'admitted' || doc.state === 'waiting' || doc.state === 'preflight'
-  const updated = await payload.update({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    id: inviteId,
-    data: {
-      revokedAt: new Date().toISOString(),
-      ...(terminal ? { state: 'dropped', dropReason: 'revoked' } : {}),
-    },
-    overrideAccess: true,
+    const invite = toInviteRecord(updated)
+    if (terminal) await mirrorGuestIntoSessionDoc(payload, invite, 'dropped')
+    logGuestEvent('revoked', { inviteId, sessionId: invite.sessionId })
+    return invite
   })
-  const invite = toInviteRecord(updated)
-  if (terminal) await mirrorGuestIntoSessionDoc(payload, invite, 'dropped')
-  logGuestEvent('revoked', { inviteId, sessionId: invite.sessionId })
-  return invite
 }
 
 export async function dropGuest(
@@ -439,28 +499,22 @@ export async function dropGuest(
   inviteId: string,
   reason = 'dropped-by-host',
 ): Promise<GuestInviteRecord> {
-  const doc = await payload
-    .findByID({
+  return mutateInvite(payload, inviteId, async (payload) => {
+    const doc = await loadGuestInvite(payload, inviteId)
+    const invite = toInviteRecord(doc)
+    const transition = transitionLobby(invite.state, 'dropped')
+    if (!transition.ok) throw new PodcastGuestError(transition.code, transition.message)
+    const updated = await payload.update({
       collection: PODCAST_GUEST_INVITE_COLLECTION,
       id: inviteId,
-      depth: 0,
+      data: { state: 'dropped', dropReason: reason },
       overrideAccess: true,
     })
-    .catch(() => null)
-  if (!doc) throw new PodcastGuestError('invite-not-found', 'Guest invite not found.')
-  const invite = toInviteRecord(doc)
-  const transition = transitionLobby(invite.state, 'dropped')
-  if (!transition.ok) throw new PodcastGuestError(transition.code, transition.message)
-  const updated = await payload.update({
-    collection: PODCAST_GUEST_INVITE_COLLECTION,
-    id: inviteId,
-    data: { state: 'dropped', dropReason: reason },
-    overrideAccess: true,
+    const dropped = toInviteRecord(updated)
+    await mirrorGuestIntoSessionDoc(payload, dropped, 'dropped')
+    logGuestEvent('dropped', { inviteId, sessionId: invite.sessionId })
+    return dropped
   })
-  const dropped = toInviteRecord(updated)
-  await mirrorGuestIntoSessionDoc(payload, dropped, 'dropped')
-  logGuestEvent('dropped', { inviteId, sessionId: invite.sessionId })
-  return dropped
 }
 
 export async function listGuestInvites(
@@ -521,7 +575,13 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
  */
 export async function pollSignalMessages(
   payload: any,
-  input: { invite: any; forSender: SignalSender; afterIso?: string; waitMs?: number },
+  input: {
+    invite: any
+    forSender: SignalSender
+    afterIso?: string
+    afterId?: string
+    waitMs?: number
+  },
 ): Promise<any[]> {
   const invite = toInviteRecord(input.invite)
   const other: SignalSender = input.forSender === 'guest' ? 'host' : 'guest'
@@ -533,7 +593,25 @@ export async function pollSignalMessages(
         and: [
           { invite: { equals: invite.id } },
           { sender: { equals: other } },
-          ...(input.afterIso ? [{ createdAt: { greater_than: input.afterIso } }] : []),
+          ...(input.afterIso
+            ? [
+                {
+                  or: [
+                    { createdAt: { greater_than: input.afterIso } },
+                    ...(input.afterId
+                      ? [
+                          {
+                            and: [
+                              { createdAt: { equals: input.afterIso } },
+                              { id: { greater_than: input.afterId } },
+                            ],
+                          },
+                        ]
+                      : []),
+                  ],
+                },
+              ]
+            : []),
         ],
       },
       sort: 'createdAt',

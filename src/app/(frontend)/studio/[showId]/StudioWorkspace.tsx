@@ -41,7 +41,6 @@ import { CaptureDevicePanel } from './CaptureDevicePanel'
 import { ControlSurfacePanel } from './ControlSurfacePanel'
 import { EditProjectPanel } from './EditProjectPanel'
 import { GuestLobbyPanel } from './GuestLobbyPanel'
-import { LiveIngestPanel } from './LiveIngestPanel'
 import { LiveSettingsPanel } from './LiveSettingsPanel'
 
 type SessionDoc = {
@@ -998,7 +997,6 @@ export function StudioWorkspace({
           {activeId && <GuestLobbyPanel sessionRecordId={activeId} />}
 
           {/* POD-21 live ingest (program bus → ingest endpoint → relay) */}
-          {activeId && <LiveIngestPanel sessionRecordId={activeId} />}
 
           {/* Live-stream settings (per-show profile + source credential form) */}
           <LiveSettingsPanel showId={showId} />

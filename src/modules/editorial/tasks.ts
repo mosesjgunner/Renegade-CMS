@@ -1,3 +1,5 @@
+import { creatorSyntheticDubTask } from '../creator-studio/synthetic-dub'
+import { creatorTranscriptAssistTask } from '../creator-studio/transcript-assist'
 import type { TaskConfig } from 'payload'
 import { creatorMediaExportTask } from '../creator-studio/media-edit-exports'
 
@@ -99,6 +101,8 @@ export const messageAttachmentScanTask: TaskConfig = {
 
 export const editorialTasks = [
   creatorMediaExportTask,
+  creatorTranscriptAssistTask,
+  creatorSyntheticDubTask,
   editorialPublishTask,
   mediaUploadCleanupTask,
   messageAttachmentCleanupTask,

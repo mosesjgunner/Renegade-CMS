@@ -7,6 +7,7 @@ import {
   type CalendarScope,
 } from './contracts'
 import { scheduleContentRelease } from '../releases/service'
+import { listTheaterCalendar } from '../community/live-events'
 
 type Doc = Record<string, any>
 const id = (value: unknown) =>
@@ -37,6 +38,8 @@ export async function rescheduleCalendarSource(
       actorId: input.actorId,
       idempotencyKey: input.mutationId,
     })
+  if (input.entry.sourceType === 'livestream')
+    throw new Error('Manage this live event in its theater.')
   const collection =
     input.entry.sourceType === 'social-queue-item' ? 'social-queue-items' : 'calendar-entries'
   const before = (await payload.findByID({
@@ -112,7 +115,7 @@ export async function listUnifiedCalendar(
       } as never)) as unknown as { docs: Doc[] }
     ).docs
 
-  const [jobs, releases, queueItems, messages] = await Promise.all([
+  const [jobs, releases, queueItems, messages, theaterEvents] = await Promise.all([
     find({
       collection: 'scheduled-publish-jobs',
       where: { 'article.content.site': { equals: scope.siteId } },
@@ -143,9 +146,11 @@ export async function listUnifiedCalendar(
       limit,
       sort: 'scheduledFor',
     }),
+    listTheaterCalendar(payload, [scope.siteId]),
   ])
 
   const entries: CalendarProjection[] = [
+    ...theaterEvents,
     ...jobs.map((job): CalendarProjection => {
       const content = (job.article as Doc | undefined)?.content as Doc | undefined
       return {

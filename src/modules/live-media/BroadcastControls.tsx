@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { LiveConnection, LiveMediaCapabilities, LiveState, ProviderId } from './provider'
 import { publishWhip } from './whip'
+import { DestinationControls } from './DestinationControls'
 
 type Session = {
   id: string
@@ -16,7 +17,17 @@ type Reply = { session: Session | null; connection?: LiveConnection; providers?:
 
 const buttonClass = 'rounded border px-3 py-1 text-sm disabled:opacity-50'
 
-export function BroadcastControls({ endpoint }: { endpoint: string }) {
+export function BroadcastControls({
+  endpoint,
+  programStream,
+  onRecordingChange,
+  eventShow = false,
+}: {
+  endpoint: string
+  programStream?: MediaStream
+  eventShow?: boolean
+  onRecordingChange?: (active: boolean) => void
+}) {
   const preview = useRef<HTMLVideoElement>(null)
   const source = useRef<MediaStream | null>(null)
   const transport = useRef<Awaited<ReturnType<typeof publishWhip>> | null>(null)
@@ -102,11 +113,15 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
   useEffect(
     () => () => {
       activeGeneration.current++
-      source.current?.getTracks().forEach((track) => track.stop())
+      if (!programStream) source.current?.getTracks().forEach((track) => track.stop())
       void transport.current?.close()
     },
-    [],
+    [programStream],
   )
+
+  useEffect(() => {
+    onRecordingChange?.(Boolean(session?.recording && !ended))
+  }, [session?.recording, ended, onRecordingChange])
 
   async function run(operation: () => Promise<void>) {
     setPending(true)
@@ -129,6 +144,16 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
         ? result.session.provider
         : (result.providers?.find((candidate) => candidate.ready)?.id ?? 'mediamtx'),
     )
+    if (eventShow && !result.providers?.find((candidate) => candidate.id === 'mediamtx')?.ready)
+      throw new Error(
+        'The recording provider is unavailable. Check the provider and retry preflight.',
+      )
+    if (programStream) {
+      source.current = programStream
+      if (preview.current) preview.current.srcObject = programStream
+      setCameraReady(programStream.getTracks().every((track) => track.readyState === 'live'))
+      return
+    }
     if (!navigator.mediaDevices?.getUserMedia)
       throw new Error('Camera and microphone access require HTTPS or a local browser origin.')
     if (source.current?.getTracks().every((track) => track.readyState === 'live')) return
@@ -151,8 +176,8 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
       return
     }
     const result = await request('start', {
-      provider,
-      recording: provider === 'cloudflare' || recording,
+      provider: eventShow ? 'mediamtx' : provider,
+      recording: eventShow || provider === 'cloudflare' || recording,
       inputId,
     })
     if (!result.session) throw new Error('The broadcast could not be started.')
@@ -164,7 +189,7 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
     if (!session) return
     activeGeneration.current++
     setSession({ ...session, state: 'ended', providerStopped: false })
-    source.current?.getTracks().forEach((track) => track.stop())
+    if (!programStream) source.current?.getTracks().forEach((track) => track.stop())
     source.current = null
     setCameraReady(false)
     const current = transport.current
@@ -186,12 +211,12 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
           muted
           autoPlay
           playsInline
-          aria-label="Camera preview"
+          aria-label={programStream ? 'Program preview' : 'Camera preview'}
           className="aspect-video w-full max-w-sm rounded bg-black"
         />
         <div>
           <button className={buttonClass} disabled={pending} onClick={() => void run(preflight)}>
-            Check camera, microphone and provider
+            {programStream ? 'Check program and provider' : 'Check camera, microphone and provider'}
           </button>
         </div>
         {configured.length > 0 && (
@@ -222,7 +247,7 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
           </label>
         )}
         {selected && <p className="text-sm">{selected.capabilities.cost}</p>}
-        {configured.length > 0 && !active && provider === 'mediamtx' && (
+        {!eventShow && configured.length > 0 && !active && provider === 'mediamtx' && (
           <label>
             <input
               type="checkbox"
@@ -245,11 +270,11 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
               pending ||
               !cameraReady ||
               !selected?.ready ||
-              Boolean(ended && !session?.providerStopped)
+              Boolean(ended && (eventShow || !session?.providerStopped))
             }
             onClick={() => void run(start)}
           >
-            {active ? 'Reconnect camera' : 'Start broadcast'}
+            {active ? 'Reconnect source' : eventShow ? 'Start show' : 'Start broadcast'}
           </button>
           {session && (!ended || !session.providerStopped) && (
             <button
@@ -257,7 +282,7 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
               disabled={pending}
               onClick={() => void run(() => finish('end'))}
             >
-              {ended ? 'Retry provider stop' : 'End broadcast'}
+              {ended ? 'Retry provider stop' : eventShow ? 'End show' : 'End broadcast'}
             </button>
           )}
           {session && ended && session.providerStopped && (
@@ -270,6 +295,10 @@ export function BroadcastControls({ endpoint }: { endpoint: string }) {
             </button>
           )}
         </div>
+        <DestinationControls
+          endpoint={endpoint}
+          sessionId={active && session?.provider === 'mediamtx' ? session.id : undefined}
+        />
         {error && <p role="alert">{error}</p>}
       </div>
     </details>

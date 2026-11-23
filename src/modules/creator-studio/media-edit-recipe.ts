@@ -75,6 +75,7 @@ export const recipeSchema = z
         in: time,
         out: time,
         cleanup: z.boolean(),
+        mode: z.enum(['mix', 'replace']).optional(),
         ...audioControls,
       })
       .nullable(),

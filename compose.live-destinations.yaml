@@ -1,0 +1,30 @@
+services:
+  renegade-web:
+    environment:
+      LIVE_DESTINATION_ENCRYPTION_KEY: ${LIVE_DESTINATION_ENCRYPTION_KEY:?Set the destination encryption key}
+      LIVE_DESTINATION_ENDPOINTS: ${LIVE_DESTINATION_ENDPOINTS:?Set trusted destination endpoints}
+
+  live-mediamtx:
+    environment:
+      MTX_RTSP: 'yes'
+      MTX_RTSPTRANSPORTS: tcp
+
+  live-relay:
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
+    restart: unless-stopped
+    init: true
+    cap_drop: [ALL]
+    ulimits:
+      core: 0
+    command: ['node', '--import', 'tsx', 'src/scripts/live-destination-worker.ts']
+    environment:
+      DATABASE_URL: postgresql://renegade:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}@postgres:5432/renegade
+      LIVE_DESTINATION_ENCRYPTION_KEY: ${LIVE_DESTINATION_ENCRYPTION_KEY:?Set the destination encryption key}
+      LIVE_DESTINATION_ENDPOINTS: ${LIVE_DESTINATION_ENDPOINTS:?Set trusted destination endpoints}
+      LIVE_RELAY_RTSP_URL: rtsp://live-mediamtx:8554
+    networks: [default, live-control]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      live-mediamtx:
+        condition: service_started

@@ -9,6 +9,8 @@
  */
 import { useCallback, useEffect, useState } from 'react'
 
+import { HostStage } from './HostStage'
+
 type InviteView = {
   id: string
   state: string
@@ -47,8 +49,12 @@ export function GuestLobbyPanel({ sessionRecordId }: { sessionRecordId: string }
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
-    const data = (await res.json().catch(() => ({}))) as { error?: string }
-    setStatus(res.ok ? 'Done.' : (data.error ?? `Request failed (${res.status}).`))
+    const data = (await res.json().catch(() => ({}))) as { error?: string; warnings?: string[] }
+    setStatus(
+      res.ok
+        ? data.warnings?.join(' ') || 'Done.'
+        : (data.error ?? `Request failed (${res.status}).`),
+    )
     return res.ok
   }
 
@@ -125,7 +131,7 @@ export function GuestLobbyPanel({ sessionRecordId }: { sessionRecordId: string }
                 )
               }
             >
-              Drop
+              {invite.state === 'admitted' ? 'Kick guest' : 'Decline guest'}
             </button>
           )}
           {invite.state !== 'dropped' && invite.state !== 'left' && (
@@ -143,6 +149,7 @@ export function GuestLobbyPanel({ sessionRecordId }: { sessionRecordId: string }
           )}
         </div>
       ))}
+      <HostStage key={sessionRecordId} sessionId={sessionRecordId} guests={invites} />
     </section>
   )
 }

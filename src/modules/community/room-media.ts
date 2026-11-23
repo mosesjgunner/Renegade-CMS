@@ -5,6 +5,7 @@ import { Readable } from 'node:stream'
 import type { Payload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
 import { parseByteRange } from '@/modules/media/range-serving'
+import { loadLiveEvent, type LiveEvent } from './live-events'
 import type { RoomViewer } from './room-participation'
 import { requireRoomAccess, roomQuery } from './rooms'
 import { CommunityError } from './service'
@@ -83,18 +84,65 @@ async function mediaPath(dir: string | null, file: string) {
   return path && dirname(path) === dir && basename(path) === file ? path : null
 }
 
+export async function premiereFileReady(viewer: RoomViewer) {
+  const path = await mediaPath(await roomDirectory(viewer), 'premiere.mp4')
+  if (!path) return false
+  const file = await open(path, 'r').catch(() => null)
+  if (!file) return false
+  try {
+    const stat = await file.stat()
+    return stat.isFile() && stat.size > 0
+  } finally {
+    await file.close()
+  }
+}
+
+const eventFiles = ['premiere.mp4', 'event-audio.aac', 'event-captions.vtt', 'event-transcript.vtt']
+function eventMediaAllowed(event: LiveEvent | null, file: string) {
+  if (!event) return !eventFiles.includes(file)
+  if (event.source === 'broadcast')
+    return Boolean(
+      event.session_id &&
+        ['event-captions.vtt', 'event-transcript.vtt'].includes(file) &&
+        (!event.ended_at || event.replay_published_at),
+    )
+  return (
+    event.source === 'premiere' &&
+    eventFiles.includes(file) &&
+    (event.ended_at ? Boolean(event.replay_published_at) : event.starts_at.getTime() <= Date.now())
+  )
+}
+
 export async function roomPlayback(payload: Payload, viewer: RoomViewer) {
   await requireTheater(payload, viewer)
   const dir = await roomDirectory(viewer)
   const base = `/api/rooms/${viewer.conversationId}/playback`
-  const [live, replay] = await Promise.all([
-    mediaPath(dir, 'live.m3u8'),
-    mediaPath(dir, 'replay.mp4'),
-  ])
+  const event = await loadLiveEvent(roomQuery(payload), viewer.conversationId)
+  const [live, replay] = event
+    ? [null, null]
+    : await Promise.all([mediaPath(dir, 'live.m3u8'), mediaPath(dir, 'replay.mp4')])
+  const assets = await Promise.all(
+    eventFiles.map(async (file) =>
+      eventMediaAllowed(event, file) && (await mediaPath(dir, file)) ? `${base}/${file}` : null,
+    ),
+  )
+  const [premiere, audio, captions, transcript] = assets
   const expires = String(Math.floor(Date.now() / 1000) + tokenLifetime)
   const token = `${expires}.${signature(viewer, expires)}`
   return Response.json(
-    { live: live ? `${base}/live.m3u8` : null, replay: replay ? `${base}/replay.mp4` : null },
+    {
+      live: live ? `${base}/live.m3u8` : event?.ended_at ? null : premiere,
+      replay: replay ? `${base}/replay.mp4` : event?.ended_at ? premiere : null,
+      ...(event && {
+        eventSource: event.source,
+        eventEnded: Boolean(event.ended_at),
+        premiereLobby: event.source === 'premiere' && event.starts_at.getTime() > Date.now(),
+        premiereStart: premiere && !event.ended_at ? event.starts_at : null,
+        audio,
+        captions,
+        transcript,
+      }),
+    },
     {
       headers: {
         ...privateHeaders,
@@ -158,7 +206,10 @@ export async function serveRoomMedia(
     ?.slice(playbackCookie.length + 1)
   if (!validRoomPlaybackToken(viewer, token))
     throw new CommunityError('Playback authorization required.', 403, 'ROOM_PLAYBACK_REQUIRED')
-  const path = await mediaPath(await roomDirectory(viewer), file)
+  const event = await loadLiveEvent(roomQuery(payload), viewer.conversationId)
+  const path = eventMediaAllowed(event, file)
+    ? await mediaPath(await roomDirectory(viewer), file)
+    : null
   const handle = path ? await open(path, 'r').catch(() => null) : null
   if (!handle) return new Response(null, { status: 404, headers: privateHeaders })
   let streamOpened = false

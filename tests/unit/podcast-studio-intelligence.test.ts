@@ -255,6 +255,20 @@ describe('POD-14 transcript serialisation + editing', () => {
     expect(plain.every((segment) => segment.words === undefined)).toBe(true)
   })
 
+  it('rounds timestamps across minute boundaries and preserves literal WebVTT text', () => {
+    const cue = {
+      id: 'seg-1',
+      startSeconds: 59.9996,
+      endSeconds: 60.5,
+      text: 'Literal <caption> & cues',
+      speaker: 'A&B',
+    }
+    const vtt = segmentsToVtt([cue])
+    expect(vtt).toContain('00:01:00.000 --> 00:01:00.500')
+    expect(vtt).toContain('Literal &lt;caption&gt; &amp; cues')
+    expect(parseVtt(vtt)).toEqual([{ ...cue, startSeconds: 60 }])
+  })
+
   it('parses foreign SRT/VTT documents (numbered cues, WEBVTT header)', () => {
     const srt = `1\n00:00:01,000 --> 00:00:03,500\nFirst line.\n\n2\n00:00:03,500 --> 00:00:05,000\nSecond line.\n`
     expect(parseSrt(srt)).toHaveLength(2)

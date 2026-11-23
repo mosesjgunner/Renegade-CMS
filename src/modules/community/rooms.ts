@@ -225,7 +225,12 @@ async function ensureRoomReadState(
   return { floor: Number(row.history_floor_sequence), lastRead: Number(row.last_read_sequence) }
 }
 
-async function appendRoomNotice(query: Query, conversationId: string, event: string, body: string) {
+export async function appendRoomNotice(
+  query: Query,
+  conversationId: string,
+  event: string,
+  body: string,
+) {
   const allocated = await query<{ sequence_number: number }>(
     'UPDATE conversations SET next_message_sequence=next_message_sequence+1, last_message_at=now(), updated_at=now() WHERE id=$1 RETURNING next_message_sequence - 1 AS sequence_number',
     [conversationId],

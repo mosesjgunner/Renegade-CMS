@@ -1,0 +1,52 @@
+﻿# Standalone evaluation stack. The core CMS does not load this Compose file.
+services:
+  studio-redis:
+    image: ${STUDIO_REDIS_IMAGE:?Set a pinned Redis image}
+    profiles: [interactive-studio]
+    restart: unless-stopped
+    networks: [studio-backend]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  studio-livekit:
+    image: ${STUDIO_LIVEKIT_IMAGE:?Set a pinned LiveKit server image}
+    profiles: [interactive-studio]
+    restart: unless-stopped
+    command: [--config, /etc/livekit.yaml]
+    volumes:
+      - ${STUDIO_LIVEKIT_CONFIG:?Set the LiveKit config file path}:/etc/livekit.yaml:ro
+    ports:
+      - '127.0.0.1:7880:7880'
+      - '7881:7881/tcp'
+      - '7882:7882/udp'
+    networks: [studio-backend, studio-edge]
+    depends_on:
+      studio-redis:
+        condition: service_healthy
+
+  studio-egress:
+    image: ${STUDIO_EGRESS_IMAGE:?Set a pinned LiveKit Egress image}
+    profiles: [interactive-studio]
+    restart: unless-stopped
+    environment:
+      EGRESS_CONFIG_FILE: /etc/egress.yaml
+    volumes:
+      - ${STUDIO_EGRESS_CONFIG:?Set the Egress config file path}:/etc/egress.yaml:ro
+      - studio-egress-files:/recordings
+    networks: [studio-backend, studio-edge]
+    depends_on:
+      studio-redis:
+        condition: service_healthy
+      studio-livekit:
+        condition: service_started
+
+networks:
+  studio-backend:
+    internal: true
+  studio-edge:
+
+volumes:
+  studio-egress-files:

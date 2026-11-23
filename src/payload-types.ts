@@ -548,6 +548,8 @@ export interface Config {
       'execution-outbox-handle': TaskExecutionOutboxHandle;
       'webhook-delivery-dispatch': TaskWebhookDeliveryDispatch;
       'creator-media-export': TaskCreatorMediaExport;
+      'creator-transcript-assist': TaskCreatorTranscriptAssist;
+      'creator-synthetic-dub': TaskCreatorSyntheticDub;
       'editorial-publish': TaskEditorialPublish;
       'media-upload-cleanup': TaskMediaUploadCleanup;
       'community-message-attachment-cleanup': TaskCommunityMessageAttachmentCleanup;
@@ -3711,6 +3713,8 @@ export interface PayloadJob {
           | 'execution-outbox-handle'
           | 'webhook-delivery-dispatch'
           | 'creator-media-export'
+          | 'creator-transcript-assist'
+          | 'creator-synthetic-dub'
           | 'editorial-publish'
           | 'media-upload-cleanup'
           | 'community-message-attachment-cleanup'
@@ -3787,6 +3791,8 @@ export interface PayloadJob {
         | 'execution-outbox-handle'
         | 'webhook-delivery-dispatch'
         | 'creator-media-export'
+        | 'creator-transcript-assist'
+        | 'creator-synthetic-dub'
         | 'editorial-publish'
         | 'media-upload-cleanup'
         | 'community-message-attachment-cleanup'
@@ -17576,6 +17582,30 @@ export interface TaskCreatorMediaExport {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreator-transcript-assist".
+ */
+export interface TaskCreatorTranscriptAssist {
+  input: {
+    assistId: string;
+  };
+  output: {
+    completed: boolean;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreator-synthetic-dub".
+ */
+export interface TaskCreatorSyntheticDub {
+  input: {
+    dubId: string;
+  };
+  output: {
+    completed: boolean;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskEditorial-publish".
  */
 export interface TaskEditorialPublish {
@@ -17934,6 +17964,8 @@ export interface TaskPodcastTranscribe {
     mediaAssetId: string;
     episodeId?: string | null;
     providerId?: string | null;
+    creatorSite?: string | null;
+    creatorMember?: string | null;
     idempotencyKey: string;
   };
   output: {
@@ -17967,6 +17999,8 @@ export interface TaskMediaPeaks {
   input: {
     mediaAssetId: string;
     idempotencyKey: string;
+    creatorSite?: string | null;
+    creatorMember?: string | null;
   };
   output: {
     mediaAssetId: string;

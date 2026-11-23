@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto'
+import { assertTranscriptSegments } from './transcript-validation'
+export { assertTranscriptSegments } from './transcript-validation'
 
 export type ExternalMediaIdentity = { provider: string; externalId: string; scopeId: string }
 export type TranscriptSegment = {
@@ -75,14 +77,6 @@ export const externalIdentityKey = (identity: ExternalMediaIdentity) =>
   `${identity.provider}:${identity.scopeId}:${identity.externalId}`
 export const transcriptChecksum = (segments: readonly TranscriptSegment[]) =>
   createHash('sha256').update(JSON.stringify(segments)).digest('hex')
-export const assertTranscriptSegments = (segments: readonly TranscriptSegment[]) => {
-  let previousEnd = 0
-  for (const segment of segments) {
-    if (segment.startSeconds < previousEnd || segment.endSeconds < segment.startSeconds)
-      throw new Error('Transcript segments must be ordered and have non-negative durations.')
-    previousEnd = segment.endSeconds
-  }
-}
 export const deriveTranscriptRevision = (input: {
   source: TranscriptRevision
   sourceKind: 'manual' | 'ai-cleanup'

@@ -1,3 +1,4 @@
+import { ownedEditSource, requireEdit } from '../creator-studio/media-edit-projects'
 import type { TaskConfig } from 'payload'
 
 import { loadConfig } from '../core/config'
@@ -580,6 +581,8 @@ export const mediaTasks = [
       { name: 'mediaAssetId', type: 'text', required: true },
       { name: 'episodeId', type: 'text' },
       { name: 'providerId', type: 'text' },
+      { name: 'creatorSite', type: 'text' },
+      { name: 'creatorMember', type: 'text' },
       { name: 'idempotencyKey', type: 'text', required: true },
     ],
     outputSchema: [
@@ -599,10 +602,24 @@ export const mediaTasks = [
         mediaAssetId: string
         episodeId?: string
         providerId?: string
+        creatorSite?: string
+        creatorMember?: string
         idempotencyKey: string
       }
       req: { payload: import('payload').Payload }
     }) => {
+      const creator =
+        input.creatorSite && input.creatorMember
+          ? { siteId: input.creatorSite, memberId: input.creatorMember }
+          : null
+      if (creator) {
+        try {
+          await requireEdit(req.payload, creator)
+          await ownedEditSource(req.payload, creator, input.mediaAssetId)
+        } catch {
+          return { output: { completed: false, error: 'Creator transcription access expired.' } }
+        }
+      }
       const envConfig = transcriptionConfigFromEnv()
       const providerId = input.providerId ?? envConfig.providerId
       const provider =
@@ -614,6 +631,12 @@ export const mediaTasks = [
               ? createHttpTranscriptionProvider({
                   endpoint: envConfig.endpoint,
                   apiKey: envConfig.apiKey,
+                  fetchImpl: (url, options) =>
+                    fetch(url, {
+                      ...options,
+                      redirect: 'error',
+                      signal: AbortSignal.timeout(180_000),
+                    }),
                   readBytes: async (filePath: string) => {
                     const { readFile } = await import('node:fs/promises')
                     return readFile(filePath)
@@ -626,6 +649,7 @@ export const mediaTasks = [
           episodeId: input.episodeId,
           provider,
           providerConfig: envConfig,
+          ...(creator ? { creatorVideo: true, createdBy: creator.memberId } : {}),
         })
         return {
           output: {
@@ -696,6 +720,8 @@ export const mediaTasks = [
     inputSchema: [
       { name: 'mediaAssetId', type: 'text', required: true },
       { name: 'idempotencyKey', type: 'text', required: true },
+      { name: 'creatorSite', type: 'text' },
+      { name: 'creatorMember', type: 'text' },
     ],
     outputSchema: [
       { name: 'mediaAssetId', type: 'text', required: true },
@@ -709,9 +735,19 @@ export const mediaTasks = [
       input,
       req,
     }: {
-      input: { mediaAssetId: string; idempotencyKey: string }
+      input: {
+        mediaAssetId: string
+        idempotencyKey: string
+        creatorSite?: string
+        creatorMember?: string
+      }
       req: { payload: import('payload').Payload }
     }) => {
+      if (input.creatorSite && input.creatorMember) {
+        const actor = { siteId: input.creatorSite, memberId: input.creatorMember }
+        await requireEdit(req.payload, actor)
+        await ownedEditSource(req.payload, actor, input.mediaAssetId)
+      }
       const peaks = await generatePeaksForAsset(req.payload, loadConfig(), input.mediaAssetId)
       return {
         output: { mediaAssetId: input.mediaAssetId, completed: true, peakCount: peaks.min.length },

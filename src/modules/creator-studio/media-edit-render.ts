@@ -5,11 +5,12 @@ import { access, copyFile, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { promisify } from 'node:util'
 import { resolveFfmpegBinary, resolveFfprobeBinary } from '../media/ffmpeg'
+import { segmentsToSrt } from '../podcast-studio/intelligence/caption-codec'
 import { cleanupProgramFilters, VOICE_CLEANUP_PRESET } from '../podcast-studio/intelligence/cleanup'
 import { sourceFormats, type Dependency } from './media-edit-projects'
 import { timelineDuration, type EditRecipe, type ExportProfile } from './media-edit-recipe'
 
-export const renderRecipeVersion = 1
+export const renderRecipeVersion = 2
 export const renderDeadlineMs = 8 * 60_000
 const profiles = { landscape: [1280, 720], vertical: [720, 1280] }
 const exec = promisify(execFile)
@@ -48,7 +49,9 @@ type Stream = {
   width?: number
   height?: number
   duration?: string
+  start_time?: string
   nb_read_packets?: string
+  tags?: { handler_name?: string }
 }
 type Inspection = {
   streams: Stream[]
@@ -98,11 +101,6 @@ function mediaInput(source: LocalSource, seek = 0) {
     '-i',
     source.filename,
   ]
-}
-
-function timestamp(value: number) {
-  const ms = Math.round(value * 1000)
-  return new Date(ms).toISOString().slice(11, 23).replace('.', ',')
 }
 
 async function installFont(directory: string) {
@@ -180,7 +178,7 @@ export async function renderMediaEdit(input: {
             ...inputLimits,
             ...args,
             '-show_entries',
-            'stream=codec_type,codec_name,width,height,duration,nb_read_packets:format=duration:chapter=start_time:chapter_tags=title',
+            'stream=codec_type,codec_name,width,height,duration,start_time,nb_read_packets:stream_tags=handler_name:format=duration:chapter=start_time:chapter_tags=title',
             '-of',
             'json',
             filename,
@@ -352,20 +350,43 @@ export async function renderMediaEdit(input: {
     ].join(',')
     graph.push(`[${nextInput++}:a:0]${filters}[voice]`)
     graph.push(
-      '[0:a:0][voice]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95:level=false:latency=true[mix]',
+      voice.mode === 'replace'
+        ? '[voice]apad,alimiter=limit=0.95:level=false:latency=true[mix]'
+        : '[0:a:0][voice]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95:level=false:latency=true[mix]',
     )
     audio = 'mix'
   }
+  let untouchedAudio: number | undefined
+  const [firstClip] = recipe.clips
+  if (voice && recipe.clips.length === 1 && firstClip.in === 0) {
+    const item = source(firstClip.asset)
+    const original = inspected
+      .get(firstClip.asset)
+      ?.streams.find(({ codec_type }) => codec_type === 'audio')
+    if (
+      item.mimeType === 'video/mp4' &&
+      original?.codec_name === 'aac' &&
+      Number(original.start_time) === 0 &&
+      Math.abs(Number(original.duration) - duration) <= 0.001
+    ) {
+      untouchedAudio = nextInput++
+      args.push(...mediaInput(item))
+    }
+  }
+  const sourceTrackLabel =
+    untouchedAudio === undefined ? 'Timeline source audio' : 'Original source audio'
   let captions: number | undefined
   if (recipe.captions.length) {
     await writeFile(
       path.join(directory, 'captions.srt'),
-      recipe.captions
-        .map(
-          (cue, index) =>
-            `${index + 1}\n${timestamp(cue.start)} --> ${timestamp(cue.end)}\n${cue.text}\n\n`,
-        )
-        .join(''),
+      segmentsToSrt(
+        recipe.captions.map(({ start, end, text }, index) => ({
+          id: String(index),
+          startSeconds: start,
+          endSeconds: end,
+          text,
+        })),
+      ),
     )
     captions = nextInput++
     args.push(...inputLimits, '-f', 'srt', '-i', 'captions.srt')
@@ -395,9 +416,36 @@ export async function renderMediaEdit(input: {
     `[${video}]`,
     '-map',
     audio === '0:a:0' ? audio : `[${audio}]`,
+    '-metadata:s:a:0',
+    voice
+      ? voice.mode === 'replace'
+        ? 'handler_name=Manual dub'
+        : 'handler_name=Voiceover mix'
+      : 'handler_name=Source audio',
+    ...(voice
+      ? [
+          '-map',
+          untouchedAudio === undefined ? '0:a:0' : `${untouchedAudio}:a:0`,
+          '-metadata:s:a:1',
+          'handler_name=' + sourceTrackLabel,
+          '-disposition:a:0',
+          'default',
+          '-disposition:a:1',
+          '0',
+        ]
+      : []),
     ...(captions === undefined
       ? []
-      : ['-map', `${captions}:s:0`, '-c:s', 'mov_text', '-disposition:s:0', 'default']),
+      : [
+          '-map',
+          `${captions}:s:0`,
+          '-c:s',
+          'mov_text',
+          '-metadata:s:s:0',
+          'handler_name=Creator captions',
+          '-disposition:s:0',
+          'default',
+        ]),
     '-map_metadata',
     String(chapters ?? -1),
     '-map_chapters',
@@ -406,15 +454,18 @@ export async function renderMediaEdit(input: {
     seconds(duration),
     ...videoCodec,
     ...audioCodec,
+    ...(untouchedAudio === undefined ? [] : ['-c:a:1', 'copy']),
     '-movflags',
     '+faststart',
     final,
   ])
   const report = await probe(final, ['-count_packets', '-show_chapters'])
   const visual = report.streams.find((stream) => stream.codec_type === 'video')
-  const sound = report.streams.find((stream) => stream.codec_type === 'audio')
+  const sounds = report.streams.filter((stream) => stream.codec_type === 'audio')
+  const [sound, sourceSound] = sounds
   const subtitle = report.streams.find((stream) => stream.codec_type === 'subtitle')
   if (
+    (voice && (sounds.length !== 2 || sourceSound?.tags?.handler_name !== sourceTrackLabel)) ||
     visual?.codec_name !== 'h264' ||
     visual.width !== width ||
     visual.height !== height ||

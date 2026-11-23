@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { roomOverview } from './room-participation'
 import { BroadcastControls } from '@/modules/live-media/BroadcastControls'
+import type { theaterEvent } from './live-events'
 import type { LiveState } from '@/modules/live-media/provider'
 
 type Overview = Awaited<ReturnType<typeof roomOverview>>
@@ -23,7 +24,15 @@ type AttendeeData = {
 type Playback = {
   live: string | null
   replay: string | null
+  draftPreview?: boolean
+  eventSource?: 'broadcast' | 'premiere' | 'external'
+  eventEnded?: boolean
+  premiereLobby?: boolean
   replays?: { href: string; contentType: 'hls' | 'mp4' }[]
+  premiereStart?: string | null
+  audio?: string | null
+  captions?: string | null
+  transcript?: string | null
   broadcast?: { state: LiveState; providerStopped: boolean; recording: boolean; revoked: boolean }
 }
 const broadcastLabel: Record<LiveState, string> = {
@@ -35,6 +44,7 @@ const broadcastLabel: Record<LiveState, string> = {
 
 const buttonClass = 'rounded border px-3 py-1 text-sm disabled:opacity-50'
 const panelClass = 'min-w-0 rounded-lg border p-4'
+const fieldClass = 'block w-full rounded border p-2'
 
 async function roomAction(endpoint: string, action: string, fields: Record<string, unknown> = {}) {
   const csrf = document.cookie.match(/(?:^|;\s*)renegade-member-csrf=([^;]+)/)?.[1]
@@ -59,7 +69,6 @@ export function CreateRoomForm() {
   const [access, setAccess] = useState('members')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
-  const fieldClass = 'block w-full rounded border p-2'
   async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setBusy(true)
@@ -183,7 +192,10 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
     (playback?.replay ? [{ href: playback.replay, contentType: 'mp4' as const }] : [])
   const selected = replay === null ? null : replays[replay]
   const source = replay === null ? playback?.live : selected?.href
-  const filePlayback = selected?.contentType === 'mp4'
+  const [audioOnly, setAudioOnly] = useState(false)
+  const [buffering, setBuffering] = useState(false)
+  const premiereStart = replay === null ? playback?.premiereStart : null
+  const filePlayback = selected?.contentType === 'mp4' || Boolean(premiereStart)
   const managedLive = Boolean(playback?.broadcast && replay === null)
 
   useEffect(() => {
@@ -202,7 +214,7 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
         if (!active) return
         setPlayback(result)
         if (result.broadcast) interval = 4500
-        else if (result.live) interval = 240_000
+        else if (result.live && !result.premiereStart) interval = 240_000
       } catch {
         if (active) setProblem('Playback is currently unavailable.')
       } finally {
@@ -219,7 +231,7 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
 
   useEffect(() => {
     const player = video.current
-    if (!player || !source) return
+    if (!player || !source || audioOnly) return
     let active = true
     let hls: { destroy: () => void } | undefined
     let retry: ReturnType<typeof setTimeout> | undefined
@@ -227,10 +239,23 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
       setProblem('Playback interrupted. Try the player again.')
       if (managedLive && !retry) retry = setTimeout(() => setAttempt((value) => value + 1), 5000)
     }
-    const ready = () => setProblem('')
+    const ready = () => {
+      setBuffering(false)
+      setProblem('')
+    }
+    const waiting = () => setBuffering(true)
+    const sync = () => {
+      if (!premiereStart || !Number.isFinite(player.duration)) return
+      const elapsed = Math.max(0, (Date.now() - Date.parse(premiereStart)) / 1000)
+      const target = Math.min(player.duration, elapsed)
+      if (Math.abs(player.currentTime - target) > 3) player.currentTime = target
+    }
     const playing = () => {
       resume.current = true
+      sync()
     }
+    player.addEventListener('waiting', waiting)
+    player.addEventListener('loadedmetadata', sync)
     player.addEventListener('error', failed)
     player.addEventListener('canplay', ready)
     player.addEventListener('playing', playing)
@@ -268,24 +293,61 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
       active = false
       clearTimeout(retry)
       hls?.destroy()
+      player.removeEventListener('waiting', waiting)
+      player.removeEventListener('loadedmetadata', sync)
       player.removeEventListener('error', failed)
       player.removeEventListener('canplay', ready)
       player.removeEventListener('playing', playing)
       player.removeAttribute('src')
       player.load()
     }
-  }, [source, filePlayback, managedLive, attempt])
+  }, [source, filePlayback, managedLive, attempt, premiereStart, audioOnly])
 
+  if (playback?.eventSource === 'external') return null
   return (
     <section className={panelClass} aria-label="Theater player">
-      <video
-        ref={video}
-        className="aspect-video w-full rounded bg-black"
-        controls
-        playsInline
-        preload="metadata"
-        aria-label={replay === null ? 'Live stream' : 'Replay'}
-      />
+      {audioOnly && playback?.audio ? (
+        <audio
+          controls
+          preload="none"
+          src={playback.audio}
+          aria-label="Event audio"
+          onPlay={(event) => {
+            const player = event.currentTarget
+            if (premiereStart && Number.isFinite(player.duration))
+              player.currentTime = Math.min(
+                player.duration,
+                Math.max(0, (Date.now() - Date.parse(premiereStart)) / 1000),
+              )
+          }}
+        />
+      ) : (
+        <video
+          ref={video}
+          className="aspect-video w-full rounded bg-black"
+          controls
+          playsInline
+          preload="metadata"
+          aria-label={replay === null ? (premiereStart ? 'Premiere' : 'Live stream') : 'Replay'}
+        >
+          {playback?.captions && (
+            <track kind="captions" src={playback.captions} srcLang="en" label="English" />
+          )}
+        </video>
+      )}
+      {buffering && source && !audioOnly && <p role="status">Buffering video…</p>}
+      {playback?.audio && (
+        <button className={buttonClass} onClick={() => setAudioOnly(!audioOnly)}>
+          {audioOnly ? 'Switch to video' : 'Listen in audio only'}
+        </button>
+      )}
+      {playback?.transcript && (
+        <p>
+          <a href={playback.transcript} download>
+            Download transcript
+          </a>
+        </p>
+      )}
       {playback?.broadcast && <p role="status">{broadcastLabel[playback.broadcast.state]}</p>}
       {playback?.broadcast?.state === 'ended' &&
         playback.broadcast.recording &&
@@ -298,9 +360,17 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
         )}
       {!source && !problem && !playback?.broadcast && (
         <p role="status">
-          {broadcasts
-            ? 'Lobby · Waiting for the host.'
-            : 'The live stream is currently unavailable.'}
+          {playback?.eventEnded
+            ? replays.length
+              ? 'Choose a replay to begin.'
+              : 'Replay is not available yet.'
+            : playback?.eventSource === 'premiere'
+              ? playback.premiereLobby
+                ? 'The premiere will open at the scheduled time.'
+                : 'The premiere file is unavailable. Room chat remains available.'
+              : broadcasts
+                ? 'Lobby · Waiting for the host.'
+                : 'The live stream is currently unavailable.'}
         </p>
       )}
       {problem && (!playback?.broadcast || source) && (
@@ -320,7 +390,13 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
             setReplay(index)
           }}
         >
-          {replays.length === 1 ? 'Watch replay' : `Watch replay · Part ${index + 1}`}
+          {playback?.draftPreview
+            ? replays.length === 1
+              ? 'Preview private replay'
+              : `Preview private replay · Part ${index + 1}`
+            : replays.length === 1
+              ? 'Watch replay'
+              : `Watch replay · Part ${index + 1}`}
         </a>
       ))}
       {replay !== null && playback?.live && (
@@ -328,6 +404,202 @@ function TheaterPlayer({ endpoint, broadcasts }: { endpoint: string; broadcasts:
           Return to live
         </button>
       )}
+    </section>
+  )
+}
+
+type TheaterEventData = Awaited<ReturnType<typeof theaterEvent>>
+
+function TheaterEventPanel({
+  endpoint,
+  canManage,
+  signedIn,
+  broadcasts,
+}: {
+  endpoint: string
+  canManage: boolean
+  signedIn: boolean
+  broadcasts: boolean
+}) {
+  const [revision, setRevision] = useState(0)
+  const { data: event, unavailable } = useRoomViewData<TheaterEventData>(
+    endpoint,
+    'event',
+    revision,
+  )
+  const [problem, setProblem] = useState('')
+  const [busy, setBusy] = useState(false)
+  async function change(action: string, fields: Record<string, unknown> = {}) {
+    setBusy(true)
+    setProblem('')
+    try {
+      await roomAction(endpoint, action, fields)
+      setRevision((value) => value + 1)
+    } catch (error) {
+      setProblem(error instanceof Error ? error.message : 'The event could not be updated.')
+    } finally {
+      setBusy(false)
+    }
+  }
+  if (!event && !canManage && !unavailable) return null
+  return (
+    <section className={panelClass} aria-label="Theater event">
+      {event ? (
+        <>
+          <h2>{event.title}</h2>
+          <p>
+            <time dateTime={String(event.startsAt)}>
+              {new Date(event.startsAt).toLocaleString(undefined, {
+                timeZone: event.timeZone,
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              })}
+            </time>{' '}
+            ({event.timeZone})
+          </p>
+          <p role="status">
+            {event.ended
+              ? event.published
+                ? 'Replay available'
+                : 'Event ended'
+              : event.lobby
+                ? 'Lobby'
+                : event.reconnecting
+                  ? 'Waiting for the host to reconnect'
+                  : event.source === 'premiere'
+                    ? 'Premiere in progress'
+                    : event.source === 'external'
+                      ? 'Watch party in progress'
+                      : 'Show started'}
+          </p>
+          <p>
+            <a href={`${endpoint}?view=event-calendar`}>Add to calendar</a>
+          </p>
+          {event.announcement && <p role="status">{event.announcement}</p>}
+          {event.providerUrl && (
+            <p>
+              <a href={event.providerUrl} target="_blank" rel="noopener noreferrer">
+                Open provider player
+              </a>{' '}
+              The provider may require your own account or subscription. If playback is blocked or
+              offline, check availability on the provider site. Room chat is available here.
+            </p>
+          )}
+          {event.rsvpEnabled &&
+            !event.ended &&
+            (signedIn ? (
+              <button
+                className={buttonClass}
+                disabled={busy}
+                onClick={() => void change(event.attending ? 'cancel-rsvp' : 'rsvp')}
+              >
+                {event.attending ? 'Cancel RSVP' : 'RSVP'}
+              </button>
+            ) : (
+              <p>Sign in to RSVP.</p>
+            ))}
+          {canManage && (
+            <>
+              <form
+                onSubmit={(submit) => {
+                  submit.preventDefault()
+                  void change('announce-event', {
+                    announcement: new FormData(submit.currentTarget).get('announcement'),
+                  })
+                }}
+              >
+                <label>
+                  Announcement{' '}
+                  <input name="announcement" className={fieldClass} required maxLength={1000} />
+                </label>
+                <button className={buttonClass} disabled={busy}>
+                  Post announcement
+                </button>
+              </form>
+              {!event.ended && event.source !== 'broadcast' && (
+                <button
+                  className={buttonClass}
+                  disabled={busy}
+                  onClick={() => void change('end-event')}
+                >
+                  End event
+                </button>
+              )}
+              {event.replayDraft && !event.published && (
+                <p>
+                  Private replay draft.{' '}
+                  <button
+                    className={buttonClass}
+                    disabled={busy}
+                    onClick={() => void change('publish-event-replay')}
+                  >
+                    Publish replay to room audience
+                  </button>
+                </p>
+              )}
+            </>
+          )}
+        </>
+      ) : (
+        canManage &&
+        !unavailable && (
+          <details>
+            <summary>Schedule theater event</summary>
+            <form
+              className="grid gap-2"
+              onSubmit={(submit) => {
+                submit.preventDefault()
+                const data = new FormData(submit.currentTarget)
+                void change('schedule-event', {
+                  title: data.get('title'),
+                  startsAt: new Date(String(data.get('startsAt'))).toISOString(),
+                  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                  source: data.get('source'),
+                  providerUrl: data.get('providerUrl'),
+                  rsvpEnabled: data.has('rsvp'),
+                })
+              }}
+            >
+              <label>
+                Title <input className={fieldClass} name="title" required maxLength={160} />
+              </label>
+              <label>
+                Start in your local time{' '}
+                <input className={fieldClass} type="datetime-local" name="startsAt" required />
+              </label>
+              <label>
+                Source{' '}
+                <select className={fieldClass} name="source">
+                  <option value="broadcast">Recorded live show</option>
+                  <option value="premiere">Locally owned premiere</option>
+                  <option value="external">External watch party</option>
+                </select>
+              </label>
+              <label>
+                Official playback URL (external only){' '}
+                <input className={fieldClass} name="providerUrl" type="url" />
+              </label>
+              <label>
+                <input type="checkbox" name="rsvp" /> Enable optional RSVP
+              </label>
+              <button className={buttonClass} disabled={busy}>
+                Schedule event
+              </button>
+            </form>
+          </details>
+        )
+      )}
+      {canManage && event?.source === 'broadcast' && !broadcasts && (
+        <p role="status">The recording provider is offline. The lobby and chat remain available.</p>
+      )}
+      {broadcasts && canManage && (!event || event.source === 'broadcast') && (
+        <BroadcastControls
+          endpoint={`${endpoint}/broadcast`}
+          eventShow={event?.source === 'broadcast'}
+        />
+      )}
+      {unavailable && <p role="status">Event details are temporarily unavailable.</p>}
+      {problem && <p role="alert">{problem}</p>}
     </section>
   )
 }
@@ -683,10 +955,13 @@ export function RoomView({
       >
         {overview.mode === 'theater' && (
           <div className="min-w-0">
+            <TheaterEventPanel
+              endpoint={endpoint}
+              canManage={overview.canManage}
+              signedIn={overview.signedIn}
+              broadcasts={broadcasts}
+            />
             <TheaterPlayer endpoint={endpoint} broadcasts={broadcasts} />
-            {broadcasts && overview.canManage && (
-              <BroadcastControls endpoint={`${endpoint}/broadcast`} />
-            )}
           </div>
         )}
         <RoomConversation endpoint={endpoint} overview={overview} />
