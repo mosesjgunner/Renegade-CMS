@@ -211,7 +211,9 @@ export const Sites: CollectionConfig = {
             targets.some(
               (target) =>
                 typeof target !== 'string' ||
-                !/^(gallery|content|theater|room):[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(target),
+                !/^(gallery|content|theater|room):[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(
+                  target,
+                ),
             ))
         )
           return 'Use up to 100 submission targets in kind:UUID format.'

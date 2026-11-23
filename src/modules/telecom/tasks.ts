@@ -37,6 +37,71 @@ export function selectTelecomAdapter(): MessagingProviderAdapter {
   return disabledTelecomAdapter
 }
 
+export type TelecomProviderTruth = {
+  /** The provider mode actually in force, from TELECOM_MODE — never inferred from credentials alone. */
+  mode: 'disabled' | 'emulator' | 'live'
+  /** The adapter id that will actually carry (or refuse) the next send. */
+  provider: string
+  status: 'healthy' | 'degraded' | 'disabled'
+  /** Display name that states plainly whether sends are live, simulated or off. */
+  name: string
+  /** True only when a live provider is selected AND outbound live sending is explicitly allowed. */
+  outboundAllowed: boolean
+  /** Routes derived from the selected adapter's declared contract — never a hardcoded list. */
+  routesActive: string[]
+}
+
+/**
+ * RC3-19 (#31): the operator surface must display the telecom truth —
+ * which provider mode is actually selected, whether sends are live or
+ * simulated, and which routes that provider really declares. Before
+ * this, the command center hardcoded `routesActive: ['SMS-GSM7',
+ * 'SMS-UCS2', 'RCS-Jibe']` and guessed status from Twilio credentials
+ * alone, so it claimed RCS routes in every mode, including disabled.
+ */
+export function telecomProviderTruth(): TelecomProviderTruth {
+  const env = process.env
+  const mode = env.TELECOM_MODE || 'disabled'
+  const adapter = selectTelecomAdapter()
+  if (adapter.id === 'disabled-telecom') {
+    return {
+      mode: 'disabled',
+      provider: adapter.id,
+      status: 'disabled',
+      name: 'Telecom disabled — no provider configured for this environment',
+      outboundAllowed: false,
+      routesActive: [],
+    }
+  }
+  if (adapter.id === 'telecom-emulator') {
+    return {
+      mode: 'emulator',
+      provider: adapter.id,
+      status: 'degraded',
+      name: 'Deterministic telecom emulator — simulated sends only, no live carrier',
+      outboundAllowed: false,
+      routesActive: adapter.contract.channels.map(
+        (channel) => `${channel.toUpperCase()} (emulated)`,
+      ),
+    }
+  }
+  const outboundAllowed =
+    (mode === 'real' || mode === 'twilio') && env.TELECOM_ALLOW_OUTBOUND === 'true'
+  return {
+    mode: 'live',
+    provider: adapter.id,
+    // Configured is not the same as verified: the adapter's live health
+    // is not probed from the operator surface, so the honest status is
+    // degraded (present, unverified), never healthy.
+    status: 'degraded',
+    name: outboundAllowed
+      ? 'Twilio Telecom — live carrier sends allowed'
+      : 'Twilio Telecom — configured, live sends not allowed (TELECOM_ALLOW_OUTBOUND is not true)',
+    outboundAllowed,
+    routesActive: adapter.contract.channels.map((channel) => channel.toUpperCase()),
+  }
+}
+
 export const telecomDeliveryTask = {
   slug: 'audience-telecom-delivery',
   label: 'Audience telecom delivery',
