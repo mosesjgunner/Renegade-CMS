@@ -221,17 +221,26 @@ async function createHistoricalFixture(payload: Payload) {
     requiresReview: true,
     canonicalUrl: 'https://example.test/upgrade-sentinel-article',
   })
-  await sentinel('variant', 'social-network-variants', {
-    id: ids.variant,
-    draft: ids.draft,
-    account: ids.account,
-    label: 'Bluesky',
-    network: 'bluesky',
-    text: 'Upgrade sentinel social content',
-    status: 'scheduled',
-    idempotencyKey: 'upgrade-sentinel-variant',
-    attachments: [ids.media],
-  })
+  // The historical variant schema predates the YouTube upload field.
+  await insertRow(
+    'social_network_variants',
+    ['id', 'draft_id', 'account_id', 'label', 'network', 'text', 'status', 'idempotency_key'],
+    [
+      ids.variant,
+      ids.draft,
+      ids.account,
+      'Bluesky',
+      'bluesky',
+      'Upgrade sentinel social content',
+      'scheduled',
+      'upgrade-sentinel-variant',
+    ],
+  )
+  await insertRow(
+    'social_network_variants_rels',
+    ['order', 'parent_id', 'path', 'media_assets_id'],
+    [1, ids.variant, 'attachments', ids.media],
+  )
   // RC3-16 added recurrence/handoff columns to social_queue_items after
   // the upgrade baseline; insert baseline-only columns directly, like
   // the media and content sentinels above.
@@ -305,6 +314,19 @@ async function assertUpgrade(payload: Payload) {
       ?.source_content_id !== ids.content
   )
     throw new Error('Upgrade broke the social relationship.')
+  const variant = await one(
+    `SELECT v.draft_id, v.account_id, r.media_assets_id
+     FROM social_network_variants v
+     JOIN social_network_variants_rels r ON r.parent_id = v.id AND r.path = 'attachments'
+     WHERE v.id = $1`,
+    [ids.variant],
+  )
+  if (
+    variant?.draft_id !== ids.draft ||
+    variant?.account_id !== ids.account ||
+    variant?.media_assets_id !== ids.media
+  )
+    throw new Error('Upgrade broke the social variant attachment relationship.')
   const duplicate = await one(
     'SELECT (SELECT count(*) FROM content WHERE id = $1) AS content_count, (SELECT count(*) FROM social_queue_items WHERE id = $2) AS queue_count',
     [ids.content, ids.queue],
