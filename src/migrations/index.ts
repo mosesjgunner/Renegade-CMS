@@ -989,19 +989,21 @@ export const migrations = [
     name: '20261122_190000_cre08_live_media',
   },
   {
-<<<<<<< HEAD
     up: cre10Destinations.up,
     down: cre10Destinations.down,
     name: '20261122_200000_cre10_destinations',
   },
   { up: cre11LiveEvents.up, down: cre11LiveEvents.down, name: '20261123_090000_cre11_live_events' },
-  { up: cre12CaptionWorkers.up, down: cre12CaptionWorkers.down, name: '20261123_100000_cre12_caption_workers' },
-=======
+  {
+    up: cre12CaptionWorkers.up,
+    down: cre12CaptionWorkers.down,
+    name: '20261123_100000_cre12_caption_workers',
+  },
+  {
     up: rc319AutomationResumeTask.up,
     down: rc319AutomationResumeTask.down,
     name: '20261122_160000_rc319_automation_resume_task',
   },
->>>>>>> 65bd6bbb47a9fc4d664c2b3ee7264dc90e226df2
 ]
 import * as cre05MediaEdits from './20261122_160000_cre05_media_edits'
 import * as cre03Portfolios from './20261122_150000_cre03_portfolios'
@@ -1019,10 +1021,7 @@ import * as rc317EditorialDepth from './20261122_090000_rc317_editorial_depth'
 import * as cre06VideoSources from './20261122_170000_cre06_video_sources'
 import * as cre07TheaterRooms from './20261122_180000_cre07_theater_rooms'
 import * as cre08LiveMedia from './20261122_190000_cre08_live_media'
-<<<<<<< HEAD
 import * as cre10Destinations from './20261122_200000_cre10_destinations'
 import * as cre11LiveEvents from './20261123_090000_cre11_live_events'
 import * as cre12CaptionWorkers from './20261123_100000_cre12_caption_workers'
-=======
 import * as rc319AutomationResumeTask from './20261122_160000_rc319_automation_resume_task'
->>>>>>> 65bd6bbb47a9fc4d664c2b3ee7264dc90e226df2
