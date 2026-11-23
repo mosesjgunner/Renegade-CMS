@@ -56,6 +56,8 @@ describe('Payload domain registration', () => {
         'webhook-delivery-dispatch',
         'editorial-publish',
         'creator-media-export',
+        'creator-synthetic-dub',
+        'creator-transcript-assist',
         'media-upload-cleanup',
         'content-release-execute',
         'quality-scan',
