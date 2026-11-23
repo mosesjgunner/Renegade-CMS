@@ -33,6 +33,8 @@ import {
   ForumSections,
 } from '../../collections/Community'
 import { CreatorProjects } from '../../collections/CreatorProjects'
+import { ExternalVideoSources, YouTubeChannelClaims } from '../../collections/ExternalVideoSources'
+import { MediaEditExports, MediaEditProjects } from '../../collections/MediaEditProjects'
 import type { DomainDefinition } from '../core/payload-domains'
 import { editorialTasks } from './tasks'
 
@@ -64,6 +66,10 @@ export const editorialDomain: DomainDefinition = {
     Sources,
     Albums,
     CreatorProjects,
+    MediaEditProjects,
+    MediaEditExports,
+    ExternalVideoSources,
+    YouTubeChannelClaims,
     MediaUsages,
     ForumSections,
     Forums,

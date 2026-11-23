@@ -1,4 +1,5 @@
 import type { TaskConfig } from 'payload'
+import { creatorMediaExportTask } from '../creator-studio/media-edit-exports'
 
 import { executeScheduledPublishJob } from './scheduler'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
@@ -97,6 +98,7 @@ export const messageAttachmentScanTask: TaskConfig = {
 }
 
 export const editorialTasks = [
+  creatorMediaExportTask,
   editorialPublishTask,
   mediaUploadCleanupTask,
   messageAttachmentCleanupTask,

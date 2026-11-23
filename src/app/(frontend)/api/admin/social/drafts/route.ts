@@ -1,3 +1,4 @@
+import { youtubeApprovedSettings, youtubeUploadSettings } from '@/modules/social/adapters/youtube'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -248,11 +249,28 @@ export async function POST(request: Request) {
         label?: string
         linkUrl?: string
         attachments?: string[]
+        youtubeUpload?: unknown
       }>
       reason?: string
     }
 
     const action = body.action || 'create-draft'
+    if (
+      Array.isArray(body.variants) &&
+      body.variants.some(
+        (variant) =>
+          variant.youtubeUpload != null &&
+          (variant.network !== 'youtube' || !youtubeUploadSettings(variant.youtubeUpload)),
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            'YouTube upload settings require a destination channel, title, privacy, audience and compliance confirmation.',
+        },
+        { status: 400 },
+      )
+    }
 
     // ==========================================
     // ACTION: CREATE-DRAFT
@@ -317,13 +335,14 @@ export async function POST(request: Request) {
           text: v.text || '',
           attachments: (v.attachments || []).map((attId) => ({
             mediaAssetId: attId,
-            role: 'image' as const,
+            role: v.network === 'youtube' ? 'video' : 'image',
           })),
+          ...youtubeApprovedSettings(v.network, v.youtubeUpload),
           status: 'draft',
           idempotencyKey: 'temp',
         }
 
-        if (adapter.validatePost) {
+        if (adapter.validatePost && (v.network !== 'youtube' || v.youtubeUpload)) {
           const report = adapter.validatePost(simVariant)
           if (!report.isValid) {
             for (const err of report.errors) {
@@ -393,6 +412,9 @@ export async function POST(request: Request) {
             text: v.text,
             linkUrl: v.linkUrl || canonicalUrl || undefined,
             attachments: v.attachments || [],
+            ...(v.youtubeUpload !== undefined && v.network === 'youtube'
+              ? { youtubeUpload: youtubeUploadSettings(v.youtubeUpload) }
+              : {}),
             status: 'draft',
             idempotencyKey: key,
           } as never,
@@ -464,13 +486,14 @@ export async function POST(request: Request) {
             text: v.text || '',
             attachments: (v.attachments || []).map((attId) => ({
               mediaAssetId: attId,
-              role: 'image' as const,
+              role: v.network === 'youtube' ? 'video' : 'image',
             })),
+            ...youtubeApprovedSettings(v.network, v.youtubeUpload),
             status: 'draft',
             idempotencyKey: 'temp',
           }
 
-          if (adapter.validatePost) {
+          if (adapter.validatePost && (v.network !== 'youtube' || v.youtubeUpload)) {
             const report = adapter.validatePost(simVariant)
             if (!report.isValid) {
               for (const err of report.errors) {
@@ -540,6 +563,9 @@ export async function POST(request: Request) {
                 text: v.text,
                 linkUrl: v.linkUrl || updateData.canonicalUrl || draft.canonicalUrl,
                 attachments: v.attachments || [],
+                ...(v.youtubeUpload !== undefined && v.network === 'youtube'
+                  ? { youtubeUpload: youtubeUploadSettings(v.youtubeUpload) }
+                  : {}),
                 // Modification resets approval on variant
                 status: 'draft',
                 approvalHash: null,
@@ -560,6 +586,9 @@ export async function POST(request: Request) {
                 text: v.text,
                 linkUrl: v.linkUrl || updateData.canonicalUrl || draft.canonicalUrl,
                 attachments: v.attachments || [],
+                ...(v.youtubeUpload !== undefined && v.network === 'youtube'
+                  ? { youtubeUpload: youtubeUploadSettings(v.youtubeUpload) }
+                  : {}),
                 status: 'draft',
                 idempotencyKey: key,
               } as never,
@@ -698,6 +727,7 @@ export async function POST(request: Request) {
             mediaAssetId: idOf(att),
             role: 'image',
           })),
+          ...youtubeApprovedSettings(v.network, v.youtubeUpload),
         })
 
         await payload.update({

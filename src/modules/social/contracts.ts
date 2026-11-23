@@ -73,7 +73,7 @@ export type SocialVariant = {
   network: SocialNetwork
   text: string
   attachments: readonly SocialAttachment[]
-  linkUrl?: string
+  linkUrl?: string | null
   status: SocialState
   approvalHash?: string
   scheduledFor?: string
@@ -217,12 +217,20 @@ export interface OAuthInitParams {
 export interface AuthContext {
   accountId: string
   accountHandle: string
+  externalAccountId?: string
   network: SocialNetwork
   credentials: Record<string, string> | null
   tokens?: AuthTokens
 }
 
+export interface StreamedSocialVideo {
+  size: number
+  mimeType: string
+  open(start: number, end: number): Promise<ReadableStream<Uint8Array>>
+}
+
 export interface MediaResolver {
+  resolveVideo?(mediaAssetId: string): Promise<StreamedSocialVideo>
   resolveUrl(mediaAssetId: string): Promise<string>
   resolveBuffer(
     mediaAssetId: string,
@@ -309,7 +317,7 @@ export type SocialProviderCapabilities = Readonly<{
 // ==========================================
 
 export const socialHash = (
-  input: Pick<SocialVariant, 'text' | 'attachments' | 'linkUrl' | 'network'>,
+  input: Pick<SocialVariant, 'text' | 'attachments' | 'linkUrl' | 'network' | 'platformSettings'>,
 ) => `sha256:${createHash('sha256').update(JSON.stringify(input)).digest('hex')}`
 
 export const socialIdempotencyKey = (variantId: string, approvedHash: string) =>

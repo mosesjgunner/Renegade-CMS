@@ -1,0 +1,35 @@
+logLevel: warn
+authInternalUsers:
+  - user: any
+    permissions:
+      - action: publish
+      - action: read
+      - action: playback
+      - action: api
+api: true
+apiAddress: :9997
+playback: true
+playbackAddress: :9996
+rtsp: false
+rtmp: false
+srt: false
+moq: false
+hls: true
+hlsAddress: :8888
+hlsVariant: fmp4
+hlsSegmentDuration: 2s
+hlsSegmentCount: 7
+webrtc: true
+webrtcAddress: :8889
+webrtcLocalUDPAddress: :8189
+pathDefaults:
+  source: publisher
+  overridePublisher: false
+  recordPath: /recordings/%path/%Y-%m-%d_%H-%M-%S-%f
+  recordFormat: fmp4
+  recordPartDuration: 1s
+  recordSegmentDuration: 30m
+  recordDeleteAfter: 7d
+paths:
+  '~^[0-9a-f-]{36}$':
+    record: false

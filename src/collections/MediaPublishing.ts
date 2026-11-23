@@ -748,7 +748,7 @@ export const PodcastEpisodes: CollectionConfig = {
       type: 'json',
       admin: {
         description:
-          'POD-16 audience room binding (data only): { "roomId": "…", "access": "public" | "members" }. The community rooms machinery is not in this tree yet — this binding is the reference it will consume; see docs/podcast-studio/LIVE.md.',
+          'Canonical Community Rooms reference. Use { "roomId": "<room conversation ID>", "access": "public" | "members" }.',
       },
       validate: (value: unknown) => {
         if (value == null) return true

@@ -21,6 +21,14 @@ expectedCollections.splice(
   0,
   'analytics-consent-records',
 )
+expectedCollections.splice(
+  expectedCollections.indexOf('creator-projects') + 1,
+  0,
+  'media-edit-projects',
+  'media-edit-exports',
+  'external-video-sources',
+  'youtube-channel-claims',
+)
 
 describe('Payload domain registration', () => {
   it('registers every existing collection, global, and task exactly once', () => {
@@ -47,6 +55,7 @@ describe('Payload domain registration', () => {
         'execution-outbox-handle',
         'webhook-delivery-dispatch',
         'editorial-publish',
+        'creator-media-export',
         'media-upload-cleanup',
         'content-release-execute',
         'quality-scan',

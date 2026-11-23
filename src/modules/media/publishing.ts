@@ -10,7 +10,6 @@ import {
   transcriptChecksum,
   type TranscriptSegment,
 } from './contracts'
-import type { ProviderAdapter } from '../execution/providers'
 
 type Doc = Record<string, any>
 const id = (value: unknown) =>
@@ -170,6 +169,7 @@ export function assertSafeEmbedUrl(value: string, provider: string, externalId: 
   if (
     !allowed ||
     url.protocol !== 'https:' ||
+    url.port ||
     url.username ||
     url.password ||
     url.search ||
@@ -513,113 +513,6 @@ export async function importPodcastFeed(
   }
 }
 
-export type YouTubeVideo = {
-  id: string
-  title: string
-  description?: string
-  thumbnailUrl?: string
-  captions?: readonly string[]
-  chapters?: unknown
-}
-export type YouTubeConfig = { channelId: string; apiKey: string }
-export const youtubeAdapter: ProviderAdapter<YouTubeConfig, 'video.import' | 'video.embed'> = {
-  id: 'youtube',
-  validate: (config) =>
-    config.channelId && config.apiKey
-      ? { ok: true }
-      : {
-          ok: false,
-          error: {
-            code: 'misconfigured',
-            retryable: false,
-            message: 'YouTube channel ID and API key are required.',
-          },
-        },
-  capabilities: () => ['video.import', 'video.embed'],
-  health: async (config) =>
-    youtubeAdapter.validate(config).ok
-      ? { status: 'healthy' }
-      : { status: 'disabled', detail: 'YouTube channel ID and API key are required.' },
-}
-/** Provider clients supply normalized video facts; this boundary owns persistence and update rules. */
-export async function syncYouTubeVideo(
-  store: MediaPublishingStore,
-  input: { siteId: string; channelId: string; video: YouTubeVideo },
-) {
-  if (!/^[A-Za-z0-9_-]{1,128}$/.test(input.video.id))
-    throw new Error('YouTube video ID is invalid.')
-  const channel = await store.findByID({
-    collection: 'video-channels',
-    id: input.channelId,
-    depth: 0,
-    overrideAccess: true,
-  })
-  if (id(channel.site) !== input.siteId)
-    throw new Error('Video channel scope does not match sync scope.')
-  if (!channel.syncClaimed)
-    throw new Error('Video provider sync has not been claimed for this channel.')
-  const key = externalIdentityKey({
-    provider: 'youtube',
-    scopeId: input.channelId,
-    externalId: input.video.id,
-  })
-  const sourceChecksum = createHash('sha256').update(JSON.stringify(input.video)).digest('hex')
-  const slug = `youtube-${input.video.id
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')}`
-  const found = await store.find({
-    collection: 'videos',
-    where: { providerIdentity: { equals: key } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-  const data = {
-    site: input.siteId,
-    publication: channel.publication ?? null,
-    space: channel.space ?? null,
-    owner: channel.owner ?? null,
-    channel: input.channelId,
-    title: input.video.title,
-    slug,
-    description: input.video.description ?? null,
-    provider: 'youtube',
-    externalId: input.video.id,
-    embedUrl: assertSafeEmbedUrl(
-      `https://www.youtube-nocookie.com/embed/${input.video.id}`,
-      'youtube',
-      input.video.id,
-    ),
-    chapters: input.video.chapters ?? null,
-    providerSourceChecksum: sourceChecksum,
-    availability: 'available',
-    status: 'draft',
-  }
-  if (found.docs[0]) {
-    if (found.docs[0].providerSourceChecksum === sourceChecksum)
-      return { created: false, updated: false, video: found.docs[0] }
-    return {
-      created: false,
-      updated: true,
-      video: await store.update({
-        collection: 'videos',
-        id: found.docs[0].id,
-        data,
-        overrideAccess: true,
-      }),
-    }
-  }
-  return {
-    created: true,
-    updated: false,
-    video: await store.create({
-      collection: 'videos',
-      data: { ...data, providerIdentity: key },
-      overrideAccess: true,
-    }),
-  }
-}
 export function publicVideo(record: Doc) {
   if (!canRenderPublic(record) || record.availability !== 'available')
     return {

@@ -1,3 +1,4 @@
+import { youtubeApprovedSettings } from '../social/adapters/youtube'
 import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
 import type { CoordinatedRelease, PinArtifactInput } from './contracts'
@@ -82,6 +83,7 @@ export async function assertReleaseArtifactScope(
         text: v.text,
         linkUrl: v.linkUrl,
         attachments: v.attachments,
+        ...youtubeApprovedSettings(String(v.network), v.youtubeUpload),
         // approvalHash is deliberately NOT fingerprinted: it is a
         // deterministic hash of network/text/linkUrl/attachments (all
         // fingerprinted directly above), so it adds no content protection —

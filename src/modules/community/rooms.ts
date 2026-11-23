@@ -11,12 +11,7 @@ import { getGroup, groupAuthority, isSiteStaff, type GroupRole } from './groups'
  * copies a roster into conversation_memberships (PT-K1), so a group
  * membership change takes effect on the next fetch and the next send.
  *
- * evaluateRoomAudience() is the one shared audience function. Every
- * room surface (browse, read, write, report, recap, export-facing
- * reads) consults it or its SQL mirror room_audience() — there is no
- * second roster and no second rule. Precedence follows the community
- * contract §3: tenant → member status → base audience → event
- * restriction (may only narrow) → lifecycle.
+ * room_audience() is the shared policy for application reads and SQL writes.
  *
  * Transport contract (D8): Postgres is the authority. Clients poll
  * with a monotonic sequence cursor; any realtime bus is a hint only.
@@ -26,6 +21,11 @@ export const roomLifecycles = ['open', 'closed'] as const
 export type RoomLifecycle = (typeof roomLifecycles)[number]
 export const roomHistoryPolicies = ['all', 'from-join'] as const
 export type RoomHistoryPolicy = (typeof roomHistoryPolicies)[number]
+export const roomModes = ['chat', 'group', 'content-attached', 'theater'] as const
+export const roomAccessPolicies = ['public', 'members', 'paid', 'invite'] as const
+export type RoomMode = (typeof roomModes)[number]
+export type RoomAccessPolicy = (typeof roomAccessPolicies)[number]
+export const roomIdPattern = /^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i
 
 type Query = <T = Record<string, unknown>>(
   text: string,
@@ -34,7 +34,10 @@ type Query = <T = Record<string, unknown>>(
 type Client = { query: Query; release?: () => void }
 type DbPayload = Payload & { db: { pool?: { connect?: () => Promise<Client>; query?: Query } } }
 
-async function transaction<T>(payload: Payload, work: (query: Query) => Promise<T>): Promise<T> {
+export async function roomTransaction<T>(
+  payload: Payload,
+  work: (query: Query) => Promise<T>,
+): Promise<T> {
   const client = await (payload as DbPayload).db.pool?.connect?.()
   if (!client)
     throw new CommunityError(
@@ -55,7 +58,7 @@ async function transaction<T>(payload: Payload, work: (query: Query) => Promise<
   }
 }
 
-function poolQuery(payload: Payload): Query {
+export function roomQuery(payload: Payload): Query {
   const pool = (payload as DbPayload).db.pool
   if (!pool?.query) throw new CommunityError('Database unavailable.', 503, 'ROOMS_DB_UNAVAILABLE')
   return pool.query.bind(pool)
@@ -70,6 +73,13 @@ export interface RoomBinding {
   lifecycle: RoomLifecycle
   historyPolicy: RoomHistoryPolicy
   createdByMemberId: string
+  mode: RoomMode
+  accessPolicy: RoomAccessPolicy
+  contentId: string | null
+  discussionId: string | null
+  participantLimit: number | null
+  startsAt: string | null
+  endsAt: string | null
 }
 
 export interface RoomAudience {
@@ -95,6 +105,7 @@ export async function loadRoomBinding(
   query: Query,
   conversationId: string,
 ): Promise<RoomBinding | null> {
+  if (!roomIdPattern.test(conversationId)) return null
   const row = (
     await query<Record<string, unknown>>('SELECT * FROM room_bindings WHERE conversation_id=$1', [
       conversationId,
@@ -110,6 +121,13 @@ export async function loadRoomBinding(
     lifecycle: String(row.lifecycle) as RoomLifecycle,
     historyPolicy: String(row.history_policy) as RoomHistoryPolicy,
     createdByMemberId: String(row.created_by_member_id),
+    mode: row.mode as RoomMode,
+    accessPolicy: row.access_policy as RoomAccessPolicy,
+    contentId: row.content_id ? String(row.content_id) : null,
+    discussionId: row.discussion_id ? String(row.discussion_id) : null,
+    participantLimit: row.participant_limit === null ? null : Number(row.participant_limit),
+    startsAt: row.starts_at ? new Date(String(row.starts_at)).toISOString() : null,
+    endsAt: row.ends_at ? new Date(String(row.ends_at)).toISOString() : null,
   }
 }
 
@@ -130,80 +148,24 @@ async function hasStanding(query: Query, siteId: string, memberId: string) {
  */
 export async function evaluateRoomAudience(
   query: Query,
-  input: { siteId: string; conversationId: string; memberId: string },
+  input: { siteId: string; conversationId: string; memberId: string | null },
 ): Promise<RoomAudience> {
   const binding = await loadRoomBinding(query, input.conversationId)
-  if (!binding) return { bound: false, canRead: false, canWrite: false, role: null, binding: null }
+  if (!binding) return denied(null, 'ROOM_NOT_FOUND')
   if (binding.siteId !== input.siteId) return denied(binding, 'TENANT_MISMATCH')
-  const conversation = (
-    await query<{ site_id: string; status: string }>(
-      'SELECT site_id, status FROM conversations WHERE id=$1',
-      [input.conversationId],
+  const row = (
+    await query<{ can_read: boolean; can_write: boolean; audience_role: RoomAudience['role'] }>(
+      'SELECT * FROM room_audience($1,$2)',
+      [input.conversationId, input.memberId],
     )
   ).rows[0]
-  if (!conversation || String(conversation.site_id) !== input.siteId)
-    return denied(binding, 'TENANT_MISMATCH')
-  const member = (
-    await query<{ status: string }>('SELECT status FROM members WHERE id=$1', [input.memberId])
-  ).rows[0]
-  if (!member) return denied(binding, 'MEMBER_NOT_FOUND')
-  if (member.status !== 'active' && member.status !== 'restricted')
-    return denied(binding, 'MEMBER_NOT_ACTIVE')
-
-  let canRead = false
-  let canWrite = false
-  let role: RoomAudience['role'] = null
-  if (binding.groupId) {
-    const membership = (
-      await query<{ role: string }>(
-        "SELECT role FROM group_memberships WHERE group_id=$1 AND member_id=$2 AND status='active'",
-        [binding.groupId, input.memberId],
-      )
-    ).rows[0]
-    if (membership) {
-      role = String(membership.role) as GroupRole
-      canRead = true
-      canWrite = member.status === 'active'
-    } else {
-      const group = (
-        await query<{ privacy: string }>('SELECT privacy FROM groups WHERE id=$1 AND status=$2', [
-          binding.groupId,
-          'active',
-        ])
-      ).rows[0]
-      if (group?.privacy === 'public' && (await hasStanding(query, input.siteId, input.memberId))) {
-        role = 'guest'
-        canRead = true
-      }
-    }
-  } else if (await hasStanding(query, input.siteId, input.memberId)) {
-    role = 'member'
-    canRead = true
-    canWrite = member.status === 'active'
-  }
-  if (!canRead) return denied(binding, 'NOT_IN_AUDIENCE')
-
-  if (binding.eventRestricted) {
-    const attendee = (
-      await query(
-        'SELECT member_id FROM room_event_attendees WHERE conversation_id=$1 AND member_id=$2',
-        [input.conversationId, input.memberId],
-      )
-    ).rows[0]
-    if (!attendee) {
-      // PT-K1 oversight: group staff keep read (never write) on an
-      // attendance-restricted room so live moderation stays possible.
-      if (role === 'owner' || role === 'admin' || role === 'moderator') canWrite = false
-      else return denied(binding, 'EVENT_ATTENDEE_REQUIRED')
-    }
-  }
-  if (binding.lifecycle === 'closed') canWrite = false
-  return { bound: true, canRead, canWrite, role, binding }
+  if (!row?.can_read) return denied(binding, 'NOT_IN_AUDIENCE')
+  return { bound: true, binding, canRead: true, canWrite: row.can_write, role: row.audience_role }
 }
 
 export async function requireRoomAccess(
   query: Query,
-  input: { siteId: string; conversationId: string; memberId: string },
+  input: { siteId: string; conversationId: string; memberId: string | null },
   mode: 'read' | 'write',
 ): Promise<RoomAudience> {
   const audience = await evaluateRoomAudience(query, input)
@@ -314,6 +276,14 @@ export async function createRoom(
     eventRestricted?: boolean
     attendeeMemberIds?: string[]
     historyPolicy?: RoomHistoryPolicy
+    mode?: RoomMode
+    accessPolicy?: RoomAccessPolicy
+    contentId?: string
+    discussionId?: string
+    participantLimit?: number
+    startsAt?: string
+    endsAt?: string
+    entitlement?: { resource: string; capability: string; scope?: string }
   },
 ) {
   const title = input.title?.trim()
@@ -324,6 +294,51 @@ export async function createRoom(
       'INVALID_ROOM_TITLE',
     )
   const historyPolicy = input.historyPolicy ?? 'all'
+  const mode = input.mode ?? (input.groupId ? 'group' : 'chat')
+  const accessPolicy = input.accessPolicy ?? 'members'
+  if (!roomModes.includes(mode) || !roomAccessPolicies.includes(accessPolicy))
+    throw new CommunityError('Unknown room mode or audience.', 422, 'INVALID_ROOM_POLICY')
+  if ((mode === 'group' && !input.groupId) || (mode === 'content-attached' && !input.contentId))
+    throw new CommunityError('The room mode requires an owner.', 422, 'ROOM_OWNER_REQUIRED')
+  if (
+    accessPolicy === 'paid' &&
+    (!input.entitlement?.resource.trim() || !input.entitlement.capability.trim())
+  )
+    throw new CommunityError(
+      'Paid rooms require an entitlement policy.',
+      422,
+      'ROOM_ENTITLEMENT_REQUIRED',
+    )
+  if (
+    input.participantLimit !== undefined &&
+    (!Number.isInteger(input.participantLimit) ||
+      input.participantLimit < 1 ||
+      input.participantLimit > 10000)
+  )
+    throw new CommunityError(
+      'Participant limit must be between 1 and 10000.',
+      422,
+      'INVALID_ROOM_LIMIT',
+    )
+  if (
+    [input.startsAt, input.endsAt].some(
+      (date) => date !== undefined && !Number.isFinite(Date.parse(date)),
+    ) ||
+    (input.startsAt && input.endsAt && Date.parse(input.startsAt) >= Date.parse(input.endsAt))
+  )
+    throw new CommunityError('Invalid room schedule.', 422, 'INVALID_ROOM_SCHEDULE')
+  if (accessPolicy === 'public' && historyPolicy === 'from-join')
+    throw new CommunityError(
+      'Public rooms require full chat history.',
+      422,
+      'INVALID_HISTORY_POLICY',
+    )
+  if (
+    [input.groupId, input.eventId, input.contentId, input.discussionId].some(
+      (id) => id && !roomIdPattern.test(id),
+    )
+  )
+    throw new CommunityError('Invalid room owner or link.', 422, 'INVALID_ROOM_OWNER')
   if (!roomHistoryPolicies.includes(historyPolicy))
     throw new CommunityError('Unknown history policy.', 422, 'INVALID_HISTORY_POLICY')
   if (input.eventRestricted && !input.eventId)
@@ -332,7 +347,7 @@ export async function createRoom(
       422,
       'EVENT_REQUIRED_FOR_RESTRICTION',
     )
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const creator = (
       await query<{ status: string }>('SELECT status FROM members WHERE id=$1', [
         input.creatorMemberId,
@@ -378,6 +393,30 @@ export async function createRoom(
       if (!event || String(event.site_id) !== input.siteId)
         throw new CommunityError('Event not found on this site.', 404, 'EVENT_NOT_FOUND')
     }
+    if (
+      input.contentId &&
+      !(
+        await query('SELECT id FROM content WHERE id=$1 AND site_id=$2', [
+          input.contentId,
+          input.siteId,
+        ])
+      ).rows[0]
+    )
+      throw new CommunityError('Content not found on this site.', 404, 'ROOM_CONTENT_NOT_FOUND')
+    if (
+      input.discussionId &&
+      !(
+        await query('SELECT id FROM discussions WHERE id=$1 AND site_id=$2', [
+          input.discussionId,
+          input.siteId,
+        ])
+      ).rows[0]
+    )
+      throw new CommunityError(
+        'Discussion not found on this site.',
+        404,
+        'ROOM_DISCUSSION_NOT_FOUND',
+      )
     const attendees = [...new Set(input.attendeeMemberIds ?? [])]
     if (input.eventRestricted)
       await assertAttendeesInAudience(query, {
@@ -393,7 +432,9 @@ export async function createRoom(
     ).rows[0]!
     const conversationId = String(conversation.id)
     await query(
-      'INSERT INTO room_bindings (conversation_id,site_id,group_id,event_id,event_restricted,history_policy,created_by_member_id) VALUES ($1,$2,$3,$4,$5,$6,$7)',
+      `INSERT INTO room_bindings (conversation_id,site_id,group_id,event_id,event_restricted,history_policy,created_by_member_id,
+        mode,access_policy,content_id,discussion_id,participant_limit,starts_at,ends_at,entitlement_resource,entitlement_capability,entitlement_scope)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
       [
         conversationId,
         input.siteId,
@@ -402,6 +443,16 @@ export async function createRoom(
         Boolean(input.eventRestricted),
         historyPolicy,
         input.creatorMemberId,
+        mode,
+        accessPolicy,
+        input.contentId ?? null,
+        input.discussionId ?? null,
+        input.participantLimit ?? null,
+        input.startsAt ?? null,
+        input.endsAt ?? null,
+        input.entitlement?.resource.trim() ?? null,
+        input.entitlement?.capability.trim() ?? null,
+        input.entitlement?.scope?.trim() || null,
       ],
     )
     for (const memberId of attendees)
@@ -409,18 +460,23 @@ export async function createRoom(
         conversationId,
         memberId,
       ])
+    if (accessPolicy === 'invite')
+      await query('INSERT INTO room_invitations (conversation_id,member_id) VALUES ($1,$2)', [
+        conversationId,
+        input.creatorMemberId,
+      ])
     // The founding audience was present from the start: their
     // from-join floor is the first sequence. Later joiners get their
     // floor materialized by the group join path (or lazily at first
     // evaluation for standing granted after the room exists).
-    if (input.groupId)
+    if (input.groupId && accessPolicy === 'members')
       await query(
         `INSERT INTO room_read_states (conversation_id,member_id,history_floor_sequence)
          SELECT $1, member_id, 1 FROM group_memberships WHERE group_id=$2 AND status='active'
          ON CONFLICT (conversation_id,member_id) DO NOTHING`,
         [conversationId, input.groupId],
       )
-    else
+    else if (accessPolicy === 'members')
       await query(
         `INSERT INTO room_read_states (conversation_id,member_id,history_floor_sequence)
          SELECT $1, member_id, 1 FROM member_site_roles WHERE site_id=$2
@@ -437,22 +493,36 @@ export async function createRoom(
       eventRestricted: Boolean(input.eventRestricted),
       lifecycle: 'open' as RoomLifecycle,
       historyPolicy,
+      mode,
+      accessPolicy,
     }
   })
 }
 
-async function requireRoomManager(
+export async function canManageRoom(
   query: Query,
-  siteId: string,
   binding: RoomBinding,
   actorMemberId: string,
+  moderate = false,
 ) {
-  if (await isSiteStaff(query, siteId, actorMemberId)) return
-  if (binding.createdByMemberId === actorMemberId) return
+  const active = await query("SELECT id FROM members WHERE id=$1 AND status='active'", [
+    actorMemberId,
+  ])
+  if (!active.rows[0]) return false
+  if (await isSiteStaff(query, binding.siteId, actorMemberId)) return true
   if (binding.groupId) {
-    const authority = await groupAuthority(query, siteId, binding.groupId, actorMemberId)
-    if (authority.role === 'owner' || authority.role === 'admin') return
+    const authority = await groupAuthority(query, binding.siteId, binding.groupId, actorMemberId)
+    return (
+      authority.role === 'owner' ||
+      authority.role === 'admin' ||
+      (moderate && authority.role === 'moderator')
+    )
   }
+  return false
+}
+
+async function requireRoomManager(query: Query, binding: RoomBinding, actorMemberId: string) {
+  if (await canManageRoom(query, binding, actorMemberId)) return
   throw new CommunityError('Room manager permission is required.', 403, 'ROOM_MANAGER_REQUIRED')
 }
 
@@ -465,11 +535,11 @@ export async function setRoomAttendees(
     attendeeMemberIds: string[]
   },
 ) {
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const binding = await loadRoomBinding(query, input.conversationId)
     if (!binding || binding.siteId !== input.siteId)
       throw new CommunityError('Room not found.', 404, 'ROOM_NOT_FOUND')
-    await requireRoomManager(query, input.siteId, binding, input.actorMemberId)
+    await requireRoomManager(query, binding, input.actorMemberId)
     const attendees = [...new Set(input.attendeeMemberIds)]
     await assertAttendeesInAudience(query, {
       siteId: input.siteId,
@@ -502,11 +572,11 @@ export async function setRoomLifecycle(
 ) {
   if (!roomLifecycles.includes(input.lifecycle))
     throw new CommunityError('Unknown room lifecycle.', 422, 'INVALID_ROOM_LIFECYCLE')
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const binding = await loadRoomBinding(query, input.conversationId)
     if (!binding || binding.siteId !== input.siteId)
       throw new CommunityError('Room not found.', 404, 'ROOM_NOT_FOUND')
-    await requireRoomManager(query, input.siteId, binding, input.actorMemberId)
+    await requireRoomManager(query, binding, input.actorMemberId)
     await query(
       'UPDATE room_bindings SET lifecycle=$2, updated_at=now() WHERE conversation_id=$1',
       [input.conversationId, input.lifecycle],
@@ -525,7 +595,7 @@ export async function getRoom(
   payload: Payload,
   input: { siteId: string; conversationId: string; viewerMemberId: string },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   const binding = await loadRoomBinding(query, input.conversationId)
   if (!binding || binding.siteId !== input.siteId)
     throw new CommunityError('Room not found.', 404, 'ROOM_NOT_FOUND')
@@ -557,6 +627,7 @@ export async function getRoom(
       await query<{ count: number }>(
         `SELECT count(*)::int AS count FROM messages
          WHERE conversation_id=$1 AND sequence_number >= $2 AND sequence_number > $3
+           AND room_removed_at IS NULL
            AND sender_id IS NOT NULL AND sender_id <> $4`,
         [input.conversationId, state.floor, state.lastRead, input.viewerMemberId],
       )
@@ -607,25 +678,36 @@ export async function listRoomMessages(
   input: {
     siteId: string
     conversationId: string
-    memberId: string
+    memberId: string | null
     afterSequence?: number
     limit?: number
+    latest?: boolean
   },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   const audience = await requireRoomAccess(query, input, 'read')
   const binding = audience.binding!
-  const state = await ensureRoomReadState(query, binding, input.memberId)
+  const state = input.memberId
+    ? await ensureRoomReadState(query, binding, input.memberId)
+    : { floor: 1, lastRead: 0 }
   const after = Math.max(input.afterSequence ?? 0, 0)
   const limit = Math.min(Math.max(input.limit ?? 100, 1), 200)
   const rows = await query<Record<string, unknown>>(
-    `SELECT m.id, m.conversation_id, m.sender_id, m.sequence_number, m.body_html, m.created_at,
+    `SELECT m.id, m.conversation_id, m.sender_id, m.sequence_number, m.body_html, m.created_at, m.room_question,
        COALESCE(json_agg(json_build_object('id',a.id,'filename',a.original_filename,'mimeType',a.claimed_mime_type,'status',a.status,'presentation',CASE WHEN a.status='clean' THEN 'attachment' ELSE 'attachment_pending' END)) FILTER (WHERE a.id IS NOT NULL), '[]') AS attachments
      FROM messages m LEFT JOIN message_attachments a ON a.message_id = m.id
      WHERE m.conversation_id = $1 AND m.sequence_number >= $2 AND m.sequence_number > $3
+       AND m.room_removed_at IS NULL
        AND ${hiddenByRelations.replaceAll('$site', '$4').replaceAll('$reader', '$5')}
-     GROUP BY m.id ORDER BY m.sequence_number ASC LIMIT $6`,
+     GROUP BY m.id ORDER BY m.sequence_number ${input.latest ? 'DESC' : 'ASC'} LIMIT $6`,
     [input.conversationId, state.floor, after, input.siteId, input.memberId, limit],
+  )
+  const pinned = await query<Record<string, unknown>>(
+    `SELECT m.id, m.body_html FROM room_bindings b JOIN messages m
+       ON m.id=b.pinned_message_id AND m.conversation_id=b.conversation_id
+     WHERE b.conversation_id=$1 AND m.sequence_number >= $2 AND m.room_removed_at IS NULL
+       AND ${hiddenByRelations.replaceAll('$site', '$3').replaceAll('$reader', '$4')}`,
+    [input.conversationId, state.floor, input.siteId, input.memberId],
   )
   const latest = Number(
     (
@@ -640,14 +722,15 @@ export async function listRoomMessages(
       await query<{ count: number }>(
         `SELECT count(*)::int AS count FROM messages m
          WHERE m.conversation_id=$1 AND m.sequence_number >= $2 AND m.sequence_number > $3
-           AND m.sender_id IS NOT NULL AND m.sender_id <> $4
+           AND m.sender_id IS NOT NULL AND m.sender_id <> $4 AND m.room_removed_at IS NULL
            AND ${hiddenByRelations.replaceAll('$site', '$5').replaceAll('$reader', '$4')}`,
         [input.conversationId, state.floor, state.lastRead, input.memberId, input.siteId],
       )
     ).rows[0]?.count ?? 0,
   )
   return {
-    messages: rows.rows,
+    messages: input.latest ? rows.rows.reverse() : rows.rows,
+    pinned: pinned.rows[0] ?? null,
     floor: state.floor,
     lastReadSequence: state.lastRead,
     unreadCount: unread,
@@ -659,7 +742,7 @@ export async function markRoomRead(
   payload: Payload,
   input: { siteId: string; conversationId: string; memberId: string; upToSequence: number },
 ) {
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const audience = await requireRoomAccess(query, input, 'read')
     const binding = audience.binding!
     const state = await ensureRoomReadState(query, binding, input.memberId)
@@ -673,11 +756,13 @@ export async function markRoomRead(
     )
     // Monotonic: a stale client can never rewind the cursor.
     const next = Math.min(Math.max(input.upToSequence, state.lastRead), latest)
-    await query(
-      'UPDATE room_read_states SET last_read_sequence=$3, updated_at=now() WHERE conversation_id=$1 AND member_id=$2',
+    const {
+      rows: [updated],
+    } = await query<{ last_read_sequence: number }>(
+      'UPDATE room_read_states SET last_read_sequence=GREATEST(last_read_sequence,$3), updated_at=now() WHERE conversation_id=$1 AND member_id=$2 RETURNING last_read_sequence',
       [input.conversationId, input.memberId, next],
     )
-    return { lastReadSequence: next }
+    return { lastReadSequence: updated.last_read_sequence }
   })
 }
 
@@ -685,7 +770,7 @@ export async function getRoomReadState(
   payload: Payload,
   input: { siteId: string; conversationId: string; memberId: string },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   const audience = await requireRoomAccess(query, input, 'read')
   const binding = audience.binding!
   const state = await ensureRoomReadState(query, binding, input.memberId)
@@ -726,43 +811,22 @@ async function activeGroupMemberIds(query: Query, groupId: string): Promise<Set<
   return new Set(rows.rows.map((row) => String(row.member_id)))
 }
 
-async function groupStaffIds(query: Query, groupId: string): Promise<Set<string>> {
-  const rows = await query<{ member_id: string }>(
-    "SELECT member_id FROM group_memberships WHERE group_id=$1 AND status='active' AND role IN ('owner','admin','moderator')",
-    [groupId],
-  )
-  return new Set(rows.rows.map((row) => String(row.member_id)))
-}
-
-/** The resolved READ set of a room — who can actually see its content right now. */
 export async function resolveRoomAudienceIds(
   query: Query,
   binding: RoomBinding,
 ): Promise<Set<string>> {
-  let base: Set<string>
-  if (binding.groupId) {
-    const group = (
-      await query<{ privacy: string }>('SELECT privacy FROM groups WHERE id=$1', [binding.groupId])
-    ).rows[0]
-    const members = await activeGroupMemberIds(query, binding.groupId)
-    base =
-      group?.privacy === 'public'
-        ? new Set([...(await standingMemberIds(query, binding.siteId)), ...members])
-        : members
-  } else {
-    base = await standingMemberIds(query, binding.siteId)
-  }
-  if (!binding.eventRestricted) return base
-  const attendees = new Set(
-    (
-      await query<{ member_id: string }>(
-        'SELECT member_id FROM room_event_attendees WHERE conversation_id=$1',
-        [binding.conversationId],
-      )
-    ).rows.map((row) => String(row.member_id)),
+  const result = await query<{ member_id: string }>(
+    `SELECT candidate.member_id FROM (
+       SELECT member_id FROM member_site_roles WHERE site_id=$1
+       UNION SELECT member_id FROM group_memberships WHERE group_id=$2 AND status='active'
+       UNION SELECT member_id FROM room_invitations WHERE conversation_id=$3
+       UNION SELECT supporter.member_id FROM supporters supporter
+         JOIN entitlements e ON e.supporter_id=supporter.id WHERE e.site_id=$1 AND supporter.member_id IS NOT NULL
+     ) candidate
+     WHERE EXISTS (SELECT 1 FROM room_audience($3,candidate.member_id) WHERE can_read)`,
+    [binding.siteId, binding.groupId, binding.conversationId],
   )
-  const staff = binding.groupId ? await groupStaffIds(query, binding.groupId) : new Set<string>()
-  return new Set([...base].filter((memberId) => attendees.has(memberId) || staff.has(memberId)))
+  return new Set(result.rows.map((row) => String(row.member_id)))
 }
 
 /** The resolved READ set of a recap destination (a group, or the whole site). */
@@ -810,7 +874,7 @@ export async function createRecap(
       422,
       'RECAP_QUOTES_REQUIRED',
     )
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const audience = await requireRoomAccess(
       query,
       {
@@ -826,7 +890,7 @@ export async function createRecap(
     for (const messageId of [...new Set(input.quoteMessageIds)]) {
       const message = (
         await query<{ id: string; sequence_number: number }>(
-          'SELECT id, sequence_number FROM messages WHERE id=$1 AND conversation_id=$2',
+          'SELECT id, sequence_number FROM messages WHERE id=$1 AND conversation_id=$2 AND room_removed_at IS NULL',
           [messageId, input.sourceConversationId],
         )
       ).rows[0]
@@ -885,7 +949,7 @@ export async function publishRecap(
   payload: Payload,
   input: { siteId: string; recapId: string; approverMemberId: string },
 ) {
-  return transaction(payload, async (query) => {
+  return roomTransaction(payload, async (query) => {
     const recap = (
       await query<Record<string, unknown>>(
         'SELECT * FROM room_recaps WHERE id=$1 AND site_id=$2 FOR UPDATE',
@@ -979,7 +1043,7 @@ export async function getRecap(
   payload: Payload,
   input: { siteId: string; recapId: string; viewerMemberId: string },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   const recap = (
     await query<Record<string, unknown>>('SELECT * FROM room_recaps WHERE id=$1 AND site_id=$2', [
       input.recapId,
@@ -1016,6 +1080,7 @@ export async function getRecap(
         memberId: input.viewerMemberId,
       })
     : null
+  if (!sourceAudience?.canRead) throw new CommunityError('Access denied.', 403, 'NOT_ROOM_AUDIENCE')
   const viewerFloor =
     binding && sourceAudience?.canRead
       ? await roomFloorFor(query, binding, input.viewerMemberId)
@@ -1023,7 +1088,7 @@ export async function getRecap(
   const quoteRows = await query<Record<string, unknown>>(
     `SELECT q.id, q.source_message_id, q.source_sequence, q.position,
             m.body_html, m.sender_id, m.created_at
-     FROM room_recap_quotes q LEFT JOIN messages m ON m.id = q.source_message_id
+     FROM room_recap_quotes q LEFT JOIN messages m ON m.id = q.source_message_id AND m.room_removed_at IS NULL
      WHERE q.recap_id=$1 ORDER BY q.position ASC`,
     [input.recapId],
   )
@@ -1064,7 +1129,7 @@ export async function listGroupLibrary(
   payload: Payload,
   input: { siteId: string; groupId: string; viewerMemberId: string },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   // The library lives inside the group home: the group gate applies,
   // and listings carry no quote content (D6 non-leak rule).
   await getGroup(payload, {
@@ -1077,8 +1142,9 @@ export async function listGroupLibrary(
        (SELECT count(*)::int FROM room_recap_quotes q WHERE q.recap_id = r.id) AS quote_count
      FROM room_recaps r
      WHERE r.site_id=$1 AND r.destination_group_id=$2 AND r.status='published'
+       AND EXISTS (SELECT 1 FROM room_audience(r.source_conversation_id,$3) WHERE can_read)
      ORDER BY r.published_at DESC`,
-    [input.siteId, input.groupId],
+    [input.siteId, input.groupId, input.viewerMemberId],
   )
   return rows.rows.map((row) => ({
     id: String(row.id),
@@ -1098,7 +1164,7 @@ export async function getGroupHome(
   payload: Payload,
   input: { siteId: string; groupId: string; viewerMemberId: string },
 ) {
-  const query = poolQuery(payload)
+  const query = roomQuery(payload)
   const group = await getGroup(payload, input)
   const roomRows = await query<Record<string, unknown>>(
     `SELECT c.id, c.title, c.last_message_at, b.lifecycle, b.history_policy, b.event_id, b.event_restricted,
@@ -1106,6 +1172,7 @@ export async function getGroupHome(
        (SELECT can_write FROM room_audience(c.id, $3)) AS can_write
      FROM room_bindings b JOIN conversations c ON c.id = b.conversation_id
      WHERE b.group_id=$1 AND b.site_id=$2 AND c.status='active'
+       AND EXISTS (SELECT 1 FROM room_audience(c.id,$3) WHERE can_read)
      ORDER BY c.created_at ASC`,
     [input.groupId, input.siteId, input.viewerMemberId],
   )
@@ -1124,9 +1191,10 @@ export async function getGroupHome(
     await query<Record<string, unknown>>(
       `SELECT e.id, e.title, e.starts_at FROM calendar_entries e
        JOIN room_bindings b ON b.event_id = e.id
-       WHERE b.group_id=$1 AND e.starts_at >= now() AND e.status NOT IN ('cancelled','archived')
+       WHERE b.group_id=$1 AND e.site_id=$2 AND e.starts_at >= now() AND e.status NOT IN ('cancelled','archived')
+         AND EXISTS (SELECT 1 FROM room_audience(b.conversation_id,$3) WHERE can_read)
        ORDER BY e.starts_at ASC LIMIT 1`,
-      [input.groupId],
+      [input.groupId, input.siteId, input.viewerMemberId],
     )
   ).rows[0]
   const library = await listGroupLibrary(payload, input)

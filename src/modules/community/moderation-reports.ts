@@ -61,7 +61,11 @@ const targetSql: Record<ModerationTargetType, string> = {
   // audience function and the member's history floor — the same rule
   // the read path enforces. Without this branch room members could
   // not report at all.
-  message: `SELECT m.id, m.body_html AS "bodyHtml", m.sequence_number AS "sequenceNumber", m.created_at AS "createdAt", m.sender_id AS "senderId", m.conversation_id AS "conversationId" FROM messages m JOIN conversations c ON c.id=m.conversation_id WHERE m.id=$1 AND c.site_id=$2 AND (EXISTS (SELECT 1 FROM conversation_memberships cm WHERE cm.conversation_id=c.id AND cm.member_id=$3 AND cm.left_at IS NULL AND m.sequence_number >= cm.visible_from_sequence) OR ((SELECT can_read FROM room_audience(c.id, $3)) IS TRUE AND m.sequence_number >= room_history_floor(c.id, $3)))`,
+  message: `SELECT m.id, m.body_html AS "bodyHtml", m.sequence_number AS "sequenceNumber", m.created_at AS "createdAt", m.sender_id AS "senderId", m.conversation_id AS "conversationId" FROM messages m JOIN conversations c ON c.id=m.conversation_id WHERE m.id=$1 AND c.site_id=$2 AND m.room_removed_at IS NULL AND (
+    CASE WHEN EXISTS (SELECT 1 FROM room_bindings WHERE conversation_id=c.id)
+      THEN (SELECT can_read FROM room_audience(c.id,$3)) IS TRUE AND m.sequence_number>=room_history_floor(c.id,$3)
+      ELSE EXISTS (SELECT 1 FROM conversation_memberships cm WHERE cm.conversation_id=c.id AND cm.member_id=$3 AND cm.left_at IS NULL AND m.sequence_number>=cm.visible_from_sequence)
+    END)`,
 }
 
 async function resolveSnapshot(

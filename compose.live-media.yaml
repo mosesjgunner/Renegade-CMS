@@ -1,0 +1,35 @@
+services:
+  renegade-web:
+    environment:
+      LIVE_MEDIAMTX_CONTROL_URL: http://live-mediamtx:9997
+      LIVE_MEDIAMTX_RECORDINGS_URL: http://live-mediamtx:9996
+      LIVE_MEDIAMTX_STUN_URL: ${LIVE_MEDIAMTX_STUN_URL:-}
+    networks: [default, live-control]
+
+  live-mediamtx:
+    image: bluenviron/mediamtx:1.21.4@sha256:c730bccdbc8739f8f0c13cefe9bea8b61926f599b88fa4d0d229baa91846c7bc
+    restart: unless-stopped
+    environment:
+      MTX_WEBRTCADDITIONALHOSTS: ${LIVE_MEDIAMTX_ICE_HOST:?Set a host name or IP reachable by publishing browsers}
+    ports:
+      - '8189:8189/udp'
+    volumes:
+      - ./docker/live-media/mediamtx.yml:/mediamtx.yml:ro
+      - live_recordings:/recordings
+    networks: [live-control]
+
+  live-gateway:
+    image: nginx:stable-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94
+    restart: unless-stopped
+    ports:
+      - '${LIVE_GATEWAY_BIND:-127.0.0.1:8088}:8080'
+    volumes:
+      - ./docker/live-media/gateway.conf:/etc/nginx/conf.d/default.conf:ro
+    networks: [live-control]
+    depends_on: [live-mediamtx, renegade-web]
+
+networks:
+  live-control:
+
+volumes:
+  live_recordings:

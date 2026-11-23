@@ -5,6 +5,7 @@ import type {
   ImageEditorAsset,
   ImageEditorExtensionAction,
   ImageEditorExtensionContext,
+  ImageEditorExportResult,
   ImageEditorFormat,
   ImageEditorSaveMode,
 } from './contracts'
@@ -17,6 +18,7 @@ export interface ImageEditorModalProps {
   isOpen: boolean
   onClose: () => void
   onSaved?: (result: { assetId: string; url: string; mode: string }) => void
+  saveCopy?: (result: ImageEditorExportResult) => Promise<{ assetId: string; url: string }>
   extensions?: ImageEditorExtensionAction[]
 }
 
@@ -35,6 +37,7 @@ function ImageEditorView({
   asset,
   onClose,
   onSaved,
+  saveCopy,
   extensions: propExtensions,
 }: Omit<ImageEditorModalProps, 'asset' | 'isOpen'> & { asset: ImageEditorAsset }) {
   const registryExtensions = useImageEditorExtensions()
@@ -199,6 +202,13 @@ function ImageEditorView({
     try {
       const exported = await adapter.exportImage({ format, quality })
       setDimensions({ width: exported.width, height: exported.height })
+      if (saveCopy) {
+        const result = await saveCopy(exported)
+        adapter.markSaved()
+        onSaved?.({ ...result, mode: 'new-asset' })
+        onClose()
+        return
+      }
       setStatusMessage('Saving to CMoS Media…')
       const extension = format === 'image/jpeg' ? 'jpg' : format === 'image/webp' ? 'webp' : 'png'
       const filename = sanitizeImageFilename(title || asset.title || 'image', extension)
@@ -390,25 +400,29 @@ function ImageEditorView({
       </main>
       <footer className={styles.saveDrawer}>
         <div className={styles.saveOptions}>
-          <label className={styles.field}>
-            Filename
-            <input
-              className={styles.input}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-            />
-          </label>
-          <label className={styles.field}>
-            Save as
-            <select
-              className={styles.select}
-              value={saveMode}
-              onChange={(event) => setSaveMode(event.target.value as ImageEditorSaveMode)}
-            >
-              <option value="all-usages">New version</option>
-              <option value="new-asset">New asset</option>
-            </select>
-          </label>
+          {!saveCopy && (
+            <label className={styles.field}>
+              Filename
+              <input
+                className={styles.input}
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+              />
+            </label>
+          )}
+          {!saveCopy && (
+            <label className={styles.field}>
+              Save as
+              <select
+                className={styles.select}
+                value={saveMode}
+                onChange={(event) => setSaveMode(event.target.value as ImageEditorSaveMode)}
+              >
+                <option value="all-usages">New version</option>
+                <option value="new-asset">New asset</option>
+              </select>
+            </label>
+          )}
           <label className={styles.field}>
             Format
             <select
@@ -434,7 +448,7 @@ function ImageEditorView({
               />
             </label>
           )}
-          {saveMode === 'all-usages' && (
+          {!saveCopy && saveMode === 'all-usages' && (
             <label className={styles.field}>
               Version note
               <input
@@ -451,7 +465,7 @@ function ImageEditorView({
           onClick={() => void save()}
           disabled={!isReady || isSaving || isRunningExtension}
         >
-          {saveMode === 'new-asset' ? 'Save As' : 'Save version'}
+          {saveCopy || saveMode === 'new-asset' ? 'Save copy' : 'Save version'}
         </button>
       </footer>
       {showLeaveDialog && (
@@ -491,6 +505,7 @@ export function ImageEditorModal({
   isOpen,
   onClose,
   onSaved,
+  saveCopy,
   extensions,
 }: ImageEditorModalProps) {
   if (!isOpen || !asset) return null
@@ -500,6 +515,7 @@ export function ImageEditorModal({
       asset={asset}
       onClose={onClose}
       onSaved={onSaved}
+      saveCopy={saveCopy}
       extensions={extensions}
     />
   )

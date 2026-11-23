@@ -1,5 +1,4 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { YouTubeAdapter } from '@/modules/social/adapters/youtube'
 import { TikTokAdapter } from '@/modules/social/adapters/tiktok'
 import { XAdapter } from '@/modules/social/adapters/x'
 import { aggregateAnalytics, SocialAnalyticsCollector } from '@/modules/social/analytics'
@@ -39,98 +38,6 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
       fileName: `${assetId}.mp4`,
     }),
   }
-
-  describe('YouTubeAdapter (Data API v3 Resumable Uploads)', () => {
-    const adapter = new YouTubeAdapter()
-    const context: AuthContext = {
-      accountId: 'yt-channel-1',
-      accountHandle: 'RenegadeBroadcasting',
-      network: 'youtube',
-      credentials: {
-        channelId: 'UC1234567890',
-        accessToken: 'ya29.google_oauth_test_token',
-      },
-    }
-
-    it('validates video requirement, title length and single attachment constraint', () => {
-      const noVideoVariant = createTestVariant({
-        network: 'youtube',
-        text: 'Description without video',
-        attachments: [],
-      })
-      const val1 = adapter.validatePost(noVideoVariant)
-      expect(val1.isValid).toBe(false)
-      expect(val1.errors.some((e) => e.code === 'VIDEO_REQUIRED')).toBe(true)
-
-      const imageVariant = createTestVariant({
-        network: 'youtube',
-        text: 'Image instead of video',
-        attachments: [{ mediaAssetId: 'photo1', role: 'image' }],
-      })
-      const val2 = adapter.validatePost(imageVariant)
-      expect(val2.isValid).toBe(false)
-      expect(val2.errors.some((e) => e.code === 'INVALID_MEDIA_TYPE')).toBe(true)
-
-      const tooLongTitleVariant = createTestVariant({
-        network: 'youtube',
-        text: 'Valid description',
-        attachments: [{ mediaAssetId: 'vid1', role: 'video' }],
-        platformSettings: { videoTitle: 'T'.repeat(101) },
-      })
-      const val3 = adapter.validatePost(tooLongTitleVariant)
-      expect(val3.isValid).toBe(false)
-      expect(val3.errors.some((e) => e.code === 'TITLE_TOO_LONG')).toBe(true)
-    })
-
-    it('executes Google resumable upload protocol flow (INIT session -> PUT binary chunk)', async () => {
-      const calls: string[] = []
-      globalThis.fetch = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
-        calls.push(`${init?.method} ${url}`)
-        if (url.includes('uploadType=resumable')) {
-          return new Response(null, {
-            status: 200,
-            headers: {
-              Location:
-                'https://www.googleapis.com/upload/youtube/v3/videos?upload_id=session_abc123',
-            },
-          })
-        }
-        if (url.includes('upload_id=session_abc123')) {
-          expect(init?.method).toBe('PUT')
-          return new Response(JSON.stringify({ id: 'yt_video_99999' }), { status: 200 })
-        }
-        return new Response('Not Found', { status: 404 })
-      })
-
-      const variant = createTestVariant({
-        network: 'youtube',
-        text: 'Episode 42: The Future of Sovereign Media',
-        attachments: [{ mediaAssetId: 'vid-ep42', role: 'video' }],
-        platformSettings: {
-          videoTitle: 'Future of Sovereign Media',
-          privacyStatus: 'public',
-        },
-      })
-
-      const result = await adapter.publish(variant, context, mockMediaResolver)
-      expect(result.status).toBe('published')
-      if (result.status === 'published') {
-        expect(result.remoteId).toBe('yt_video_99999')
-        expect(result.remoteUrl).toBe('https://www.youtube.com/watch?v=yt_video_99999')
-      }
-      expect(calls).toHaveLength(2)
-    })
-
-    it('deletes a video via deletePost', async () => {
-      globalThis.fetch = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
-        expect(init?.method).toBe('DELETE')
-        expect(url).toContain('id=yt_video_99999')
-        return new Response(null, { status: 204 })
-      })
-
-      await expect(adapter.deletePost('yt_video_99999', context)).resolves.toBeUndefined()
-    })
-  })
 
   describe('TikTokAdapter (Content Posting API v2)', () => {
     const adapter = new TikTokAdapter()

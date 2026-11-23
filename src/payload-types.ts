@@ -168,6 +168,10 @@ export interface Config {
     sources: Source;
     albums: Album;
     'creator-projects': CreatorProject;
+    'media-edit-projects': MediaEditProject;
+    'media-edit-exports': MediaEditExport;
+    'external-video-sources': ExternalVideoSource;
+    'youtube-channel-claims': YoutubeChannelClaim;
     'media-usages': MediaUsage;
     'forum-sections': ForumSection;
     forums: Forum;
@@ -392,6 +396,10 @@ export interface Config {
     sources: SourcesSelect<false> | SourcesSelect<true>;
     albums: AlbumsSelect<false> | AlbumsSelect<true>;
     'creator-projects': CreatorProjectsSelect<false> | CreatorProjectsSelect<true>;
+    'media-edit-projects': MediaEditProjectsSelect<false> | MediaEditProjectsSelect<true>;
+    'media-edit-exports': MediaEditExportsSelect<false> | MediaEditExportsSelect<true>;
+    'external-video-sources': ExternalVideoSourcesSelect<false> | ExternalVideoSourcesSelect<true>;
+    'youtube-channel-claims': YoutubeChannelClaimsSelect<false> | YoutubeChannelClaimsSelect<true>;
     'media-usages': MediaUsagesSelect<false> | MediaUsagesSelect<true>;
     'forum-sections': ForumSectionsSelect<false> | ForumSectionsSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
@@ -539,6 +547,7 @@ export interface Config {
       'execution-outbox-dispatch': TaskExecutionOutboxDispatch;
       'execution-outbox-handle': TaskExecutionOutboxHandle;
       'webhook-delivery-dispatch': TaskWebhookDeliveryDispatch;
+      'creator-media-export': TaskCreatorMediaExport;
       'editorial-publish': TaskEditorialPublish;
       'media-upload-cleanup': TaskMediaUploadCleanup;
       'community-message-attachment-cleanup': TaskCommunityMessageAttachmentCleanup;
@@ -3701,6 +3710,7 @@ export interface PayloadJob {
           | 'execution-outbox-dispatch'
           | 'execution-outbox-handle'
           | 'webhook-delivery-dispatch'
+          | 'creator-media-export'
           | 'editorial-publish'
           | 'media-upload-cleanup'
           | 'community-message-attachment-cleanup'
@@ -3776,6 +3786,7 @@ export interface PayloadJob {
         | 'execution-outbox-dispatch'
         | 'execution-outbox-handle'
         | 'webhook-delivery-dispatch'
+        | 'creator-media-export'
         | 'editorial-publish'
         | 'media-upload-cleanup'
         | 'community-message-attachment-cleanup'
@@ -6420,6 +6431,18 @@ export interface SocialNetworkVariant {
   text: string;
   linkUrl?: string | null;
   attachments?: (string | MediaAsset)[] | null;
+  /**
+   * Optional authorized upload settings. Set channelId, title, privacy (private, unlisted, public), madeForKids (yes or no), and complianceConfirmed (true only after certifying rights and YouTube Community Guidelines compliance). Approve the variant after editing.
+   */
+  youtubeUpload?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   validation?:
     | {
         [k: string]: unknown;
@@ -6822,6 +6845,104 @@ export interface CreatorProject {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-edit-projects".
+ */
+export interface MediaEditProject {
+  id: string;
+  site: string | Site;
+  owner: string | Member;
+  title: string;
+  revision: number;
+  history:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-edit-exports".
+ */
+export interface MediaEditExport {
+  id: string;
+  site: string | Site;
+  owner: string | Member;
+  project: string | MediaEditProject;
+  key: string;
+  projectRevision: number;
+  profile: string;
+  state: string;
+  snapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  jobId?: string | null;
+  video?: (string | null) | MediaAsset;
+  thumbnail?: (string | null) | MediaAsset;
+  report?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  error?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "external-video-sources".
+ */
+export interface ExternalVideoSource {
+  id: string;
+  site: string | Site;
+  owner: string | Member;
+  content: string | Content;
+  identity: string;
+  provider: string;
+  availability: string;
+  snapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  expiresAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "youtube-channel-claims".
+ */
+export interface YoutubeChannelClaim {
+  id: string;
+  site: string | Site;
+  owner: string | Member;
+  claim?: string | null;
+  credential?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-usages".
  */
 export interface MediaUsage {
@@ -6864,6 +6985,10 @@ export interface MediaUsage {
     | {
         relationTo: 'graphic-documents';
         value: string | GraphicDocument;
+      }
+    | {
+        relationTo: 'media-edit-projects';
+        value: string | MediaEditProject;
       }
     | {
         relationTo: 'podcast-episodes';
@@ -14007,6 +14132,7 @@ export interface SocialNetworkVariantsSelect<T extends boolean = true> {
   text?: T;
   linkUrl?: T;
   attachments?: T;
+  youtubeUpload?: T;
   validation?: T;
   status?: T;
   approvalHash?: T;
@@ -14346,6 +14472,68 @@ export interface CreatorProjectsSelect<T extends boolean = true> {
   canonicalPath?: T;
   portfolioDraft?: T;
   portfolioPublished?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-edit-projects_select".
+ */
+export interface MediaEditProjectsSelect<T extends boolean = true> {
+  site?: T;
+  owner?: T;
+  title?: T;
+  revision?: T;
+  history?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-edit-exports_select".
+ */
+export interface MediaEditExportsSelect<T extends boolean = true> {
+  site?: T;
+  owner?: T;
+  project?: T;
+  key?: T;
+  projectRevision?: T;
+  profile?: T;
+  state?: T;
+  snapshot?: T;
+  jobId?: T;
+  video?: T;
+  thumbnail?: T;
+  report?: T;
+  error?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "external-video-sources_select".
+ */
+export interface ExternalVideoSourcesSelect<T extends boolean = true> {
+  site?: T;
+  owner?: T;
+  content?: T;
+  identity?: T;
+  provider?: T;
+  availability?: T;
+  snapshot?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "youtube-channel-claims_select".
+ */
+export interface YoutubeChannelClaimsSelect<T extends boolean = true> {
+  site?: T;
+  owner?: T;
+  claim?: T;
+  credential?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -17373,6 +17561,18 @@ export interface TaskExecutionOutboxHandle {
 export interface TaskWebhookDeliveryDispatch {
   input?: unknown;
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreator-media-export".
+ */
+export interface TaskCreatorMediaExport {
+  input: {
+    exportId: string;
+  };
+  output: {
+    verified: boolean;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

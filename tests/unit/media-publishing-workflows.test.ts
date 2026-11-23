@@ -9,10 +9,8 @@ import {
   podcastRss,
   podcastGuid,
   publicVideo,
-  syncYouTubeVideo,
   transcriptFromSegments,
   validatePodcastFeed,
-  youtubeAdapter,
 } from '../../src/modules/media/publishing'
 
 describe('podcast and video publishing workflows', () => {
@@ -131,40 +129,6 @@ describe('podcast and video publishing workflows', () => {
     expect(publicVideo({ status: 'draft', availability: 'available' })).toMatchObject({
       available: false,
     })
-    expect(youtubeAdapter.validate({ channelId: '', apiKey: '' })).toMatchObject({ ok: false })
-  })
-
-  it('syncs a claimed YouTube channel twice without duplicate video records', async () => {
-    const records: any[] = [{ id: 'channel-a', site: 'site-a', syncClaimed: true }]
-    const store = {
-      async findByID() {
-        return records[0]
-      },
-      async find(args: any) {
-        return {
-          docs: records.filter(
-            (record) => record.providerIdentity === args.where?.providerIdentity?.equals,
-          ),
-        }
-      },
-      async create(args: any) {
-        const record = { id: `video-${records.length}`, ...args.data }
-        records.push(record)
-        return record
-      },
-      async update(args: any) {
-        const record = records.find((value) => value.id === args.id)
-        Object.assign(record, args.data)
-        return record
-      },
-    }
-    const video = { id: 'abc123', title: 'Provider video', captions: ['en'] }
-    expect(
-      (await syncYouTubeVideo(store, { siteId: 'site-a', channelId: 'channel-a', video })).created,
-    ).toBe(true)
-    expect(
-      await syncYouTubeVideo(store, { siteId: 'site-a', channelId: 'channel-a', video }),
-    ).toMatchObject({ created: false, updated: false })
   })
 
   it('retains accessible transcript timing evidence', () => {

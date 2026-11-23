@@ -74,7 +74,7 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
       setBusy(false)
     }
   }
-  async function openDraft(id: string) {
+  const openDraft = useCallback(async (id: string) => {
     setBusy(true)
     try {
       const response = await fetch(`/api/creator-studio?draft=${encodeURIComponent(id)}`, {
@@ -91,7 +91,11 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
     } finally {
       setBusy(false)
     }
-  }
+  }, [])
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('draft')
+    if (id && workspace?.space?.id) void openDraft(id)
+  }, [workspace?.space?.id, openDraft])
   async function save(event: React.FormEvent) {
     event.preventDefault()
     if (!workspace?.space) return
@@ -117,7 +121,9 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <h1 className="text-3xl font-bold">Creator Studio</h1>
       {workspace && <p><Link href="/studio/record">Record audio, camera or screen</Link></p>}
+      {workspace && <p><Link href="/studio/media-edit">Edit media</Link></p>}
       <p><Link href="/studio/portfolio">Portfolios and projects</Link></p>
+      <p><Link href="/studio/external-video">External videos and distribution</Link></p>
       <Link href="/studio/submissions">Community submissions</Link>
       {message && <p role="status">{message}</p>}
       {workspace && !workspace.space && (

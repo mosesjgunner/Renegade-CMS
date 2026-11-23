@@ -31,7 +31,7 @@ import {
   scheduleLiveEpisode,
   type LiveEpisodeDoc,
 } from './live-session'
-import { parseLiveRoomBinding, type LiveRoomBinding } from './live-room'
+import { resolveLiveRoomBinding, type LiveRoomBinding } from './live-room'
 import type { RelayHealth } from './relay'
 import {
   encryptStreamCredential,
@@ -208,14 +208,24 @@ export async function convertLiveEpisodeWithRecording(
 }
 
 // ---------------------------------------------------------------------------
-// Audience room binding (data only — see live-room.ts for the gap)
+// Audience room binding
 // ---------------------------------------------------------------------------
 
 export async function setLiveRoomBinding(
   payload: any,
   input: { episodeId: string; binding: LiveRoomBinding },
 ): Promise<any> {
-  const binding = parseLiveRoomBinding(input.binding)
+  const episode = await findById(payload, EPISODES, input.episodeId)
+  const showId = typeof episode.show === 'string' ? episode.show : episode.show?.id
+  const show = await findById(payload, SHOWS, showId)
+  const siteId = typeof episode.site === 'string' ? episode.site : episode.site?.id
+  const showSiteId = typeof show.site === 'string' ? show.site : show.site?.id
+  if (!siteId || showSiteId !== siteId)
+    throw new Error('The podcast episode and show must belong to the same site.')
+  const { binding } = await resolveLiveRoomBinding(payload, siteId, input.binding, {
+    requiresMembers:
+      episode.membersOnly || show.feedVisibility === 'members' || Boolean(show.requiredEntitlement),
+  })
   return payload.update({
     collection: EPISODES,
     id: input.episodeId,

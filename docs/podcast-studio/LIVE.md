@@ -183,14 +183,13 @@ the session clock. Concretely, and proven in the POD-16 suites:
 - **Now-playing credential coupling**: metadata updates authenticate
   with the show's stream credential as the Icecast admin password
   (§1). A future stage should split source and admin credentials.
-- **Audience room is data only.** The LIVE-SHOWS direction puts a
-  live text room beside the stream (public or member-gated). The
-  community rooms machinery is not in this tree, so an episode
-  carries the binding — `liveRoom: { roomId, access }` on
-  podcast-episodes, set via `POST { action: 'bind-room', … }` — and
-  nothing consumes it yet. A bound room id is a reference, not a
-  working chat room. No chat system was built in this stage, on
-  purpose.
+- **Audience room.** Create a Community Room under `/rooms` and pass
+  its conversation ID in `liveRoom: { roomId, access }` via
+  `POST /api/podcast-studio/live` with `action: 'bind-room'`. The episode
+  page links to the room. A member binding applies the show's current
+  podcast entitlement to room reads and playback in addition to the
+  room's audience policy. Missing rooms, rooms from another site, and
+  incompatible policies return an error when binding.
 - **Live event layer**: scheduling a live episode uses the
   episode's live-state fields; promotion/ticketing through the
   events + commerce machinery (per the LIVE-SHOWS addendum) is not

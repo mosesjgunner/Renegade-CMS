@@ -11,6 +11,8 @@ import { canRenderPodcast } from '@/modules/media/publishing'
 import { PodcastPlayer } from '@/modules/media/PodcastPlayer'
 import { oEmbedDiscoveryLinks } from '@/modules/podcast-studio/embed'
 import { loadConfig } from '@/modules/core/config'
+import { resolveLiveRoomBinding } from '@/modules/podcast-studio/live/live-room'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import {
   discoveryToMetadata,
   resolveDiscoveryDocument,
@@ -55,10 +57,13 @@ export default async function PodcastEpisodePage({
   const payload = await getPayload({ config })
   const { slug } = await params
   const query = (await searchParams) || {}
+  const reqHeaders = await headers().catch(() => undefined)
+  const siteId = reqHeaders ? await publicSiteForHost(payload, reqHeaders.get('host')) : ''
+  if (reqHeaders && !siteId) notFound()
 
   const result = await payload.find({
     collection: 'podcast-episodes',
-    where: { slug: { equals: slug } },
+    where: { slug: { equals: slug }, ...(siteId ? { site: { equals: siteId } } : {}) },
     limit: 1,
     depth: 2,
     overrideAccess: true,
@@ -66,12 +71,6 @@ export default async function PodcastEpisodePage({
   const episode = result.docs[0] as any
 
   // Auth & preview check
-  let reqHeaders: Headers | undefined
-  try {
-    reqHeaders = await headers()
-  } catch {
-    // Outside active request scope (e.g. tests or pre-rendering)
-  }
   const auth = reqHeaders
     ? await payload.auth({ headers: reqHeaders }).catch(() => ({ user: null }))
     : { user: null }
@@ -87,7 +86,10 @@ export default async function PodcastEpisodePage({
     const redirects = await payload
       .find({
         collection: 'public-redirects',
-        where: { fromPath: { equals: currentPath } },
+        where: {
+          fromPath: { equals: currentPath },
+          ...(siteId ? { site: { equals: siteId } } : {}),
+        },
         limit: 1,
         depth: 0,
         overrideAccess: true,
@@ -109,6 +111,15 @@ export default async function PodcastEpisodePage({
   }
 
   const show = typeof episode.show === 'object' && episode.show !== null ? episode.show : null
+  const liveRoom =
+    episode.liveRoom == null
+      ? null
+      : await resolveLiveRoomBinding(payload, value(episode.site), episode.liveRoom, {
+          requiresMembers:
+            episode.membersOnly ||
+            show?.feedVisibility === 'members' ||
+            Boolean(show?.requiredEntitlement),
+        }).catch(() => null)
   const audio = episode.audio as any
   const artworkId = episode.artwork
     ? value(episode.artwork)
@@ -251,6 +262,16 @@ export default async function PodcastEpisodePage({
           </div>
         )}
       </header>
+
+      {episode.liveRoom != null && (
+        <section aria-label="Live room">
+          {liveRoom ? (
+            <Link href={liveRoom.href}>Open live room</Link>
+          ) : (
+            <p>The live room is unavailable for this episode.</p>
+          )}
+        </section>
+      )}
 
       {/* Episode Artwork */}
       {artworkId && (

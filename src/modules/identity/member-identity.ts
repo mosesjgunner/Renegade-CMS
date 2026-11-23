@@ -455,6 +455,7 @@ export async function currentMember(
   store: IdentityStore,
   token: string | undefined,
   now = new Date(),
+  options: { touchSession?: boolean } = {},
 ): Promise<string | null> {
   if (!token) return null
   const found = await store.find({
@@ -470,12 +471,13 @@ export async function currentMember(
     new Date(String(session.expiresAt)).getTime() <= now.getTime()
   )
     return null
-  await store.update({
-    collection: 'member-sessions',
-    id: String(session.id),
-    data: { lastSeenAt: now.toISOString() },
-    overrideAccess: true,
-  })
+  if (options.touchSession !== false)
+    await store.update({
+      collection: 'member-sessions',
+      id: String(session.id),
+      data: { lastSeenAt: now.toISOString() },
+      overrideAccess: true,
+    })
   const memberId =
     typeof session.member === 'string'
       ? session.member

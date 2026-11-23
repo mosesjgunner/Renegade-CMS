@@ -1,3 +1,5 @@
+import { videoAssetBody } from '../creator-studio/video-export'
+import { youtubeApprovedSettings } from './adapters/youtube'
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload relationship normalization at the worker boundary */
 import { createLocalReq, type Payload, type TaskConfig } from 'payload'
 import { withExecutionLock } from '../operations/execution-lock'
@@ -187,10 +189,18 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       mediaAssetId: id(value),
       role: 'image' as const,
     }))
+    const youtubeSettings = youtubeApprovedSettings(variant.network, variant.youtubeUpload)
     const approved: SocialVariant = {
       ...variant,
       accountId: id(account),
-      attachments,
+      attachments:
+        variant.network === 'youtube'
+          ? attachments.map(({ mediaAssetId }: { mediaAssetId: string }) => ({
+              mediaAssetId,
+              role: 'video' as const,
+            }))
+          : attachments,
+      ...youtubeSettings,
       idempotencyKey: queue.idempotencyKey,
     }
     const hash = socialHash({
@@ -198,6 +208,7 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       text: variant.text,
       linkUrl: variant.linkUrl,
       attachments,
+      ...youtubeSettings,
     })
     // A queue item is bound to its approved content in one of two ways:
     // the standalone scheduling path embeds the approval hash as the key
@@ -210,6 +221,7 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       queue.idempotencyKey.split(':').pop() === id(variant)
     const invalid =
       id(variant.account) !== id(account) ||
+      (variant.network === 'youtube' && account.network !== 'youtube') ||
       id(draft.site) !== id(account.site) ||
       !variant.approvalHash ||
       hash !== variant.approvalHash ||
@@ -229,6 +241,7 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
     const context = {
       accountId: id(account),
       accountHandle: account.displayName,
+      externalAccountId: account.externalAccountId,
       network: variant.network,
       credentials: credentials ?? {},
     }
@@ -237,7 +250,11 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
     // approved copy, link and attachments, so an operator can post it by
     // hand and record completion via completeManualHandoff. No provider
     // request is made and no publish attempt is recorded.
-    if (!recovery && provider.mode === 'manual-handoff') {
+    if (
+      !recovery &&
+      (provider.mode === 'manual-handoff' ||
+        (variant.network === 'youtube' && !youtubeSettings.platformSettings))
+    ) {
       const handoff = {
         network: variant.network,
         accountId: id(account),
@@ -402,6 +419,16 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
     } else {
       const resolver: MediaResolver = {
         resolveUrl: async (assetId) => `/media/${assetId}`,
+        resolveVideo: async (assetId) => {
+          const asset = await payload.findByID({
+            collection: 'media-assets',
+            id: assetId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          if (id(asset.site) !== id(account.site)) throw new Error('Media belongs to another site.')
+          return videoAssetBody(asset)
+        },
         resolveBuffer: async (assetId) => {
           const asset = await payload.findByID({
             collection: 'media-assets',

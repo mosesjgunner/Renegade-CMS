@@ -1524,10 +1524,12 @@ describe.skipIf(!hasFfmpegBinaries)('JP-9 — live show', () => {
       })
       expect(pub.hasCredential).toBe(true)
       expect(JSON.stringify(pub)).not.toContain(LIVE_PASSWORD)
-      await setLiveRoomBinding(payload as never, {
-        episodeId: String(episode.id),
-        binding: { roomId: 'jp9-room', access: 'public' },
-      })
+      await expect(
+        setLiveRoomBinding(payload as never, {
+          episodeId: String(episode.id),
+          binding: { roomId: 'jp9-room', access: 'public' },
+        }),
+      ).rejects.toMatchObject({ code: 'LIVE_ROOM_NOT_FOUND' })
 
       const feedForEpisode = async () => {
         const showDoc = await payload.findByID({

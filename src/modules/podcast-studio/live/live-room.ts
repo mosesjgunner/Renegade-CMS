@@ -1,32 +1,11 @@
-/**
- * POD-16 — Audience room binding for live episodes (DATA ONLY).
- *
- * The LIVE-SHOWS direction addendum (Nov 17, 2026) puts a live room
- * alongside the stream: the audience — at a venue, remote, or both —
- * gets text Q&A/chat with access public or member-gated, reusing the
- * community/rooms machinery where it exists.
- *
- * GAP, stated plainly: the community program's rooms machinery is
- * NOT in this tree. `src/modules/community/` has forums, discussions
- * and messaging, but no rooms/chat-room collection or service exists
- * here to bind to (checked POD-16: no room collection in
- * src/collections/Community.ts, no room module under
- * src/modules/community/). Per the POD-16 brief's scope discipline
- * this stage therefore delivers the binding AS DATA — an episode
- * carries { roomId, access } in its `liveRoom` JSON field — plus
- * this contract, and does NOT build a chat system. When the rooms
- * machinery lands, `roomId` is the foreign key it consumes and
- * `access` maps onto its room-access policy (`public` = anyone may
- * read/post per the room's own rules; `members` = the show's member
- * entitlement, the POD-03 binding, gates entry). Until then a
- * bound room id is a reference, not a working room — LIVE.md says
- * so in operator language.
- */
+import type { Payload } from 'payload'
+import { loadRoomBinding, roomIdPattern, roomQuery } from '@/modules/community/rooms'
+import { CommunityError } from '@/modules/community/service'
 
 export type LiveRoomAccess = 'public' | 'members'
 
 export type LiveRoomBinding = {
-  /** Identifier of the audience room in the community rooms system (external reference until that system lands in-tree). */
+  /** Canonical Community Rooms conversation ID. */
   roomId: string
   access: LiveRoomAccess
 }
@@ -50,4 +29,32 @@ export const tryParseLiveRoomBinding = (raw: unknown): LiveRoomBinding | null =>
   } catch {
     return null
   }
+}
+
+/** Resolve stored references and validate newly submitted ones against the same site. */
+export async function resolveLiveRoomBinding(
+  payload: Payload,
+  siteId: string,
+  raw: unknown,
+  options: { requiresMembers?: boolean } = {},
+) {
+  const value = parseLiveRoomBinding(raw)
+  const roomId = value.roomId.toLowerCase()
+  const room = roomIdPattern.test(roomId) ? await loadRoomBinding(roomQuery(payload), roomId) : null
+  if (!room || room.siteId !== siteId)
+    throw new CommunityError(
+      'The bound live room could not be found on this site.',
+      404,
+      'LIVE_ROOM_NOT_FOUND',
+    )
+  if (
+    (value.access === 'public' && (room.accessPolicy !== 'public' || options.requiresMembers)) ||
+    (value.access === 'members' && room.accessPolicy === 'public')
+  )
+    throw new CommunityError(
+      'The podcast and room access policies are incompatible.',
+      409,
+      'LIVE_ROOM_POLICY_MISMATCH',
+    )
+  return { binding: { ...value, roomId }, href: `/rooms/${roomId}` }
 }

@@ -1,8 +1,14 @@
+import { ExternalVideoPlayer } from '@/modules/creator-studio/ExternalVideoPlayer'
+import {
+  isManualProvider,
+  manualVideo,
+  type ExternalProvider,
+} from '@/modules/creator-studio/video-providers'
+import { assertSafeEmbedUrl } from '@/modules/media/publishing'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound, permanentRedirect } from 'next/navigation'
 import { headers } from 'next/headers'
-import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { SubmissionTargetLink } from '@/modules/creator-studio/SubmissionTargetLink'
 import type { Metadata } from 'next'
@@ -24,7 +30,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const payload = await getPayload({ config })
   const { slug } = await params
+  const siteId = await communitySiteForHost(payload, (await headers()).get('host')).catch(() => '')
+  if (!siteId) return { robots: { index: false, follow: false } }
   const discovery = await resolveDiscoveryDocument(payload, {
+    siteId,
     collection: 'videos',
     slug,
     path: `/videos/${slug}`,
@@ -36,11 +45,14 @@ export async function generateMetadata({
 export default async function VideoPage({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
   const { slug } = await params
+  const siteId = await communitySiteForHost(payload, (await headers()).get('host')).catch(() => '')
+  if (!siteId) notFound()
   const found = await payload.find({
     collection: 'videos' as never,
     where: {
       and: [
         { slug: { equals: slug } },
+        { site: { equals: siteId } },
         { status: { equals: 'published' } },
         { visibility: { in: ['public', 'unlisted'] } },
       ],
@@ -51,15 +63,26 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
   } as never)
   const video = found.docs[0] as unknown as Record<string, unknown> | undefined
   if (!video) notFound()
-  const siteId = await communitySiteForHost(payload, (await headers()).get('host')).catch(() => '')
-  const submissions = siteId
-    ? <SubmissionTargetLink payload={payload} siteId={siteId} target={`theater:${String(video.id)}`} />
-    : null
-  // Externally hosted videos (YouTube/Vimeo/etc.) have no native asset; they
-  // render through their provider embed instead of 404ing while the sitemap
-  // advertises them. Only https embed URLs are honored.
-  const embedUrl = typeof video.embedUrl === 'string' ? video.embedUrl.trim() : ''
-  if (embedUrl && /^https:\/\//i.test(embedUrl)) {
+  const submissions = (
+    <SubmissionTargetLink
+      payload={payload}
+      siteId={siteId}
+      target={`theater:${String(video.id)}`}
+    />
+  )
+  const legacyUrl = typeof video.embedUrl === 'string' ? video.embedUrl.trim() : ''
+  if (legacyUrl) {
+    if (video.availability === 'removed' || video.availability === 'unavailable') notFound()
+    const provider = video.provider
+    let url: string | undefined
+    try {
+      if (provider === 'youtube')
+        url = assertSafeEmbedUrl(legacyUrl, provider, String(video.externalId))
+      else if (isManualProvider(provider)) url = manualVideo(provider, legacyUrl).url
+    } catch {
+      notFound()
+    }
+    if (!url) notFound()
     const embedTitle = String(video.title ?? '')
     const embedDiscovery = await resolveDiscoveryDocument(payload, {
       collection: 'videos',
@@ -79,14 +102,10 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
         />
         <h1 className="text-4xl font-bold">{embedTitle}</h1>
         <div className="aspect-video w-full overflow-hidden rounded-lg bg-black">
-          <iframe
-            src={embedUrl}
+          <ExternalVideoPlayer
+            provider={provider as ExternalProvider}
+            url={url}
             title={embedTitle}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="strict-origin-when-cross-origin"
           />
         </div>
         {video.body ? (

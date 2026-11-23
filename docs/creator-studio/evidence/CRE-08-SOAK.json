@@ -1,0 +1,1081 @@
+{
+  "result": "pass",
+  "worktreeBase": "027557f1a5760cf6031043d0e28d656828460519",
+  "runtime": "Next.js dev build, test-auth switches disabled, fresh PostgreSQL with 170 migrations",
+  "topology": [
+    "Windows Chromium publisher",
+    "Linux Chromium viewer on separate Docker network",
+    "private MediaMTX network",
+    "Nginx gateway"
+  ],
+  "images": {
+    "mediaMtx": "1.21.4@sha256:c730bccdbc8739f8f0c13cefe9bea8b61926f599b88fa4d0d229baa91846c7bc",
+    "gateway": "stable-alpine@sha256:0985e772fb9f729e6fa0980da05fca5d9c468e870eed43071545afa9d2e27d94",
+    "viewer": "v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e"
+  },
+  "summary": {
+    "ingressMbps": 0.49,
+    "combinedEgressMbps": 0.99,
+    "viewerEgressMbps": 0.49,
+    "mediaCpuPercent": {
+      "min": 3.48,
+      "median": 4.38,
+      "max": 10.71
+    },
+    "mediaMemoryMiB": {
+      "min": 36.86,
+      "median": 40.29,
+      "max": 45.55
+    },
+    "gatewayCpuPercent": {
+      "min": 0,
+      "median": 0.31,
+      "max": 1.77
+    },
+    "gatewayMemoryMiB": {
+      "min": 15.13,
+      "median": 15.86,
+      "max": 16.35
+    },
+    "watchSeconds": 1261.273,
+    "videoPositionSeconds": 1259.781057,
+    "frames": 25165,
+    "decodedAudioBytes": 3786863,
+    "droppedFrames": 649,
+    "outageSeconds": 45.007,
+    "recoveredAfterSeconds": 57.293,
+    "sameSession": true,
+    "replays": [
+      {
+        "start": "2026-11-23T01:16:08.352377Z",
+        "duration": 1276.28
+      },
+      {
+        "start": "2026-11-23T01:38:11.931722Z",
+        "duration": 10.136
+      }
+    ],
+    "mediaSamples": 21,
+    "gatewaySamples": 12
+  },
+  "events": [
+    {
+      "event": "watching",
+      "at": "2026-11-23T01:16:23.418Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080",
+      "minutes": 21,
+      "viewer": "browser on separate Docker network",
+      "gateway": {
+        "ipAddress": "10.204.209.20",
+        "port": 3909
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:17:24.708Z",
+      "elapsedSeconds": 61.495,
+      "playback": {
+        "seconds": 61.958451,
+        "frames": 1241,
+        "audioBytes": 185626,
+        "droppedFrames": 5
+      },
+      "bytesReceived": 4158527,
+      "bytesSent": 8062853,
+      "mediaNode": {
+        "BlockIO": "14.6MB / 13.7MB",
+        "CPUPerc": "4.58%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.48%",
+        "MemUsage": "37.66MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "17.1MB / 13.2MB",
+        "PIDs": "13"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:18:25.881Z",
+      "elapsedSeconds": 122.668,
+      "playback": {
+        "seconds": 122.925695,
+        "frames": 2459,
+        "audioBytes": 369543,
+        "droppedFrames": 7
+      },
+      "bytesReceived": 7987209,
+      "bytesSent": 15720217,
+      "mediaNode": {
+        "BlockIO": "14.6MB / 17.5MB",
+        "CPUPerc": "3.85%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.51%",
+        "MemUsage": "39.29MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "21.5MB / 20.8MB",
+        "PIDs": "13"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:19:27.115Z",
+      "elapsedSeconds": 183.902,
+      "playback": {
+        "seconds": 183.638617,
+        "frames": 3673,
+        "audioBytes": 547096,
+        "droppedFrames": 8
+      },
+      "bytesReceived": 11780798,
+      "bytesSent": 23307395,
+      "mediaNode": {
+        "BlockIO": "14.6MB / 21.3MB",
+        "CPUPerc": "10.71%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.48%",
+        "MemUsage": "36.93MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "25.9MB / 29.1MB",
+        "PIDs": "13"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:20:28.316Z",
+      "elapsedSeconds": 245.103,
+      "playback": {
+        "seconds": 244.846169,
+        "frames": 4897,
+        "audioBytes": 723724,
+        "droppedFrames": 9
+      },
+      "bytesReceived": 15598707,
+      "bytesSent": 30943213,
+      "mediaNode": {
+        "BlockIO": "14.6MB / 25.1MB",
+        "CPUPerc": "4.59%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.50%",
+        "MemUsage": "38.72MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "30.3MB / 36.6MB",
+        "PIDs": "13"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:21:29.623Z",
+      "elapsedSeconds": 306.41,
+      "playback": {
+        "seconds": 305.863532,
+        "frames": 6115,
+        "audioBytes": 906242,
+        "droppedFrames": 10
+      },
+      "bytesReceived": 19416522,
+      "bytesSent": 38578843,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 29.4MB",
+        "CPUPerc": "4.46%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.47%",
+        "MemUsage": "36.86MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "34.6MB / 44.5MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:22:30.883Z",
+      "elapsedSeconds": 367.67,
+      "playback": {
+        "seconds": 367.050133,
+        "frames": 7337,
+        "audioBytes": 1096953,
+        "droppedFrames": 35
+      },
+      "bytesReceived": 23216791,
+      "bytesSent": 46179381,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 32.3MB",
+        "CPUPerc": "4.54%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.51%",
+        "MemUsage": "39.51MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "39MB / 52.2MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:23:32.105Z",
+      "elapsedSeconds": 428.892,
+      "playback": {
+        "seconds": 428.273094,
+        "frames": 8560,
+        "audioBytes": 1284586,
+        "droppedFrames": 91
+      },
+      "bytesReceived": 27046034,
+      "bytesSent": 53837867,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 36.1MB",
+        "CPUPerc": "3.68%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.50%",
+        "MemUsage": "39.2MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "43.4MB / 60.1MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:24:33.386Z",
+      "elapsedSeconds": 490.173,
+      "playback": {
+        "seconds": 489.490911,
+        "frames": 9783,
+        "audioBytes": 1466406,
+        "droppedFrames": 138
+      },
+      "bytesReceived": 30836641,
+      "bytesSent": 61419081,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 39.9MB",
+        "CPUPerc": "3.87%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.51%",
+        "MemUsage": "40.01MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "47.8MB / 67.6MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:25:34.590Z",
+      "elapsedSeconds": 551.377,
+      "playback": {
+        "seconds": 550.664132,
+        "frames": 11004,
+        "audioBytes": 1650038,
+        "droppedFrames": 184
+      },
+      "bytesReceived": 34620303,
+      "bytesSent": 68986405,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 43.7MB",
+        "CPUPerc": "3.75%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.52%",
+        "MemUsage": "40.29MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "52.2MB / 75.7MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:26:35.954Z",
+      "elapsedSeconds": 612.741,
+      "playback": {
+        "seconds": 611.455691,
+        "frames": 12219,
+        "audioBytes": 1836853,
+        "droppedFrames": 251
+      },
+      "bytesReceived": 38377477,
+      "bytesSent": 76500753,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 47.5MB",
+        "CPUPerc": "3.95%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.49%",
+        "MemUsage": "37.84MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "56.5MB / 82.3MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:27:37.282Z",
+      "elapsedSeconds": 674.069,
+      "playback": {
+        "seconds": 672.735998,
+        "frames": 13443,
+        "audioBytes": 2025235,
+        "droppedFrames": 265
+      },
+      "bytesReceived": 42117938,
+      "bytesSent": 83981675,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 51.2MB",
+        "CPUPerc": "4.24%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.52%",
+        "MemUsage": "40.39MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "60.8MB / 86.2MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:28:38.546Z",
+      "elapsedSeconds": 735.333,
+      "playback": {
+        "seconds": 734.059486,
+        "frames": 14667,
+        "audioBytes": 2207716,
+        "droppedFrames": 275
+      },
+      "bytesReceived": 45897197,
+      "bytesSent": 91540193,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 55MB",
+        "CPUPerc": "3.83%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.53%",
+        "MemUsage": "40.98MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "65.1MB / 90.1MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:29:39.811Z",
+      "elapsedSeconds": 796.598,
+      "playback": {
+        "seconds": 795.30224,
+        "frames": 15890,
+        "audioBytes": 2389557,
+        "droppedFrames": 275
+      },
+      "bytesReceived": 49644882,
+      "bytesSent": 99035563,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 58.7MB",
+        "CPUPerc": "3.99%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.52%",
+        "MemUsage": "40.71MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "69.4MB / 94.2MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:30:41.112Z",
+      "elapsedSeconds": 857.899,
+      "playback": {
+        "seconds": 856.536754,
+        "frames": 17113,
+        "audioBytes": 2576270,
+        "droppedFrames": 275
+      },
+      "bytesReceived": 53408309,
+      "bytesSent": 106562417,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 62.5MB",
+        "CPUPerc": "5.70%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.53%",
+        "MemUsage": "40.97MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "73.7MB / 97.9MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:31:42.430Z",
+      "elapsedSeconds": 919.217,
+      "playback": {
+        "seconds": 917.828213,
+        "frames": 18337,
+        "audioBytes": 2764715,
+        "droppedFrames": 278
+      },
+      "bytesReceived": 57184367,
+      "bytesSent": 114114533,
+      "mediaNode": {
+        "BlockIO": "14.8MB / 66.2MB",
+        "CPUPerc": "4.38%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.51%",
+        "MemUsage": "39.5MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "78MB / 102MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:32:43.668Z",
+      "elapsedSeconds": 980.455,
+      "playback": {
+        "seconds": 979.033701,
+        "frames": 19560,
+        "audioBytes": 2948815,
+        "droppedFrames": 320
+      },
+      "bytesReceived": 60931667,
+      "bytesSent": 121609133,
+      "mediaNode": {
+        "BlockIO": "15MB / 70.8MB",
+        "CPUPerc": "5.62%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.52%",
+        "MemUsage": "40.5MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "82.3MB / 106MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:33:44.941Z",
+      "elapsedSeconds": 1041.728,
+      "playback": {
+        "seconds": 1040.269432,
+        "frames": 20782,
+        "audioBytes": 3128281,
+        "droppedFrames": 328
+      },
+      "bytesReceived": 64609175,
+      "bytesSent": 128964149,
+      "mediaNode": {
+        "BlockIO": "15MB / 74.4MB",
+        "CPUPerc": "4.35%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.52%",
+        "MemUsage": "40.8MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "86.5MB / 110MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:34:46.169Z",
+      "elapsedSeconds": 1102.956,
+      "playback": {
+        "seconds": 1101.51046,
+        "frames": 22004,
+        "audioBytes": 3307871,
+        "droppedFrames": 346
+      },
+      "bytesReceived": 68346681,
+      "bytesSent": 136439161,
+      "mediaNode": {
+        "BlockIO": "18.7MB / 78.2MB",
+        "CPUPerc": "3.48%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.55%",
+        "MemUsage": "42.47MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "90.7MB / 114MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:35:47.435Z",
+      "elapsedSeconds": 1164.222,
+      "playback": {
+        "seconds": 1162.755557,
+        "frames": 23228,
+        "audioBytes": 3494141,
+        "droppedFrames": 485
+      },
+      "bytesReceived": 72095013,
+      "bytesSent": 143935825,
+      "mediaNode": {
+        "BlockIO": "18.7MB / 81.9MB",
+        "CPUPerc": "7.85%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.57%",
+        "MemUsage": "44.25MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "95MB / 118MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:36:48.766Z",
+      "elapsedSeconds": 1225.553,
+      "playback": {
+        "seconds": 1223.980234,
+        "frames": 24450,
+        "audioBytes": 3679533,
+        "droppedFrames": 647
+      },
+      "bytesReceived": 75855051,
+      "bytesSent": 151455901,
+      "mediaNode": {
+        "BlockIO": "18.8MB / 85.7MB",
+        "CPUPerc": "4.91%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.57%",
+        "MemUsage": "44.45MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "99.3MB / 121MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "sample",
+      "at": "2026-11-23T01:37:24.486Z",
+      "elapsedSeconds": 1261.273,
+      "playback": {
+        "seconds": 1259.781057,
+        "frames": 25165,
+        "audioBytes": 3786863,
+        "droppedFrames": 649
+      },
+      "bytesReceived": 78043224,
+      "bytesSent": 155832247,
+      "mediaNode": {
+        "BlockIO": "18.8MB / 87.5MB",
+        "CPUPerc": "6.42%",
+        "Container": "cre08-mtx",
+        "ID": "49a464670021",
+        "MemPerc": "0.59%",
+        "MemUsage": "45.55MiB / 7.591GiB",
+        "Name": "cre08-mtx",
+        "NetIO": "102MB / 124MB",
+        "PIDs": "14"
+      }
+    },
+    {
+      "event": "encoder-offline",
+      "at": "2026-11-23T01:37:24.534Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+    },
+    {
+      "event": "reconnect-attempt",
+      "at": "2026-11-23T01:38:09.493Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080",
+      "offlineSeconds": 45.007
+    },
+    {
+      "event": "reconnected",
+      "at": "2026-11-23T01:38:21.827Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080",
+      "playback": {
+        "seconds": 1.056359,
+        "frames": 25,
+        "audioBytes": 4300,
+        "droppedFrames": 0
+      }
+    },
+    {
+      "event": "replay",
+      "at": "2026-11-23T01:38:24.388Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080",
+      "parts": 2
+    },
+    {
+      "event": "revoked",
+      "at": "2026-11-23T01:38:25.022Z",
+      "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+    }
+  ],
+  "gatewaySamples": [
+    {
+      "at": "2026-11-23T01:27:27.4079217Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 51.2MB",
+          "CPUPerc": "3.78%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.52%",
+          "MemUsage": "40.14MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "60.1MB / 85.5MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.16%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.63MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "122MB / 120MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 41144645,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37161003,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:28:17.7381132Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 53.1MB",
+          "CPUPerc": "3.98%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.50%",
+          "MemUsage": "39.06MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "63.6MB / 88.7MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.12%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.92MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "126MB / 124MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 44196145,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37183031,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:29:08.1510796Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 56.9MB",
+          "CPUPerc": "4.46%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.51%",
+          "MemUsage": "39.94MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "67.1MB / 92MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.25%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.86MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "129MB / 127MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 47382170,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37206899,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:29:58.2761222Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 60.6MB",
+          "CPUPerc": "3.92%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.52%",
+          "MemUsage": "40.2MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "70.6MB / 95.1MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "1.77%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.58MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "133MB / 131MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 50578439,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37228931,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:30:48.3964017Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 62.5MB",
+          "CPUPerc": "3.95%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.52%",
+          "MemUsage": "40.56MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "74.2MB / 98.6MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.52%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.21%",
+          "MemUsage": "16.35MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "136MB / 134MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 53652812,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37252799,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:31:38.5411424Z",
+      "node": [
+        {
+          "BlockIO": "14.8MB / 66.2MB",
+          "CPUPerc": "3.83%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.51%",
+          "MemUsage": "39.47MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "77.7MB / 102MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.22%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.66MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "140MB / 138MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 56587721,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37276665,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:32:28.6805375Z",
+      "node": [
+        {
+          "BlockIO": "15MB / 68MB",
+          "CPUPerc": "3.70%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.51%",
+          "MemUsage": "40MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "81.2MB / 105MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.26%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.88MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "143MB / 142MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 59646407,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37298685,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:33:18.9039995Z",
+      "node": [
+        {
+          "BlockIO": "15MB / 72.6MB",
+          "CPUPerc": "7.37%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.54%",
+          "MemUsage": "41.71MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "84.7MB / 108MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "1.05%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.48MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "147MB / 145MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 62763450,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37322551,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:34:09.0239484Z",
+      "node": [
+        {
+          "BlockIO": "18.2MB / 74.4MB",
+          "CPUPerc": "6.90%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.56%",
+          "MemUsage": "43.87MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "88.1MB / 111MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.00%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.25MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "150MB / 149MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 65698269,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37344583,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:34:59.1483935Z",
+      "node": [
+        {
+          "BlockIO": "18.7MB / 78.2MB",
+          "CPUPerc": "5.14%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.57%",
+          "MemUsage": "44.11MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "91.6MB / 114MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.31%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.19%",
+          "MemUsage": "15.13MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "154MB / 152MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 68749700,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37368449,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:35:48.4429773Z",
+      "node": [
+        {
+          "BlockIO": "18.7MB / 81.9MB",
+          "CPUPerc": "4.39%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.56%",
+          "MemUsage": "43.68MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "95.1MB / 118MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.90%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.20%",
+          "MemUsage": "15.88MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "157MB / 156MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 71924498,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37390477,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-23T01:36:37.6172721Z",
+      "node": [
+        {
+          "BlockIO": "18.7MB / 83.8MB",
+          "CPUPerc": "6.72%",
+          "Container": "cre08-mtx",
+          "ID": "49a464670021",
+          "MemPerc": "0.56%",
+          "MemUsage": "43.6MiB / 7.591GiB",
+          "Name": "cre08-mtx",
+          "NetIO": "98.5MB / 121MB",
+          "PIDs": "14"
+        },
+        {
+          "BlockIO": "10.4MB / 4.1kB",
+          "CPUPerc": "0.99%",
+          "Container": "cre08-gateway",
+          "ID": "343079b84838",
+          "MemPerc": "0.21%",
+          "MemUsage": "15.94MiB / 7.591GiB",
+          "Name": "cre08-gateway",
+          "NetIO": "161MB / 159MB",
+          "PIDs": "9"
+        }
+      ],
+      "hls": [
+        {
+          "browser": "viewer",
+          "bytes": 74977091,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        },
+        {
+          "browser": "host",
+          "bytes": 37412503,
+          "session": "867f0a56-cf4b-463d-82f6-78537247c080"
+        }
+      ]
+    }
+  ]
+}

@@ -1,46 +1,135 @@
-import {
+﻿import {
   normalizeProviderError,
-  type AccountConstraints,
   type AdapterResult,
   type AuthContext,
   type MediaResolver,
   type ProviderCapabilities,
+  type ValidationReport,
   type SocialProviderAdapter,
   type SocialVariant,
-  type ValidationReport,
+  type StreamedSocialVideo,
 } from '../contracts'
-import { validateOutboundUrl } from '../security'
+import {
+  YouTubeError,
+  YouTubeMetadata,
+  youtubeConfiguration,
+  youtubeReadonly,
+  youtubeResponseError,
+  youtubeUpload,
+} from '../../creator-studio/youtube-metadata'
+import { youtubeChannelId, youtubeVideoId } from '../../creator-studio/video-providers'
 
-export interface YouTubePlatformSettings {
-  channelId?: string
-  videoTitle?: string
-  privacyStatus?: 'public' | 'private' | 'unlisted'
-  tags?: string[]
-  categoryId?: string
-  madeForKids?: boolean
-  notifySubscribers?: boolean
-  customThumbnailAssetId?: string
-  isShort?: boolean
+const origin = 'https://www.googleapis.com'
+const uploadPath = '/upload/youtube/v3/videos'
+const chunkSize = 8 * 1024 * 1024
+const maxBytes = 256 * 1024 ** 3
+const videoMimes = ['video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm']
+
+export function youtubePublishingEnabled() {
+  return process.env.CREATOR_YOUTUBE_UPLOAD_AUTHORIZED === 'true' && Boolean(youtubeConfiguration())
+}
+
+export function youtubeUploadSettings(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const { title, privacy, complianceConfirmed, madeForKids, channelId } = value as Record<
+    string,
+    unknown
+  >
+  if (
+    typeof channelId !== 'string' ||
+    !youtubeChannelId.test(channelId) ||
+    typeof title !== 'string' ||
+    !title.trim() ||
+    title.length > 100 ||
+    (privacy !== 'private' && privacy !== 'unlisted' && privacy !== 'public') ||
+    complianceConfirmed !== true ||
+    (madeForKids !== 'yes' && madeForKids !== 'no')
+  )
+    return null
+  return { channelId, title: title.trim(), privacy, complianceConfirmed, madeForKids }
+}
+
+export function youtubeApprovedSettings(network: string, value: unknown) {
+  const settings = network === 'youtube' && youtubeUploadSettings(value)
+  return settings ? { platformSettings: settings } : {}
+}
+
+function uploadSession(value: string | null) {
+  if (!value) throw new Error('Missing YouTube upload session.')
+  const url = new URL(value)
+  if (
+    url.origin !== origin ||
+    url.pathname !== uploadPath ||
+    url.hash ||
+    url.username ||
+    url.password ||
+    !url.searchParams.has('upload_id')
+  )
+    throw new Error('Invalid YouTube upload session.')
+  return url
+}
+
+const unknown = (): AdapterResult => ({
+  status: 'unknown',
+  error: normalizeProviderError({
+    kind: 'remote-unknown',
+    remoteOutcome: 'unknown',
+    message: 'YouTube upload outcome is uncertain. Check YouTube Studio before retrying.',
+  }),
+})
+
+function failure(error: unknown): AdapterResult {
+  if (error instanceof YouTubeError && error.kind === 'quota') {
+    const header = error.retryAfter
+    const seconds = Number(header)
+    const retryAt = !header
+      ? Date.now() + 60 * 60_000
+      : /^\d+$/.test(header)
+        ? Date.now() + seconds * 1000
+        : Date.parse(header)
+    return {
+      status: 'failed',
+      error: normalizeProviderError({
+        kind: 'rate-limit',
+        message: error.message,
+        retryAfter:
+          Number.isFinite(retryAt) && retryAt <= 8.64e15
+            ? new Date(retryAt).toISOString()
+            : undefined,
+      }),
+    }
+  }
+  if (error instanceof YouTubeError && ['revoked', 'scope', 'claim'].includes(error.kind))
+    return {
+      status: 'failed',
+      error: normalizeProviderError({ kind: 'reconnect-required', message: error.message }),
+    }
+  return {
+    status: 'failed',
+    error: normalizeProviderError({
+      kind: 'transient',
+      message: 'YouTube could not start the upload.',
+    }),
+  }
 }
 
 export class YouTubeAdapter implements SocialProviderAdapter {
+  constructor(private request?: typeof fetch) {}
+
   readonly id = 'adapter-youtube'
-  readonly name = 'YouTube Data API v3 Adapter'
-  readonly version = '2026.1.0'
   readonly network = 'youtube' as const
   readonly mode = 'live' as const
-
   readonly capabilities = {
     postTypes: ['video'] as const,
-    textLimit: 5000, // Description limit
+    textLimit: 5000,
     media: { images: false, video: true, audio: false, maxAttachments: 1 },
     threads: false,
     linkCards: 'none' as const,
-    edit: true, // Title, description, privacy, tags
-    delete: true,
-    nativeScheduling: true,
+    edit: false,
+    delete: false,
+    nativeScheduling: false,
     authentication: { required: true, modes: ['oauth2-google'] },
-    rateLimit: { requestsPerMinute: 600, retryAfterHeader: 'retry-after' },
+    rateLimit: { retryAfterHeader: 'retry-after' },
   }
 
   getCapabilities(): ProviderCapabilities {
@@ -52,180 +141,153 @@ export class YouTubeAdapter implements SocialProviderAdapter {
       supportsPolls: false,
       supportsThreads: false,
       supportsAltText: false,
-      supportsNativeScheduling: true,
-      supportsPostEditing: true,
-      supportsPostDeletion: true,
-      supportsAnalytics: true,
-      supportsComments: true,
-      supportsDrafts: true,
+      supportsNativeScheduling: false,
+      supportsPostEditing: false,
+      supportsPostDeletion: false,
+      supportsAnalytics: false,
+      supportsComments: false,
+      supportsDrafts: false,
       requiresMedia: true,
       requiresBoardOrCategory: false,
-      supportsCustomThumbnails: true,
-
+      supportsCustomThumbnails: false,
       limits: {
-        maxCharacters: 5000,
+        maxCharacters: this.capabilities.textLimit,
         maxImages: 0,
-        maxVideoDurationSeconds: 43200, // 12 hours
-        maxVideoFileSizeBytes: 256 * 1024 * 1024 * 1024, // 256 GB
-        maxImageFileSizeBytes: 2 * 1024 * 1024, // Thumbnail 2MB
+        maxVideoDurationSeconds: 12 * 60 * 60,
+        maxVideoFileSizeBytes: maxBytes,
+        maxImageFileSizeBytes: 0,
       },
-
       mediaConstraints: {
-        allowedImageMimes: ['image/jpeg', 'image/png'],
-        allowedVideoMimes: ['video/mp4', 'video/quicktime', 'video/x-matroska', 'video/webm'],
-        allowedVideoCodecs: ['h264', 'h265', 'vp9', 'av1'],
-        aspectRatios: {
-          minRatio: 0.56,
-          maxRatio: 1.78,
-          strictStandard: 'LANDSCAPE_16_9',
-        },
+        allowedImageMimes: [],
+        allowedVideoMimes: videoMimes,
+        allowedVideoCodecs: [],
+        aspectRatios: { minRatio: 0, maxRatio: Number.MAX_SAFE_INTEGER },
       },
     }
   }
 
-  validatePost(variant: SocialVariant, constraints?: AccountConstraints): ValidationReport {
+  validatePost(variant: SocialVariant): ValidationReport {
     const errors: ValidationReport['errors'] = []
-    const warnings: ValidationReport['warnings'] = []
-    const settings = variant.platformSettings as YouTubePlatformSettings | undefined
-
-    if (!variant.attachments.length) {
+    if (variant.attachments.length !== 1 || variant.attachments[0].role !== 'video')
       errors.push({
         field: 'attachments',
-        message: 'YouTube requires exactly one video attachment.',
         code: 'VIDEO_REQUIRED',
+        message: 'Select one native video.',
       })
-    } else {
-      const att = variant.attachments[0]
-      if (att.role !== 'video') {
-        errors.push({
-          field: 'attachments',
-          message: 'YouTube attachments must be video assets.',
-          code: 'INVALID_MEDIA_TYPE',
-        })
-      }
-    }
-
-    if (variant.attachments.length > 1) {
+    if (!youtubeUploadSettings(variant.platformSettings))
       errors.push({
-        field: 'attachments',
-        message: 'YouTube does not support multiple video attachments.',
-        code: 'TOO_MANY_ATTACHMENTS',
+        field: 'platformSettings',
+        code: 'UPLOAD_SETTINGS_REQUIRED',
+        message: 'Set the channel, title, privacy, audience and compliance confirmation.',
       })
-    }
-
-    const title = settings?.videoTitle || variant.text.slice(0, 100)
-    if (!title.trim()) {
-      errors.push({
-        field: 'videoTitle',
-        message: 'YouTube video requires a non-empty title.',
-        code: 'TITLE_REQUIRED',
-      })
-    } else if (title.length > 100) {
-      errors.push({
-        field: 'videoTitle',
-        message: `YouTube title exceeds 100 character limit (${title.length}).`,
-        code: 'TITLE_TOO_LONG',
-      })
-    }
-
-    if (variant.text.length > 5000) {
+    if (variant.text.length > this.capabilities.textLimit)
       errors.push({
         field: 'text',
-        message: `YouTube description exceeds 5,000 character limit (${variant.text.length}).`,
         code: 'DESCRIPTION_TOO_LONG',
+        message: 'The YouTube description exceeds 5,000 characters.',
       })
-    }
-
-    return { isValid: errors.length === 0, errors, warnings }
+    return { errors, warnings: [], isValid: errors.length === 0 }
   }
 
-  /**
-   * Resumable upload session initiator according to Google Resumable Protocol.
-   */
-  async initiateResumableUpload(
+  private async begin(
     accessToken: string,
-    metadata: {
-      title: string
-      description: string
-      privacyStatus: string
-      tags?: string[]
-      madeForKids?: boolean
-      categoryId?: string
-    },
-    totalByteSize: number,
-    mimeType: string,
-  ): Promise<string> {
-    const endpoint =
-      'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status'
-    const ssrf = validateOutboundUrl(endpoint)
-    if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
-
-    const body = {
-      snippet: {
-        title: metadata.title,
-        description: metadata.description,
-        tags: metadata.tags || [],
-        categoryId: metadata.categoryId || '22', // Default: People & Blogs
+    settings: NonNullable<ReturnType<typeof youtubeUploadSettings>>,
+    description: string,
+    video: StreamedSocialVideo,
+  ) {
+    const response = await (this.request ?? fetch)(
+      `${origin}${uploadPath}?uploadType=resumable&part=snippet,status`,
+      {
+        method: 'POST',
+        redirect: 'error',
+        signal: AbortSignal.timeout(15000),
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': video.mimeType,
+          'X-Upload-Content-Length': String(video.size),
+        },
+        body: JSON.stringify({
+          snippet: { title: settings.title, description, categoryId: '22' },
+          status: {
+            privacyStatus: settings.privacy,
+            selfDeclaredMadeForKids: settings.madeForKids === 'yes',
+          },
+        }),
       },
-      status: {
-        privacyStatus: metadata.privacyStatus || 'public',
-        selfDeclaredMadeForKids: metadata.madeForKids ?? false,
-      },
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json; charset=UTF-8',
-        'X-Upload-Content-Type': mimeType,
-        'X-Upload-Content-Length': String(totalByteSize),
-      },
-      body: JSON.stringify(body),
-    })
-
-    if (!res.ok) {
-      const err = (await res.json().catch(() => null)) as { error?: { message?: string } } | null
-      throw new Error(
-        `Failed to initiate YouTube resumable upload: ${err?.error?.message || res.statusText}`,
-      )
-    }
-
-    const sessionUri = res.headers.get('location')
-    if (!sessionUri) {
-      throw new Error('Google resumable upload did not return a Location session header')
-    }
-
-    return sessionUri
+    )
+    if (!response.ok) throw await youtubeResponseError(response)
+    return uploadSession(response.headers.get('location'))
   }
 
-  /**
-   * Uploads binary buffer chunk to resumable upload URI.
-   */
-  async uploadVideoBuffer(
-    sessionUri: string,
-    buffer: Buffer,
-    mimeType: string,
-  ): Promise<{ id: string }> {
-    const ssrf = validateOutboundUrl(sessionUri)
-    if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
-
-    const res = await fetch(sessionUri, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': mimeType,
-        'Content-Length': String(buffer.length),
-        'Content-Range': `bytes 0-${buffer.length - 1}/${buffer.length}`,
-      },
-      body: new Uint8Array(buffer),
-    })
-
-    if (!res.ok && res.status !== 200 && res.status !== 201) {
-      throw new Error(`YouTube video chunk upload failed with HTTP ${res.status}`)
+  private async transfer(
+    session: URL,
+    token: string,
+    video: StreamedSocialVideo,
+  ): Promise<AdapterResult> {
+    let offset = 0
+    let probes = 0
+    let probe = false
+    while (offset < video.size && probes < 4) {
+      const end = Math.min(video.size - 1, offset + chunkSize - 1)
+      let response: Response
+      try {
+        const body = probe ? undefined : await video.open(offset, end)
+        const options: RequestInit & { duplex: 'half' } = {
+          method: 'PUT',
+          redirect: 'manual',
+          duplex: 'half',
+          signal: AbortSignal.timeout(120000),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': video.mimeType,
+            'Content-Length': String(probe ? 0 : end - offset + 1),
+            'Content-Range': probe
+              ? `bytes */${video.size}`
+              : `bytes ${offset}-${end}/${video.size}`,
+          },
+          body,
+        }
+        response = await (this.request ?? fetch)(session, options)
+      } catch {
+        probe = true
+        probes += 1
+        continue
+      }
+      if ([200, 201].includes(response.status)) {
+        const { id } = await response.json().catch(() => ({}))
+        if (typeof id !== 'string' || !youtubeVideoId.test(id)) return unknown()
+        return {
+          status: 'published',
+          remoteId: id,
+          remoteUrl: `https://www.youtube.com/watch?v=${id}`,
+          rawResponse: { id },
+        }
+      }
+      if (response.status === 308) {
+        const range = response.headers.get('range')
+        await response.body?.cancel()
+        const match = range && /^bytes=0-(\d+)$/.exec(range)
+        if (range && !match) return unknown()
+        const next = match ? Number(match[1]) + 1 : 0
+        if (next < offset || next >= video.size || (!probe && next > end + 1)) return unknown()
+        if (next === offset) probes += 1
+        else probes = 0
+        offset = next
+        probe = false
+        continue
+      }
+      if (response.status >= 500) {
+        await response.body?.cancel()
+        probe = true
+        probes += 1
+        continue
+      }
+      // The provider may have committed bytes during an earlier request.
+      await response.body?.cancel()
+      return unknown()
     }
-
-    const data = (await res.json()) as { id: string }
-    return data
+    return unknown()
   }
 
   async publish(
@@ -233,112 +295,66 @@ export class YouTubeAdapter implements SocialProviderAdapter {
     context?:
       | AuthContext
       | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
-    mediaResolver?: MediaResolver,
+    resolver?: MediaResolver,
   ): Promise<AdapterResult> {
-    const auth = context as AuthContext | undefined
-    const accessToken = auth?.credentials?.accessToken || auth?.tokens?.accessToken
-    const settings = variant.platformSettings as YouTubePlatformSettings | undefined
-
-    if (!accessToken) {
-      return {
-        status: 'failed',
-        error: normalizeProviderError({
-          kind: 'authentication',
-          message: 'YouTube publishing requires a valid Google OAuth 2.0 access token.',
-        }),
-      }
-    }
-
-    if (!variant.attachments.length || !mediaResolver) {
-      return {
-        status: 'failed',
-        error: normalizeProviderError({
-          kind: 'validation',
-          message: 'YouTube publishing requires a video attachment and MediaResolver.',
-        }),
-      }
-    }
-
-    const att = variant.attachments[0]
-    const title = settings?.videoTitle || variant.text.slice(0, 100) || 'Untitled Video'
-    const description = variant.text
-
-    try {
-      const { buffer, mimeType } = await mediaResolver.resolveBuffer(att.mediaAssetId)
-
-      // Step 1: Initiate Resumable Session
-      const sessionUri = await this.initiateResumableUpload(
-        accessToken,
-        {
-          title,
-          description,
-          privacyStatus: settings?.privacyStatus || 'public',
-          tags: settings?.tags,
-          madeForKids: settings?.madeForKids,
-          categoryId: settings?.categoryId,
-        },
-        buffer.length,
-        mimeType || 'video/mp4',
+    const config = youtubeConfiguration()
+    const refreshToken = context?.credentials?.refreshToken
+    const channelId =
+      context && 'externalAccountId' in context ? context.externalAccountId : undefined
+    const settings = youtubeUploadSettings(variant.platformSettings)
+    const invalid = (message: string): AdapterResult => ({
+      status: 'failed',
+      error: normalizeProviderError({ kind: 'validation', message }),
+    })
+    if (
+      !youtubePublishingEnabled() ||
+      !config ||
+      !channelId ||
+      !config.allowedChannels.includes(channelId) ||
+      !refreshToken
+    )
+      return failure(new YouTubeError('claim'))
+    if (
+      !settings ||
+      settings.channelId !== channelId ||
+      (settings.privacy !== 'private' &&
+        process.env.CREATOR_YOUTUBE_PUBLIC_UPLOADS_AUTHORIZED !== 'true') ||
+      !this.validatePost(variant).isValid ||
+      !resolver?.resolveVideo
+    )
+      return invalid(
+        'YouTube requires approved upload settings, permitted privacy and one native video.',
       )
 
-      // Step 2: Upload Video Binary
-      const videoResult = await this.uploadVideoBuffer(sessionUri, buffer, mimeType || 'video/mp4')
-      const videoId = videoResult.id
-      const remoteUrl = `https://www.youtube.com/watch?v=${videoId}`
-
-      // Step 3: Optional Custom Thumbnail
-      if (settings?.customThumbnailAssetId) {
-        try {
-          const thumb = await mediaResolver.resolveBuffer(settings.customThumbnailAssetId)
-          const thumbEndpoint = `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${videoId}`
-          await fetch(thumbEndpoint, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': thumb.mimeType || 'image/jpeg',
-            },
-            body: new Uint8Array(thumb.buffer),
-          })
-        } catch {
-          // Thumbnail failure is non-fatal to video publication
-        }
-      }
-
-      return {
-        status: 'published',
-        remoteId: videoId,
-        remoteUrl,
-        receipt: {
-          remotePostId: videoId,
-          remoteUrl,
-          publishedAt: new Date(),
-          rawResponse: videoResult as unknown as Record<string, unknown>,
-        },
-      }
-    } catch (e: unknown) {
-      const err = e as { message?: string; status?: number }
-      return {
-        status: 'failed',
-        error: normalizeProviderError({
-          kind: 'transient',
-          message: err.message || 'YouTube upload pipeline encountered an unexpected error.',
-        }),
-      }
+    let video: StreamedSocialVideo
+    try {
+      video = await resolver.resolveVideo(variant.attachments[0].mediaAssetId)
+      if (
+        !Number.isSafeInteger(video.size) ||
+        video.size < 1 ||
+        video.size > maxBytes ||
+        !videoMimes.includes(video.mimeType)
+      )
+        return invalid('The original video does not meet YouTube upload limits.')
+    } catch {
+      return invalid('The original video is unavailable for upload.')
     }
-  }
 
-  async deletePost(remotePostId: string, authContext: AuthContext): Promise<void> {
-    const accessToken = authContext.credentials?.accessToken || authContext.tokens?.accessToken
-    if (!accessToken) throw new Error('Missing token for YouTube delete')
-
-    const endpoint = `https://www.googleapis.com/youtube/v3/videos?id=${remotePostId}`
-    const res = await fetch(endpoint, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-
-    if (!res.ok && res.status !== 204) {
-      throw new Error(`YouTube video deletion failed with HTTP ${res.status}`)
+    let session: URL
+    let token: string
+    try {
+      const client = new YouTubeMetadata(config, this.request)
+      const grant = await client.refresh(refreshToken, [youtubeReadonly, youtubeUpload])
+      await client.channel(grant, channelId)
+      token = grant.token
+      session = await this.begin(token, settings, variant.text, video)
+    } catch (error) {
+      return failure(error)
+    }
+    try {
+      return await this.transfer(session, token, video)
+    } catch {
+      return unknown()
     }
   }
 }

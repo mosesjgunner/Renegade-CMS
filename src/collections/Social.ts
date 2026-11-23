@@ -1,3 +1,4 @@
+import { youtubeUploadSettings } from '../modules/social/adapters/youtube'
 import { ValidationError, type CollectionConfig } from 'payload'
 
 import { ownerFields } from './canonical-shared'
@@ -165,6 +166,19 @@ export const SocialNetworkVariants: CollectionConfig = {
     },
     { name: 'linkUrl', type: 'text' },
     { name: 'attachments', type: 'relationship', relationTo: 'media-assets', hasMany: true },
+    {
+      name: 'youtubeUpload',
+      type: 'json',
+      validate: (value: unknown) =>
+        value == null ||
+        Boolean(youtubeUploadSettings(value)) ||
+        'Set the destination channel, title, privacy, audience and compliance confirmation.',
+      admin: {
+        condition: (_, variant) => variant.network === 'youtube',
+        description:
+          'Optional authorized upload settings. Set channelId, title, privacy (private, unlisted, public), madeForKids (yes or no), and complianceConfirmed (true only after certifying rights and YouTube Community Guidelines compliance). Approve the variant after editing.',
+      },
+    },
     { name: 'validation', type: 'json', defaultValue: [] },
     {
       name: 'status',

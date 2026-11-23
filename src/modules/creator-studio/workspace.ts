@@ -1,3 +1,4 @@
+import type { Content } from '@/payload-types'
 import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 import { authorizeCreator } from './policy'
@@ -146,7 +147,7 @@ export async function createCreatorSpace(payload: Payload, siteId: string, membe
   }
 }
 
-const lexical = (text: string) => ({
+export const creatorDraftBody = (text: string): NonNullable<Content['body']> => ({
   root: {
     type: 'root',
     children: [
@@ -267,7 +268,7 @@ export async function saveCreatorDraft(
     return (await payload.update({
       collection: 'content',
       id: doc.id,
-      data: { title, body: lexical(input.text) },
+      data: { title, body: creatorDraftBody(input.text) },
       context: { creatorDraftGuard: { siteId, memberId, spaceId, updatedAt: doc.updatedAt } },
       overrideAccess: true,
     } as never)) as unknown as { id: string }
@@ -283,7 +284,7 @@ export async function saveCreatorDraft(
       visibility: 'private',
       title,
       slug: `creator-${randomUUID()}`,
-      body: lexical(input.text),
+      body: creatorDraftBody(input.text),
     },
     overrideAccess: true,
   } as never)) as unknown as { id: string }

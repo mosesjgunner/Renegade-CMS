@@ -391,6 +391,7 @@ export async function resolveCommunityActor(
   payload: Payload,
   headersOrTokenOrReq?: Headers | Request | string | null,
   siteId?: string,
+  options: { touchSession?: boolean } = {},
 ): Promise<CommunityActor> {
   let sessionToken: string | undefined
   if (typeof headersOrTokenOrReq === 'string') {
@@ -408,7 +409,9 @@ export async function resolveCommunityActor(
     sessionToken = readMemberSession(headersOrTokenOrReq as Headers)
   }
 
-  let memberId = sessionToken ? await currentMember(payload as never, sessionToken) : null
+  let memberId = sessionToken
+    ? await currentMember(payload as never, sessionToken, undefined, options)
+    : null
   // An admin passkey authenticates identity only. Its linked canonical member
   // still needs the same site-specific moderation grants as a member session.
   if (!sessionToken && headersOrTokenOrReq && typeof headersOrTokenOrReq !== 'string') {

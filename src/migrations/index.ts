@@ -968,7 +968,28 @@ export const migrations = [
     down: cre03Portfolios.down,
     name: "20261122_150000_cre03_portfolios",
   },
+  {
+    up: cre05MediaEdits.up,
+    down: cre05MediaEdits.down,
+    name: '20261122_160000_cre05_media_edits',
+  },
+  {
+    up: cre06VideoSources.up,
+    down: cre06VideoSources.down,
+    name: '20261122_170000_cre06_video_sources',
+  },
+  {
+    up: cre07TheaterRooms.up,
+    down: cre07TheaterRooms.down,
+    name: '20261122_180000_cre07_theater_rooms',
+  },
+  {
+    up: cre08LiveMedia.up,
+    down: cre08LiveMedia.down,
+    name: '20261122_190000_cre08_live_media',
+  },
 ]
+import * as cre05MediaEdits from './20261122_160000_cre05_media_edits'
 import * as cre03Portfolios from "./20261122_150000_cre03_portfolios"
 import * as cre01CreatorPolicy from './20261122_120000_cre01_creator_policy'
 import * as cre01SpaceDescription from './20261122_130000_cre01_space_description'
@@ -981,3 +1002,6 @@ import * as rc315bGroupsRooms from './20261121_170000_rc315b_groups_rooms'
 import * as rc312CreatorCatalog from './20261121_190000_rc312_creator_catalog'
 import * as rc314Repurpose from './20261121_200000_rc314_repurpose'
 import * as rc317EditorialDepth from './20261122_090000_rc317_editorial_depth'
+import * as cre06VideoSources from './20261122_170000_cre06_video_sources'
+import * as cre07TheaterRooms from './20261122_180000_cre07_theater_rooms'
+import * as cre08LiveMedia from './20261122_190000_cre08_live_media'

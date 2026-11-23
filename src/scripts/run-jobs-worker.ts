@@ -34,6 +34,7 @@ if (registeredWorkflows.length) registrations.push({ workflowSlug: { in: registe
 const registeredJobs: Where = registrations.length
   ? { or: registrations }
   : { id: { exists: false } }
+let nextExternalVideoSweep = 0
 let stopping = false
 let timer: NodeJS.Timeout | undefined
 
@@ -83,6 +84,18 @@ async function cycle(): Promise<void> {
         const { recoverSocialOutbox } = await import('../modules/social/tasks')
         await recoverSocialOutbox(payload)
       }
+      if (
+        workerProfile !== 'audience' &&
+        payload.collections['external-video-sources'] &&
+        Date.now() >= nextExternalVideoSweep
+      ) {
+        nextExternalVideoSweep = Date.now() + 15 * 60 * 1000
+        const { purgeExpiredVideoSnapshots, recheckYouTubeAuthorizations } = await import(
+          '../modules/creator-studio/external-video'
+        )
+        await purgeExpiredVideoSnapshots(payload)
+        await recheckYouTubeAuthorizations(payload)
+      }
       if (payload.collections['media-assets']) {
         const { recoverStaleMediaVariantJobs } = await import('../modules/media/tasks')
         await recoverStaleMediaVariantJobs(payload as never, mediaStaleClaimMs).catch(
@@ -98,6 +111,10 @@ async function cycle(): Promise<void> {
     await payload.jobs.handleSchedules({ queue: 'commerce' })
     await payload.jobs.run({ queue: 'commerce', limit: 1, where: registeredJobs })
     if (workerProfile === 'media-heavy') {
+      const { recoverCreatorMediaExports } = await import('../modules/creator-studio/media-edit-exports')
+      await recoverCreatorMediaExports(payload).catch((error) => {
+        payload.logger.error({ err: error, event: 'creator.media_export_recovery_failed' })
+      })
       const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
       await recoverStaleVideoJobs(payload).catch(() => undefined)
       await payload.jobs

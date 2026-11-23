@@ -376,12 +376,13 @@ describe('POD-16 integration', () => {
     expect(feed).not.toContain(PASSWORD)
   })
 
-  it('binds an audience room as data (public/members) and refuses a bad policy', async () => {
-    const updated = await setLiveRoomBinding(payload as never, {
-      episodeId: String(episode.id),
-      binding: { roomId: 'venue-room-1', access: 'members' },
-    })
-    expect((updated as any).liveRoom).toEqual({ roomId: 'venue-room-1', access: 'members' })
+  it('refuses a missing audience room and a bad policy', async () => {
+    await expect(
+      setLiveRoomBinding(payload as never, {
+        episodeId: String(episode.id),
+        binding: { roomId: 'venue-room-1', access: 'members' },
+      }),
+    ).rejects.toMatchObject({ code: 'LIVE_ROOM_NOT_FOUND' })
     await expect(
       setLiveRoomBinding(payload as never, {
         episodeId: String(episode.id),

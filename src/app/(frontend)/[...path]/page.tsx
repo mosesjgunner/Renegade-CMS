@@ -1,3 +1,6 @@
+import { extractPlainText } from '@/modules/editorial/presentation'
+import { publicExternalVideo } from '@/modules/creator-studio/external-video'
+import { ExternalVideoPlayer } from '@/modules/creator-studio/ExternalVideoPlayer'
 import {
   archivePageNumber,
   paginateArchive,
@@ -659,9 +662,17 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         </main>
       )
     }
-    const name = label(record)
+    const external =
+      collection === 'content' &&
+      record.contentType === 'video' &&
+      record.visibility === 'public' &&
+      !record.requiredEntitlement
+        ? await publicExternalVideo(payload, siteId, String(record.id))
+        : null
+    const name = external?.available ? external.title || label(record) : label(record)
     let articleBody: string | null = null
-    if (collection === 'content') {
+    if (external) articleBody = extractPlainText(record.body)
+    if (collection === 'content' && !external) {
       const articleResult = await payload.find({
         collection: 'article-family-content',
         where: { content: { equals: String(record.id) } },
@@ -716,6 +727,15 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-stone-950 dark:text-stone-50 font-display">
             {name}
           </h1>
+          {external?.available ? (
+            <ExternalVideoPlayer
+              provider={external.provider}
+              url={external.url}
+              title={external.title || name}
+            />
+          ) : external ? (
+            <p>This video is unavailable.</p>
+          ) : null}
           {typeof record.summary === 'string' ? (
             <p className="text-lg sm:text-xl text-stone-600 dark:text-stone-300 font-display italic leading-relaxed">
               {record.summary}

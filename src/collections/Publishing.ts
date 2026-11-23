@@ -2300,6 +2300,7 @@ export const MediaUsages: CollectionConfig = {
         'email-messages',
         'page-layouts',
         'graphic-documents',
+        'media-edit-projects',
         'podcast-episodes',
         'videos',
         'social-network-variants',

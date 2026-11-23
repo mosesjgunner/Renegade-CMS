@@ -578,6 +578,7 @@ export async function materializeRoomFloors(
      SELECT b.conversation_id, $2, c.next_message_sequence
      FROM room_bindings b JOIN conversations c ON c.id = b.conversation_id
      WHERE b.group_id = $1 AND b.history_policy = 'from-join'
+       AND EXISTS (SELECT 1 FROM room_audience(b.conversation_id,$2) WHERE can_read)
      ON CONFLICT (conversation_id,member_id) DO UPDATE
        SET history_floor_sequence = GREATEST(room_read_states.history_floor_sequence, EXCLUDED.history_floor_sequence)`,
     [groupId, memberId],

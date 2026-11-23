@@ -234,6 +234,7 @@ export async function sendConversationMessage(
     body: string
     idempotencyKey: string
     attachmentIds?: string[]
+    roomQuestion?: boolean
   },
 ) {
   const bodyHtml = sanitizeCommentHtml(String(input.body ?? '').trim())
@@ -260,27 +261,32 @@ export async function sendConversationMessage(
       // rows — the shared audience function decides. Unbound
       // conversations are structurally unreachable by this branch, so
       // DM semantics are unchanged.
-      let roomMode = false
-      if (!membership.rows[0]) {
-        const audience = await evaluateRoomAudience(query, {
-          siteId: input.siteId,
-          conversationId: input.conversationId,
-          memberId: input.senderId,
-        })
-        if (!audience.bound)
-          throw new ConversationError(
-            'Active membership is required',
-            403,
-            'NOT_CONVERSATION_MEMBER',
-          )
+      const audience = await evaluateRoomAudience(query, {
+        siteId: input.siteId,
+        conversationId: input.conversationId,
+        memberId: input.senderId,
+      })
+      const roomMode = audience.bound
+      if (!roomMode && !membership.rows[0])
+        throw new ConversationError('Active membership is required', 403, 'NOT_CONVERSATION_MEMBER')
+      if (roomMode) {
         if (!audience.canWrite)
           throw new ConversationError(
             audience.binding?.lifecycle === 'closed' ? 'This room is closed' : 'Access denied',
             audience.binding?.lifecycle === 'closed' ? 409 : 403,
             audience.binding?.lifecycle === 'closed' ? 'ROOM_CLOSED' : 'NOT_ROOM_AUDIENCE',
           )
-        roomMode = true
+        if (audience.binding?.participantLimit !== null) {
+          const seat = await query(
+            'SELECT member_id FROM room_participation WHERE conversation_id=$1 AND member_id=$2 AND active_until>now()',
+            [input.conversationId, input.senderId],
+          )
+          if (!seat.rows[0])
+            throw new ConversationError('Join the room before posting.', 409, 'ROOM_JOIN_REQUIRED')
+        }
       }
+      if (input.roomQuestion && audience.binding?.mode !== 'theater')
+        throw new ConversationError('Questions require a theater.', 422, 'THEATER_REQUIRED')
       const conversation = (membership.rows[0] ?? {
         request_state: 'active',
         request_recipient_member_id: null,
@@ -327,11 +333,25 @@ export async function sendConversationMessage(
             403,
             'BLOCKED_COMMUNICATION',
           )
+      if (roomMode)
+        await query('SELECT id FROM conversations WHERE id=$1 FOR UPDATE', [input.conversationId])
       const duplicate = await query<Record<string, unknown>>(
         'SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2',
         [input.conversationId, input.idempotencyKey],
       )
-      if (duplicate.rows[0]) return { ...duplicate.rows[0], duplicate: true }
+      if (duplicate.rows[0]) {
+        if (
+          roomMode &&
+          (String(duplicate.rows[0].sender_id) !== input.senderId ||
+            duplicate.rows[0].room_removed_at)
+        )
+          throw new ConversationError(
+            'This message key is unavailable.',
+            409,
+            'MESSAGE_KEY_UNAVAILABLE',
+          )
+        return { ...duplicate.rows[0], duplicate: true }
+      }
       const sequence = await query<{ sequence_number: number }>(
         'UPDATE conversations SET next_message_sequence=next_message_sequence+1, last_message_at=now(), updated_at=now() WHERE id=$1 RETURNING next_message_sequence - 1 AS sequence_number',
         [input.conversationId],
@@ -340,7 +360,9 @@ export async function sendConversationMessage(
         throw new ConversationError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')
       const row = (
         await query<Record<string, unknown>>(
-          'INSERT INTO messages (conversation_id,sender_id,idempotency_key,sequence_number,body_html) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+          input.roomQuestion
+            ? 'INSERT INTO messages (conversation_id,sender_id,idempotency_key,sequence_number,body_html,room_question) VALUES ($1,$2,$3,$4,$5,true) RETURNING *'
+            : 'INSERT INTO messages (conversation_id,sender_id,idempotency_key,sequence_number,body_html) VALUES ($1,$2,$3,$4,$5) RETURNING *',
           [
             input.conversationId,
             input.senderId,
@@ -481,15 +503,11 @@ export async function listConversationMessages(
     'SELECT cm.visible_from_sequence FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3',
     [input.conversationId, input.memberId, input.siteId],
   )
-  if (!membership.rows[0]) {
+  const audience = await evaluateRoomAudience(query, input)
+  if (audience.bound || !membership.rows[0]) {
     // Derived branch (Circles D3): bound rooms resolve through the
     // shared audience function and the (conversation, member) read
     // state — floor, cursor and block/mute filtering included.
-    const audience = await evaluateRoomAudience(query, {
-      siteId: input.siteId,
-      conversationId: input.conversationId,
-      memberId: input.memberId,
-    })
     if (audience.bound && audience.canRead) {
       const room = await listRoomMessages(payload, {
         siteId: input.siteId,
