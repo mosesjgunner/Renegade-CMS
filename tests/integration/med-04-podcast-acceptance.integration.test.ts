@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { mkdtemp, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 import sharp from 'sharp'
 
@@ -25,6 +25,11 @@ import EpisodePage, {
   generateMetadata as generateEpisodeMetadata,
 } from '../../src/app/(frontend)/podcasts/episodes/[slug]/page'
 import { seed } from '../../src/scripts/seed'
+
+vi.mock('next/headers', async () => ({
+  ...(await vi.importActual<typeof import('next/headers')>('next/headers')),
+  headers: async () => new Headers({ host: 'med04-podcast.test' }),
+}))
 
 /**
  * Creates a valid RIFF/WAVE 16-bit PCM buffer with a sine wave audio tone.
@@ -88,6 +93,9 @@ let payload: Payload
 let testMediaDir: string
 let site: any
 let publication: any
+let previousOrigins:
+  | Awaited<ReturnType<typeof resolveSiteSettings>>['canonicalOriginsBySite']
+  | undefined
 
 beforeAll(async () => {
   payload = await getPayload({ config })
@@ -103,6 +111,14 @@ beforeAll(async () => {
   })
   site = siteResult.docs[0]
   expect(site).toBeTruthy()
+  previousOrigins = (await resolveSiteSettings(payload)).canonicalOriginsBySite
+  await payload.updateGlobal({
+    slug: 'site-settings',
+    data: {
+      canonicalOriginsBySite: { ...previousOrigins, [site.id]: 'https://med04-podcast.test' },
+    },
+    overrideAccess: true,
+  })
 
   const pubResult = await payload.find({
     collection: 'publications',
@@ -115,6 +131,13 @@ beforeAll(async () => {
 })
 
 afterAll(async () => {
+  if (previousOrigins) {
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: { canonicalOriginsBySite: previousOrigins },
+      overrideAccess: true,
+    })
+  }
   if (testMediaDir) {
     await rm(testMediaDir, { recursive: true, force: true }).catch(() => undefined)
   }
@@ -453,23 +476,12 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
 
     // 7. Test Episode Access Gating & Preview
     // Anonymous public access to scheduled/draft Episode 2 throws notFound()
-    let scheduledNotFound = false
-    try {
-      await EpisodePage({
+    await expect(
+      EpisodePage({
         params: Promise.resolve({ slug: ep2Slug }),
         searchParams: Promise.resolve({}),
-      })
-    } catch (err: any) {
-      if (
-        err?.message?.includes('NEXT_') ||
-        err?.message?.includes('404') ||
-        err?.digest?.includes('NEXT_') ||
-        err?.digest?.includes('404')
-      ) {
-        scheduledNotFound = true
-      }
-    }
-    expect(scheduledNotFound).toBe(true)
+      }),
+    ).rejects.toMatchObject({ digest: 'NEXT_HTTP_ERROR_FALLBACK;404' })
 
     // Public access to published Episode 1 succeeds
     const ep1PageElement = await EpisodePage({

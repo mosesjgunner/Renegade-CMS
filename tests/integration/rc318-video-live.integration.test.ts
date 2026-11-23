@@ -23,6 +23,7 @@
  * unpublishes the mount. Skipped (with the gap named) when no
  * icecast2 binary exists on the rig.
  */
+import { resolveFfmpegBinary, resolveFfprobeBinary } from '../../src/modules/media/ffmpeg'
 import { execFile, execFileSync, spawn, type ChildProcess } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
@@ -114,7 +115,7 @@ describe('RC3-18 #16 video journey', () => {
     'uploads, processes, publishes and publicly plays back a captioned video',
     async () => {
       const mp4Path = path.join(tmpDir, `source-${suffix}.mp4`)
-      await execFileAsync('ffmpeg', [
+      await execFileAsync(resolveFfmpegBinary(), [
         '-hide_banner',
         '-loglevel',
         'error',
@@ -172,7 +173,7 @@ describe('RC3-18 #16 video journey', () => {
       expect(baselineBytes).toBeTruthy()
       const baselinePath = path.join(tmpDir, `baseline-${suffix}.mp4`)
       await writeFile(baselinePath, baselineBytes!)
-      const probe = await execFileAsync('ffprobe', [
+      const probe = await execFileAsync(resolveFfprobeBinary(), [
         '-v',
         'error',
         '-select_streams',
@@ -427,7 +428,7 @@ describe('RC3-18 #16 livestream against a real Icecast server', () => {
     'streams through the product relay to real listeners, takes a now-playing update, and recovers from a mid-stream kill',
     async () => {
       const tonePath = path.join(tmpDir, `tone-${suffix}.wav`)
-      await execFileAsync('ffmpeg', [
+      await execFileAsync(resolveFfmpegBinary(), [
         '-hide_banner',
         '-loglevel',
         'error',
@@ -468,7 +469,7 @@ describe('RC3-18 #16 livestream against a real Icecast server', () => {
       expect(heard.length).toBeGreaterThanOrEqual(16_384)
       const heardPath = path.join(tmpDir, `heard-${suffix}.mp3`)
       await writeFile(heardPath, heard)
-      const probe = await execFileAsync('ffprobe', [
+      const probe = await execFileAsync(resolveFfprobeBinary(), [
         '-v',
         'error',
         '-show_entries',
