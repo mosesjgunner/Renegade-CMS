@@ -524,6 +524,10 @@ export type RawHealthEvaluationInput = {
   telecomProviderStatus: 'healthy' | 'degraded' | 'disabled'
   telecomProviderName: string
   telecomOutboundAllowed: boolean
+  /** RC3-19: routes the selected telecom provider actually declares.
+   * Supplied by the caller from the adapter contract; when a caller
+   * cannot establish it, the truthful value is no routes at all. */
+  telecomRoutesActive?: string[]
   totalSentRecently: number
   hardBouncesRecently: number
   complaintsRecently: number
@@ -644,7 +648,7 @@ export function evaluateAudienceHealth(
         provider: input.telecomProviderName,
         status: input.telecomProviderStatus,
         outboundAllowed: input.telecomOutboundAllowed,
-        routesActive: ['SMS-GSM7', 'SMS-UCS2', 'RCS-Jibe'],
+        routesActive: input.telecomRoutesActive ?? [],
       },
     },
     metrics: {

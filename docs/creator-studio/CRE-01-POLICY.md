@@ -5,7 +5,20 @@ Creator access is per site and separate from staff operator permissions. A membe
 For a site, an operator can set `creatorPolicy` to, for example:
 
 ```json
-{"enabled":true,"selfServiceSpaces":true,"quotas":{"bytes":1000000000,"uploadCount":100,"concurrentRecordings":1,"processingMinutes":60,"liveMinutes":60,"audienceCap":100,"exportJobs":5,"retentionDays":30}}
+{
+  "enabled": true,
+  "selfServiceSpaces": true,
+  "quotas": {
+    "bytes": 1000000000,
+    "uploadCount": 100,
+    "concurrentRecordings": 1,
+    "processingMinutes": 60,
+    "liveMinutes": 60,
+    "audienceCap": 100,
+    "exportJobs": 5,
+    "retentionDays": 30
+  }
+}
 ```
 
 The site owner grants a member names in the `creatorCapabilities` JSON array on the member's site-role record. The Studio draft and Space workflow needs `content.draft-own` and `space.manage-own`. Optional `creatorQuotaOverride` uses the same quota keys and nonnegative integer values. Missing limits are unspecified, not an unlimited allowance. No role name automatically grants creator operations. Self-service Space creation and editing require `selfServiceSpaces: true`; joining the site does not grant creator capabilities.

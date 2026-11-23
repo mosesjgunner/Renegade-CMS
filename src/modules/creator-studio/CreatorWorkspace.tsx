@@ -120,10 +120,22 @@ export function CreatorWorkspace({ handle }: { handle?: string }) {
   return (
     <main className="mx-auto max-w-4xl space-y-6 p-6">
       <h1 className="text-3xl font-bold">Creator Studio</h1>
-      {workspace && <p><Link href="/studio/record">Record audio, camera or screen</Link></p>}
-      {workspace && <p><Link href="/studio/media-edit">Edit media</Link></p>}
-      <p><Link href="/studio/portfolio">Portfolios and projects</Link></p>
-      <p><Link href="/studio/external-video">External videos and distribution</Link></p>
+      {workspace && (
+        <p>
+          <Link href="/studio/record">Record audio, camera or screen</Link>
+        </p>
+      )}
+      {workspace && (
+        <p>
+          <Link href="/studio/media-edit">Edit media</Link>
+        </p>
+      )}
+      <p>
+        <Link href="/studio/portfolio">Portfolios and projects</Link>
+      </p>
+      <p>
+        <Link href="/studio/external-video">External videos and distribution</Link>
+      </p>
       <Link href="/studio/submissions">Community submissions</Link>
       {message && <p role="status">{message}</p>}
       {workspace && !workspace.space && (

@@ -1,7 +1,9 @@
 import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  await db.execute(sql`ALTER TABLE "spaces" ADD COLUMN IF NOT EXISTS "creator_description" varchar;`)
+  await db.execute(
+    sql`ALTER TABLE "spaces" ADD COLUMN IF NOT EXISTS "creator_description" varchar;`,
+  )
 }
 
 // Rolling back discards Space descriptions.
