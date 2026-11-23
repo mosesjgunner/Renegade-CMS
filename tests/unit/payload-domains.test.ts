@@ -67,6 +67,7 @@ describe('Payload domain registration', () => {
         'media-variant-generate',
         'network-delivery',
         'social-publish',
+        'audience-automation-resume',
         'audience-email-delivery',
         'audience-form-intake',
         'community-email-dispatch',

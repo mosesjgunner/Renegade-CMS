@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { withExecutionLock } from '../operations/execution-lock'
+import { triggerAutomations } from './automation-executor'
 import { executeIntakeActions } from './form-runtime'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* Durable commands for public forms, subscriber lifecycle, and bulk delivery. */
@@ -385,6 +386,25 @@ export async function confirmDoubleOptIn(payload: Store, token: string) {
     },
     overrideAccess: true,
   })
+  // RC3-19 (#30): confirmation is the domain event general automations
+  // subscribe to. Automation outcomes never change the confirmation
+  // result — runs and failures are journaled on their own rows.
+  if (siteId) {
+    try {
+      await triggerAutomations(payload, {
+        siteId,
+        triggerType: 'confirmed-subscription',
+        subscriberId: relationId(confirmation.subscriber) ?? '',
+        sourceEventId: `subscriber:${relationId(confirmation.subscriber) ?? ''}`,
+      })
+    } catch (error) {
+      payload.logger?.error?.({
+        err: error,
+        event: 'audience.automation.trigger_failed',
+        siteId,
+      })
+    }
+  }
   return subDoc
 }
 

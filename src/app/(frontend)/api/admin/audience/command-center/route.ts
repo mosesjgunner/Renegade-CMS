@@ -11,6 +11,7 @@ import {
 } from '@/modules/audience/command-center-service'
 import { AUDIENCE_METRIC_DICTIONARY } from '@/modules/audience/command-center-contracts'
 import { boundaryFrom, boundaryIsolationState } from '@/modules/email/delivery'
+import { telecomProviderTruth } from '@/modules/telecom/tasks'
 import { verifySenderDns, type SenderDnsReport } from '@/modules/email/dns-verification'
 
 export const runtime = 'nodejs'
@@ -162,10 +163,6 @@ export async function GET(request: Request) {
     const appConfig = loadConfig()
     const isSmtpConfigured = appConfig.email.mode === 'smtp' && Boolean(appConfig.email.host)
     const isDevEmail = appConfig.email.mode === 'development'
-    const isTwilioConfigured = Boolean(
-      process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN,
-    )
-
     const emailProviderStatus: 'healthy' | 'degraded' | 'disabled' = isSmtpConfigured
       ? 'degraded'
       : isDevEmail
@@ -178,13 +175,14 @@ export async function GET(request: Request) {
         ? 'Local Development Mailer (Capture Sink)'
         : 'No email delivery configured'
 
-    const telecomProviderStatus: 'healthy' | 'degraded' | 'disabled' = isTwilioConfigured
-      ? 'degraded'
-      : 'disabled'
-
-    const telecomProviderName = isTwilioConfigured
-      ? 'Twilio Telecom / Jibe RCS Gateway'
-      : 'Local Telecom Emulator (unconfigured for live carrier dispatches)'
+    // RC3-19 (#31): telecom truth comes from the adapter that will
+    // actually carry the next send (selected by TELECOM_MODE), not from
+    // credential presence alone — the old derivation claimed an RCS
+    // gateway name in every mode and never reported the emulator mode
+    // the product was really running in.
+    const telecomTruth = telecomProviderTruth()
+    const telecomProviderStatus = telecomTruth.status
+    const telecomProviderName = telecomTruth.name
 
     const totalAccepted = outcomes?.find((o) => o.status === 'accepted')?.count ?? 0
     const totalBounced = outcomes?.find((o) => o.status === 'bounced')?.count ?? 0
@@ -265,10 +263,8 @@ export async function GET(request: Request) {
       tlsVerified: false,
       telecomProviderStatus,
       telecomProviderName,
-      telecomOutboundAllowed:
-        process.env.TELECOM_MODE === 'twilio' &&
-        process.env.TELECOM_ALLOW_OUTBOUND === 'true' &&
-        isTwilioConfigured,
+      telecomOutboundAllowed: telecomTruth.outboundAllowed,
+      telecomRoutesActive: telecomTruth.routesActive,
       totalSentRecently: totalAccepted + totalBounced + totalComplaints,
       hardBouncesRecently: totalBounced,
       complaintsRecently: totalComplaints,

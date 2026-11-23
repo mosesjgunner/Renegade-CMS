@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
 import { communityEmailTask } from '../community/external-notifications'
+import { resumeDueAutomationRuns } from './automation-executor'
 import { formIntakeTask } from './form-tasks'
 import { createHash } from 'node:crypto'
 
@@ -392,11 +393,26 @@ export const newsletterDispatchTask = {
     return { output: {} }
   },
 } as unknown as TaskConfig
+/** RC3-19 (#30): resumes automation runs parked on a delay step. */
+export const automationResumeTask = {
+  slug: 'audience-automation-resume',
+  label: 'Audience automation resume',
+  inputSchema: [],
+  outputSchema: [],
+  retries: { attempts: 3, backoff: { delay: 1000, type: 'exponential' } },
+  concurrency: () => 'audience.automation-resume',
+  schedule: [{ cron: '*/30 * * * * *', queue: 'operations' }],
+  handler: async ({ req }: { req: any }) => {
+    await resumeDueAutomationRuns(req.payload)
+    return { output: {} }
+  },
+} as unknown as TaskConfig
 export const audienceTasks = [
   emailDeliveryTask,
   newsletterDispatchTask,
   formIntakeTask,
   communityEmailTask,
+  automationResumeTask,
 ]
 
 /** Delivery state is the durable outbox, including jobs interrupted while processing.
