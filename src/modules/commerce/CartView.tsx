@@ -6,8 +6,9 @@ import type { VersionedCart } from './cart'
 import type { PricingSnapshot } from './pricing'
 import type { CheckoutProposal } from './proposal'
 import type { RawAddressInput } from './shipping'
+import { formatMinorMoney } from './catalog'
 
-export function CartView() {
+export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
   const [cart, setCart] = useState<VersionedCart | null>(null)
   const [pricing, setPricing] = useState<PricingSnapshot | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -29,6 +30,7 @@ export function CartView() {
     country: 'US',
   })
   const [termsAccepted, setTermsAccepted] = useState<boolean>(false)
+  const [marketingAccepted, setMarketingAccepted] = useState<boolean>(false)
 
   // Proposal State
   const [proposal, setProposal] = useState<CheckoutProposal | null>(null)
@@ -209,8 +211,12 @@ export function CartView() {
           country: hasPhysical ? address.country : billingCountry,
         },
         consents: {
-          termsAccepted: true,
-          privacyAccepted: true,
+          // Send the customer's actual selections: the required agreement
+          // checkbox covers the Terms of Service and Privacy Policy it names;
+          // marketing consent is a separate, optional choice.
+          termsAccepted,
+          privacyAccepted: termsAccepted,
+          marketingAccepted,
         },
       }
 
@@ -243,7 +249,7 @@ export function CartView() {
       setPaymentMethodId(available.methods[0]?.id ?? '')
       if (!available.methods.length)
         throw new Error('No configured payment methods are eligible for this quote.')
-      setAnnouncement('Immutable checkout proposal created. Ready to proceed to payment.')
+      setAnnouncement('Your order total is confirmed. Choose how to pay below.')
     } catch (err: any) {
       setProposalError(err.message || 'Error creating checkout proposal.')
     } finally {
@@ -278,10 +284,12 @@ export function CartView() {
     }
   }
 
+  const pageTitle = mode === 'checkout' ? 'Checkout' : 'Shopping Cart'
+
   if (loading) {
     return (
       <main className="max-w-4xl mx-auto p-8 space-y-4">
-        <h1 className="text-3xl font-black">Shopping Cart</h1>
+        <h1 className="text-3xl font-black">{pageTitle}</h1>
         <p>Loading your cart...</p>
       </main>
     )
@@ -290,7 +298,7 @@ export function CartView() {
   if (!cart || cart.items.length === 0) {
     return (
       <main className="max-w-4xl mx-auto p-8 space-y-6">
-        <h1 className="text-3xl font-black">Shopping Cart</h1>
+        <h1 className="text-3xl font-black">{pageTitle}</h1>
         <p className="text-muted-foreground">Your cart is currently empty.</p>
         <button type="button" onClick={mergeGuestCart}>
           Merge guest cart after signing in
@@ -315,7 +323,7 @@ export function CartView() {
       </div>
 
       <header className="flex justify-between items-baseline border-b pb-4">
-        <h1 className="text-3xl font-black">Shopping Cart</h1>
+        <h1 className="text-3xl font-black">{pageTitle}</h1>
         <Link href="/store" className="text-sm underline font-semibold text-primary">
           ← Continue Shopping
         </Link>
@@ -351,6 +359,13 @@ export function CartView() {
           <h2 id="cart-items-heading" className="text-xl font-bold">
             Items ({cart.items.reduce((sum, i) => sum + i.quantity, 0)})
           </h2>
+          {mode === 'checkout' ? (
+            <p className="text-sm">
+              <Link href="/cart" className="underline font-semibold text-primary">
+                ← Edit cart
+              </Link>
+            </p>
+          ) : null}
 
           <div className="space-y-4">
             {cart.items.map((item) => (
@@ -381,55 +396,62 @@ export function CartView() {
                     </label>
                   )}
                   <p className="font-semibold">
-                    ${(Number(item.displaySnapshot.unitPriceMinor) / 100).toFixed(2)}{' '}
-                    {item.displaySnapshot.currency} each
+                    {formatMinorMoney(
+                      item.displaySnapshot.unitPriceMinor,
+                      item.displaySnapshot.currency,
+                    )}{' '}
+                    each
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center border rounded">
+                {mode === 'checkout' ? (
+                  <p className="text-sm font-medium">Qty {item.quantity}</p>
+                ) : (
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center border rounded">
+                      <button
+                        type="button"
+                        onClick={() => updateLineQuantity(item.lineId, item.quantity - 1)}
+                        disabled={updatingLine === item.lineId}
+                        aria-label={`Decrease quantity of ${item.displaySnapshot.title}`}
+                        className="px-3 py-1 font-bold disabled:opacity-50"
+                      >
+                        -
+                      </button>
+                      <span
+                        className="px-3 py-1 text-sm font-medium"
+                        aria-label={`Quantity is ${item.quantity}`}
+                      >
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => updateLineQuantity(item.lineId, item.quantity + 1)}
+                        disabled={updatingLine === item.lineId}
+                        aria-label={`Increase quantity of ${item.displaySnapshot.title}`}
+                        className="px-3 py-1 font-bold disabled:opacity-50"
+                      >
+                        +
+                      </button>
+                    </div>
+
                     <button
                       type="button"
-                      onClick={() => updateLineQuantity(item.lineId, item.quantity - 1)}
+                      onClick={() => updateLineQuantity(item.lineId, 0)}
                       disabled={updatingLine === item.lineId}
-                      aria-label={`Decrease quantity of ${item.displaySnapshot.title}`}
-                      className="px-3 py-1 font-bold disabled:opacity-50"
+                      aria-label={`Remove ${item.displaySnapshot.title} from cart`}
+                      className="text-xs text-red-600 underline font-semibold hover:text-red-700 disabled:opacity-50"
                     >
-                      -
-                    </button>
-                    <span
-                      className="px-3 py-1 text-sm font-medium"
-                      aria-label={`Quantity is ${item.quantity}`}
-                    >
-                      {item.quantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => updateLineQuantity(item.lineId, item.quantity + 1)}
-                      disabled={updatingLine === item.lineId}
-                      aria-label={`Increase quantity of ${item.displaySnapshot.title}`}
-                      className="px-3 py-1 font-bold disabled:opacity-50"
-                    >
-                      +
+                      Remove
                     </button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => updateLineQuantity(item.lineId, 0)}
-                    disabled={updatingLine === item.lineId}
-                    aria-label={`Remove ${item.displaySnapshot.title} from cart`}
-                    className="text-xs text-red-600 underline font-semibold hover:text-red-700 disabled:opacity-50"
-                  >
-                    Remove
-                  </button>
-                </div>
+                )}
               </article>
             ))}
           </div>
 
-          {/* Coupon Codes */}
-          <div className="pt-4 border-t space-y-3">
+          {/* Coupon Codes (cart step only; codes already applied still price in checkout) */}
+          <div className={mode === 'checkout' ? 'hidden' : 'pt-4 border-t space-y-3'}>
             <h3 className="text-sm font-bold">Promotion / Gift Code</h3>
             <form onSubmit={handleApplyCoupon} className="flex gap-2">
               <input
@@ -489,7 +511,7 @@ export function CartView() {
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Subtotal</dt>
                   <dd className="font-semibold">
-                    ${(Number(pricing.subtotalMinor) / 100).toFixed(2)} {pricing.currency}
+                    {formatMinorMoney(pricing.subtotalMinor, pricing.currency)}
                   </dd>
                 </div>
 
@@ -497,8 +519,7 @@ export function CartView() {
                   <div className="flex justify-between text-green-600 dark:text-green-400">
                     <dt>Discounts</dt>
                     <dd className="font-semibold">
-                      -${(Number(pricing.adjustmentsTotalMinor) / 100).toFixed(2)}{' '}
-                      {pricing.currency}
+                      -{formatMinorMoney(pricing.adjustmentsTotalMinor, pricing.currency)}
                     </dd>
                   </div>
                 )}
@@ -506,21 +527,21 @@ export function CartView() {
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Shipping Estimate</dt>
                   <dd className="font-semibold">
-                    ${(Number(pricing.netShippingMinor) / 100).toFixed(2)} {pricing.currency}
+                    {formatMinorMoney(pricing.netShippingMinor, pricing.currency)}
                   </dd>
                 </div>
 
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Estimated Tax</dt>
                   <dd className="font-semibold">
-                    ${(Number(pricing.taxTotalMinor) / 100).toFixed(2)} {pricing.currency}
+                    {formatMinorMoney(pricing.taxTotalMinor, pricing.currency)}
                   </dd>
                 </div>
 
                 <div className="flex justify-between border-t pt-3 text-base font-bold">
-                  <dt>Grand Total</dt>
+                  <dt>Total</dt>
                   <dd className="text-primary">
-                    ${(Number(pricing.grandTotalMinor) / 100).toFixed(2)} {pricing.currency}
+                    {formatMinorMoney(pricing.grandTotalMinor, pricing.currency)}
                   </dd>
                 </div>
               </dl>
@@ -530,6 +551,15 @@ export function CartView() {
               Current prices and promotions are checked on the server. Shipping and tax are
               confirmed in the checkout quote.
             </p>
+
+            {mode === 'cart' ? (
+              <Link
+                href="/checkout"
+                className="block w-full py-3 text-center bg-primary text-primary-foreground font-bold rounded hover:opacity-90 text-sm transition-opacity"
+              >
+                Proceed to Checkout →
+              </Link>
+            ) : null}
           </div>
 
           {/* Checkout Proposal Generator */}
@@ -669,7 +699,7 @@ export function CartView() {
                 </fieldset>
               )}
 
-              <div className="border-t pt-3">
+              <div className="border-t pt-3 space-y-2">
                 <label className="flex items-start space-x-2 text-xs">
                   <input
                     type="checkbox"
@@ -679,6 +709,15 @@ export function CartView() {
                     className="mt-0.5 rounded"
                   />
                   <span>I agree to the Terms of Service and Privacy Policy.</span>
+                </label>
+                <label className="flex items-start space-x-2 text-xs">
+                  <input
+                    type="checkbox"
+                    checked={marketingAccepted}
+                    onChange={(e) => setMarketingAccepted(e.target.checked)}
+                    className="mt-0.5 rounded"
+                  />
+                  <span>Email me news and offers (optional).</span>
                 </label>
               </div>
 
@@ -693,7 +732,7 @@ export function CartView() {
                 disabled={proposalLoading || !customerEmail || !termsAccepted}
                 className="w-full py-3 bg-primary text-primary-foreground font-bold rounded hover:opacity-90 disabled:opacity-50 text-sm transition-opacity"
               >
-                {proposalLoading ? 'Generating Proposal...' : 'Create Checkout Proposal'}
+                {proposalLoading ? 'Preparing your order…' : 'Review your order'}
               </button>
             </form>
           ) : (
@@ -701,35 +740,41 @@ export function CartView() {
             <div
               className="p-6 rounded-lg border border-primary/40 bg-primary/5 space-y-4"
               role="region"
-              aria-label="Checkout Proposal Review"
+              aria-label="Review and pay"
             >
               <div className="flex justify-between items-baseline">
-                <h3 className="font-bold text-base text-primary">Immutable Proposal</h3>
+                <h3 className="font-bold text-base text-primary">Review &amp; pay</h3>
                 <span className="text-xs px-2 py-0.5 bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 font-bold rounded">
-                  Guaranteed Quote
+                  Total confirmed
                 </span>
-              </div>
-
-              <div className="text-xs space-y-1 font-mono break-all text-muted-foreground">
-                <p>ID: {proposal.id}</p>
-                <p>Hash: {proposal.integrityHash.slice(0, 24)}...</p>
-                <p>Cart Version: {proposal.cartVersion}</p>
               </div>
 
               <div className="text-xs space-y-1 border-t pt-2">
                 <p>
-                  <strong>Customer:</strong> {proposal.customer.email}
+                  <strong>Email:</strong> {proposal.customer.email}
                 </p>
                 {proposal.shippingAddress && (
                   <p>
-                    <strong>Destination:</strong> {proposal.shippingAddress.normalized.city},{' '}
+                    <strong>Deliver to:</strong> {proposal.shippingAddress.normalized.city},{' '}
                     {proposal.shippingAddress.normalized.state}{' '}
                     {proposal.shippingAddress.normalized.country}
                   </p>
                 )}
                 <p>
-                  <strong>Fulfillment:</strong> {proposal.fulfillmentSplit.length} package(s) (
-                  {proposal.fulfillmentSplit.map((f) => f.fulfillmentKind).join(', ')})
+                  <strong>How you&apos;ll get it:</strong>{' '}
+                  {proposal.fulfillmentSplit
+                    .map((f) =>
+                      f.fulfillmentKind === 'physical'
+                        ? 'parcel delivery'
+                        : f.fulfillmentKind === 'pod'
+                          ? 'made to order'
+                          : 'digital delivery',
+                    )
+                    .join(', ')}
+                </p>
+                <p>
+                  <strong>Total to pay:</strong>{' '}
+                  {formatMinorMoney(proposal.pricingSnapshot.grandTotalMinor, proposal.currency)}
                 </p>
               </div>
 
@@ -760,8 +805,7 @@ export function CartView() {
               )}
               {paymentAction ? (
                 <div className="p-4 rounded border bg-surface dark:bg-zinc-900 space-y-2 text-sm">
-                  <p className="font-bold text-green-600">✓ Checkout Initiated</p>
-                  <p>Intent ID: {paymentAction.intentId}</p>
+                  <p className="font-bold text-green-600">✓ Payment started</p>
                   {paymentAction.actionUrl && (
                     <a
                       href={paymentAction.actionUrl}
@@ -782,8 +826,8 @@ export function CartView() {
                   className="w-full py-3 bg-primary text-primary-foreground font-bold rounded hover:opacity-90 disabled:opacity-50 text-sm transition-opacity"
                 >
                   {paymentLoading
-                    ? 'Initiating Checkout...'
-                    : `Confirm & Pay $${(Number(proposal.pricingSnapshot.grandTotalMinor) / 100).toFixed(2)}`}
+                    ? 'Starting payment…'
+                    : `Confirm & Pay ${formatMinorMoney(proposal.pricingSnapshot.grandTotalMinor, proposal.currency)}`}
                 </button>
               )}
             </div>

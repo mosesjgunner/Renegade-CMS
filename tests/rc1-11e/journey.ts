@@ -884,14 +884,12 @@ try {
     await memberAlphaPage.getByLabel('State / Province').fill('TX')
     await memberAlphaPage.getByLabel('Postal Code').fill('78701')
     await memberAlphaPage.getByLabel('Country (2-letter ISO)').fill('US')
-    await memberAlphaPage.getByRole('checkbox').check()
+    await memberAlphaPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const mAlphaPropWait = memberAlphaPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
     )
-    await memberAlphaPage
-      .getByRole('button', { name: 'Create Checkout Proposal', exact: true })
-      .click()
+    await memberAlphaPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     const mAlphaPropResp = await mAlphaPropWait
     assert.equal(mAlphaPropResp.status(), 200)
     const mAlphaProposal = (await mAlphaPropResp.json()).proposal
@@ -1145,14 +1143,12 @@ try {
     await guestAlphaPage.getByLabel('State / Province').fill('TX')
     await guestAlphaPage.getByLabel('Postal Code').fill('78701')
     await guestAlphaPage.getByLabel('Country (2-letter ISO)').fill('US')
-    await guestAlphaPage.getByRole('checkbox').check()
+    await guestAlphaPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const gAlphaPropWait = guestAlphaPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
     )
-    await guestAlphaPage
-      .getByRole('button', { name: 'Create Checkout Proposal', exact: true })
-      .click()
+    await guestAlphaPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     assert.equal((await gAlphaPropWait).status(), 200)
 
     const gAlphaInitWait = guestAlphaPage.waitForResponse(
@@ -1266,14 +1262,12 @@ try {
     await guestBetaPage.getByLabel('State / Province').fill('TX')
     await guestBetaPage.getByLabel('Postal Code').fill('78701')
     await guestBetaPage.getByLabel('Country (2-letter ISO)').fill('US')
-    await guestBetaPage.getByRole('checkbox').check()
+    await guestBetaPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const gbPropWait = guestBetaPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
     )
-    await guestBetaPage
-      .getByRole('button', { name: 'Create Checkout Proposal', exact: true })
-      .click()
+    await guestBetaPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     const gbProposal = (await (await gbPropWait).json()).proposal
     // Subtotal: 1400 + 1000 = 2400; Shipping: 500; Tax (6.25% on 2400): 150 -> GrandTotal: 3050 ($30.50)
     const gbInitWait = guestBetaPage.waitForResponse(
@@ -1381,14 +1375,12 @@ try {
     await memberBetaPage.goto(`${betaBase}/cart`)
     await memberBetaPage.getByLabel('Email Address').fill('member-beta@11e.test')
     await memberBetaPage.getByLabel('Full Name').fill('Member Beta')
-    await memberBetaPage.getByRole('checkbox').check()
+    await memberBetaPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const mbPropWait = memberBetaPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
     )
-    await memberBetaPage
-      .getByRole('button', { name: 'Create Checkout Proposal', exact: true })
-      .click()
+    await memberBetaPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     const mbProposal = (await (await mbPropWait).json()).proposal
     assert.equal(mbProposal.pricingSnapshot.grandTotalMinor, '1000')
 

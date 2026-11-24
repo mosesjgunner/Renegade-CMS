@@ -316,8 +316,11 @@ async function createProposal(request: Request) {
       selectedShippingRate: selectedRate,
       taxSnapshot,
       consents: {
-        termsAccepted: true,
-        privacyAccepted: true,
+        // Record the customer's actual submitted selections (validated above:
+        // terms and privacy must both be true or the request was rejected).
+        // Never synthesize acceptance the customer did not submit.
+        termsAccepted: consents.termsAccepted === true,
+        privacyAccepted: consents.privacyAccepted === true,
         marketingAccepted: Boolean(consents.marketingAccepted),
         timestamp: new Date().toISOString(),
       },
