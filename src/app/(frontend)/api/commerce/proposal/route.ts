@@ -29,7 +29,15 @@ import {
   computeProposalIntegrityHash,
   createCheckoutProposal,
   PROPOSAL_TTL_MS,
+  type ReferralLineInput,
 } from '@/modules/commerce/proposal'
+import {
+  fulfillmentGroupKindForLine,
+  quoteShippingForGroups,
+  resolveProductSource,
+  type ProductSourceDescriptor,
+} from '@/modules/commerce/adapters'
+import type { ShippingRate } from '@/modules/commerce/shipping'
 
 async function createProposal(request: Request) {
   const payload = await getPayload({ config })
@@ -143,6 +151,8 @@ async function createProposal(request: Request) {
       merchantConnectionId: String(d.merchantConnection?.id ?? d.merchantConnection ?? ''),
       variants: Array.isArray(d.variants) ? d.variants : [],
       offers: Array.isArray(d.offers) ? d.offers : [],
+      affiliatePolicy: d.affiliatePolicy ?? undefined,
+      sourcePolicy: d.sourcePolicy ?? undefined,
     }))
 
     const promotions = promotionsResult.docs.map((p: any) => ({
@@ -192,16 +202,66 @@ async function createProposal(request: Request) {
       updatedAt: String(cartDoc.updatedAt),
     }
 
+    // RC3-20: partition affiliate lines out BEFORE pricing. An affiliate line
+    // is never a payable line — the partner is merchant of record — so it is
+    // excluded from pricing, tax, and inventory reservation, and closes on
+    // the proposal as a terminal referral group. Payable lines (own, POD,
+    // dropship) flow through the existing pipeline unchanged.
+    const lineSources = new Map<string, ProductSourceDescriptor>()
+    const referralLines: ReferralLineInput[] = []
+    const payableItems: (typeof rawCart.items)[number][] = []
+    for (const item of rawCart.items) {
+      const product = products.find((candidate: any) => candidate.id === item.productId)
+      const source = product
+        ? resolveProductSource(product as any, item.variantSku)
+        : ({ type: 'own', providerKey: 'own-inventory' } as const)
+      lineSources.set(item.lineId, source)
+      if (source.type === 'affiliate') {
+        referralLines.push({
+          productId: item.productId,
+          variantSku: item.variantSku,
+          title: item.displaySnapshot.title,
+          quantity: item.quantity,
+          observedUnitPriceMinor:
+            (product as any)?.affiliatePolicy?.remotePrice?.amountMinor ??
+            item.displaySnapshot.unitPriceMinor,
+          destinationUrl: (product as any)?.affiliatePolicy?.destinationUrl,
+          disclosure: (product as any)?.affiliatePolicy?.disclosure,
+          sourceProviderKey: source.providerKey,
+        })
+      } else {
+        payableItems.push(item)
+      }
+    }
+    if (payableItems.length === 0 && referralLines.length > 0) {
+      return NextResponse.json(
+        {
+          error:
+            'Affiliate items are purchased at the disclosed seller destination. This cart has no payable items.',
+          referralLines,
+        },
+        { status: 400 },
+      )
+    }
+    rawCart = { ...rawCart, items: payableItems }
+
     const preliminary = reResolveCart({ cart: rawCart, products, promotions })
     rawCart = preliminary.cart
 
     // Shipping & Tax setup
     let validatedShippingAddress = undefined
     let selectedRate = undefined
+    const groupShippingRates: Partial<Record<'physical' | 'pod' | 'dropship', ShippingRate>> = {}
     let shippingAmountMinor = '0'
     let taxSnapshot = undefined
 
-    const hasShippable = rawCart.items.some((i) => i.kind === 'physical' || i.kind === 'pod')
+    const groupKindOf = (item: (typeof rawCart.items)[number]) => {
+      const source = lineSources.get(item.lineId)
+      return source ? fulfillmentGroupKindForLine({ itemKind: item.kind, source }) : 'physical'
+    }
+    const hasShippable = rawCart.items.some((i) =>
+      ['physical', 'pod', 'dropship'].includes(groupKindOf(i)),
+    )
     if (hasShippable) {
       if (!shippingAddress) {
         return NextResponse.json(
@@ -219,7 +279,9 @@ async function createProposal(request: Request) {
         )
       }
 
-      // Shipping rate calculation
+      // Shipping rate calculation — RC3-20: quoted per fulfillment group.
+      // Each group ships separately, so each is quoted on its own items and
+      // subtotal; the proposal total is the sum of the group rates.
       const shippingAdapter = new LocalFallbackShippingAdapter({
         standardRateMinor: '500', // $5.00 default flat
         currency: rawCart.currency,
@@ -227,29 +289,45 @@ async function createProposal(request: Request) {
         enableLocalPickup: true,
       })
 
-      const availableRates = await shippingAdapter.getRates({
-        siteId,
-        currency: rawCart.currency,
-        itemsSubtotalMinor: preliminary.pricingSnapshot.subtotalMinor,
-        destination: validatedShippingAddress,
-        items: rawCart.items.map((i) => ({
-          productId: i.productId,
-          variantSku: i.variantSku,
-          quantity: i.quantity,
-          shippable: i.kind === 'physical' || i.kind === 'pod',
-        })),
+      const shippableKinds = ['physical', 'pod', 'dropship'] as const
+      const groups = shippableKinds
+        .map((kind) => {
+          const groupItems = rawCart.items.filter((i) => groupKindOf(i) === kind)
+          const subtotal = groupItems.reduce((sum, i) => {
+            const line = preliminary.pricingSnapshot.lines.find((l) => l.lineId === i.lineId)
+            return sum + BigInt(line?.grossAmountMinor ?? '0')
+          }, 0n)
+          return {
+            groupKey: kind,
+            itemsSubtotalMinor: subtotal.toString(),
+            items: groupItems.map((i) => ({
+              productId: i.productId,
+              variantSku: i.variantSku,
+              quantity: i.quantity,
+              shippable: true,
+            })),
+          }
+        })
+        .filter((group) => group.items.length > 0)
+
+      const { quotes, totalMinor } = await quoteShippingForGroups({
+        adapter: shippingAdapter,
+        base: { siteId, currency: rawCart.currency, destination: validatedShippingAddress },
+        groups,
+        selectedRateId: selectedShippingRateId,
       })
 
       if (
         selectedShippingRateId &&
-        !availableRates.some((rate) => rate.id === selectedShippingRateId)
+        !quotes.some((quote) => quote.rate?.id === selectedShippingRateId)
       )
         return NextResponse.json({ error: 'Unknown shipping rate.' }, { status: 400 })
-      selectedRate =
-        availableRates.find((r) => r.id === selectedShippingRateId) ?? availableRates[0]
-      if (selectedRate) {
-        shippingAmountMinor = selectedRate.amountMinor
+      for (const quote of quotes) {
+        if (quote.rate)
+          groupShippingRates[quote.groupKey as 'physical' | 'pod' | 'dropship'] = quote.rate
       }
+      selectedRate = groupShippingRates.physical ?? quotes.find((q) => q.rate)?.rate
+      shippingAmountMinor = totalMinor
 
       // Tax calculation
       const taxAdapter = new BoundedJurisdictionTaxAdapter()
@@ -314,6 +392,9 @@ async function createProposal(request: Request) {
       shippingAddress: validatedShippingAddress,
       billingAddress: billingAddress ? validateAddress(billingAddress) : undefined,
       selectedShippingRate: selectedRate,
+      groupShippingRates,
+      lineSources,
+      referralLines,
       taxSnapshot,
       consents: {
         // Record the customer's actual submitted selections (validated above:

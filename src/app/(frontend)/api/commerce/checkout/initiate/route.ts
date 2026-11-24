@@ -25,6 +25,7 @@ import {
   configuredPaymentProvider,
   PaymentProviderError,
 } from '@/modules/commerce/payment-provider'
+import { createBtcpayAdapter } from '@/modules/commerce/adapters'
 
 const id = (value: unknown) =>
   typeof value === 'string' ? value : (value as { id?: string } | null)?.id
@@ -123,7 +124,17 @@ async function initiateCheckout(
             .catch(() => null)
     if (!proposalCart || !(await canAccessCommerceCart(payload, request, proposalCart)))
       return NextResponse.json({ error: 'Checkout access denied.' }, { status: 403 })
-    const cartItems = list(proposalCart.items)
+    // RC3-20: the proposal's priced lines define the payable set. Affiliate
+    // lines were partitioned into the referral group before pricing, so they
+    // are excluded from the integrity digest exactly as at proposal time.
+    const pricedLineIds = new Set(
+      list(proposal.pricingSnapshot?.lines).map((line: any) => String(line.lineId)),
+    )
+    const cartItems = pricedLineIds.size
+      ? list(proposalCart.items).filter(
+          (item: any) => !item.lineId || pricedLineIds.has(String(item.lineId)),
+        )
+      : list(proposalCart.items)
     const expectedIntegrity = computeProposalIntegrityHash({
       id: String(proposal.id),
       cartId: String(proposalCart.id),
@@ -346,8 +357,16 @@ async function initiateCheckout(
   }
   let quotedLines: any[]
   try {
+    // RC3-20: quote only the proposal's priced (payable) lines. Referral
+    // lines are never quoted — snapshotQuotedLines' affiliate rejection
+    // remains the guard for flows without a partitioned proposal.
+    const pricedIds = proposal
+      ? new Set(list(proposal.pricingSnapshot?.lines).map((line: any) => String(line.lineId)))
+      : new Set<string>()
     quotedLines = snapshotQuotedLines({
-      cartLines: list(cart.items),
+      cartLines: pricedIds.size
+        ? list(cart.items).filter((item: any) => !item.lineId || pricedIds.has(String(item.lineId)))
+        : list(cart.items),
       products,
       currency: session.currency,
     })
@@ -524,6 +543,82 @@ async function initiateCheckout(
     },
     overrideAccess: true,
   })
+  if (crypto && capability.providerKey === 'btcpay') {
+    // RC3-20: BTCPay Server rail. The merchant's own BTCPay Server issues the
+    // invoice; the FX quote is frozen on the intent at creation and the
+    // invoice amount is pinned to it in BTC. Settlement is verified later by
+    // querying that same server — never from a redirect or submitted hash.
+    const btcpayConfig = (merchant.configuration ?? {}).btcpay ?? {}
+    if (!btcpayConfig.serverUrl || !btcpayConfig.storeId || !btcpayConfig.apiKey)
+      return NextResponse.json(
+        { error: 'BTCPay is not configured for this merchant.' },
+        { status: 503 },
+      )
+    const btcpay = createBtcpayAdapter({
+      serverUrl: String(btcpayConfig.serverUrl),
+      storeId: String(btcpayConfig.storeId),
+      apiKey: String(btcpayConfig.apiKey),
+      requiredConfirmations: Number(btcpayConfig.requiredConfirmations ?? 1),
+    })
+    try {
+      const quote = await btcpay.quoteInvoiceAmount({
+        amountMinor: String(intent.amountMinor),
+        currency: String(intent.currency),
+        now: new Date().toISOString(),
+        buyerConfirmedConversion: true,
+      })
+      const invoice = await btcpay.createInvoice({
+        intentId: intent.id,
+        exactAmountAtomic: quote.exactAmountAtomic,
+        expiresAt: intent.expiresAt,
+        buyerEmail: proposal?.customer?.email ? String(proposal.customer.email) : undefined,
+      })
+      await db.update({
+        collection: 'payment-intents',
+        id: intent.id,
+        data: {
+          providerReference: `btcpay:${invoice.reference}`,
+          state: 'pending',
+          cryptoInvoice: invoice,
+          fxQuote: quote.money,
+        },
+        overrideAccess: true,
+      })
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'pending', selectedCapabilityId: capability.id },
+        overrideAccess: true,
+      })
+      return NextResponse.json({
+        sessionId: session.id,
+        intentId: intent.id,
+        flow: 'qr',
+        cryptoInvoice: invoice,
+        fxQuote: quote.money,
+        instructions: capability.instructions,
+      })
+    } catch (error) {
+      await db.update({
+        collection: 'payment-intents',
+        id: intent.id,
+        data: { state: 'failed' },
+        overrideAccess: true,
+      })
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'failed' },
+        overrideAccess: true,
+      })
+      return NextResponse.json(
+        {
+          error: error instanceof Error ? error.message : 'BTCPay invoice creation failed.',
+        },
+        { status: 502 },
+      )
+    }
+  }
   if (crypto) {
     const cryptoConfig = (merchant.configuration ?? {}).crypto ?? {}
     const network = String(

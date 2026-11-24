@@ -349,6 +349,18 @@ export const Products: CollectionConfig = {
           'Reviewed remote IDs/options, pinned artwork revision, mockup provenance and cost/availability snapshot.',
       },
     },
+    {
+      name: 'sourcePolicy',
+      type: 'json',
+      access: {
+        read: ({ req }) =>
+          Boolean(req.user && ['owner', 'administrator', 'staff'].includes(String(req.user.role))),
+      },
+      admin: {
+        description:
+          'RC3-20 adapter sourcing: per-variant source descriptors (own / dropship provider key + remote ref + observed cost/availability snapshot). Supplier facts are observations with a freshness window, never silent overwrites.',
+      },
+    },
     { name: 'disclosures', type: 'json', defaultValue: [] },
     { name: 'workflowAudit', type: 'json', defaultValue: [] },
     { name: 'revisionSnapshots', type: 'json', defaultValue: [] },
@@ -576,6 +588,14 @@ export const PaymentIntents: CollectionConfig = {
       admin: {
         description:
           'Noncustodial intent-bound invoice: destination, network, asset, exact amount, URI/QR, expiry, server-verified observations, confirmations and reorg history. Never private keys.',
+      },
+    },
+    {
+      name: 'fxQuote',
+      type: 'json',
+      admin: {
+        description:
+          'RC3-20 frozen FX quote for crypto rails (MoneySnapshot: fiat amount/currency, quotedAt, quoteSource, buyerConfirmedConversion) plus the quoted exact atomic amount. Frozen at intent creation; an expired unpaid intent is re-quoted as a new intent, never silently re-priced.',
       },
     },
     {
