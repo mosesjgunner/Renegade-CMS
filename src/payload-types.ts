@@ -3520,6 +3520,18 @@ export interface Product {
     | number
     | boolean
     | null;
+  /**
+   * RC3-20 adapter sourcing: per-variant source descriptors (own / dropship provider key + remote ref + observed cost/availability snapshot). Supplier facts are observations with a freshness window, never silent overwrites.
+   */
+  sourcePolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   disclosures?:
     | {
         [k: string]: unknown;
@@ -10262,6 +10274,18 @@ export interface PaymentIntent {
     | boolean
     | null;
   /**
+   * RC3-20 BTCPay rail: the frozen FX quote (MoneySnapshot) behind a crypto invoice — rate, quote source, quote time, and the buyer's confirmed conversion. Settlement is verified server-side from BTCPay only; this record is evidence, never the source of truth.
+   */
+  fxQuote?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Scoped operational exception only; it does not alter financial history.
    */
   exception?:
@@ -16288,6 +16312,7 @@ export interface ProductsSelect<T extends boolean = true> {
   digitalDelivery?: T;
   affiliatePolicy?: T;
   podMappings?: T;
+  sourcePolicy?: T;
   disclosures?: T;
   workflowAudit?: T;
   revisionSnapshots?: T;
@@ -16522,6 +16547,7 @@ export interface PaymentIntentsSelect<T extends boolean = true> {
   state?: T;
   providerReference?: T;
   cryptoInvoice?: T;
+  fxQuote?: T;
   exception?: T;
   financialEvents?: T;
   orderLines?: T;

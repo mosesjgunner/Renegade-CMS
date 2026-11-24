@@ -3,6 +3,7 @@ import type { VersionedCart } from './cart'
 import type { PricingSnapshot } from './pricing'
 import type { ValidatedAddress, ShippingRate } from './shipping'
 import type { TaxCalculationResult } from './tax'
+import { fulfillmentGroupKindForLine, type ProductSourceDescriptor } from './adapters'
 
 export const PROPOSAL_TTL_MS = 20 * 60 * 1000 // 20 minutes
 
@@ -21,8 +22,10 @@ export type ProposalConsent = Readonly<{
   timestamp: string
 }>
 
+export type FulfillmentGroupKind = 'physical' | 'digital' | 'pod' | 'dropship' | 'referral'
+
 export type FulfillmentGroup = Readonly<{
-  fulfillmentKind: 'physical' | 'digital' | 'pod'
+  fulfillmentKind: FulfillmentGroupKind
   items: readonly Readonly<{
     productId: string
     variantSku: string
@@ -32,8 +35,29 @@ export type FulfillmentGroup = Readonly<{
     lineAmountMinor: string
     entitlement?: string
     podProviderKey?: string
+    /** Adapter provider key serving this line (dropship supplier, referral program). */
+    sourceProviderKey?: string
   }>[]
   shippingRate?: ShippingRate
+  /**
+   * Referral groups are terminal at checkout: the partner is merchant of
+   * record, the buyer completes the purchase at the disclosed destination,
+   * and the group is never priced, paid, or fulfilled by this shop.
+   */
+  state?: 'referred'
+  referral?: Readonly<{ destinationUrl?: string; disclosure?: string }>
+}>
+
+export type ReferralLineInput = Readonly<{
+  productId: string
+  variantSku: string
+  title: string
+  quantity: number
+  /** Display-only observed price at the seller; never charged by this shop. */
+  observedUnitPriceMinor?: string
+  destinationUrl?: string
+  disclosure?: string
+  sourceProviderKey?: string
 }>
 
 export type CheckoutProposal = Readonly<{
@@ -110,6 +134,16 @@ export function createCheckoutProposal(input: {
   shippingAddress?: ValidatedAddress
   billingAddress?: ValidatedAddress
   selectedShippingRate?: ShippingRate
+  /** RC3-20: per-group shipping rates. Each shippable group carries its own
+   * rate; the pricing snapshot's netShippingMinor is their sum. Falls back to
+   * selectedShippingRate per group when a group rate is not supplied. */
+  groupShippingRates?: Partial<Record<'physical' | 'pod' | 'dropship', ShippingRate>>
+  /** RC3-20: per-line source descriptors, keyed by cart lineId. Lines whose
+   * source is a dropship supplier form their own fulfillment group. */
+  lineSources?: ReadonlyMap<string, ProductSourceDescriptor>
+  /** RC3-20: affiliate lines partitioned out before pricing by the caller.
+   * They close as a terminal referral group — never priced or paid here. */
+  referralLines?: readonly ReferralLineInput[]
   taxSnapshot?: TaxCalculationResult
   consents: ProposalConsent
   now?: string
@@ -130,16 +164,34 @@ export function createCheckoutProposal(input: {
   const expiresAt = new Date(Date.parse(now) + (input.ttlMs ?? PROPOSAL_TTL_MS)).toISOString()
   const id = input.id ?? randomUUID()
 
-  // Split items into fulfillment groups (physical vs digital vs POD)
+  // Split items into fulfillment groups by source: own-physical, digital,
+  // POD, and dropship each ship (or settle) separately and carry their own
+  // shipping rate. Affiliate lines never reach this loop as priced lines —
+  // the caller partitions them into referralLines before pricing.
   const physicalItems: any[] = []
   const digitalItems: any[] = []
   const podItems: any[] = []
+  const dropshipItems: any[] = []
 
   for (const item of input.cart.items) {
     const priced = input.pricingSnapshot.lines.find((l) => l.lineId === item.lineId)
     const unitPriceMinor = priced?.unitPriceMinor ?? item.displaySnapshot.unitPriceMinor
     const lineAmountMinor =
       priced?.grossAmountMinor ?? (BigInt(unitPriceMinor) * BigInt(item.quantity)).toString()
+
+    const source = input.lineSources?.get(item.lineId)
+    const groupKind = source
+      ? fulfillmentGroupKindForLine({ itemKind: item.kind, source })
+      : item.kind === 'digital' || item.kind === 'subscription' || item.kind === 'donation'
+        ? 'digital'
+        : item.kind === 'pod'
+          ? 'pod'
+          : 'physical'
+    if (groupKind === 'referral') {
+      // Defense in depth: an affiliate line must never become a priced line,
+      // even if a caller forgot to partition before pricing.
+      throw new Error('Affiliate products must be purchased at the disclosed seller destination.')
+    }
 
     const lineInfo = {
       productId: item.productId,
@@ -150,29 +202,35 @@ export function createCheckoutProposal(input: {
       lineAmountMinor,
       entitlement: item.kind === 'digital' ? `entitlement:${item.productId}` : undefined,
       podProviderKey: item.kind === 'pod' ? 'pod-provider' : undefined,
+      sourceProviderKey: source && source.type !== 'own' ? source.providerKey : undefined,
     }
 
-    if (item.kind === 'digital' || item.kind === 'subscription' || item.kind === 'donation') {
+    if (groupKind === 'digital') {
       digitalItems.push(lineInfo)
-    } else if (item.kind === 'pod') {
+    } else if (groupKind === 'pod') {
       podItems.push(lineInfo)
+    } else if (groupKind === 'dropship') {
+      dropshipItems.push(lineInfo)
     } else {
       physicalItems.push(lineInfo)
     }
   }
+
+  const groupRate = (kind: 'physical' | 'pod' | 'dropship') =>
+    input.groupShippingRates?.[kind] ?? input.selectedShippingRate
 
   const fulfillmentSplit: FulfillmentGroup[] = []
   if (physicalItems.length > 0) {
     if (!input.shippingAddress || !input.shippingAddress.isValid) {
       throw new Error('Physical items require a valid shipping address.')
     }
-    if (!input.selectedShippingRate) {
+    if (!groupRate('physical')) {
       throw new Error('Physical items require a selected shipping rate.')
     }
     fulfillmentSplit.push({
       fulfillmentKind: 'physical',
       items: physicalItems,
-      shippingRate: input.selectedShippingRate,
+      shippingRate: groupRate('physical'),
     })
   }
 
@@ -183,7 +241,21 @@ export function createCheckoutProposal(input: {
     fulfillmentSplit.push({
       fulfillmentKind: 'pod',
       items: podItems,
-      shippingRate: input.selectedShippingRate,
+      shippingRate: groupRate('pod'),
+    })
+  }
+
+  if (dropshipItems.length > 0) {
+    if (!input.shippingAddress || !input.shippingAddress.isValid) {
+      throw new Error('Dropship items require a valid shipping address.')
+    }
+    if (!groupRate('dropship')) {
+      throw new Error('Dropship items require a shipping rate.')
+    }
+    fulfillmentSplit.push({
+      fulfillmentKind: 'dropship',
+      items: dropshipItems,
+      shippingRate: groupRate('dropship'),
     })
   }
 
@@ -191,6 +263,28 @@ export function createCheckoutProposal(input: {
     fulfillmentSplit.push({
       fulfillmentKind: 'digital',
       items: digitalItems,
+    })
+  }
+
+  if (input.referralLines && input.referralLines.length > 0) {
+    const first = input.referralLines[0]
+    fulfillmentSplit.push({
+      fulfillmentKind: 'referral',
+      state: 'referred',
+      referral: { destinationUrl: first.destinationUrl, disclosure: first.disclosure },
+      items: input.referralLines.map((line) => ({
+        productId: line.productId,
+        variantSku: line.variantSku,
+        title: line.title,
+        quantity: line.quantity,
+        // Observed price at the seller, for display only. The referral group
+        // is excluded from the pricing snapshot and is never charged.
+        unitPriceMinor: line.observedUnitPriceMinor ?? '0',
+        lineAmountMinor: (
+          BigInt(line.observedUnitPriceMinor ?? '0') * BigInt(line.quantity)
+        ).toString(),
+        sourceProviderKey: line.sourceProviderKey ?? 'affiliate-referral',
+      })),
     })
   }
 

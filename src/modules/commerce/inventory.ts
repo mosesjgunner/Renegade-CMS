@@ -1,6 +1,13 @@
 export const RESERVATION_TTL_MS = 15 * 60 * 1000 // 15 minutes max
 
-export type InventoryAvailabilityPolicy = 'untracked' | 'tracked' | 'pod' | 'digital' | 'preorder'
+export type InventoryAvailabilityPolicy =
+  | 'untracked'
+  | 'tracked'
+  | 'pod'
+  | 'digital'
+  | 'preorder'
+  | 'external-hook'
+  | 'affiliate'
 
 export type VariantInventoryRecord = Readonly<{
   productId: string
@@ -69,6 +76,18 @@ export function checkLineAvailability(
   switch (record.policy) {
     case 'untracked':
       return { available: true, policy: 'untracked', requestedQuantity }
+
+    case 'external-hook':
+      // RC3-20: stock lives with the external supplier (dropship). Local
+      // counts do not exist by design; availability evidence is the source
+      // descriptor's observed snapshot, enforced at proposal/plan time.
+      return { available: true, policy: 'external-hook', requestedQuantity }
+
+    case 'affiliate':
+      // Availability belongs to the partner and is observed through the
+      // affiliate policy. The line is never stocked, reserved, or sold by us;
+      // checkout partitions it into a referral group before pricing.
+      return { available: true, policy: 'affiliate', requestedQuantity }
 
     case 'digital':
       if (record.digitalAvailable === false) {

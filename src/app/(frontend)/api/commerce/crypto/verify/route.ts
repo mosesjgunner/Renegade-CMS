@@ -7,6 +7,7 @@ import {
   finalizeVerifiedOrder,
   verifySubmittedCryptoTransaction,
 } from '@/modules/commerce/service'
+import { createBtcpayAdapter } from '@/modules/commerce/adapters'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 
 const relationId = (value: any) =>
@@ -15,8 +16,7 @@ const relationId = (value: any) =>
 /** A submitted hash is a lookup hint only; the configured adapter supplies chain facts. */
 export async function POST(request: Request) {
   const input = (await request.json()) as { intentId?: string; transactionId?: string }
-  if (!input.intentId || !input.transactionId)
-    return NextResponse.json({ error: 'intentId and transactionId are required.' }, { status: 400 })
+  if (!input.intentId) return NextResponse.json({ error: 'intentId is required.' }, { status: 400 })
   const payload = await getPayload({ config })
   const db: any = payload
   const intent: any = await db
@@ -36,6 +36,83 @@ export async function POST(request: Request) {
   const hostSite = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => '')
   if (!hostSite || hostSite !== relationId(intent.site))
     return NextResponse.json({ error: 'Payment intent not found.' }, { status: 404 })
+  // RC3-20: BTCPay intents settle on evidence queried server-side from the
+  // merchant's own BTCPay Server, bound to this intent's invoice reference.
+  // There is no submitted transaction hash to replay and no fixture evidence
+  // involved, so this path runs in production posture as well.
+  if (intent.providerKey === 'btcpay') {
+    const merchant: any = await db
+      .findByID({
+        collection: 'merchant-connections',
+        id: relationId(intent.merchantConnection),
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    const btcpayConfig = merchant?.configuration?.btcpay ?? {}
+    if (!btcpayConfig.serverUrl || !btcpayConfig.storeId || !btcpayConfig.apiKey)
+      return NextResponse.json(
+        { error: 'BTCPay is not configured for this merchant.' },
+        { status: 503 },
+      )
+    try {
+      const verification = await createBtcpayAdapter({
+        serverUrl: String(btcpayConfig.serverUrl),
+        storeId: String(btcpayConfig.storeId),
+        apiKey: String(btcpayConfig.apiKey),
+        requiredConfirmations: Number(btcpayConfig.requiredConfirmations ?? 1),
+      }).verifySettlement({
+        invoiceId: String(intent.cryptoInvoice.reference ?? ''),
+        invoice: intent.cryptoInvoice,
+        now: new Date().toISOString(),
+      })
+      await db.update({
+        collection: 'payment-intents',
+        id: intent.id,
+        data: {
+          cryptoInvoice: verification.invoice,
+          state: verification.accepted
+            ? 'paid'
+            : verification.invoice.state === 'exception'
+              ? 'exception'
+              : 'pending',
+        },
+        overrideAccess: true,
+      })
+      if (verification.accepted) {
+        const session: any = await db.findByID({
+          collection: 'checkout-sessions',
+          id: relationId(intent.checkoutSession),
+          depth: 1,
+          overrideAccess: true,
+        })
+        await db.update({
+          collection: 'checkout-sessions',
+          id: session.id,
+          data: { state: 'completed' },
+          overrideAccess: true,
+        })
+        await finalizeVerifiedOrder(db, {
+          intent: { ...intent, state: 'paid' },
+          session,
+          merchantId: relationId(intent.merchantConnection),
+          verifiedAt: new Date().toISOString(),
+        })
+      }
+      return NextResponse.json({
+        state: verification.invoice.state,
+        confirmed: verification.accepted,
+        manualReconciliationAllowed: verification.manualReconciliationAllowed,
+      })
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'BTCPay verification failed.' },
+        { status: 422 },
+      )
+    }
+  }
+  if (!input.transactionId)
+    return NextResponse.json({ error: 'transactionId is required.' }, { status: 400 })
   // TA-P0-2 (c): this route can only settle on fixture evidence (the sole
   // configured adapter). Fixture evidence is test evidence — it must never
   // settle an order in production posture. The local E2E harness is the
