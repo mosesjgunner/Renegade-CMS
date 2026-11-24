@@ -7,6 +7,9 @@ import {
   trackedAffiliateUrl,
 } from './catalog'
 import { AddToCartControl } from './AddToCartControl'
+import { ProductGallery } from './ProductGallery'
+import type { MerchantPolicy } from './merchant-config'
+import { policyHref } from './policies'
 
 const id = (value: unknown) =>
   typeof value === 'object' && value !== null
@@ -66,11 +69,34 @@ export function ProductCard({ product }: { product: Record<string, unknown> }) {
   )
 }
 
-export function ProductDetail({ product }: { product: Record<string, unknown> }) {
+export function ProductDetail({
+  product,
+  relatedProducts,
+  policies,
+}: {
+  product: Record<string, unknown>
+  relatedProducts?: Record<string, unknown>[]
+  policies?: MerchantPolicy[]
+}) {
   const catalog = catalogProductFromDocument(product)
   const media = Array.isArray(product.media) ? product.media : []
   const firstCurrency = catalog.offers.find((offer) => offer.status === 'active')?.currency ?? 'USD'
   const affiliate = catalog.affiliate ? affiliateFreshness(catalog.affiliate) : null
+  const galleryImages = media
+    .map((item, index) => {
+      const mediaId = id(item)
+      const alt =
+        typeof item === 'object' && item
+          ? String(
+              (item as Record<string, unknown>).altText ?? `${catalog.name} image ${index + 1}`,
+            )
+          : `${catalog.name} image ${index + 1}`
+      return mediaId ? { id: mediaId, alt } : null
+    })
+    .filter((image): image is { id: string; alt: string } => image !== null)
+  const deliveryPolicies = (policies ?? []).filter((policy) =>
+    ['shipping', 'returns'].includes(policy.type),
+  )
   return (
     <article className="surface-card p-6 sm:p-10 space-y-8">
       <header className="space-y-3">
@@ -80,27 +106,8 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
         <h1 className="text-4xl font-black">{catalog.name}</h1>
         {typeof product.summary === 'string' ? <p className="text-xl">{product.summary}</p> : null}
       </header>
-      {media.length ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {media.map((item, index) => {
-            const mediaId = id(item)
-            const alt =
-              typeof item === 'object' && item
-                ? String(
-                    (item as Record<string, unknown>).altText ??
-                      `${catalog.name} image ${index + 1}`,
-                  )
-                : `${catalog.name} image ${index + 1}`
-            return mediaId ? (
-              <img
-                key={mediaId}
-                src={`/media/${encodeURIComponent(mediaId)}?variant=${index ? 'inline' : 'hero'}`}
-                alt={alt}
-                className="w-full rounded-lg object-cover"
-              />
-            ) : null
-          })}
-        </div>
+      {galleryImages.length ? (
+        <ProductGallery images={galleryImages} productName={catalog.name} />
       ) : null}
       {typeof product.description === 'string' ? (
         <div className="prose dark:prose-invert whitespace-pre-line">{product.description}</div>
@@ -172,6 +179,7 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
             productName={catalog.name}
             isDonation={catalog.capabilities.includes('donation')}
             donationMinimumMinor={catalog.offers[0]?.donation?.minimumMinor}
+            optionDimensions={catalog.optionDimensions}
             variants={catalog.variants
               .filter((v) => v.status !== 'archived')
               .map((v) => {
@@ -187,6 +195,7 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
                   inventoryQuantity: v.inventory?.quantity,
                   priceMinor: off?.amountMinor ?? '0',
                   currency: off?.currency ?? firstCurrency,
+                  optionValues: { ...v.optionValues },
                   unavailable:
                     !off ||
                     v.status === 'unavailable' ||
@@ -195,6 +204,19 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
               })}
           />
         )}
+        {deliveryPolicies.length ? (
+          <p className="text-sm">
+            <strong>Delivery &amp; returns:</strong>{' '}
+            {deliveryPolicies.map((policy, index) => (
+              <span key={policy.type}>
+                {index > 0 ? ' · ' : ''}
+                <Link className="underline font-semibold" href={policyHref(policy)}>
+                  {policy.title} (v{policy.version})
+                </Link>
+              </span>
+            ))}
+          </p>
+        ) : null}
         {catalog.capabilities.includes('affiliate') && catalog.affiliate ? (
           <div className="rounded border p-4 space-y-2">
             <p>
@@ -236,6 +258,18 @@ export function ProductDetail({ product }: { product: Record<string, unknown> })
               </li>
             ))}
           </ul>
+        </section>
+      ) : null}
+      {relatedProducts?.length ? (
+        <section aria-labelledby="related-heading" className="border-t pt-6">
+          <h2 id="related-heading" className="text-xl font-bold mb-4">
+            Related products
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {relatedProducts.map((related) => (
+              <ProductCard key={String(related.id)} product={related} />
+            ))}
+          </div>
         </section>
       ) : null}
     </article>

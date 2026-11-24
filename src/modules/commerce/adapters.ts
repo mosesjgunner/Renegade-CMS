@@ -177,6 +177,13 @@ export type PaymentRailAdapterDescriptor = AdapterDescriptor &
     family: 'card' | 'crypto' | 'external-link' | 'manual'
     implementation: 'live-configured' | 'deterministic-emulator' | 'fixture' | 'test'
     networks?: readonly string[]
+    /**
+     * RC3-20 SHOP-UX Pass 05: who holds the buyer's funds. Custodial
+     * (processor-managed) and noncustodial (merchant's own server/wallet)
+     * crypto are distinct buyer-facing capabilities and must never be
+     * presented as the same method.
+     */
+    custody?: 'processor-managed' | 'noncustodial'
   }>
 
 export type AdapterRegistries = Readonly<{
@@ -271,6 +278,7 @@ export function createBuiltinAdapterRegistries(): AdapterRegistries {
     contractVersion: ADAPTER_REGISTRY_CONTRACT_VERSION,
     capabilities: ['invoice', 'fixture-observations'],
     networks: ['dogecoin', 'evm:1'],
+    custody: 'noncustodial',
   })
   paymentRails.register({
     key: 'btcpay',
@@ -279,6 +287,23 @@ export function createBuiltinAdapterRegistries(): AdapterRegistries {
     contractVersion: BTCPAY_ADAPTER_CONTRACT_VERSION,
     capabilities: ['invoice', 'server-verified-settlement', 'fx-quote', 'lightning', 'on-chain'],
     networks: ['bitcoin'],
+    custody: 'noncustodial',
+  })
+  paymentRails.register({
+    key: 'custodial-crypto',
+    family: 'crypto',
+    implementation: 'deterministic-emulator',
+    contractVersion: CUSTODIAL_CRYPTO_ADAPTER_CONTRACT_VERSION,
+    capabilities: [
+      'invoice',
+      'fx-quote',
+      'lightning',
+      'on-chain',
+      'processor-settlement',
+      'fixture-observations',
+    ],
+    networks: ['bitcoin'],
+    custody: 'processor-managed',
   })
 
   return { sources, fulfillmentProviders, paymentRails }
@@ -292,6 +317,9 @@ export type ShippingGroupQuote = Readonly<{
   groupKey: string
   rate?: ShippingRate
   amountMinor: string
+  /** Every rate quoted for the group, so checkout can offer an explicit
+   * shipping-method choice (RC3-20 SHOP-UX Pass 04). */
+  options?: readonly ShippingRate[]
 }>
 
 /**
@@ -326,7 +354,7 @@ export async function quoteShippingForGroups(input: {
     if (!rate)
       throw new Error(`No shipping rate available for fulfillment group ${group.groupKey}.`)
     total += BigInt(rate.amountMinor)
-    quotes.push({ groupKey: group.groupKey, rate, amountMinor: rate.amountMinor })
+    quotes.push({ groupKey: group.groupKey, rate, amountMinor: rate.amountMinor, options: rates })
   }
   return { quotes, totalMinor: total.toString() }
 }
@@ -532,6 +560,7 @@ export function createEmulatorDropshipAdapter(
 // ---------------------------------------------------------------------------
 
 export const BTCPAY_ADAPTER_CONTRACT_VERSION = 'rc320.btcpay.v1' as const
+export const CUSTODIAL_CRYPTO_ADAPTER_CONTRACT_VERSION = 'rc320.custodial-crypto.v1' as const
 
 export type BtcpayFetch = (
   url: string,
@@ -789,6 +818,181 @@ export function createBtcpayAdapter(config: BtcpayConfig): BtcpayAdapter {
         accepted: mapped.accepted,
         manualReconciliationAllowed: mapped.manualReconciliationAllowed,
       }
+    },
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Custodial crypto — a processor-managed rail (RC3-20 SHOP-UX Pass 05)
+// ---------------------------------------------------------------------------
+
+export type CustodialCryptoConfig = Readonly<{
+  /** Buyer-facing processor name, e.g. "ProcessorPay". */
+  processorName: string
+  /** The processor's deposit address — funds go to the PROCESSOR, never to
+   * a merchant wallet. That is what makes this rail custodial. */
+  depositAddress: string
+  /** Optional Lightning address the processor accepts payment at. */
+  lightningAddress?: string
+  settlementMode: 'fiat' | 'crypto' | 'mixed'
+  /** Processor fee in basis points, disclosed on the frozen quote. */
+  feeBasisPoints: number
+  /** The processor's quoted fiat-per-BTC rate (deterministic in fixture
+   * mode; a live integration reads it from the processor's rate API). */
+  rateFiatPerBtc: string
+  requiredConfirmations?: number
+  /** Processor-reported chain observations (fixture evidence in tests; a
+   * live integration sources these from the processor's API/webhooks). */
+  observations?: readonly import('./contracts').ChainPaymentObservation[]
+}>
+
+/** Reads `configuration.custodialCrypto` from a merchant connection.
+ * Returns null when the rail is not completely configured. */
+export function custodialCryptoConfigFromMerchant(
+  configuration: Record<string, unknown> | null | undefined,
+): CustodialCryptoConfig | null {
+  const raw = (configuration ?? {}).custodialCrypto as Record<string, unknown> | undefined
+  if (!raw || typeof raw !== 'object') return null
+  const processorName = typeof raw.processorName === 'string' ? raw.processorName.trim() : ''
+  const depositAddress = typeof raw.depositAddress === 'string' ? raw.depositAddress.trim() : ''
+  const rateFiatPerBtc = typeof raw.rateFiatPerBtc === 'string' ? raw.rateFiatPerBtc.trim() : ''
+  const settlementMode = raw.settlementMode
+  const feeBasisPoints = raw.feeBasisPoints
+  if (!processorName || !depositAddress || !rateFiatPerBtc) return null
+  if (settlementMode !== 'fiat' && settlementMode !== 'crypto' && settlementMode !== 'mixed')
+    return null
+  if (
+    typeof feeBasisPoints !== 'number' ||
+    !Number.isInteger(feeBasisPoints) ||
+    feeBasisPoints < 0 ||
+    feeBasisPoints > 10000
+  )
+    return null
+  return {
+    processorName,
+    depositAddress,
+    ...(typeof raw.lightningAddress === 'string' && raw.lightningAddress.trim()
+      ? { lightningAddress: raw.lightningAddress.trim() }
+      : {}),
+    settlementMode,
+    feeBasisPoints,
+    rateFiatPerBtc,
+    requiredConfirmations:
+      typeof raw.requiredConfirmations === 'number' ? raw.requiredConfirmations : 1,
+    observations: Array.isArray(raw.observations)
+      ? (raw.observations as CustodialCryptoConfig['observations'])
+      : [],
+  }
+}
+
+export type CustodialSettlement = Readonly<{
+  settlementMode: CustodialCryptoConfig['settlementMode']
+  feeBasisPoints: number
+  feeAmountMinor: string
+  netAmountMinor: string
+  currency: string
+}>
+
+export type CustodialCryptoAdapter = Readonly<{
+  key: 'custodial-crypto'
+  contractVersion: typeof CUSTODIAL_CRYPTO_ADAPTER_CONTRACT_VERSION
+  processorName: string
+  quoteInvoiceAmount(input: {
+    amountMinor: string
+    currency: string
+    now: string
+    buyerConfirmedConversion: boolean
+  }): {
+    exactAmountAtomic: string
+    money: MoneySnapshot & { exactAmountAtomic: string }
+    settlement: CustodialSettlement
+  }
+  settlementFor(amountMinor: string, currency: string): CustodialSettlement
+  createInvoice(input: {
+    intentId: string
+    network: string
+    asset: string
+    exactAmountAtomic: string
+    destination: string
+    expiresAt: string
+    requiredConfirmations: number
+  }): Promise<import('./contracts').CryptoInvoice>
+  getObservation(
+    transactionId: string,
+  ): Promise<import('./contracts').ChainPaymentObservation | null>
+}>
+
+/**
+ * Deterministic processor-managed crypto adapter. The buyer pays the
+ * PROCESSOR's deposit address (or its Lightning address); the processor
+ * reports observations and settles to the merchant minus its disclosed fee.
+ * This is the custodial counterpart to the noncustodial BTCPay rail: same
+ * invoice/verification contract, opposite custody. Fixture observations are
+ * the evidence source in this build — a live processor integration swaps
+ * the observation feed, not the contract.
+ */
+export function createCustodialCryptoAdapter(
+  config: CustodialCryptoConfig,
+): CustodialCryptoAdapter {
+  const settlementFor = (amountMinor: string, currency: string): CustodialSettlement => {
+    const amount = BigInt(amountMinor)
+    // Fee rounds UP so the disclosed fee is never understated.
+    const fee = (amount * BigInt(config.feeBasisPoints) + 9999n) / 10000n
+    return {
+      settlementMode: config.settlementMode,
+      feeBasisPoints: config.feeBasisPoints,
+      feeAmountMinor: fee.toString(),
+      netAmountMinor: (amount - fee).toString(),
+      currency,
+    }
+  }
+  return {
+    key: 'custodial-crypto',
+    contractVersion: CUSTODIAL_CRYPTO_ADAPTER_CONTRACT_VERSION,
+    processorName: config.processorName,
+    settlementFor,
+    quoteInvoiceAmount(input) {
+      const exactAmountAtomic = convertFiatMinorToSatoshis({
+        amountMinor: input.amountMinor,
+        currency: input.currency,
+        rateFiatPerBtc: config.rateFiatPerBtc,
+      })
+      return {
+        exactAmountAtomic,
+        money: {
+          amountMinor: input.amountMinor,
+          currency: input.currency,
+          quotedAt: input.now,
+          quoteSource: 'custodial-processor',
+          buyerConfirmedConversion: input.buyerConfirmedConversion,
+          exactAmountAtomic,
+        },
+        settlement: settlementFor(input.amountMinor, input.currency),
+      }
+    },
+    async createInvoice(input) {
+      const uri = `bitcoin:${config.depositAddress}?amount=${formatSatoshisAsBtc(input.exactAmountAtomic)}`
+      return {
+        network: 'bitcoin',
+        asset: 'BTC',
+        exactAmountAtomic: input.exactAmountAtomic,
+        destination: config.depositAddress,
+        reference: input.intentId,
+        uri,
+        qrPayload: uri,
+        expiresAt: input.expiresAt,
+        requiredConfirmations: input.requiredConfirmations,
+        state: 'created',
+        confirmations: 0,
+        transactionIds: [],
+      }
+    },
+    async getObservation(transactionId) {
+      return (
+        (config.observations ?? []).find(
+          (observation) => observation.transactionId === transactionId,
+        ) ?? null
+      )
     },
   }
 }

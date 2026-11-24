@@ -14,6 +14,7 @@ import {
 } from './canonical-shared'
 import { validatePlanWrite } from '../modules/commerce/plan-write'
 import { validateCatalogWrite } from '../modules/commerce/catalog-write'
+import { catalogProductFromDocument, deriveCatalogListingFields } from '../modules/commerce/catalog'
 import { decryptCredential } from '../modules/commerce/pod-connection'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 import { assertCampaignTransition, assertDonationTransition } from '../modules/commerce/donations'
@@ -197,6 +198,37 @@ export const Products: CollectionConfig = {
         }
         return data
       },
+      ({ data, originalDoc }) => {
+        // RC3-20 SHOP-UX Pass 01: keep the denormalized listing projection
+        // (min price / currency / availability) in step with the offers and
+        // variants being written, so storefront filters and sorts can use
+        // native indexed queries. Offers remain the only price truth.
+        if (!data) return data
+        const merged = { ...originalDoc, ...data } as {
+          offers?: unknown
+          variants?: unknown
+        }
+        if (Array.isArray(merged.offers) && Array.isArray(merged.variants)) {
+          try {
+            const derived = deriveCatalogListingFields(
+              catalogProductFromDocument(merged as Record<string, unknown>),
+            )
+            data.minPriceMinor =
+              derived.minPriceMinor === null
+                ? null
+                : derived.minPriceMinor.length <= 15
+                  ? Number(derived.minPriceMinor)
+                  : null
+            data.priceCurrency = derived.priceCurrency
+            data.anyAvailable = derived.anyAvailable
+          } catch {
+            // Derivation is best-effort: a malformed offers payload is
+            // rejected by validateCatalogWrite above; never block the write
+            // on the projection.
+          }
+        }
+        return data
+      },
     ],
     afterChange: [
       ...searchProjectionHooks('products').afterChange,
@@ -232,6 +264,41 @@ export const Products: CollectionConfig = {
     ]),
     select('state', ['draft', 'review', 'approved', 'published', 'archived'], 'draft'),
     { name: 'publishedAt', type: 'date' },
+    {
+      name: 'featured',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description:
+          'Merchant-curated: eligible for the storefront featured rail (RC3-20 SHOP-UX Pass 01).',
+      },
+    },
+    {
+      name: 'minPriceMinor',
+      type: 'number',
+      admin: {
+        readOnly: true,
+        description:
+          'Derived at write time from active offers (lowest purchasable variant price, minor units). Projection only — offers remain the price truth.',
+      },
+    },
+    {
+      name: 'priceCurrency',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Currency of the derived minimum price.',
+      },
+    },
+    {
+      name: 'anyAvailable',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        readOnly: true,
+        description: 'Derived at write time: at least one variant is purchasable right now.',
+      },
+    },
     { name: 'archivedAt', type: 'date' },
     { name: 'redirectTo', type: 'text' },
     { name: 'description', type: 'textarea' },

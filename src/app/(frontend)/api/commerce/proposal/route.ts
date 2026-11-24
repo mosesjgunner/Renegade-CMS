@@ -38,6 +38,11 @@ import {
   type ProductSourceDescriptor,
 } from '@/modules/commerce/adapters'
 import type { ShippingRate } from '@/modules/commerce/shipping'
+import {
+  merchantPolicyVersions,
+  merchantShippingConfig,
+  merchantTaxConfig,
+} from '@/modules/commerce/merchant-config'
 
 async function createProposal(request: Request) {
   const payload = await getPayload({ config })
@@ -245,6 +250,28 @@ async function createProposal(request: Request) {
     }
     rawCart = { ...rawCart, items: payableItems }
 
+    // RC3-20 SHOP-UX Pass 04: the cart's merchant connection carries the
+    // merchant's own shipping rates, tax rates and policy versions. Load it
+    // once and thread the parsed configuration through quoting below.
+    let merchantConfiguration: Record<string, unknown> = {}
+    if (rawCart.merchantConnectionId) {
+      const connection = await (payload as any)
+        .findByID({
+          collection: 'merchant-connections',
+          id: rawCart.merchantConnectionId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      if (connection && commerceRelationId(connection.site) === siteId)
+        merchantConfiguration =
+          typeof connection.configuration === 'object' && connection.configuration !== null
+            ? connection.configuration
+            : {}
+    }
+    const taxConfig = merchantTaxConfig(merchantConfiguration)
+    const policyVersions = merchantPolicyVersions(merchantConfiguration)
+
     const preliminary = reResolveCart({ cart: rawCart, products, promotions })
     rawCart = preliminary.cart
 
@@ -252,6 +279,11 @@ async function createProposal(request: Request) {
     let validatedShippingAddress = undefined
     let selectedRate = undefined
     const groupShippingRates: Partial<Record<'physical' | 'pod' | 'dropship', ShippingRate>> = {}
+    let shippingOptions: Array<{
+      groupKey: string
+      rates: readonly ShippingRate[]
+      selectedRateId: string | null
+    }> = []
     let shippingAmountMinor = '0'
     let taxSnapshot = undefined
 
@@ -282,12 +314,11 @@ async function createProposal(request: Request) {
       // Shipping rate calculation — RC3-20: quoted per fulfillment group.
       // Each group ships separately, so each is quoted on its own items and
       // subtotal; the proposal total is the sum of the group rates.
-      const shippingAdapter = new LocalFallbackShippingAdapter({
-        standardRateMinor: '500', // $5.00 default flat
-        currency: rawCart.currency,
-        freeShippingThresholdMinor: '5000', // $50 free shipping
-        enableLocalPickup: true,
-      })
+      // Merchant-configured rates from the connection record; the platform
+      // defaults apply only when the merchant has not configured their own.
+      const shippingAdapter = new LocalFallbackShippingAdapter(
+        merchantShippingConfig(merchantConfiguration, rawCart.currency),
+      )
 
       const shippableKinds = ['physical', 'pod', 'dropship'] as const
       const groups = shippableKinds
@@ -326,11 +357,20 @@ async function createProposal(request: Request) {
         if (quote.rate)
           groupShippingRates[quote.groupKey as 'physical' | 'pod' | 'dropship'] = quote.rate
       }
+      shippingOptions = quotes
+        .filter((quote) => quote.options?.length)
+        .map((quote) => ({
+          groupKey: quote.groupKey,
+          rates: quote.options!,
+          selectedRateId: quote.rate?.id ?? null,
+        }))
       selectedRate = groupShippingRates.physical ?? quotes.find((q) => q.rate)?.rate
       shippingAmountMinor = totalMinor
 
-      // Tax calculation
-      const taxAdapter = new BoundedJurisdictionTaxAdapter()
+      // Tax calculation — merchant-configured rates first (Pass 04); the
+      // bounded baseline only fills gaps, and an unmapped destination with
+      // neither still fails closed below before any charge.
+      const taxAdapter = new BoundedJurisdictionTaxAdapter(undefined, taxConfig.ratesBps)
       try {
         taxSnapshot = await taxAdapter.calculateTax({
           siteId,
@@ -347,6 +387,7 @@ async function createProposal(request: Request) {
             currency: rawCart.currency,
           })),
           shippingAmountMinor,
+          taxShipping: taxConfig.taxShipping,
         })
       } catch (err) {
         if (err instanceof TaxCalculationUnavailableError) {
@@ -404,6 +445,9 @@ async function createProposal(request: Request) {
         privacyAccepted: consents.privacyAccepted === true,
         marketingAccepted: Boolean(consents.marketingAccepted),
         timestamp: new Date().toISOString(),
+        // Stamp the merchant's configured policy versions in force at
+        // consent time; omitted entirely when none are configured.
+        ...(Object.keys(policyVersions).length ? { policyVersions } : {}),
       },
     })
 
@@ -555,6 +599,9 @@ async function createProposal(request: Request) {
 
     return NextResponse.json({
       proposal: { ...proposal, id: String(storedProposal.id), integrityHash },
+      // Pass 04: every quoted shipping option per fulfillment group, so the
+      // buyer can make an explicit delivery-method choice and re-quote.
+      shippingOptions,
     })
   } catch (error) {
     return NextResponse.json(

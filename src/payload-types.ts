@@ -3368,6 +3368,22 @@ export interface Product {
   kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation' | 'affiliate';
   state: 'draft' | 'review' | 'approved' | 'published' | 'archived';
   publishedAt?: string | null;
+  /**
+   * Merchant-curated: eligible for the storefront featured rail (RC3-20 SHOP-UX Pass 01).
+   */
+  featured?: boolean | null;
+  /**
+   * Derived at write time from active offers (lowest purchasable variant price, minor units). Projection only — offers remain the price truth.
+   */
+  minPriceMinor?: number | null;
+  /**
+   * Currency of the derived minimum price.
+   */
+  priceCurrency?: string | null;
+  /**
+   * Derived at write time: at least one variant is purchasable right now.
+   */
+  anyAvailable?: boolean | null;
   archivedAt?: string | null;
   redirectTo?: string | null;
   description?: string | null;
@@ -16269,6 +16285,10 @@ export interface ProductsSelect<T extends boolean = true> {
   kind?: T;
   state?: T;
   publishedAt?: T;
+  featured?: T;
+  minPriceMinor?: T;
+  priceCurrency?: T;
+  anyAvailable?: T;
   archivedAt?: T;
   redirectTo?: T;
   description?: T;

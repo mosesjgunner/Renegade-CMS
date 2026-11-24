@@ -19,7 +19,7 @@ export type TaxCalculationResult = Readonly<{
   lineTaxAmountsMinor?: Readonly<Record<string, string>>
   taxableAmountMinor: string
   taxDisplay: 'inclusive' | 'exclusive'
-  source: 'provider' | 'bounded-rule'
+  source: 'provider' | 'bounded-rule' | 'merchant-configured'
   calculatedAt: string
   disclaimer: string
 }>
@@ -69,9 +69,20 @@ const TRANSACTION_TAX_DISCLAIMER =
 export class BoundedJurisdictionTaxAdapter implements TaxAdapter {
   public readonly key = 'bounded-jurisdiction'
   private externalProvider?: TaxAdapter
+  private merchantRatesBps: Record<string, number>
 
-  constructor(externalProvider?: TaxAdapter) {
+  /**
+   * `merchantRatesBps` (RC3-20 SHOP-UX Pass 04) carries the merchant's own
+   * configured rates from their merchant connection, keyed like the bounded
+   * tables (`US:CA`, `GB`). A configured rate — including an explicit 0 the
+   * merchant asserts for an exempt jurisdiction — wins over the bounded
+   * baseline and is labeled `merchant-configured` on the result. The
+   * bounded statewide table remains only a starting baseline for
+   * unconfigured merchants, never production truth on its own.
+   */
+  constructor(externalProvider?: TaxAdapter, merchantRatesBps: Record<string, number> = {}) {
     this.externalProvider = externalProvider
+    this.merchantRatesBps = merchantRatesBps
   }
 
   async calculateTax(input: TaxCalculationInput): Promise<TaxCalculationResult> {
@@ -89,9 +100,11 @@ export class BoundedJurisdictionTaxAdapter implements TaxAdapter {
       }
     }
 
-    // Determine applicable jurisdiction key
+    // Determine applicable jurisdiction key. Merchant-configured rates are
+    // consulted first; the bounded baseline only fills gaps.
     let rateBasisPoints: number | undefined
     let jurisdiction = country
+    let source: TaxCalculationResult['source'] = 'bounded-rule'
 
     if (country === 'US') {
       if (!state) {
@@ -101,8 +114,16 @@ export class BoundedJurisdictionTaxAdapter implements TaxAdapter {
         )
       }
       const stateKey = `US:${state}`
-      rateBasisPoints = BOUNDED_STATE_TAX_RATES_BPS[stateKey]
       jurisdiction = stateKey
+      if (this.merchantRatesBps[stateKey] !== undefined) {
+        rateBasisPoints = this.merchantRatesBps[stateKey]
+        source = 'merchant-configured'
+      } else {
+        rateBasisPoints = BOUNDED_STATE_TAX_RATES_BPS[stateKey]
+      }
+    } else if (this.merchantRatesBps[country] !== undefined) {
+      rateBasisPoints = this.merchantRatesBps[country]
+      source = 'merchant-configured'
     } else if (BOUNDED_COUNTRY_VAT_RATES_BPS[country] !== undefined) {
       rateBasisPoints = BOUNDED_COUNTRY_VAT_RATES_BPS[country]
       jurisdiction = country
@@ -160,7 +181,7 @@ export class BoundedJurisdictionTaxAdapter implements TaxAdapter {
       taxableAmountMinor: taxableBase.toString(),
       taxDisplay:
         country === 'GB' || country === 'DE' || country === 'FR' ? 'inclusive' : 'exclusive',
-      source: 'bounded-rule',
+      source,
       calculatedAt: new Date().toISOString(),
       disclaimer: TRANSACTION_TAX_DISCLAIMER,
     }

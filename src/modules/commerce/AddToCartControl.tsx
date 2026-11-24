@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { formatMinorMoney, minorMoneyDecimal, parseMoneyToMinor } from './catalog'
 
 export type AddToCartVariant = {
   sku: string
@@ -12,39 +13,85 @@ export type AddToCartVariant = {
   priceMinor: string
   currency: string
   unavailable?: boolean
+  optionValues?: Record<string, string>
 }
+
+export type AddToCartDimension = { key: string; label: string; values: readonly string[] }
 
 export function AddToCartControl({
   productId,
   productName,
   variants,
+  optionDimensions,
   isDonation,
   donationMinimumMinor,
 }: {
   productId: string
   productName: string
   variants: AddToCartVariant[]
+  optionDimensions?: readonly AddToCartDimension[]
   isDonation?: boolean
   donationMinimumMinor?: string
 }) {
   const availableVariants = variants.filter((v) => !v.unavailable)
+  const dimensions = useMemo(
+    () =>
+      (optionDimensions ?? []).filter(
+        (dimension) =>
+          dimension.values?.length && variants.some((v) => v.optionValues?.[dimension.key]),
+      ),
+    [optionDimensions, variants],
+  )
+  const useDimensions = dimensions.length > 0
   const [selectedSku, setSelectedSku] = useState<string>(
     availableVariants[0]?.sku ?? variants[0]?.sku ?? '',
   )
+  const [optionSelection, setOptionSelection] = useState<Record<string, string>>(() => {
+    const first = availableVariants[0] ?? variants[0]
+    const initial: Record<string, string> = {}
+    for (const dimension of dimensions)
+      if (first?.optionValues?.[dimension.key])
+        initial[dimension.key] = first.optionValues[dimension.key]
+    return initial
+  })
+  const dimensionVariant = useDimensions
+    ? variants.find((v) =>
+        dimensions.every(
+          (dimension) => v.optionValues?.[dimension.key] === optionSelection[dimension.key],
+        ),
+      )
+    : undefined
+  const selectedVariant = useDimensions
+    ? dimensionVariant
+    : variants.find((v) => v.sku === selectedSku)
   const [quantity, setQuantity] = useState<number>(1)
+  const donationCurrency = selectedVariant?.currency ?? variants[0]?.currency ?? 'USD'
   const [donationAmount, setDonationAmount] = useState<string>(
-    donationMinimumMinor ? (Number(donationMinimumMinor) / 100).toFixed(2) : '5.00',
+    donationMinimumMinor ? minorMoneyDecimal(donationMinimumMinor, donationCurrency) : '5.00',
   )
   const [loading, setLoading] = useState(false)
   const [announcement, setAnnouncement] = useState<string>('')
   const [error, setError] = useState<string>('')
   const [added, setAdded] = useState(false)
 
-  const selectedVariant = variants.find((v) => v.sku === selectedSku)
   const isOutOfStock =
     !selectedVariant ||
     selectedVariant.unavailable ||
     (selectedVariant.inventoryPolicy === 'tracked' && (selectedVariant.inventoryQuantity ?? 0) <= 0)
+
+  /** A dimension value is selectable when at least one variant matching the
+   * rest of the current selection carries it. */
+  const dimensionValueEnabled = (dimension: AddToCartDimension, value: string) =>
+    variants.some(
+      (v) =>
+        v.optionValues?.[dimension.key] === value &&
+        dimensions.every(
+          (other) =>
+            other.key === dimension.key ||
+            !optionSelection[other.key] ||
+            v.optionValues?.[other.key] === optionSelection[other.key],
+        ),
+    )
 
   async function handleAddToCart(e: React.FormEvent) {
     e.preventDefault()
@@ -62,8 +109,8 @@ export function AddToCartControl({
       }
 
       if (isDonation) {
-        const donationMinor = Math.round(parseFloat(donationAmount) * 100).toString()
-        payload.donationAmountMinor = donationMinor
+        // Currency-exponent-aware conversion — never a hardcoded /100.
+        payload.donationAmountMinor = parseMoneyToMinor(donationAmount, donationCurrency)
       }
 
       const res = await fetch('/api/commerce/cart', {
@@ -96,7 +143,56 @@ export function AddToCartControl({
       </div>
 
       <form onSubmit={handleAddToCart} className="space-y-3">
-        {variants.length > 1 && (
+        {useDimensions ? (
+          <div className="space-y-3">
+            {dimensions.map((dimension) => (
+              <div key={dimension.key}>
+                <label
+                  htmlFor={`option-${dimension.key}`}
+                  className="block text-sm font-semibold mb-1"
+                >
+                  {dimension.label}
+                </label>
+                <select
+                  id={`option-${dimension.key}`}
+                  value={optionSelection[dimension.key] ?? ''}
+                  onChange={(e) => {
+                    setOptionSelection((current) => ({
+                      ...current,
+                      [dimension.key]: e.target.value,
+                    }))
+                    setAdded(false)
+                    setError('')
+                  }}
+                  className="w-full rounded border p-2 bg-transparent"
+                  disabled={loading}
+                >
+                  {dimension.values.map((value) => (
+                    <option
+                      key={value}
+                      value={value}
+                      disabled={!dimensionValueEnabled(dimension, value)}
+                    >
+                      {value}
+                      {dimensionValueEnabled(dimension, value) ? '' : ' (unavailable)'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ))}
+            {selectedVariant ? (
+              <p className="text-sm" role="status">
+                {selectedVariant.title} —{' '}
+                {formatMinorMoney(selectedVariant.priceMinor, selectedVariant.currency)}
+                {isOutOfStock ? ' · Unavailable' : ''}
+              </p>
+            ) : (
+              <p className="text-sm" role="status">
+                That combination is not available.
+              </p>
+            )}
+          </div>
+        ) : variants.length > 1 ? (
           <div>
             <label htmlFor="variant-select" className="block text-sm font-semibold mb-1">
               Select Option
@@ -114,24 +210,28 @@ export function AddToCartControl({
             >
               {variants.map((v) => (
                 <option key={v.sku} value={v.sku} disabled={v.unavailable}>
-                  {v.title} ({v.sku}) - ${(Number(v.priceMinor) / 100).toFixed(2)} {v.currency}
+                  {v.title} ({v.sku}) - {formatMinorMoney(v.priceMinor, v.currency)}
                   {v.unavailable ? ' [Unavailable]' : ''}
                 </option>
               ))}
             </select>
           </div>
-        )}
+        ) : null}
 
         {isDonation ? (
           <div>
             <label htmlFor="donation-amount" className="block text-sm font-semibold mb-1">
-              Donation Amount ({selectedVariant?.currency ?? 'USD'})
+              Donation Amount ({donationCurrency})
             </label>
             <input
               id="donation-amount"
               type="number"
-              step="1.00"
-              min={donationMinimumMinor ? (Number(donationMinimumMinor) / 100).toFixed(2) : '1.00'}
+              step="0.01"
+              min={
+                donationMinimumMinor
+                  ? minorMoneyDecimal(donationMinimumMinor, donationCurrency)
+                  : '0'
+              }
               value={donationAmount}
               onChange={(e) => setDonationAmount(e.target.value)}
               className="w-full rounded border p-2 bg-transparent"
@@ -177,6 +277,9 @@ export function AddToCartControl({
                 +
               </button>
             </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Stock is confirmed by the store when you check out.
+            </p>
           </div>
         )}
 
