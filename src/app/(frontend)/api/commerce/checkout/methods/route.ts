@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { canAccessCommerceCart, commerceRelationId as id } from '@/modules/commerce/cart-access'
 import { eligiblePaymentMethods, type PaymentMethodCapability } from '@/modules/commerce/contracts'
+import { presentPaymentMethod } from '@/modules/commerce/payment-methods'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
@@ -65,12 +66,14 @@ export async function GET(request: Request) {
   })
   return Response.json(
     {
-      methods: eligible.map(({ capability }) => ({
-        id: capability.id,
-        label: capability.railKey,
-        family: capability.family,
-        providerKey: capability.providerKey,
-      })),
+      // Pass 05: buyers see recognizable methods with custody explained —
+      // never adapter/rail keys.
+      methods: eligible.map(({ capability }) =>
+        presentPaymentMethod(
+          capability,
+          (merchant.configuration as Record<string, unknown> | null) ?? null,
+        ),
+      ),
     },
     { headers: { 'cache-control': 'private, no-store' } },
   )

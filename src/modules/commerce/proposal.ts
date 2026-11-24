@@ -20,6 +20,13 @@ export type ProposalConsent = Readonly<{
   privacyAccepted: boolean
   marketingAccepted?: boolean
   timestamp: string
+  /**
+   * RC3-20 SHOP-UX Pass 04: the merchant policy versions in force when the
+   * buyer consented (e.g. `{ terms: '3', privacy: '2' }`), taken from the
+   * merchant connection's configured policy records. Absent when the
+   * merchant has not configured policy versions — never invented.
+   */
+  policyVersions?: Readonly<Record<string, string>>
 }>
 
 export type FulfillmentGroupKind = 'physical' | 'digital' | 'pod' | 'dropship' | 'referral'

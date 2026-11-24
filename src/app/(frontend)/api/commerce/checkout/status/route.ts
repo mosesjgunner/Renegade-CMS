@@ -112,6 +112,79 @@ export async function GET(request: Request) {
         })
     }
   }
+  // RC3-20 SHOP-UX Pass 06: shipment-split visibility. Groups come from the
+  // order's frozen fulfillment split; shipment status and tracking come
+  // from the canonical fulfillment records (manual packages and POD jobs)
+  // — only facts recorded on those records are shown, never invented.
+  type ShipmentView = {
+    label: string
+    status: string
+    carrier: string | null
+    trackingNumber: string | null
+    trackingUrl: string | null
+    shippedAt: string | null
+  }
+  let fulfillment: {
+    groups: Array<{ kind: string; itemCount: number; state: string | null }>
+    shipments: ShipmentView[]
+  } | null = null
+  if (order) {
+    const groups = (
+      Array.isArray(order.downstreamInstructions) ? order.downstreamInstructions : []
+    ).map((group: any) => ({
+      kind: String(group.fulfillmentKind ?? group.kind ?? 'physical'),
+      itemCount: Array.isArray(group.items)
+        ? group.items.reduce((sum: number, item: any) => sum + Number(item.quantity ?? 1), 0)
+        : 0,
+      state: group.state ? String(group.state) : null,
+    }))
+    const shipments: ShipmentView[] = []
+    const [packages, jobs] = await Promise.all([
+      payload
+        .find({
+          collection: 'manual-fulfillment-packages',
+          where: { order: { equals: order.id } },
+          sort: 'packageIndex',
+          limit: 50,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => ({ docs: [] as any[] })),
+      payload
+        .find({
+          collection: 'pod-jobs',
+          where: { order: { equals: order.id } },
+          sort: 'packageIndex',
+          limit: 50,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => ({ docs: [] as any[] })),
+    ])
+    for (const pkg of packages.docs as any[]) {
+      const external = pkg.externalFulfillment ?? {}
+      shipments.push({
+        label: `Package ${Number(pkg.packageIndex ?? 0) + 1}`,
+        status: String(pkg.status ?? ''),
+        carrier: external.carrier ? String(external.carrier) : null,
+        trackingNumber: external.trackingNumber ? String(external.trackingNumber) : null,
+        trackingUrl: external.trackingUrl ? String(external.trackingUrl) : null,
+        shippedAt: external.shippedAt ? String(external.shippedAt) : null,
+      })
+    }
+    for (const job of jobs.docs as any[]) {
+      const tracking = job.trackingSource ?? {}
+      shipments.push({
+        label: `Made-to-order package ${Number(job.packageIndex ?? 0) + 1}`,
+        status: String(job.state ?? ''),
+        carrier: tracking.carrier ? String(tracking.carrier) : null,
+        trackingNumber: tracking.trackingNumber ? String(tracking.trackingNumber) : null,
+        trackingUrl: tracking.trackingUrl ? String(tracking.trackingUrl) : null,
+        shippedAt: null,
+      })
+    }
+    fulfillment = { groups, shipments }
+  }
   return NextResponse.json(
     {
       downloads,
@@ -175,6 +248,7 @@ export async function GET(request: Request) {
                   currency: String(order.totalsSnapshot.currency ?? order.currency),
                 }
               : null,
+            fulfillment,
           }
         : null,
     },

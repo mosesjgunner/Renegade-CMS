@@ -12,6 +12,8 @@ import {
 } from '@/modules/public/discovery'
 import { ProductDetail } from '@/modules/commerce/ProductView'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { relatedProductsFor } from '@/modules/commerce/storefront'
+import { siteMerchantPolicies } from '@/modules/commerce/policies'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,6 +63,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     record: product,
   })
   if (discovery.canonicalPath !== `/store/${slug}`) permanentRedirect(discovery.canonicalPath)
+  const [relatedProducts, policies] = await Promise.all([
+    relatedProductsFor(payload as any, product, siteId),
+    siteMerchantPolicies(payload as any, siteId),
+  ])
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
       <script
@@ -69,7 +75,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           __html: serializeJsonLd(discovery.schema.jsonLd),
         }}
       />
-      <ProductDetail product={product} />
+      <ProductDetail product={product} relatedProducts={relatedProducts} policies={policies} />
     </main>
   )
 }

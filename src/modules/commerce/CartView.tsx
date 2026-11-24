@@ -2,11 +2,66 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { toDataURL } from 'qrcode'
 import type { VersionedCart } from './cart'
 import type { PricingSnapshot } from './pricing'
 import type { CheckoutProposal } from './proposal'
 import type { RawAddressInput } from './shipping'
 import { formatMinorMoney } from './catalog'
+
+/** Recognizable country names for the address selects (Pass 04: buyers
+ * should never have to know ISO codes). */
+const COUNTRY_CODES: string[] = (() => {
+  try {
+    return (Intl as any)
+      .supportedValuesOf('region')
+      .filter((code: string) => /^[A-Z]{2}$/.test(code))
+  } catch {
+    return ['US', 'CA', 'GB', 'DE', 'FR', 'AU', 'JP', 'MX', 'BR', 'IN']
+  }
+})()
+const countryDisplay = new Intl.DisplayNames(['en'], { type: 'region' })
+const countryName = (code: string) => {
+  try {
+    return countryDisplay.of(code) ?? code
+  } catch {
+    return code
+  }
+}
+
+type PresentedMethod = {
+  id: string
+  label: string
+  detail: string | null
+  family: string
+  providerKey: string
+  custody: 'processor-managed' | 'noncustodial' | null
+  networks: readonly string[]
+  paymentOptions: readonly string[]
+  testMode: boolean
+}
+
+type ShippingRateOption = {
+  id: string
+  title: string
+  amountMinor: string
+  currency: string
+  estimatedDaysMin?: number
+  estimatedDaysMax?: number
+}
+type ShippingOptionGroup = {
+  groupKey: string
+  rates: ShippingRateOption[]
+  selectedRateId: string | null
+}
+type MerchantPolicyLink = { type: string; version: string; title: string; href: string }
+
+const formatBtc = (satoshis: string) => {
+  const value = BigInt(satoshis)
+  const whole = value / 100_000_000n
+  const fraction = (value % 100_000_000n).toString().padStart(8, '0')
+  return `${whole.toString()}.${fraction}`
+}
 
 export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
   const [cart, setCart] = useState<VersionedCart | null>(null)
@@ -38,14 +93,43 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
   const [proposalError, setProposalError] = useState<string>('')
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false)
   const [paymentAction, setPaymentAction] = useState<any>(null)
-  const [paymentMethods, setPaymentMethods] = useState<
-    Array<{ id: string; label: string; providerKey: string }>
-  >([])
+  const [paymentMethods, setPaymentMethods] = useState<PresentedMethod[]>([])
   const [paymentMethodId, setPaymentMethodId] = useState('')
+  const [shippingOptions, setShippingOptions] = useState<ShippingOptionGroup[]>([])
+  const [selectedShippingRateId, setSelectedShippingRateId] = useState('')
+  const [policies, setPolicies] = useState<MerchantPolicyLink[]>([])
+  const [cryptoTxId, setCryptoTxId] = useState('')
+  const [cryptoVerifyState, setCryptoVerifyState] = useState('')
+  const [qrDataUrl, setQrDataUrl] = useState('')
 
   useEffect(() => {
     fetchCart()
+    fetch('/api/commerce/policies')
+      .then(async (response) => {
+        if (response.ok) setPolicies((await response.json()).policies ?? [])
+      })
+      .catch(() => undefined)
   }, [])
+
+  // Render a scannable QR for the crypto payment URI the server issued.
+  useEffect(() => {
+    const payload = paymentAction?.cryptoInvoice?.qrPayload
+    if (!payload) {
+      setQrDataUrl('')
+      return
+    }
+    let cancelled = false
+    toDataURL(String(payload), { margin: 1, width: 220 })
+      .then((url) => {
+        if (!cancelled) setQrDataUrl(url)
+      })
+      .catch(() => {
+        if (!cancelled) setQrDataUrl('')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [paymentAction])
 
   async function mergeGuestCart() {
     const token = document.cookie
@@ -192,15 +276,14 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
     }
   }
 
-  async function handleGenerateProposal(e: React.FormEvent) {
-    e.preventDefault()
+  async function requestProposal(shippingRateId?: string) {
     if (!cart) return
-
     setProposalLoading(true)
     setProposalError('')
     setPaymentAction(null)
     setPaymentMethods([])
     setPaymentMethodId('')
+    setCryptoVerifyState('')
 
     try {
       const hasPhysical = cart.items.some((i) => i.kind === 'physical' || i.kind === 'pod')
@@ -226,6 +309,7 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
           name: customerName || address.name,
         }
       }
+      if (shippingRateId) payload.selectedShippingRateId = shippingRateId
 
       const res = await fetch('/api/commerce/proposal', {
         method: 'POST',
@@ -239,6 +323,11 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
       }
 
       setProposal(data.proposal)
+      const options: ShippingOptionGroup[] = Array.isArray(data.shippingOptions)
+        ? data.shippingOptions
+        : []
+      setShippingOptions(options)
+      setSelectedShippingRateId(options[0]?.selectedRateId ?? '')
       const methodsResponse = await fetch(
         '/api/commerce/checkout/methods?proposal=' + encodeURIComponent(data.proposal.id),
       )
@@ -254,6 +343,57 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
       setProposalError(err.message || 'Error creating checkout proposal.')
     } finally {
       setProposalLoading(false)
+    }
+  }
+
+  async function handleGenerateProposal(e: React.FormEvent) {
+    e.preventDefault()
+    await requestProposal(selectedShippingRateId || undefined)
+  }
+
+  /** Pass 04: an explicit delivery-method choice re-quotes the order with
+   * that rate; the previous quote is superseded server-side. */
+  async function changeShippingMethod(rateId: string) {
+    setSelectedShippingRateId(rateId)
+    await requestProposal(rateId)
+  }
+
+  /** Pass 05: after paying a crypto invoice, ask the server to verify. The
+   * transaction id is only a lookup hint — settlement truth is server-side. */
+  async function handleVerifyCrypto() {
+    if (!paymentAction?.intentId) return
+    setPaymentLoading(true)
+    try {
+      const res = await fetch('/api/commerce/crypto/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          intentId: paymentAction.intentId,
+          ...(cryptoTxId.trim() ? { transactionId: cryptoTxId.trim() } : {}),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Verification failed.')
+      if (data.confirmed) {
+        setCryptoVerifyState('Payment confirmed. Your order is complete — thank you!')
+        setAnnouncement('Payment confirmed. Your order is complete.')
+      } else if (data.state === 'underpaid') {
+        setCryptoVerifyState(
+          'The payment received was less than the invoice amount. Please send the remaining amount to the same address.',
+        )
+      } else if (data.state === 'expired') {
+        setCryptoVerifyState(
+          'This invoice has expired. Go back and review your order again to get a new quote.',
+        )
+      } else {
+        setCryptoVerifyState(
+          `Payment seen (status: ${data.state}). Confirmation can take a little while — you can check again shortly.`,
+        )
+      }
+    } catch (err: any) {
+      setCryptoVerifyState(err.message || 'Verification failed.')
+    } finally {
+      setPaymentLoading(false)
     }
   }
 
@@ -604,15 +744,22 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
 
               {!hasPhysical && (
                 <div>
-                  <label htmlFor="billing-country">Billing country (2-letter ISO)</label>
-                  <input
+                  <label htmlFor="billing-country" className="block text-xs font-semibold mb-1">
+                    Billing country
+                  </label>
+                  <select
                     id="billing-country"
                     value={billingCountry}
                     required
-                    maxLength={2}
-                    pattern="[A-Za-z]{2}"
-                    onChange={(event) => setBillingCountry(event.target.value.toUpperCase())}
-                  />
+                    onChange={(event) => setBillingCountry(event.target.value)}
+                    className="w-full rounded border p-2 text-sm bg-transparent"
+                  >
+                    {COUNTRY_CODES.map((code) => (
+                      <option key={code} value={code}>
+                        {countryName(code)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
               {hasPhysical && (
@@ -681,19 +828,21 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
                     </div>
                     <div>
                       <label htmlFor="addr-country" className="block text-xs font-medium mb-1">
-                        Country (2-letter ISO)
+                        Country
                       </label>
-                      <input
+                      <select
                         id="addr-country"
-                        type="text"
-                        maxLength={2}
                         value={address.country}
-                        onChange={(e) =>
-                          setAddress({ ...address, country: e.target.value.toUpperCase() })
-                        }
+                        onChange={(e) => setAddress({ ...address, country: e.target.value })}
                         required
-                        className="w-full rounded border p-2 text-sm bg-transparent uppercase"
-                      />
+                        className="w-full rounded border p-2 text-sm bg-transparent"
+                      >
+                        {COUNTRY_CODES.map((code) => (
+                          <option key={code} value={code}>
+                            {countryName(code)}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 </fieldset>
@@ -708,7 +857,37 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
                     required
                     className="mt-0.5 rounded"
                   />
-                  <span>I agree to the Terms of Service and Privacy Policy.</span>
+                  <span>
+                    I agree to the{' '}
+                    {policies.find((policy) => policy.type === 'terms') ? (
+                      <a
+                        className="underline font-semibold"
+                        href={policies.find((policy) => policy.type === 'terms')!.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Terms of Service (v
+                        {policies.find((policy) => policy.type === 'terms')!.version})
+                      </a>
+                    ) : (
+                      'Terms of Service'
+                    )}{' '}
+                    and{' '}
+                    {policies.find((policy) => policy.type === 'privacy') ? (
+                      <a
+                        className="underline font-semibold"
+                        href={policies.find((policy) => policy.type === 'privacy')!.href}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Privacy Policy (v
+                        {policies.find((policy) => policy.type === 'privacy')!.version})
+                      </a>
+                    ) : (
+                      'Privacy Policy'
+                    )}
+                    .
+                  </span>
                 </label>
                 <label className="flex items-start space-x-2 text-xs">
                   <input
@@ -768,7 +947,11 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
                         ? 'parcel delivery'
                         : f.fulfillmentKind === 'pod'
                           ? 'made to order'
-                          : 'digital delivery',
+                          : f.fulfillmentKind === 'dropship'
+                            ? 'shipped by the supplier'
+                            : f.fulfillmentKind === 'referral'
+                              ? 'bought at the seller’s own site'
+                              : 'digital delivery',
                     )
                     .join(', ')}
                 </p>
@@ -784,24 +967,64 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
                 </p>
               )}
 
-              {paymentMethods.length > 0 && !paymentAction && (
-                <label>
-                  Payment method
-                  <select
-                    aria-label="Payment method"
-                    value={paymentMethodId}
-                    onChange={(event) => setPaymentMethodId(event.target.value)}
-                  >
-                    {paymentMethods.map((method) => (
-                      <option key={method.id} value={method.id}>
-                        {method.label}
-                        {method.providerKey === 'deterministic-test'
-                          ? ' (test payment — no real charge)'
+              {shippingOptions.length > 0 && !paymentAction && (
+                <fieldset className="border-t pt-3 space-y-2">
+                  <legend className="text-xs font-bold">Delivery method</legend>
+                  <p className="text-xs text-muted-foreground">
+                    Applies to each shipment in this order. Changing it updates your total.
+                  </p>
+                  {shippingOptions[0].rates.map((rate) => (
+                    <label key={rate.id} className="flex items-start gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="shipping-method"
+                        value={rate.id}
+                        checked={selectedShippingRateId === rate.id}
+                        onChange={() => changeShippingMethod(rate.id)}
+                        className="mt-1"
+                      />
+                      <span>
+                        <span className="font-semibold">{rate.title}</span> —{' '}
+                        {formatMinorMoney(rate.amountMinor, rate.currency)}
+                        {rate.estimatedDaysMin && rate.estimatedDaysMax
+                          ? ` · arrives in ${rate.estimatedDaysMin}–${rate.estimatedDaysMax} days`
                           : ''}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+
+              {paymentMethods.length > 0 && !paymentAction && (
+                <fieldset className="border-t pt-3 space-y-2">
+                  <legend className="text-xs font-bold">Payment method</legend>
+                  {paymentMethods.map((method) => (
+                    <label key={method.id} className="flex items-start gap-2 text-sm">
+                      <input
+                        type="radio"
+                        name="payment-method"
+                        value={method.id}
+                        checked={paymentMethodId === method.id}
+                        onChange={(event) => setPaymentMethodId(event.target.value)}
+                        className="mt-1"
+                      />
+                      <span>
+                        <span className="font-semibold">{method.label}</span>
+                        {method.paymentOptions.length ? (
+                          <span className="text-muted-foreground">
+                            {' '}
+                            ({method.paymentOptions.join(' or ')})
+                          </span>
+                        ) : null}
+                        {method.detail ? (
+                          <span className="block text-xs text-muted-foreground">
+                            {method.detail}
+                          </span>
+                        ) : null}
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
               )}
               {paymentAction ? (
                 <div className="p-4 rounded border bg-surface dark:bg-zinc-900 space-y-2 text-sm">
@@ -816,6 +1039,86 @@ export function CartView({ mode = 'cart' }: { mode?: 'cart' | 'checkout' }) {
                   )}
                   {paymentAction.instructions && (
                     <p className="text-xs text-muted-foreground">{paymentAction.instructions}</p>
+                  )}
+                  {paymentAction.cryptoInvoice && (
+                    <div className="space-y-2 border-t pt-3">
+                      <p className="font-bold">
+                        Pay exactly {formatBtc(paymentAction.cryptoInvoice.exactAmountAtomic)} BTC
+                      </p>
+                      {paymentAction.fxQuote && (
+                        <p className="text-xs text-muted-foreground">
+                          That is{' '}
+                          {formatMinorMoney(
+                            paymentAction.fxQuote.amountMinor,
+                            paymentAction.fxQuote.currency,
+                          )}{' '}
+                          at the rate frozen when this payment started — the amount will not change
+                          while this invoice is open.
+                          {paymentAction.fxQuote.settlement
+                            ? ` Processor fee ${formatMinorMoney(paymentAction.fxQuote.settlement.feeAmountMinor, paymentAction.fxQuote.currency)}; the seller receives ${formatMinorMoney(paymentAction.fxQuote.settlement.netAmountMinor, paymentAction.fxQuote.currency)}.`
+                            : ''}
+                        </p>
+                      )}
+                      {paymentAction.custodial?.lightningAddress && (
+                        <p className="text-xs">
+                          <strong>Lightning:</strong> pay{' '}
+                          <span className="font-mono break-all">
+                            {paymentAction.custodial.lightningAddress}
+                          </span>{' '}
+                          the exact amount above.
+                        </p>
+                      )}
+                      <p className="text-xs">
+                        <strong>On-chain address:</strong>{' '}
+                        <span className="font-mono break-all">
+                          {paymentAction.cryptoInvoice.destination}
+                        </span>
+                      </p>
+                      {qrDataUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={qrDataUrl}
+                          alt="QR code for this Bitcoin payment"
+                          width={220}
+                          height={220}
+                        />
+                      ) : null}
+                      <p className="text-xs text-muted-foreground">
+                        This invoice expires at{' '}
+                        {new Date(paymentAction.cryptoInvoice.expiresAt).toLocaleString()}. Send the
+                        exact amount — a partial payment cannot complete the order.
+                      </p>
+                      {paymentAction.cryptoInvoice.network === 'bitcoin' &&
+                      paymentMethods.find((method) => method.id === paymentMethodId)
+                        ?.providerKey !== 'btcpay' ? (
+                        <div className="space-y-2">
+                          <label className="block text-xs font-semibold" htmlFor="crypto-txid">
+                            After paying, enter the transaction ID so we can confirm it
+                          </label>
+                          <input
+                            id="crypto-txid"
+                            type="text"
+                            value={cryptoTxId}
+                            onChange={(event) => setCryptoTxId(event.target.value)}
+                            className="w-full rounded border p-2 text-sm bg-transparent font-mono"
+                            placeholder="Transaction ID"
+                          />
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={handleVerifyCrypto}
+                        disabled={paymentLoading}
+                        className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded text-xs disabled:opacity-50"
+                      >
+                        {paymentLoading ? 'Checking…' : 'I’ve paid — confirm my payment'}
+                      </button>
+                      {cryptoVerifyState && (
+                        <p role="status" className="text-xs font-semibold">
+                          {cryptoVerifyState}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               ) : (

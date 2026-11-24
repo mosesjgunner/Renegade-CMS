@@ -464,6 +464,71 @@ export function resolveActiveOffer(
   )
 }
 
+export type CatalogListingFields = {
+  minPriceMinor: string | null
+  priceCurrency: string | null
+  anyAvailable: boolean
+}
+
+/**
+ * RC3-20 SHOP-UX Pass 01: denormalized listing fields maintained on the
+ * product record at write time so the storefront can filter and sort by
+ * price and availability with native indexed queries. Price truth stays in
+ * the offers JSON; this is a projection of `resolveActiveOffer` over the
+ * product's purchasable variants, never an independent price source.
+ */
+export function deriveCatalogListingFields(
+  product: Pick<CatalogProduct, 'offers' | 'variants'>,
+  now = new Date().toISOString(),
+): CatalogListingFields {
+  let best: { amountMinor: bigint; currency: string } | null = null
+  let anyAvailable = false
+  const currencies = [...new Set(product.offers.map((offer) => offer.currency))]
+  for (const variant of product.variants) {
+    if (variant.status !== 'active') continue
+    const inventoryOk =
+      variant.inventory?.policy !== 'tracked' || (variant.inventory?.quantity ?? 0) > 0
+    if (!inventoryOk) continue
+    for (const currency of currencies) {
+      const offer = resolveActiveOffer(product as CatalogProduct, {
+        variantSku: variant.sku,
+        currency,
+        now,
+      })
+      if (!offer || !integerMoney(offer.amountMinor)) continue
+      anyAvailable = true
+      const amount = BigInt(offer.amountMinor)
+      if (!best || amount < best.amountMinor) best = { amountMinor: amount, currency }
+    }
+  }
+  return {
+    minPriceMinor: best ? best.amountMinor.toString() : null,
+    priceCurrency: best ? best.currency : null,
+    anyAvailable,
+  }
+}
+
+/**
+ * Parse a buyer-entered major-unit amount (e.g. a donation "12.50") into
+ * minor units using the currency's own fraction digits — never a hardcoded
+ * 100 divisor. Rejects anything that is not a plain non-negative decimal
+ * with at most the currency's fraction digits.
+ */
+export function parseMoneyToMinor(value: string, currency: string): string {
+  if (!/^[A-Z]{3}$/.test(currency)) throw new Error('Invalid currency.')
+  const digits =
+    new Intl.NumberFormat('en', { style: 'currency', currency }).resolvedOptions()
+      .maximumFractionDigits ?? 2
+  const trimmed = value.trim()
+  if (!/^\d+(\.\d+)?$/.test(trimmed)) throw new Error('Enter a valid amount.')
+  const [whole, fraction = ''] = trimmed.split('.')
+  if (fraction.length > digits)
+    throw new Error(`Enter an amount with at most ${digits} decimal places.`)
+  const padded = fraction.padEnd(digits, '0')
+  const minor = BigInt(whole) * 10n ** BigInt(digits) + (padded ? BigInt(padded) : 0n)
+  return minor.toString()
+}
+
 export function affiliateFreshness(
   policy: AffiliatePolicy,
   now = new Date(),

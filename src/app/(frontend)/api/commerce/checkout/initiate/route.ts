@@ -25,7 +25,11 @@ import {
   configuredPaymentProvider,
   PaymentProviderError,
 } from '@/modules/commerce/payment-provider'
-import { createBtcpayAdapter } from '@/modules/commerce/adapters'
+import {
+  createBtcpayAdapter,
+  createCustodialCryptoAdapter,
+  custodialCryptoConfigFromMerchant,
+} from '@/modules/commerce/adapters'
 
 const id = (value: unknown) =>
   typeof value === 'string' ? value : (value as { id?: string } | null)?.id
@@ -543,6 +547,53 @@ async function initiateCheckout(
     },
     overrideAccess: true,
   })
+  // RC3-20 SHOP-UX Pass 05: choosing a payment method supersedes the
+  // buyer's earlier choices for this checkout. Any other still-open intent
+  // is cancelled so a stale invoice or hosted page from a previous method
+  // can no longer settle the order after the buyer switched — switching
+  // methods must never double-charge or double-fulfill.
+  await db.update({
+    collection: 'payment-intents',
+    where: {
+      and: [
+        { checkoutSession: { equals: session.id } },
+        { id: { not_equals: intent.id } },
+        { state: { in: ['created', 'requires-action', 'pending'] } },
+      ],
+    },
+    data: { state: 'cancelled' },
+    overrideAccess: true,
+  })
+  // RC3-20 SHOP-UX Pass 06: guest buyers reach their order page through a
+  // possession-verified, expiring token cookie. The hosted-card path sets
+  // it on its success response; the crypto paths must set it too, or a
+  // guest who paid by crypto can never open their order status.
+  const withGuestOrderCookie = (response: NextResponse) => {
+    if (!id(cart.member) && !id(cart.owner)) {
+      const tokenSecret =
+        process.env.COMMERCE_GUEST_ORDER_SECRET ??
+        (process.env.NODE_ENV === 'production' ? '' : 'development-commerce-guest-secret-32')
+      if (tokenSecret) {
+        const token = signGuestOrderToken(
+          {
+            orderId: String(session.id),
+            checkoutSessionId: String(session.id),
+            siteId: String(id(session.site)),
+            exp: Date.parse(session.expiresAt) + 30 * 24 * 60 * 60 * 1000,
+          },
+          tokenSecret,
+        )
+        response.cookies.set(`renegade_checkout_${session.id}`, token, {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: new URL(request.url).protocol === 'https:',
+          path: '/',
+          maxAge: 30 * 24 * 60 * 60,
+        })
+      }
+    }
+    return response
+  }
   if (crypto && capability.providerKey === 'btcpay') {
     // RC3-20: BTCPay Server rail. The merchant's own BTCPay Server issues the
     // invoice; the FX quote is frozen on the intent at creation and the
@@ -590,14 +641,16 @@ async function initiateCheckout(
         data: { state: 'pending', selectedCapabilityId: capability.id },
         overrideAccess: true,
       })
-      return NextResponse.json({
-        sessionId: session.id,
-        intentId: intent.id,
-        flow: 'qr',
-        cryptoInvoice: invoice,
-        fxQuote: quote.money,
-        instructions: capability.instructions,
-      })
+      return withGuestOrderCookie(
+        NextResponse.json({
+          sessionId: session.id,
+          intentId: intent.id,
+          flow: 'qr',
+          cryptoInvoice: invoice,
+          fxQuote: quote.money,
+          instructions: capability.instructions,
+        }),
+      )
     } catch (error) {
       await db.update({
         collection: 'payment-intents',
@@ -614,6 +667,96 @@ async function initiateCheckout(
       return NextResponse.json(
         {
           error: error instanceof Error ? error.message : 'BTCPay invoice creation failed.',
+        },
+        { status: 502 },
+      )
+    }
+  }
+  if (crypto && capability.providerKey === 'custodial-crypto') {
+    // RC3-20 SHOP-UX Pass 05: custodial crypto rail. The buyer pays the
+    // PROCESSOR's deposit address (or its Lightning address) — funds never
+    // touch a merchant wallet. The FX quote, the processor fee and the
+    // settlement mode are frozen on the intent at creation, exactly like
+    // the BTCPay rail freezes its quote; settlement is verified later from
+    // processor-reported observations.
+    const custodialConfig = custodialCryptoConfigFromMerchant(merchant.configuration ?? {})
+    if (!custodialConfig)
+      return NextResponse.json(
+        { error: 'Custodial crypto is not configured for this merchant.' },
+        { status: 503 },
+      )
+    const custodial = createCustodialCryptoAdapter(custodialConfig)
+    try {
+      const quote = custodial.quoteInvoiceAmount({
+        amountMinor: String(intent.amountMinor),
+        currency: String(intent.currency),
+        now: new Date().toISOString(),
+        buyerConfirmedConversion: true,
+      })
+      const invoice = await custodial.createInvoice({
+        intentId: intent.id,
+        network: 'bitcoin',
+        asset: 'BTC',
+        exactAmountAtomic: quote.exactAmountAtomic,
+        destination: custodialConfig.depositAddress,
+        expiresAt: intent.expiresAt,
+        requiredConfirmations: custodialConfig.requiredConfirmations ?? 1,
+      })
+      const fxQuote = {
+        ...quote.money,
+        processorName: custodialConfig.processorName,
+        settlement: quote.settlement,
+      }
+      await db.update({
+        collection: 'payment-intents',
+        id: intent.id,
+        data: {
+          providerReference: `custodial:${intent.id}`,
+          state: 'pending',
+          cryptoInvoice: invoice,
+          fxQuote,
+        },
+        overrideAccess: true,
+      })
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'pending', selectedCapabilityId: capability.id },
+        overrideAccess: true,
+      })
+      return withGuestOrderCookie(
+        NextResponse.json({
+          sessionId: session.id,
+          intentId: intent.id,
+          flow: 'qr',
+          cryptoInvoice: invoice,
+          fxQuote,
+          custodial: {
+            processorName: custodialConfig.processorName,
+            settlementMode: custodialConfig.settlementMode,
+            ...(custodialConfig.lightningAddress
+              ? { lightningAddress: custodialConfig.lightningAddress }
+              : {}),
+          },
+          instructions: capability.instructions,
+        }),
+      )
+    } catch (error) {
+      await db.update({
+        collection: 'payment-intents',
+        id: intent.id,
+        data: { state: 'failed' },
+        overrideAccess: true,
+      })
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'failed' },
+        overrideAccess: true,
+      })
+      return NextResponse.json(
+        {
+          error: error instanceof Error ? error.message : 'Custodial invoice creation failed.',
         },
         { status: 502 },
       )
@@ -650,12 +793,15 @@ async function initiateCheckout(
       data: { state: 'pending', selectedCapabilityId: capability.id },
       overrideAccess: true,
     })
-    return NextResponse.json({
-      intentId: intent.id,
-      flow: 'qr',
-      cryptoInvoice: invoice,
-      instructions: capability.instructions,
-    })
+    return withGuestOrderCookie(
+      NextResponse.json({
+        sessionId: session.id,
+        intentId: intent.id,
+        flow: 'qr',
+        cryptoInvoice: invoice,
+        instructions: capability.instructions,
+      }),
+    )
   }
   let adapter
   try {

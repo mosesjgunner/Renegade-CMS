@@ -1,6 +1,16 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { LiveProductShowcase } from '../../commerce/LiveProductShowcase'
+import {
+  CommerceBuyButtonBlock,
+  CommerceCartIndicatorBlock,
+  CommerceCollectionGridBlock,
+  CommerceDonationCardBlock,
+  CommerceFeaturedProductBlock,
+  CommerceMembershipCardBlock,
+  CommerceProductCardBlock,
+  CommerceProductGridBlock,
+} from '../../commerce/CommerceBlocks'
 import type { ComponentDefinition, PresentationField } from '../../public/page-builder'
 import { ResponsiveMedia } from '../../media/responsive'
 import type { FormField } from '../../audience/contracts'
@@ -643,6 +653,196 @@ starterComponents['publisher.product-showcase'] = {
   },
   fallback: (block) => (
     <div data-unavailable-component={block.component}>Product showcase unavailable</div>
+  ),
+}
+
+// RC3-20 SHOP-UX Pass 07 — commerce blocks. Props carry ONLY canonical
+// references (product / category / collection IDs) and display options.
+// Price and inventory are read live from the catalog at render time and
+// are never stored in layout JSON, so theme switches and price changes
+// cannot strand stale authoritative values in a page layout.
+const productReferenceField: PresentationField = { type: 'text', label: 'Product ID' }
+const requireProductReference = (props: Record<string, unknown>) =>
+  typeof props.productId === 'string' && props.productId.trim()
+    ? []
+    : ['Choose a product for this block']
+
+starterComponents['commerce.product-card'] = {
+  id: 'commerce.product-card',
+  version: 1,
+  label: 'Product Card',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { productId: productReferenceField },
+  validate: requireProductReference,
+  render: (props) => (
+    <div data-component="commerce.product-card" data-product-ref={String(props.productId ?? '')}>
+      <CommerceProductCardBlock productId={String(props.productId ?? '')} />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Product card unavailable</div>
+  ),
+}
+
+starterComponents['commerce.product-grid'] = {
+  id: 'commerce.product-grid',
+  version: 1,
+  label: 'Product Grid',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {
+    category: { type: 'text', label: 'Category slug (optional)' },
+    limit: { type: 'number', label: 'Maximum products' },
+    featuredOnly: {
+      type: 'select',
+      label: 'Featured products only',
+      options: ['no', 'yes'],
+    },
+  },
+  validate: () => [],
+  render: (props) => (
+    <div data-component="commerce.product-grid">
+      <CommerceProductGridBlock
+        category={typeof props.category === 'string' ? props.category : undefined}
+        limit={typeof props.limit === 'number' ? props.limit : undefined}
+        featuredOnly={props.featuredOnly === 'yes'}
+      />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Product grid unavailable</div>
+  ),
+}
+
+starterComponents['commerce.featured-product'] = {
+  id: 'commerce.featured-product',
+  version: 1,
+  label: 'Featured Product',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { productId: productReferenceField },
+  validate: requireProductReference,
+  render: (props) => (
+    <div
+      data-component="commerce.featured-product"
+      data-product-ref={String(props.productId ?? '')}
+    >
+      <CommerceFeaturedProductBlock productId={String(props.productId ?? '')} />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Featured product unavailable</div>
+  ),
+}
+
+starterComponents['commerce.collection-grid'] = {
+  id: 'commerce.collection-grid',
+  version: 1,
+  label: 'Collection Grid',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { collectionId: { type: 'text', label: 'Collection ID' } },
+  validate: (props) =>
+    typeof props.collectionId === 'string' && props.collectionId.trim()
+      ? []
+      : ['Choose a collection for this block'],
+  render: (props) => (
+    <div
+      data-component="commerce.collection-grid"
+      data-collection-ref={String(props.collectionId ?? '')}
+    >
+      <CommerceCollectionGridBlock collectionId={String(props.collectionId ?? '')} />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Collection grid unavailable</div>
+  ),
+}
+
+starterComponents['commerce.buy-button'] = {
+  id: 'commerce.buy-button',
+  version: 1,
+  label: 'Buy Button',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {
+    productId: productReferenceField,
+    label: { type: 'text', label: 'Button label (optional)', maxLength: 80 },
+  },
+  validate: requireProductReference,
+  render: (props) => (
+    <div data-component="commerce.buy-button" data-product-ref={String(props.productId ?? '')}>
+      <CommerceBuyButtonBlock
+        productId={String(props.productId ?? '')}
+        label={typeof props.label === 'string' ? props.label : undefined}
+      />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Buy button unavailable</div>
+  ),
+}
+
+starterComponents['commerce.cart-indicator'] = {
+  id: 'commerce.cart-indicator',
+  version: 1,
+  label: 'Cart Indicator',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {},
+  validate: () => [],
+  render: () => (
+    <div data-component="commerce.cart-indicator">
+      <CommerceCartIndicatorBlock />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Cart indicator unavailable</div>
+  ),
+}
+
+starterComponents['commerce.membership-card'] = {
+  id: 'commerce.membership-card',
+  version: 1,
+  label: 'Membership / Pricing Card',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { productId: productReferenceField },
+  validate: requireProductReference,
+  render: (props) => (
+    <div data-component="commerce.membership-card" data-product-ref={String(props.productId ?? '')}>
+      <CommerceMembershipCardBlock productId={String(props.productId ?? '')} />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Membership card unavailable</div>
+  ),
+}
+
+starterComponents['commerce.donation-card'] = {
+  id: 'commerce.donation-card',
+  version: 1,
+  label: 'Donation / Tip Card',
+  category: 'Commerce',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: { productId: productReferenceField },
+  validate: requireProductReference,
+  render: (props) => (
+    <div data-component="commerce.donation-card" data-product-ref={String(props.productId ?? '')}>
+      <CommerceDonationCardBlock productId={String(props.productId ?? '')} />
+    </div>
+  ),
+  fallback: (block) => (
+    <div data-unavailable-component={block.component}>Donation card unavailable</div>
   ),
 }
 

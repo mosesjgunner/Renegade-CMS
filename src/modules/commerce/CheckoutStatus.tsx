@@ -33,6 +33,28 @@ type OrderItemView = {
   currency: string
 }
 
+const SHIPMENT_STATE_LABELS: Record<string, string> = {
+  pending_acknowledgement: 'being prepared',
+  acknowledged: 'being prepared',
+  in_production: 'in production',
+  production: 'in production',
+  submitted: 'submitted to the maker',
+  shipped: 'shipped',
+  delivered: 'delivered',
+  cancelled: 'cancelled',
+  failed: 'needs attention',
+}
+
+const GROUP_LABELS: Record<string, string> = {
+  physical: 'Parcel delivery',
+  digital: 'Digital delivery',
+  pod: 'Made to order',
+  dropship: 'Shipped by the supplier',
+  referral: 'Bought at the seller’s site',
+}
+
+const humanizeKind = (kind: string) => kind.replace(/^(order|payment)-/, '').replace(/[-_]/g, ' ')
+
 type Status = {
   downloads?: Array<{ path: string; label: string }>
   checkout: { state: string }
@@ -54,8 +76,21 @@ type Status = {
       grandTotalMinor: string
       currency: string
     } | null
+    fulfillment?: {
+      groups: Array<{ kind: string; itemCount: number; state: string | null }>
+      shipments: Array<{
+        label: string
+        status: string
+        carrier: string | null
+        trackingNumber: string | null
+        trackingUrl: string | null
+        shippedAt: string | null
+      }>
+    } | null
   } | null
 }
+
+type PolicyLink = { type: string; title: string; href: string }
 
 export function CheckoutStatus({
   sessionId,
@@ -66,6 +101,14 @@ export function CheckoutStatus({
 }) {
   const [status, setStatus] = useState<Status | null>(null)
   const [error, setError] = useState('')
+  const [policies, setPolicies] = useState<PolicyLink[]>([])
+  useEffect(() => {
+    fetch('/api/commerce/policies')
+      .then(async (response) => {
+        if (response.ok) setPolicies((await response.json()).policies ?? [])
+      })
+      .catch(() => undefined)
+  }, [])
   useEffect(() => {
     let active = true
     let timer: ReturnType<typeof setTimeout>
@@ -120,17 +163,75 @@ export function CheckoutStatus({
               {status.order.refund.state}).
             </p>
           )}
+          <h2>Order timeline</h2>
           <ul aria-label="Order history">
             {(status.order?.history ?? []).map((entry, index) => (
               <li key={index}>
-                {entry.kind}
-                {entry.at ? ` · ${entry.at}` : ''}
+                {humanizeKind(entry.kind)}
+                {entry.at ? ` · ${new Date(entry.at).toLocaleString()}` : ''}
               </li>
             ))}
           </ul>
           <p>Receipt {status.order?.receiptNumber ?? 'is being prepared'}.</p>
-          {status.order?.amountMinor && status.order?.currency && (
-            <p>Total paid: {money(status.order.amountMinor, status.order.currency)}</p>
+          {status.order?.totalsSnapshot ? (
+            <>
+              <h2>Receipt</h2>
+              <dl aria-label="Itemized totals">
+                <div>
+                  <dt>Subtotal</dt>
+                  <dd>
+                    {money(
+                      status.order.totalsSnapshot.subtotalMinor,
+                      status.order.totalsSnapshot.currency,
+                    )}
+                  </dd>
+                </div>
+                {BigInt(status.order.totalsSnapshot.adjustmentsTotalMinor) > 0n && (
+                  <div>
+                    <dt>Discounts</dt>
+                    <dd>
+                      −
+                      {money(
+                        status.order.totalsSnapshot.adjustmentsTotalMinor,
+                        status.order.totalsSnapshot.currency,
+                      )}
+                    </dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Shipping</dt>
+                  <dd>
+                    {money(
+                      status.order.totalsSnapshot.netShippingMinor,
+                      status.order.totalsSnapshot.currency,
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Tax</dt>
+                  <dd>
+                    {money(
+                      status.order.totalsSnapshot.taxTotalMinor,
+                      status.order.totalsSnapshot.currency,
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Total paid</dt>
+                  <dd>
+                    {money(
+                      status.order.totalsSnapshot.grandTotalMinor,
+                      status.order.totalsSnapshot.currency,
+                    )}
+                  </dd>
+                </div>
+              </dl>
+            </>
+          ) : (
+            status.order?.amountMinor &&
+            status.order?.currency && (
+              <p>Total paid: {money(status.order.amountMinor, status.order.currency)}</p>
+            )
           )}
           {(status.order?.items?.length ?? 0) > 0 && (
             <ul aria-label="Order items">
@@ -142,11 +243,63 @@ export function CheckoutStatus({
               ))}
             </ul>
           )}
+          {status.order?.fulfillment?.groups.length ||
+          status.order?.fulfillment?.shipments.length ? (
+            <>
+              <h2>Delivery</h2>
+              <ul aria-label="Fulfillment groups">
+                {status.order.fulfillment.groups.map((group, index) => (
+                  <li key={index}>
+                    {GROUP_LABELS[group.kind] ?? group.kind} — {group.itemCount}{' '}
+                    {group.itemCount === 1 ? 'item' : 'items'}
+                    {group.state === 'referred' ? ' (completed at the seller’s site)' : ''}
+                  </li>
+                ))}
+              </ul>
+              {status.order.fulfillment.shipments.length ? (
+                <ul aria-label="Shipments">
+                  {status.order.fulfillment.shipments.map((shipment, index) => (
+                    <li key={index}>
+                      {shipment.label}: {SHIPMENT_STATE_LABELS[shipment.status] ?? shipment.status}
+                      {shipment.trackingNumber ? (
+                        <>
+                          {' '}
+                          · {shipment.carrier ? `${shipment.carrier} ` : ''}tracking{' '}
+                          {shipment.trackingUrl ? (
+                            <a href={shipment.trackingUrl}>{shipment.trackingNumber}</a>
+                          ) : (
+                            shipment.trackingNumber
+                          )}
+                        </>
+                      ) : null}
+                      {shipment.shippedAt
+                        ? ` · shipped ${new Date(shipment.shippedAt).toLocaleDateString()}`
+                        : ''}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </>
+          ) : null}
           {(status.downloads ?? []).map((file) => (
             <p key={file.path}>
               <a href={file.path}>{file.label}</a>
             </p>
           ))}
+          {policies.filter((policy) => ['returns', 'shipping'].includes(policy.type)).length ? (
+            <>
+              <h2>Help with this order</h2>
+              <ul aria-label="Seller policies">
+                {policies
+                  .filter((policy) => ['returns', 'shipping'].includes(policy.type))
+                  .map((policy) => (
+                    <li key={policy.type}>
+                      <a href={policy.href}>{policy.title}</a>
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ) : null}
         </>
       ) : (
         <>

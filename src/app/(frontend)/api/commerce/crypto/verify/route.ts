@@ -7,7 +7,11 @@ import {
   finalizeVerifiedOrder,
   verifySubmittedCryptoTransaction,
 } from '@/modules/commerce/service'
-import { createBtcpayAdapter } from '@/modules/commerce/adapters'
+import {
+  createBtcpayAdapter,
+  createCustodialCryptoAdapter,
+  custodialCryptoConfigFromMerchant,
+} from '@/modules/commerce/adapters'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 
 const relationId = (value: any) =>
@@ -36,6 +40,13 @@ export async function POST(request: Request) {
   const hostSite = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => '')
   if (!hostSite || hostSite !== relationId(intent.site))
     return NextResponse.json({ error: 'Payment intent not found.' }, { status: 404 })
+  // RC3-20 SHOP-UX Pass 05: an intent the buyer superseded by switching
+  // payment methods (or one already closed out) can no longer settle.
+  if (['cancelled', 'failed', 'expired', 'refunded'].includes(String(intent.state)))
+    return NextResponse.json(
+      { error: 'This payment method is no longer active for the checkout.' },
+      { status: 409 },
+    )
   // RC3-20: BTCPay intents settle on evidence queried server-side from the
   // merchant's own BTCPay Server, bound to this intent's invoice reference.
   // There is no submitted transaction hash to replay and no fixture evidence
@@ -145,21 +156,39 @@ export async function POST(request: Request) {
       { error: 'Transaction has already settled another payment intent.' },
       { status: 422 },
     )
-  const configured =
-    (
-      await db.findByID({
-        collection: 'merchant-connections',
-        id:
-          typeof intent.merchantConnection === 'string'
-            ? intent.merchantConnection
-            : intent.merchantConnection.id,
-        depth: 0,
-        overrideAccess: true,
-      })
-    ).configuration?.crypto?.fixtureObservations ?? []
+  const merchant: any = await db
+    .findByID({
+      collection: 'merchant-connections',
+      id:
+        typeof intent.merchantConnection === 'string'
+          ? intent.merchantConnection
+          : intent.merchantConnection.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)
+  // RC3-20 SHOP-UX Pass 05: custodial intents verify against the
+  // processor-reported observations on the merchant's custodialCrypto
+  // configuration, under the same production guard as fixture evidence —
+  // the deterministic processor feed is test evidence until a live
+  // processor integration replaces it. All other non-BTCPay crypto keeps
+  // the fixture-observation path.
+  let adapter: ReturnType<typeof createFixtureCryptoAdapter>
+  if (intent.providerKey === 'custodial-crypto') {
+    const custodialConfig = custodialCryptoConfigFromMerchant(merchant?.configuration ?? {})
+    if (!custodialConfig)
+      return NextResponse.json(
+        { error: 'Custodial crypto is not configured for this merchant.' },
+        { status: 503 },
+      )
+    adapter = createCustodialCryptoAdapter(custodialConfig)
+  } else {
+    const configured = merchant?.configuration?.crypto?.fixtureObservations ?? []
+    adapter = createFixtureCryptoAdapter(intent.providerKey, configured)
+  }
   try {
     const verification = await verifySubmittedCryptoTransaction({
-      adapter: createFixtureCryptoAdapter(intent.providerKey, configured),
+      adapter,
       invoice: intent.cryptoInvoice,
       transactionId: input.transactionId,
       now: new Date().toISOString(),
