@@ -70,6 +70,9 @@ function request(
 ) {
   const scoped = new Headers(headers)
   scoped.set('host', site.host)
+  // Browsers always send Origin on writes, and the fixture registers
+  // site.origin as the site's canonical origin — send it like a browser.
+  if (!['GET', 'HEAD'].includes(method)) scoped.set('origin', site.origin)
   return new Request(site.origin + route + suffix, { method, body, headers: scoped })
 }
 

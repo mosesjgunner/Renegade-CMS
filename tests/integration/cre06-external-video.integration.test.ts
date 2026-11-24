@@ -193,6 +193,9 @@ it('imports a channel video once, preserves local edits, hides private or missin
       cookie: `renegade-member=${actor.session}; renegade-member-csrf=${csrf}`,
       'x-member-csrf': csrf,
       'content-type': 'application/json',
+      // Browsers always send Origin on writes; the site settings above
+      // register this origin as canonical, so send it like a browser.
+      ...(body ? { origin } : {}),
     }
     return body
       ? POST(new Request(endpoint, { method: 'POST', headers, body: JSON.stringify(body) }))
