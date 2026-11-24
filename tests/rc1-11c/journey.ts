@@ -453,7 +453,7 @@ try {
     await guestPage.getByLabel('State / Province').fill('TX')
     await guestPage.getByLabel('Postal Code').fill('78701')
     await guestPage.getByLabel('Country (2-letter ISO)').fill('US')
-    await guestPage.getByRole('checkbox').check()
+    await guestPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const proposalWait = guestPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
@@ -461,7 +461,7 @@ try {
     const methodsWait = guestPage.waitForResponse((r) =>
       r.url().includes('/api/commerce/checkout/methods?proposal='),
     )
-    await guestPage.getByRole('button', { name: 'Create Checkout Proposal', exact: true }).click()
+    await guestPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     const proposalResp = await proposalWait
     const methodsResp = await methodsWait
     assert.equal(proposalResp.status(), 200)
@@ -658,12 +658,12 @@ try {
     await memberPage.getByLabel('State / Province').fill('TX')
     await memberPage.getByLabel('Postal Code').fill('78701')
     await memberPage.getByLabel('Country (2-letter ISO)').fill('US')
-    await memberPage.getByRole('checkbox').check()
+    await memberPage.getByRole('checkbox', { name: /Terms of Service/ }).check()
 
     const mPropWait = memberPage.waitForResponse(
       (r) => r.url().endsWith('/api/commerce/proposal') && r.request().method() === 'POST',
     )
-    await memberPage.getByRole('button', { name: 'Create Checkout Proposal', exact: true }).click()
+    await memberPage.getByRole('button', { name: 'Review your order', exact: true }).click()
     const mPropResp = await mPropWait
     assert.equal(mPropResp.status(), 200)
     const memberProposal = (await mPropResp.json()).proposal

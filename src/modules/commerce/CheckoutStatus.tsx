@@ -1,6 +1,27 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { formatMinorMoney } from './catalog'
+
+/** Buyer-readable money: never show raw minor units to a customer. */
+function money(amountMinor: string | undefined, currency: string | undefined): string {
+  if (!amountMinor || !currency || !/^[A-Z]{3}$/.test(currency)) return ''
+  try {
+    return formatMinorMoney(amountMinor, currency)
+  } catch {
+    return ''
+  }
+}
+
+const PAYMENT_STATE_LABELS: Record<string, string> = {
+  initiated: 'started',
+  'action-required': 'waiting for you to complete payment',
+  processing: 'processing',
+  unknown: 'being confirmed',
+  succeeded: 'confirmed',
+  failed: 'failed',
+  cancelled: 'cancelled',
+}
 
 type OrderItemView = {
   productId: string
@@ -95,7 +116,7 @@ export function CheckoutStatus({
           </p>
           {status.order?.refund && (
             <p>
-              Refund: {status.order.refund.amountMinor} {status.order.currency} minor units (
+              Refund: {money(status.order.refund.amountMinor, status.order.currency)} (
               {status.order.refund.state}).
             </p>
           )}
@@ -103,22 +124,20 @@ export function CheckoutStatus({
             {(status.order?.history ?? []).map((entry, index) => (
               <li key={index}>
                 {entry.kind}
-                {entry.at ? ` ? ${entry.at}` : ''}
+                {entry.at ? ` · ${entry.at}` : ''}
               </li>
             ))}
           </ul>
           <p>Receipt {status.order?.receiptNumber ?? 'is being prepared'}.</p>
           {status.order?.amountMinor && status.order?.currency && (
-            <p>
-              Settled total: {status.order.amountMinor} {status.order.currency} minor units
-            </p>
+            <p>Total paid: {money(status.order.amountMinor, status.order.currency)}</p>
           )}
           {(status.order?.items?.length ?? 0) > 0 && (
             <ul aria-label="Order items">
               {status.order!.items!.map((item) => (
                 <li key={`${item.productId}-${item.variantSku}`}>
-                  {item.title} ({item.variantSku}) × {item.quantity} — {item.lineAmountMinor}{' '}
-                  {item.currency} minor units
+                  {item.title} ({item.variantSku}) × {item.quantity} —{' '}
+                  {money(item.lineAmountMinor, item.currency)}
                 </li>
               ))}
             </ul>
@@ -131,10 +150,16 @@ export function CheckoutStatus({
         </>
       ) : (
         <>
-          <p>Server status: {status.payment?.state ?? status.checkout.state}.</p>
           <p>
-            A redirect or cancel click does not change payment truth. This page will update after
-            verified provider evidence arrives.
+            Payment status:{' '}
+            {PAYMENT_STATE_LABELS[status.payment?.state ?? status.checkout.state] ??
+              status.payment?.state ??
+              status.checkout.state}
+            .
+          </p>
+          <p>
+            If you have completed payment, this page updates automatically once your payment is
+            confirmed.
           </p>
         </>
       )}
