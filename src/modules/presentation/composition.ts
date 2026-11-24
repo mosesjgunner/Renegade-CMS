@@ -1084,7 +1084,7 @@ async function prepareImportLayouts(
         const reference = block.props?.[field]
         if (!isReferenceValue(reference)) continue
         if (reference.siteId === args.siteId) {
-          const collection = field === 'link' ? 'content' : 'media'
+          const collection = field === 'link' ? 'content' : 'media-assets'
           const recordId = reference.id.startsWith('content:')
             ? reference.id.slice('content:'.length)
             : reference.id
@@ -1137,7 +1137,7 @@ async function prepareImportLayouts(
           const href = typeof reference.href === 'string' ? reference.href : ''
           const filename = href.split('/').filter(Boolean).pop() ?? href
           const found = await payload.find({
-            collection: 'media',
+            collection: 'media-assets',
             where: {
               and: [
                 { site: { equals: args.siteId } },
