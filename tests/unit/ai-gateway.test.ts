@@ -264,6 +264,44 @@ describe('AI gateway acceptance fixtures', () => {
   })
 })
 
+describe('RC3-21 agent mount happy path', () => {
+  it('completes a scoped agent tool when site, publication, space, and grant all match', () => {
+    const run = {
+      id: 'run-happy',
+      siteId: 'site-1',
+      publicationId: 'pub-1',
+      spaceId: 'space-1',
+      status: 'completed' as const,
+      audit: [],
+    }
+    const result = invokeScopedAgentTool({
+      run,
+      tool: 'content.draft.read',
+      manifest: {
+        name: 'content.draft.read',
+        version: 1,
+        input: {},
+        output: {},
+        permission: 'content.read.draft',
+        dataSensitivity: 'staff',
+        rateLimit: '60/min',
+        idempotency: 'none',
+        approval: 'never',
+        timeoutMs: 5000,
+        audit: 'required',
+        rollback: 'none',
+      },
+      target: { siteId: 'site-1', publicationId: 'pub-1', spaceId: 'space-1' },
+      grants: ['content.read.draft'],
+    })
+    expect(result.status).toBe('completed')
+    expect(result.audit).toHaveLength(1)
+    expect(result.audit[0].tool).toBe('content.draft.read')
+    expect(result.audit[0].status).toBe('completed')
+    expect(result.audit[0].id).toMatch(/^audit:/)
+  })
+})
+
 describe('14B execution boundaries', () => {
   it('bounds an adapter that ignores abort and never returns late output', async () => {
     const stuck: AiAdapter = { ...adapter, complete: async () => new Promise(() => {}) }

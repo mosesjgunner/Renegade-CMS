@@ -32,6 +32,9 @@ import {
   revalidatePodConnection,
   type PodConnectionRecord,
 } from '@/modules/commerce/pod-connection'
+import { randomUUID } from 'node:crypto'
+import { RENEGRADE_TOOL_MANIFESTS } from '@/modules/extensions/agent-runtime'
+import { invokeIntegrationAgentTool } from '@/modules/integrations/agent-service'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -1398,6 +1401,114 @@ export async function POST(request: Request) {
             { status: 500 },
           )
         }
+      }
+
+      case 'agent.draft-read': {
+        // DEBT-02 / #60: the one mounted agent tool. The manifest, grants, and
+        // target scope are all derived server-side — the request body only
+        // names the site and the content record to read.
+        if (!body.siteId || !body.contentId) {
+          return NextResponse.json({ error: 'siteId and contentId are required.' }, { status: 422 })
+        }
+        const siteId = String(body.siteId)
+        const contentId = String(body.contentId)
+
+        const doc = await payload
+          .findByID({
+            collection: 'content' as never,
+            id: contentId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (!doc) {
+          return NextResponse.json({ error: 'Content not found.' }, { status: 404 })
+        }
+
+        // Target scope comes from the loaded record, never the request body.
+        // If the record lives on another site, the agent gate below denies
+        // (and the denial is audited) instead of this route pre-empting it.
+        const target = {
+          siteId: asId((doc as any).site),
+          publicationId: asId((doc as any).publication) || null,
+          spaceId: asId((doc as any).space) || null,
+        }
+
+        const manifest = RENEGRADE_TOOL_MANIFESTS.find((m) => m.name === 'content.draft.read')
+
+        // The tool grant exists only when the operator's access to the
+        // requested site verified, exactly as sibling actions check it;
+        // otherwise the gate denies on the missing grant.
+        const siteAccessVerified = grant.isGlobalOwner || grant.authorizedSiteIds.includes(siteId)
+        const grants = siteAccessVerified && manifest ? [manifest.permission] : []
+
+        const result = await invokeIntegrationAgentTool({
+          run: {
+            id: randomUUID(),
+            siteId,
+            publicationId: target.publicationId,
+            spaceId: target.spaceId,
+            status: 'completed',
+            audit: [],
+          },
+          manifest,
+          tool: 'content.draft.read',
+          target,
+          grants,
+          completed: new Map(),
+          execute: async () => ({
+            // Summary projection only (mirrors contentView in the v1 API):
+            // the draft body / rich text never leaves through this tool.
+            id: String((doc as any).id),
+            title: (doc as any).title ?? null,
+            status: (doc as any).status ?? null,
+            contentType: (doc as any).contentType ?? null,
+            canonicalPath: (doc as any).canonicalPath ?? null,
+            updatedAt: (doc as any).updatedAt ? String((doc as any).updatedAt) : null,
+          }),
+        })
+
+        // Unlike sibling actions, a failed audit write is NOT swallowed here:
+        // this persisted row is the #60 evidence that the tool ran, so if it
+        // cannot be written the action itself must fail rather than succeed
+        // with no durable record.
+        for (const entry of result.run.audit) {
+          await payload.create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: siteId,
+              action: 'agent.tool.content.draft.read',
+              subject: {
+                runId: result.run.id,
+                auditId: entry.id,
+                tool: entry.tool,
+                targetCollection: 'content',
+                targetId: contentId,
+              },
+              outcome: entry.status === 'completed' ? 'allowed' : 'denied',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+        }
+
+        if (result.run.status !== 'completed') {
+          return NextResponse.json(
+            {
+              error: 'Forbidden. Agent tool invocation denied.',
+              run: { id: result.run.id, status: result.run.status },
+              output: null,
+              audit: result.run.audit,
+            },
+            { status: 403 },
+          )
+        }
+
+        return NextResponse.json({
+          run: { id: result.run.id, status: result.run.status },
+          output: result.output,
+          audit: result.run.audit,
+        })
       }
 
       default:

@@ -162,6 +162,8 @@ async function cycle(): Promise<void> {
     }
     await payload.jobs.handleSchedules({ queue: 'commerce' })
     await payload.jobs.run({ queue: 'commerce', limit: 1, where: registeredJobs })
+    await payload.jobs.handleSchedules({ queue: 'analytics' })
+    await payload.jobs.run({ queue: 'analytics', limit: 1, where: registeredJobs })
     // Presence is intentionally short-lived operational state, never an analytics log.
     const stalePresence = await payload
       .find({

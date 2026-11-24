@@ -727,6 +727,22 @@ export async function finalizeMemberDeletion(
         data: { revokedAt: now.toISOString() },
       })
   }
+  const linkedIdentities = await store.find({
+    collection: 'linked-identities',
+    where: { member: { equals: memberId } },
+    limit: 500,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const identity of linkedIdentities.docs) {
+    if (!identity.revokedAt)
+      await store.update({
+        collection: 'linked-identities',
+        id: String(identity.id),
+        overrideAccess: true,
+        data: { revokedAt: now.toISOString() },
+      })
+  }
   await store.update({
     collection: 'members',
     id: memberId,

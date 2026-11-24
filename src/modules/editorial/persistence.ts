@@ -602,6 +602,69 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
   } as never)
 }
 
+/**
+ * RC3-21 (#59): a content change that does not alter the canonical body —
+ * e.g. an applied AI metadata-seo proposal changing only seoTitle /
+ * seoDescription — never reaches the revision branch of
+ * ensureEditorialCompanion(), because that branch keys on the body hash.
+ * Such an apply is still a change to the content target, so it must leave a
+ * NEW revision record behind: a snapshot of the (unchanged) current document
+ * at the next sequence, attributed to the actor who made the change. The
+ * revision-records schema has no AI-provenance field, so callers record the
+ * proposal / audit / provider provenance on their own record (the AI
+ * proposal's `application` object) and pass only the deciding user here as
+ * `createdBy`. Returns the new revision id, or null when the content has no
+ * editorial companion to snapshot.
+ */
+export async function recordEditorialMetadataRevision(
+  payload: Payload,
+  input: { contentId: string; createdBy: string | null },
+  req?: any,
+): Promise<string | null> {
+  const article = await findOne(
+    payload,
+    'article-family-content',
+    { content: { equals: input.contentId } },
+    0,
+    req,
+  )
+  if (!article) return null
+  const document = toRichTextDocument(article.document)
+  const sequence = Number(article.currentRevisionSequence ?? 0) + 1
+  const revisionId = randomBytes(16).toString('hex')
+  const integrityHash = `sha256:${createHash('sha256')
+    .update(`${input.contentId}:${sequence}:${document.canonicalHash}`)
+    .digest('hex')}`
+  const revision = (await payload.create({
+    collection: 'revision-records',
+    data: {
+      id: revisionId,
+      article: article.id,
+      parentRevision: article.currentRevision ?? null,
+      sequence,
+      document,
+      documentHash: document.canonicalHash,
+      integrityHash,
+      reason: 'edited',
+      createdBy: input.createdBy,
+      immutable: true,
+    },
+    overrideAccess: true,
+    req,
+  } as never)) as Doc
+  await payload.update({
+    collection: 'article-family-content',
+    id: article.id,
+    data: {
+      currentRevisionSequence: sequence,
+      currentRevision: revision.id,
+    },
+    overrideAccess: true,
+    req,
+  } as never)
+  return String(revision.id)
+}
+
 export const persistWorkflow = async (
   payload: Payload,
   bundle: EditorialBundle,

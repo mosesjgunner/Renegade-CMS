@@ -86,6 +86,8 @@ export interface Config {
     'identity-tokens': IdentityToken;
     'member-recovery-codes': MemberRecoveryCode;
     'identity-audit-events': IdentityAuditEvent;
+    'enterprise-idp-connections': EnterpriseIdpConnection;
+    'enterprise-idp-credentials': EnterpriseIdpCredential;
     'member-site-roles': MemberSiteRole;
     profiles: Profile;
     spaces: Space;
@@ -314,6 +316,8 @@ export interface Config {
     'identity-tokens': IdentityTokensSelect<false> | IdentityTokensSelect<true>;
     'member-recovery-codes': MemberRecoveryCodesSelect<false> | MemberRecoveryCodesSelect<true>;
     'identity-audit-events': IdentityAuditEventsSelect<false> | IdentityAuditEventsSelect<true>;
+    'enterprise-idp-connections': EnterpriseIdpConnectionsSelect<false> | EnterpriseIdpConnectionsSelect<true>;
+    'enterprise-idp-credentials': EnterpriseIdpCredentialsSelect<false> | EnterpriseIdpCredentialsSelect<true>;
     'member-site-roles': MemberSiteRolesSelect<false> | MemberSiteRolesSelect<true>;
     profiles: ProfilesSelect<false> | ProfilesSelect<true>;
     spaces: SpacesSelect<false> | SpacesSelect<true>;
@@ -576,6 +580,7 @@ export interface Config {
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
       'audience-form-intake': TaskAudienceFormIntake;
       'community-email-dispatch': TaskCommunityEmailDispatch;
+      'audience-automation-resume': TaskAudienceAutomationResume;
       'audience-telecom-delivery': TaskAudienceTelecomDelivery;
       'audience-telecom-dispatch': TaskAudienceTelecomDispatch;
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
@@ -2021,6 +2026,49 @@ export interface IdentityAuditEvent {
   member?: (string | null) | Member;
   event: string;
   details?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enterprise-idp-connections".
+ */
+export interface EnterpriseIdpConnection {
+  id: string;
+  label: string;
+  issuer: string;
+  clientId: string;
+  redirectUri: string;
+  scopes:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: string;
+  lastTestedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enterprise-idp-credentials".
+ */
+export interface EnterpriseIdpCredential {
+  id: string;
+  connection: string | EnterpriseIdpConnection;
+  envelope:
     | {
         [k: string]: unknown;
       }
@@ -3769,6 +3817,7 @@ export interface PayloadJob {
           | 'audience-newsletter-dispatch'
           | 'audience-form-intake'
           | 'community-email-dispatch'
+          | 'audience-automation-resume'
           | 'audience-telecom-delivery'
           | 'audience-telecom-dispatch'
           | 'analytics-retention-cleanup'
@@ -3847,6 +3896,7 @@ export interface PayloadJob {
         | 'audience-newsletter-dispatch'
         | 'audience-form-intake'
         | 'community-email-dispatch'
+        | 'audience-automation-resume'
         | 'audience-telecom-delivery'
         | 'audience-telecom-dispatch'
         | 'analytics-retention-cleanup'
@@ -11804,6 +11854,14 @@ export interface PayloadLockedDocument {
         value: string | IdentityAuditEvent;
       } | null)
     | ({
+        relationTo: 'enterprise-idp-connections';
+        value: string | EnterpriseIdpConnection;
+      } | null)
+    | ({
+        relationTo: 'enterprise-idp-credentials';
+        value: string | EnterpriseIdpCredential;
+      } | null)
+    | ({
         relationTo: 'member-site-roles';
         value: string | MemberSiteRole;
       } | null)
@@ -12395,6 +12453,31 @@ export interface IdentityAuditEventsSelect<T extends boolean = true> {
   member?: T;
   event?: T;
   details?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enterprise-idp-connections_select".
+ */
+export interface EnterpriseIdpConnectionsSelect<T extends boolean = true> {
+  label?: T;
+  issuer?: T;
+  clientId?: T;
+  redirectUri?: T;
+  scopes?: T;
+  status?: T;
+  lastTestedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "enterprise-idp-credentials_select".
+ */
+export interface EnterpriseIdpCredentialsSelect<T extends boolean = true> {
+  connection?: T;
+  envelope?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -18131,6 +18214,14 @@ export interface TaskAudienceFormIntake {
  * via the `definition` "TaskCommunity-email-dispatch".
  */
 export interface TaskCommunityEmailDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-automation-resume".
+ */
+export interface TaskAudienceAutomationResume {
   input?: unknown;
   output?: unknown;
 }
