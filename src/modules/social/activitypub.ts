@@ -180,6 +180,7 @@ export function remoteReply(input: {
   content: string
   inReplyTo: string
   discussionId: string
+  noteId?: string
 }) {
   return {
     discussion: input.discussionId,
@@ -189,6 +190,15 @@ export function remoteReply(input: {
     status: 'hidden' as const,
     visibility: 'public' as const,
     moderationState: 'review' as const,
-    federation: { actor: input.actor, activityId: input.activityId, inReplyTo: input.inReplyTo },
+    // RC3-22: this provenance is now persisted (discussion-posts gained a
+    // real `federation` json field in this pass; before, the object was
+    // silently dropped on create). The Note id is what a later Delete
+    // activity cites, so it must survive.
+    federation: {
+      actor: input.actor,
+      activityId: input.activityId,
+      inReplyTo: input.inReplyTo,
+      ...(input.noteId ? { noteId: input.noteId } : {}),
+    },
   }
 }

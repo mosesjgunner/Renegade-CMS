@@ -190,6 +190,8 @@ export interface Config {
     'network-delivery-attempts': NetworkDeliveryAttempt;
     'network-access-decisions': NetworkAccessDecision;
     'network-audit-events': NetworkAuditEvent;
+    'renegade-peer-links': RenegadePeerLink;
+    'syndicated-items': SyndicatedItem;
     'form-definitions': FormDefinition;
     'form-schemas': FormSchema;
     'form-submissions': FormSubmission;
@@ -420,6 +422,8 @@ export interface Config {
     'network-delivery-attempts': NetworkDeliveryAttemptsSelect<false> | NetworkDeliveryAttemptsSelect<true>;
     'network-access-decisions': NetworkAccessDecisionsSelect<false> | NetworkAccessDecisionsSelect<true>;
     'network-audit-events': NetworkAuditEventsSelect<false> | NetworkAuditEventsSelect<true>;
+    'renegade-peer-links': RenegadePeerLinksSelect<false> | RenegadePeerLinksSelect<true>;
+    'syndicated-items': SyndicatedItemsSelect<false> | SyndicatedItemsSelect<true>;
     'form-definitions': FormDefinitionsSelect<false> | FormDefinitionsSelect<true>;
     'form-schemas': FormSchemasSelect<false> | FormSchemasSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -7244,6 +7248,18 @@ export interface DiscussionPost {
    */
   clientMutationId?: string | null;
   moderationState: 'clear' | 'review' | 'restricted' | 'removed';
+  /**
+   * Federation provenance for posts received from a remote actor.
+   */
+  federation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -7720,6 +7736,42 @@ export interface NetworkAuditEvent {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "renegade-peer-links".
+ */
+export interface RenegadePeerLink {
+  id: string;
+  name?: string | null;
+  peerOrigin: string;
+  site: string | Site;
+  peerPublicKey: string;
+  state: 'active' | 'revoked';
+  establishedAt?: string | null;
+  revokedAt?: string | null;
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "syndicated-items".
+ */
+export interface SyndicatedItem {
+  id: string;
+  link: string | RenegadePeerLink;
+  site: string | Site;
+  sourceItemId: string;
+  dedupeKey: string;
+  kind: 'post';
+  title: string;
+  body: string;
+  sourceUrl?: string | null;
+  state: 'received' | 'withdrawn';
+  receivedAt: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -14772,6 +14824,7 @@ export interface DiscussionPostsSelect<T extends boolean = true> {
   helpful?: T;
   clientMutationId?: T;
   moderationState?: T;
+  federation?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -14953,6 +15006,40 @@ export interface NetworkAuditEventsSelect<T extends boolean = true> {
   subject?: T;
   actor?: T;
   details?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "renegade-peer-links_select".
+ */
+export interface RenegadePeerLinksSelect<T extends boolean = true> {
+  name?: T;
+  peerOrigin?: T;
+  site?: T;
+  peerPublicKey?: T;
+  state?: T;
+  establishedAt?: T;
+  revokedAt?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "syndicated-items_select".
+ */
+export interface SyndicatedItemsSelect<T extends boolean = true> {
+  link?: T;
+  site?: T;
+  sourceItemId?: T;
+  dedupeKey?: T;
+  kind?: T;
+  title?: T;
+  body?: T;
+  sourceUrl?: T;
+  state?: T;
+  receivedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

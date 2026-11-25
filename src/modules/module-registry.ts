@@ -250,6 +250,8 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'network-delivery-attempts',
       'network-access-decisions',
       'network-audit-events',
+      'renegade-peer-links',
+      'syndicated-items',
     ],
     globals: ['network-settings'],
     tasks: ['network-delivery'],

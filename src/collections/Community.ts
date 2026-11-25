@@ -336,6 +336,15 @@ export const DiscussionPosts: CollectionConfig = {
       defaultValue: 'clear',
       options: moderationStateOptions,
     },
+    {
+      // RC3-22: federation provenance for remote replies (actor,
+      // activity id, Note id, inReplyTo). Before this field existed the
+      // inbox's provenance object was silently dropped on create, which
+      // also made author-verified Delete handling impossible.
+      name: 'federation',
+      type: 'json',
+      admin: { description: 'Federation provenance for posts received from a remote actor.' },
+    },
     ...retentionFields(),
   ],
 }
