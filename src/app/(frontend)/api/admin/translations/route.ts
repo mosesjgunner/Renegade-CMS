@@ -6,6 +6,12 @@ import {
   getLocalizationEngine,
 } from '@/modules/editorial/localization/service'
 import { evaluateTranslationCompleteness } from '@/modules/editorial/localization/completeness'
+import {
+  isBridgeGroup,
+  loadSourceDocument,
+  markBridgeGroup,
+  materializePublishedVariant,
+} from '@/modules/editorial/localization/content-bridge'
 
 export const runtime = 'nodejs'
 
@@ -54,6 +60,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       action:
         | 'create-group'
+        | 'create-group-from-content'
         | 'request-translation'
         | 'draft-provider'
         | 'update-target'
@@ -65,6 +72,7 @@ export async function POST(request: Request) {
         | 'realign-pin'
         | 'check-completeness'
       groupId?: string
+      contentId?: string
       requestId?: string
       locale?: string
       targetLocale?: string
@@ -87,6 +95,16 @@ export async function POST(request: Request) {
         const group = engine.createTranslationGroup({
           sourceDocument: body.sourceDocument,
         })
+        return NextResponse.json({ success: true, group })
+      }
+
+      case 'create-group-from-content': {
+        if (!body.contentId) {
+          return NextResponse.json({ error: 'contentId is required.' }, { status: 400 })
+        }
+        const sourceDocument = await loadSourceDocument(payload as never, body.contentId)
+        const group = engine.createTranslationGroup({ sourceDocument })
+        markBridgeGroup(group.id)
         return NextResponse.json({ success: true, group })
       }
 
@@ -175,7 +193,38 @@ export async function POST(request: Request) {
         const res = engine.publishLocaleVariant(body.groupId, body.locale, {
           siteBaseUrl: body.siteBaseUrl,
         })
-        return NextResponse.json({ success: true, ...res })
+        // RC3-21 (#61): groups created from real content materialize a
+        // real localized content document on publish. Hand-constructed
+        // groups keep the legacy engine-only publish behavior.
+        if (!isBridgeGroup(body.groupId)) {
+          return NextResponse.json({ success: true, ...res })
+        }
+        const group = engine.getGroup(body.groupId)
+        if (!group) {
+          return NextResponse.json({ error: 'Group not found.' }, { status: 404 })
+        }
+        try {
+          const materializedContentId = await materializePublishedVariant(
+            payload as never,
+            group,
+            res.variant,
+          )
+          return NextResponse.json({ success: true, ...res, materializedContentId })
+        } catch (materializeErr: any) {
+          // The engine variant IS published in engine state, but no
+          // localized content document exists. Say so explicitly rather
+          // than claiming a publish that produced nothing.
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Engine published locale '${body.locale}' for group '${body.groupId}', but materializing the localized content document failed: ${materializeErr?.message || String(materializeErr)}`,
+              enginePublished: true,
+              variant: res.variant,
+              hreflang: res.hreflang,
+            },
+            { status: 502 },
+          )
+        }
       }
 
       case 'check-completeness': {

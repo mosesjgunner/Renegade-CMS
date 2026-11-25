@@ -11,6 +11,7 @@ import {
   type AiWorkflowTask,
 } from '@/modules/ai/workflows'
 import { relationId } from '@/modules/ai/connections'
+import { recordEditorialMetadataRevision } from '@/modules/editorial/persistence'
 import { decodeProposalValue } from '@/modules/ai/persistence'
 import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 
@@ -181,6 +182,20 @@ async function reviewProposal(
         overrideAccess: true,
       })
       revisionId = relationId((article.docs[0] as Doc | undefined)?.currentRevision) || null
+      // RC3-21 (#59): the canonical-save companion only creates a revision
+      // when the body hash changes. An apply that changed the target without
+      // changing the body (e.g. metadata-seo) therefore still points at the
+      // pre-existing revision; persist a new revision snapshot attributed to
+      // the deciding user so application.revisionId names a revision this
+      // apply actually created. Body-changing applies already produced a
+      // fresh revision above and keep it untouched.
+      if (revisionId === (target.context.revisionId ?? null)) {
+        revisionId =
+          (await recordEditorialMetadataRevision(payload, {
+            contentId: target.doc.id,
+            createdBy: user.id,
+          })) ?? revisionId
+      }
     }
     const saved = (await payload.update({
       collection: 'ai-proposals' as never,
@@ -194,6 +209,13 @@ async function reviewProposal(
           revisionId,
           actorId: user.id,
           appliedAt: new Date().toISOString(),
+          // The revision-records schema has no AI-provenance field, so the
+          // proposal / audit / provider provenance for an apply lives here.
+          proposalId: id,
+          auditId: proposal.auditId ?? null,
+          providerKey:
+            (proposal.contextPreview as { providerKey?: string | null } | undefined)?.providerKey ??
+            null,
         },
       } as never,
       overrideAccess: true,

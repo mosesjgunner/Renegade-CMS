@@ -4,7 +4,9 @@ type RetentionTask = {
   input: Record<string, never>
   output: { deleted: number; observedAt: string }
 }
-/** Deletes only raw events whose collection-time expiry has passed; consent evidence is intentionally excluded. */
+/** Deletes only raw events whose collection-time expiry has passed, whose retention
+ * mode is 'expire-at', and that carry no retention hold; consent evidence is
+ * intentionally excluded. */
 export const analyticsRetentionTask: TaskConfig<RetentionTask> = {
   slug: 'analytics-retention-cleanup',
   label: 'Delete expired raw analytics events',
@@ -20,7 +22,13 @@ export const analyticsRetentionTask: TaskConfig<RetentionTask> = {
     const observedAt = new Date().toISOString()
     const expired = await req.payload.find({
       collection: 'analytics-events',
-      where: { retentionExpiresAt: { less_than_equal: observedAt } },
+      where: {
+        and: [
+          { retentionExpiresAt: { less_than_equal: observedAt } },
+          { retentionMode: { equals: 'expire-at' } },
+          { retentionHold: { equals: 'none' } },
+        ],
+      },
       limit: 500,
       depth: 0,
       overrideAccess: true,

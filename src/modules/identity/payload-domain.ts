@@ -26,6 +26,7 @@ import {
   Relationships,
   Spaces,
 } from '../../collections/Identity'
+import { EnterpriseIdpConnections, EnterpriseIdpCredentials } from '../../collections/EnterpriseIdp'
 import type { AppConfig } from '../core/config'
 import type { DomainDefinition } from '../core/payload-domains'
 
@@ -41,6 +42,8 @@ export function identityDomain(config: AppConfig): DomainDefinition {
       IdentityTokens,
       MemberRecoveryCodes,
       IdentityAuditEvents,
+      EnterpriseIdpConnections,
+      EnterpriseIdpCredentials,
       MemberSiteRoles,
       Profiles,
       Spaces,
