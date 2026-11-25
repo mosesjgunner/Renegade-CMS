@@ -217,6 +217,83 @@ export const NetworkAccessDecisions: CollectionConfig = {
   ],
   indexes: [{ fields: ['subject'], unique: true }],
 }
+/**
+ * RC3-22 (#70): install-to-install trust for Renegade-to-Renegade
+ * syndication. A link is established out of band (the operators exchange
+ * origin + public key themselves — no directory, no phone-home) and is
+ * bound to exactly ONE local site: content received over the link may
+ * land only on that site. Private signing keys never enter Payload; the
+ * local install signs with its env-held key and stores only the peer's
+ * public key here.
+ */
+export const RenegadePeerLinks: CollectionConfig = {
+  ...base('renegade-peer-links', 'peerOrigin'),
+  fields: [
+    text('name'),
+    text('peerOrigin', true),
+    {
+      name: 'site',
+      type: 'relationship',
+      relationTo: 'sites' as never,
+      required: true,
+    },
+    { name: 'peerPublicKey', type: 'textarea', required: true },
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'active',
+      options: ['active', 'revoked'],
+    },
+    { name: 'establishedAt', type: 'date' },
+    { name: 'revokedAt', type: 'date' },
+    { name: 'note', type: 'textarea' },
+  ],
+  indexes: [{ fields: ['peerOrigin'], unique: true }],
+}
+/**
+ * Content received over a peer link. Received items are references held
+ * under the link's site; revoking the link withdraws every item it
+ * delivered (state 'withdrawn'), and withdrawn items leave the read path.
+ */
+export const SyndicatedItems: CollectionConfig = {
+  ...base('syndicated-items', 'title'),
+  fields: [
+    {
+      name: 'link',
+      type: 'relationship',
+      relationTo: 'renegade-peer-links' as never,
+      required: true,
+    },
+    {
+      name: 'site',
+      type: 'relationship',
+      relationTo: 'sites' as never,
+      required: true,
+    },
+    text('sourceItemId', true),
+    text('dedupeKey', true),
+    {
+      name: 'kind',
+      type: 'select',
+      required: true,
+      defaultValue: 'post',
+      options: ['post'],
+    },
+    text('title', true),
+    { name: 'body', type: 'textarea', required: true },
+    text('sourceUrl'),
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'received',
+      options: ['received', 'withdrawn'],
+    },
+    { name: 'receivedAt', type: 'date', required: true },
+  ],
+  indexes: [{ fields: ['dedupeKey'], unique: true }],
+}
 export const NetworkAuditEvents: CollectionConfig = {
   ...base('network-audit-events', 'action'),
   fields: [

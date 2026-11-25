@@ -10,6 +10,8 @@ import {
   RemoteActors,
   RemoteInstances,
   RemoteObjects,
+  RenegadePeerLinks,
+  SyndicatedItems,
 } from '../../collections/Network'
 import type { DomainDefinition } from '../core/payload-domains'
 import { networkTasks } from './tasks'
@@ -27,6 +29,8 @@ export const networkDomain: DomainDefinition = {
     NetworkDeliveryAttempts,
     NetworkAccessDecisions,
     NetworkAuditEvents,
+    RenegadePeerLinks,
+    SyndicatedItems,
   ],
   globals: [NetworkSettings],
   tasks: networkTasks,

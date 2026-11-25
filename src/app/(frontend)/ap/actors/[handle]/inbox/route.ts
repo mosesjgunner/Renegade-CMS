@@ -13,6 +13,7 @@ import {
   verifyInboundActivity,
 } from '@/modules/social/activitypub-runtime'
 import { takeNetworkQuota } from '@/modules/network/experience'
+import { cacheRemoteObject } from '@/modules/network/service'
 import { activityJson, publicationActor } from '../actor'
 
 export const dynamic = 'force-dynamic'
@@ -141,10 +142,100 @@ export async function POST(request: Request, context: { params: Promise<{ handle
                 content: object.content.replace(/<[^>]*>/g, ''),
                 inReplyTo: object.inReplyTo,
                 discussionId: String(discussion.docs[0].id),
+                noteId: typeof object.id === 'string' ? object.id : undefined,
               }) as never,
               overrideAccess: true,
             })
         }
+      } else if (object.type === 'Note' && typeof object.id === 'string') {
+        // RC3-22: a standalone post (no inReplyTo) from a peer this
+        // install follows is cached as a remote-object reference — the
+        // designed home for remote content (remoteOnly references, never
+        // editable local content). A post from an actor with no active
+        // follow relationship is acknowledged and not retained: the
+        // follow is the audience's authorization to hold the reference.
+        const follow = await actor.payload.find({
+          collection: 'network-relationships',
+          where: {
+            and: [
+              { remoteActor: { equals: verified.remoteActor.id } },
+              { kind: { equals: 'follow' } },
+              { state: { equals: 'active' } },
+            ],
+          },
+          limit: 1,
+          overrideAccess: true,
+        })
+        if (follow.docs[0])
+          await cacheRemoteObject(
+            actor.payload,
+            verified.remoteActor as never,
+            object as Record<string, unknown>,
+          )
+      }
+    }
+    if (verified.activity.type === 'Delete') {
+      // RC3-22: a peer may retract its own content. The target is the
+      // Note id the peer cites; only the verified author's own content
+      // is affected — a Delete naming anyone else's content, or content
+      // this install never received, is acknowledged and changes
+      // nothing. Discussion replies are marked removed; cached remote
+      // objects are marked removed (the block machinery's vocabulary).
+      const rawObject = verified.activity.object
+      const targetId =
+        typeof rawObject === 'string'
+          ? rawObject
+          : rawObject &&
+              typeof rawObject === 'object' &&
+              typeof (rawObject as { id?: unknown }).id === 'string'
+            ? String((rawObject as { id: string }).id)
+            : null
+      if (targetId) {
+        const pool = (
+          actor.payload.db as unknown as {
+            pool?: {
+              query: (text: string, values?: unknown[]) => Promise<{ rows: Array<{ id: string }> }>
+            }
+          }
+        ).pool
+        const found = await pool?.query(
+          `SELECT id FROM discussion_posts
+           WHERE federation->>'noteId' = $1 AND federation->>'actor' = $2
+           LIMIT 1`,
+          [targetId, String(verified.activity.actor)],
+        )
+        if (found?.rows[0])
+          await actor.payload.update({
+            collection: 'discussion-posts',
+            id: found.rows[0].id,
+            data: { status: 'removed', moderationState: 'removed' },
+            overrideAccess: true,
+          })
+        const cached = await actor.payload.find({
+          collection: 'remote-objects',
+          where: { canonicalId: { equals: targetId } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        const cachedDoc = cached.docs[0] as unknown as
+          | { id: string; actor?: unknown; visibility?: string }
+          | undefined
+        if (
+          cachedDoc &&
+          cachedDoc.visibility !== 'removed' &&
+          String(
+            typeof cachedDoc.actor === 'object' && cachedDoc.actor
+              ? (cachedDoc.actor as { id: unknown }).id
+              : cachedDoc.actor,
+          ) === String(verified.remoteActor.id)
+        )
+          await actor.payload.update({
+            collection: 'remote-objects',
+            id: cachedDoc.id,
+            data: { visibility: 'removed' },
+            overrideAccess: true,
+          })
       }
     }
     if (inbound.record) {
