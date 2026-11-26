@@ -33,7 +33,8 @@ const testEnv = {
 
 const getFullRegistrations = () => registeredPayloadDomains(loadConfig(testEnv))
 
-const EXPECTED_17_MODULES: readonly ModuleId[] = [
+// RC3-CE added the 18th optional module (monetization).
+const EXPECTED_18_MODULES: readonly ModuleId[] = [
   'collaboration',
   'community',
   'events',
@@ -51,13 +52,14 @@ const EXPECTED_17_MODULES: readonly ModuleId[] = [
   'experiences',
   'quality',
   'commerce',
+  'monetization',
 ]
 
 describe('15E: Module Registration, Provider Boundaries and Federation', () => {
-  describe('Reconciliation of the 17 Optional Modules', () => {
-    it('contains exactly the 17 specified optional modules', () => {
+  describe('Reconciliation of the 18 Optional Modules', () => {
+    it('contains exactly the 18 specified optional modules', () => {
       const moduleIds = OPTIONAL_MODULES.map((m) => m.id)
-      expect(moduleIds.sort()).toEqual([...EXPECTED_17_MODULES].sort())
+      expect(moduleIds.sort()).toEqual([...EXPECTED_18_MODULES].sort())
     })
 
     it('Profile 1: Lean / default registers only the floor (~66 collections)', () => {
@@ -75,7 +77,7 @@ describe('15E: Module Registration, Provider Boundaries and Federation', () => {
       expect(slugs.has('media-assets')).toBe(true)
       expect(slugs.has('public-redirects')).toBe(true)
 
-      // None of the 17 optional modules have collections registered in floor
+      // None of the 18 optional modules have collections registered in floor
       for (const mod of OPTIONAL_MODULES) {
         for (const col of mod.collections) {
           expect(slugs.has(col)).toBe(false)
@@ -131,10 +133,10 @@ describe('15E: Module Registration, Provider Boundaries and Federation', () => {
   })
 
   describe('Per-Module Provider Boundary Records', () => {
-    it('produces boundary records for all 17 modules with truthful local claims', () => {
+    it('produces boundary records for all 18 modules with truthful local claims', () => {
       const records = getModuleBoundaryRecords()
       const keys = Object.keys(records) as ModuleId[]
-      expect(keys.sort()).toEqual([...EXPECTED_17_MODULES].sort())
+      expect(keys.sort()).toEqual([...EXPECTED_18_MODULES].sort())
 
       for (const modId of keys) {
         const record = records[modId]

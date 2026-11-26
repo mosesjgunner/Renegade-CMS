@@ -64,6 +64,7 @@ export default function PublishingLinks({ payload }: { payload: Payload }) {
         <summary>Commerce</summary>
         {registered('products') && <Link href="/admin/catalog">Catalog</Link>}
         {registered('orders') && <Link href="/admin/commerce">Commerce Operations</Link>}
+        {registered('monetization-profiles') && <Link href="/admin/earn">Earn Center</Link>}
         {registered('pod-jobs') && <Link href="/admin/fulfillment">POD & Fulfillment</Link>}
       </details>
       <details>
