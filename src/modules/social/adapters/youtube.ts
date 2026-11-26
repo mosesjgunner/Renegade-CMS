@@ -16,6 +16,7 @@ import {
   youtubeReadonly,
   youtubeResponseError,
   youtubeUpload,
+  type YouTubeGrant,
 } from '../../creator-studio/youtube-metadata'
 import { youtubeChannelId, youtubeVideoId } from '../../creator-studio/video-providers'
 
@@ -69,17 +70,50 @@ function uploadSession(value: string | null) {
   return url
 }
 
-const unknown = (): AdapterResult => ({
+const unknown = (remoteId?: string): AdapterResult => ({
   status: 'unknown',
+  ...(remoteId ? { remoteId } : {}),
   error: normalizeProviderError({
     kind: 'remote-unknown',
     remoteOutcome: 'unknown',
-    message: 'YouTube upload outcome is uncertain. Check YouTube Studio before retrying.',
+    message: remoteId
+      ? `YouTube accepted the upload (video ${remoteId}) but has not confirmed it finished processing. Reconciliation will confirm it from YouTube — do not upload it again.`
+      : 'YouTube upload outcome is uncertain. Check YouTube Studio before retrying.',
   }),
 })
 
+/**
+ * Quota honesty: YouTube's daily buckets (the 100-uploads/day insert
+ * bucket and the shared daily unit quota) reset at midnight UTC, while
+ * rate limits are hourly. The two must never be conflated — a daily
+ * exhaustion retried in an hour just fails again and hides the real
+ * limit from the operator.
+ */
+const dailyQuotaReasons = ['quotaExceeded', 'dailyLimitExceeded', 'uploadLimitExceeded']
+
+export function nextUtcMidnight(from = Date.now()): string {
+  const date = new Date(from)
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 1, 0, 0, 0),
+  ).toISOString()
+}
+
 function failure(error: unknown): AdapterResult {
   if (error instanceof YouTubeError && error.kind === 'quota') {
+    if (error.reason && dailyQuotaReasons.includes(error.reason)) {
+      return {
+        status: 'failed',
+        error: normalizeProviderError({
+          kind: 'rate-limit',
+          message:
+            error.reason === 'uploadLimitExceeded'
+              ? 'YouTube allows 100 uploads per day on this authorization, and today’s upload limit has been reached. Uploads can resume after the daily reset at midnight UTC.'
+              : 'YouTube’s daily API quota for this authorization has been reached. It resets at midnight UTC.',
+          retryAfter: nextUtcMidnight(),
+          providerCode: error.reason,
+        }),
+      }
+    }
     const header = error.retryAfter
     const seconds = Number(header)
     const retryAt = !header
@@ -113,8 +147,19 @@ function failure(error: unknown): AdapterResult {
   }
 }
 
+export type YouTubeAdapterTiming = {
+  /** Delay between processing-status polls after the byte transfer. */
+  pollIntervalMs?: number
+  /** Bounded number of processing-status polls before the outcome stays unknown. */
+  maxPolls?: number
+  sleep?: (ms: number) => Promise<void>
+}
+
 export class YouTubeAdapter implements SocialProviderAdapter {
-  constructor(private request?: typeof fetch) {}
+  constructor(
+    private request?: typeof fetch,
+    private timing: YouTubeAdapterTiming = {},
+  ) {}
 
   readonly id = 'adapter-youtube'
   readonly network = 'youtube' as const
@@ -220,11 +265,17 @@ export class YouTubeAdapter implements SocialProviderAdapter {
     return uploadSession(response.headers.get('location'))
   }
 
+  /**
+   * Moves the bytes. Resolves with the YouTube video ID once the
+   * transfer completes — that is NOT yet a publication: YouTube still
+   * has to process the video before anyone can watch it, and only
+   * `confirmProcessing` may call it published.
+   */
   private async transfer(
     session: URL,
     token: string,
     video: StreamedSocialVideo,
-  ): Promise<AdapterResult> {
+  ): Promise<string | AdapterResult> {
     let offset = 0
     let probes = 0
     let probe = false
@@ -257,12 +308,7 @@ export class YouTubeAdapter implements SocialProviderAdapter {
       if ([200, 201].includes(response.status)) {
         const { id } = await response.json().catch(() => ({}))
         if (typeof id !== 'string' || !youtubeVideoId.test(id)) return unknown()
-        return {
-          status: 'published',
-          remoteId: id,
-          remoteUrl: `https://www.youtube.com/watch?v=${id}`,
-          rawResponse: { id },
-        }
+        return id
       }
       if (response.status === 308) {
         const range = response.headers.get('range')
@@ -288,6 +334,154 @@ export class YouTubeAdapter implements SocialProviderAdapter {
       return unknown()
     }
     return unknown()
+  }
+
+  private resultFromVideoStatus(
+    videoId: string,
+    status: Awaited<ReturnType<YouTubeMetadata['videoStatus']>>,
+    channelId?: string,
+  ): AdapterResult {
+    if (
+      status.state !== 'missing' &&
+      status.channelId &&
+      channelId &&
+      status.channelId !== channelId
+    )
+      return failure(new YouTubeError('claim'))
+    if (status.state === 'processed') {
+      const remoteUrl = `https://www.youtube.com/watch?v=${videoId}`
+      return {
+        status: 'published',
+        remoteId: videoId,
+        remoteUrl,
+        rawResponse: {
+          id: videoId,
+          processingStatus: 'processed',
+          privacyStatus: status.privacyStatus,
+        },
+        receipt: {
+          remotePostId: videoId,
+          remoteUrl,
+          publishedAt: new Date(),
+          rawResponse: { id: videoId, processingStatus: 'processed', providerMode: 'live' },
+        },
+      }
+    }
+    if (status.state === 'failed' || status.state === 'rejected') {
+      return {
+        status: 'failed',
+        error: normalizeProviderError({
+          kind: 'validation',
+          message:
+            status.state === 'failed'
+              ? `YouTube could not process this video (${status.reason}). It will not become watchable; fix the video and create a new post instead of retrying this upload.`
+              : `YouTube rejected this video during processing (${status.reason}). It will not become watchable; fix the video and create a new post instead of retrying this upload.`,
+          providerCode: status.reason,
+        }),
+      }
+    }
+    return unknown(videoId)
+  }
+
+  /**
+   * The receipt gate: an upload counts as published only when YouTube
+   * confirms processing finished. Bounded polls; a video still
+   * processing when the bound runs out stays `unknown` with its ID
+   * attached so reconciliation can settle it — never fake-published.
+   */
+  private async confirmProcessing(
+    client: YouTubeMetadata,
+    grant: YouTubeGrant,
+    channelId: string,
+    videoId: string,
+  ): Promise<AdapterResult> {
+    const maxPolls = this.timing.maxPolls ?? 5
+    const interval = this.timing.pollIntervalMs ?? 2000
+    const sleep =
+      this.timing.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)))
+    for (let poll = 0; poll < maxPolls; poll += 1) {
+      if (poll > 0) await sleep(interval)
+      let status: Awaited<ReturnType<YouTubeMetadata['videoStatus']>>
+      try {
+        status = await client.videoStatus(grant, videoId)
+      } catch (error) {
+        // A transient poll failure does not condemn the upload — the
+        // video exists. Keep polling within the bound; reconciliation
+        // settles it later if the bound runs out.
+        if (error instanceof YouTubeError && error.kind === 'unavailable') continue
+        return failure(error)
+      }
+      if (status.state === 'processing' || status.state === 'missing') continue
+      return this.resultFromVideoStatus(videoId, status, channelId)
+    }
+    return unknown(videoId)
+  }
+
+  /**
+   * Read-only reconciliation; never uploads anything. Settles from
+   * provider truth: the video ID persisted on the interrupted attempt
+   * when there is one, otherwise the channel's recent uploads matched
+   * on the exact approved title and description.
+   */
+  async reconcile(variant: SocialVariant, context?: AuthContext): Promise<AdapterResult> {
+    const config = youtubeConfiguration()
+    const refreshToken = context?.credentials?.refreshToken
+    const channelId = context?.externalAccountId
+    if (
+      !youtubePublishingEnabled() ||
+      !config ||
+      !channelId ||
+      !config.allowedChannels.includes(channelId) ||
+      !refreshToken
+    )
+      return unknown(context?.recoveryRemoteId)
+    const client = new YouTubeMetadata(config, this.request)
+    let grant: YouTubeGrant
+    let channel: Awaited<ReturnType<YouTubeMetadata['channel']>>
+    try {
+      grant = await client.refresh(refreshToken, [youtubeReadonly, youtubeUpload])
+      channel = await client.channel(grant, channelId)
+    } catch {
+      return unknown(context?.recoveryRemoteId)
+    }
+    const storedId = context?.recoveryRemoteId
+    if (storedId && youtubeVideoId.test(storedId)) {
+      try {
+        return this.resultFromVideoStatus(
+          storedId,
+          await client.videoStatus(grant, storedId),
+          channelId,
+        )
+      } catch {
+        return unknown(storedId)
+      }
+    }
+    const settings = youtubeUploadSettings(variant.platformSettings)
+    if (!settings || settings.channelId !== channelId) return unknown()
+    let uploads: Awaited<ReturnType<YouTubeMetadata['recentUploads']>>
+    try {
+      uploads = await client.recentUploads(grant, channel)
+    } catch {
+      return unknown()
+    }
+    const since = variant.scheduledFor ? Date.parse(variant.scheduledFor) - 24 * 60 * 60_000 : NaN
+    const match = uploads.find(
+      (entry) =>
+        entry.channelId === channelId &&
+        entry.title === settings.title &&
+        entry.description === variant.text &&
+        (!Number.isFinite(since) || (Date.parse(entry.publishedAt) || 0) >= since),
+    )
+    if (!match) return unknown()
+    try {
+      return this.resultFromVideoStatus(
+        match.id,
+        await client.videoStatus(grant, match.id),
+        channelId,
+      )
+    } catch {
+      return unknown(match.id)
+    }
   }
 
   async publish(
@@ -341,20 +535,29 @@ export class YouTubeAdapter implements SocialProviderAdapter {
     }
 
     let session: URL
-    let token: string
+    let client: YouTubeMetadata
+    let grant: YouTubeGrant
     try {
-      const client = new YouTubeMetadata(config, this.request)
-      const grant = await client.refresh(refreshToken, [youtubeReadonly, youtubeUpload])
+      client = new YouTubeMetadata(config, this.request)
+      grant = await client.refresh(refreshToken, [youtubeReadonly, youtubeUpload])
       await client.channel(grant, channelId)
-      token = grant.token
-      session = await this.begin(token, settings, variant.text, video)
+      session = await this.begin(grant.token, settings, variant.text, video)
     } catch (error) {
       return failure(error)
     }
+    let transferred: string | AdapterResult
     try {
-      return await this.transfer(session, token, video)
+      transferred = await this.transfer(session, grant.token, video)
     } catch {
       return unknown()
+    }
+    if (typeof transferred !== 'string') return transferred
+    try {
+      return await this.confirmProcessing(client, grant, channelId, transferred)
+    } catch {
+      // The video exists on YouTube; an unexpected confirmation error
+      // must never be reported as a known failure.
+      return unknown(transferred)
     }
   }
 }

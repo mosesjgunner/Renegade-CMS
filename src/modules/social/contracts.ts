@@ -98,7 +98,17 @@ export type AdapterResult =
       receipt?: DeliveryReceipt
     }
   | { status: 'failed'; error: ProviderError }
-  | { status: 'unknown'; error: ProviderError }
+  | {
+      status: 'unknown'
+      error: ProviderError
+      /**
+       * The provider object is known to exist (its ID was returned) but
+       * its final state is unconfirmed. The executor persists the ID on
+       * the attempt record so read-only reconciliation can settle the
+       * item from provider truth instead of quarantining it forever.
+       */
+      remoteId?: string
+    }
 
 // ==========================================
 // 2026 Normalization Specification Contracts
@@ -221,6 +231,12 @@ export interface AuthContext {
   network: SocialNetwork
   credentials: Record<string, string> | null
   tokens?: AuthTokens
+  /**
+   * Set only by the executor during read-only reconciliation: the remote
+   * ID persisted on the interrupted attempt record, when the provider
+   * object was identified before its outcome became uncertain.
+   */
+  recoveryRemoteId?: string
 }
 
 export interface StreamedSocialVideo {

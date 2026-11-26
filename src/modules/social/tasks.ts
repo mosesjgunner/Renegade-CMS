@@ -397,7 +397,11 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
       }
     } else if (recovery) {
       result = provider.reconcile
-        ? await provider.reconcile(approved, context)
+        ? await provider.reconcile(approved, {
+            ...context,
+            recoveryRemoteId:
+              typeof audit?.response?.remoteId === 'string' ? audit.response.remoteId : undefined,
+          })
         : {
             status: 'unknown',
             error: normalizeProviderError({
@@ -503,7 +507,12 @@ export async function executeSocialQueueItem(payload: Payload, input: SocialDisp
                   providerMode: result.receipt?.rawResponse?.providerMode ?? provider.mode,
                   receipt: result.receipt,
                 }
-              : null,
+              : result.status === 'unknown' && result.remoteId
+                ? // The provider object exists but its outcome is
+                  // unconfirmed; persist its ID so a later read-only
+                  // reconcile can settle this item from provider truth.
+                  { remoteId: result.remoteId }
+                : null,
           error: result.status === 'published' ? null : result.error,
         },
         overrideAccess: true,

@@ -74,6 +74,19 @@ function provider(options?: { scope?: string; status?: number; location?: string
         items: [{ id, contentDetails: { relatedPlaylists: { uploads: 'fixture' } } }],
       })
     }
+    if (pathname === '/youtube/v3/videos') {
+      // RC3-YT: publication requires YouTube to confirm processing.
+      expect(searchParams.get('id')).toBe(remoteId)
+      return Response.json({
+        items: [
+          {
+            id: remoteId,
+            snippet: { channelId: id },
+            status: { uploadStatus: 'processed', privacyStatus: 'private' },
+          },
+        ],
+      })
+    }
     if (searchParams.get('uploadType') === 'resumable') {
       if (options?.status)
         return Response.json(
@@ -133,7 +146,11 @@ describe('YouTube outbound video', () => {
     const { request, calls } = provider()
     const { media, buffer, open } = resolver()
     const result = await new YouTubeAdapter(request).publish(variant, context, media)
-    expect(result).toMatchObject({ status: 'published', remoteId, rawResponse: { id: remoteId } })
+    expect(result).toMatchObject({
+      status: 'published',
+      remoteId,
+      rawResponse: { id: remoteId, processingStatus: 'processed' },
+    })
     expect(JSON.stringify(result)).not.toContain(session)
     expect(buffer).not.toHaveBeenCalled()
     expect(open.mock.calls).toEqual([
@@ -147,6 +164,7 @@ describe('YouTube outbound video', () => {
       `bytes 0-${part - 1}/${part + 99}`,
       `bytes */${part + 99}`,
       `bytes ${part}-${part + 98}/${part + 99}`,
+      '/youtube/v3/videos',
     ])
   })
 
