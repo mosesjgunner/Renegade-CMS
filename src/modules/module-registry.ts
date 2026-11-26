@@ -78,6 +78,7 @@ export type ModuleId =
   | 'experiences'
   | 'quality'
   | 'commerce'
+  | 'monetization'
 
 export type ProviderBoundaryType =
   | 'local-only'
@@ -488,6 +489,35 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       // at floor they would work a store that is not registered.
       'commerce-reconcile-subscriptions',
       'commerce-reconcile-referrals',
+    ],
+  },
+  {
+    id: 'monetization',
+
+    providerBoundary: {
+      type: 'local-adapter',
+      claim:
+        'Creator earnings layer over local commerce truth. External providers are per-creator connected accounts or manual/CSV import only; no provider is required, none is contacted by default, and no live provider call is enabled by this module.',
+    },
+    title: 'Creator earnings (Earn Center)',
+    summary:
+      'Monetization profiles, provider connections, external revenue evidence, sponsorships, representation, first-party ads, rights/licensing, and service bookings.',
+    collections: [
+      'monetization-profiles',
+      'provider-connections',
+      'external-revenue-evidence',
+      'sponsor-advertisers',
+      'sponsor-inventory',
+      'sponsor-bookings',
+      'representation-agreements',
+      'ad-placements',
+      'ad-deliveries',
+      'rights-records',
+      'license-offers',
+      'license-grants',
+      'service-slots',
+      'service-bookings',
+      'distribution-submissions',
     ],
   },
 ] as const

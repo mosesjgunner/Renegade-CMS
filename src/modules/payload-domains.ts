@@ -12,6 +12,7 @@ import { experiencesDomain } from './experiences/payload-domain'
 import { identityDomain } from './identity/payload-domain'
 import { integrationsDomain } from './integrations/payload-domain'
 import { mediaDomain } from './media/payload-domain'
+import { monetizationDomain } from './monetization/payload-domain'
 import { networkDomain } from './network/payload-domain'
 import { operationsDomain } from './operations/payload-domain'
 import { qualityDomain } from './quality/payload-domain'
@@ -35,6 +36,7 @@ export function payloadDomains(config: AppConfig): DomainDefinition[] {
     experiencesDomain,
     qualityDomain,
     commerceDomain,
+    monetizationDomain,
   ]
 }
 
@@ -61,6 +63,7 @@ export function registeredPayloadDomains(config: AppConfig): PayloadRegistration
     experiences,
     quality,
     commerce,
+    monetization,
   ] = domains
   const registrations = composePayloadDomains(domains)
   const identityCollections = collections(identity)
@@ -85,6 +88,7 @@ export function registeredPayloadDomains(config: AppConfig): PayloadRegistration
       ...collections(experiences),
       ...collections(quality),
       ...collections(commerce),
+      ...collections(monetization),
     ],
     tasks: registrations.tasks,
   }

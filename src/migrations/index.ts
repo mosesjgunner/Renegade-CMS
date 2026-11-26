@@ -1029,6 +1029,11 @@ export const migrations = [
     down: rc322RenegadeLink.down,
     name: '20261125_060000_rc322_renegade_link',
   },
+  {
+    up: rc3CeMonetization.up,
+    down: rc3CeMonetization.down,
+    name: '20261126_120000_rc3_ce_monetization',
+  },
 ]
 import * as cre05MediaEdits from './20261122_160000_cre05_media_edits'
 import * as cre03Portfolios from './20261122_150000_cre03_portfolios'
@@ -1055,3 +1060,4 @@ import * as rc320AdapterSources from './20261124_090000_rc320_adapter_sources'
 import * as rc320ShopUxListing from './20261124_120000_rc320_shop_ux_listing'
 import * as rc321EnterpriseIdp from './20261124_140000_rc321_enterprise_idp'
 import * as rc322RenegadeLink from './20261125_060000_rc322_renegade_link'
+import * as rc3CeMonetization from './20261126_120000_rc3_ce_monetization'

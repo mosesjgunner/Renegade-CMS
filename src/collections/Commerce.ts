@@ -261,6 +261,10 @@ export const Products: CollectionConfig = {
       'membership',
       'donation',
       'affiliate',
+      // RC3-CE: services/events (CE-02) and licensed rights (CE-10)
+      // are canonical product kinds; both sell through this checkout.
+      'service',
+      'license',
     ]),
     select('state', ['draft', 'review', 'approved', 'published', 'archived'], 'draft'),
     { name: 'publishedAt', type: 'date' },

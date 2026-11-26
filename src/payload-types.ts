@@ -291,6 +291,21 @@ export interface Config {
     'pod-connections': PodConnection;
     'pod-jobs': PodJob;
     'manual-fulfillment-packages': ManualFulfillmentPackage;
+    'monetization-profiles': MonetizationProfile;
+    'provider-connections': ProviderConnection;
+    'external-revenue-evidence': ExternalRevenueEvidence;
+    'sponsor-advertisers': SponsorAdvertiser;
+    'sponsor-inventory': SponsorInventory;
+    'sponsor-bookings': SponsorBooking;
+    'representation-agreements': RepresentationAgreement;
+    'ad-placements': AdPlacement;
+    'ad-deliveries': AdDelivery;
+    'rights-records': RightsRecord;
+    'license-offers': LicenseOffer;
+    'license-grants': LicenseGrant;
+    'service-slots': ServiceSlot;
+    'service-bookings': ServiceBooking;
+    'distribution-submissions': DistributionSubmission;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -523,6 +538,21 @@ export interface Config {
     'pod-connections': PodConnectionsSelect<false> | PodConnectionsSelect<true>;
     'pod-jobs': PodJobsSelect<false> | PodJobsSelect<true>;
     'manual-fulfillment-packages': ManualFulfillmentPackagesSelect<false> | ManualFulfillmentPackagesSelect<true>;
+    'monetization-profiles': MonetizationProfilesSelect<false> | MonetizationProfilesSelect<true>;
+    'provider-connections': ProviderConnectionsSelect<false> | ProviderConnectionsSelect<true>;
+    'external-revenue-evidence': ExternalRevenueEvidenceSelect<false> | ExternalRevenueEvidenceSelect<true>;
+    'sponsor-advertisers': SponsorAdvertisersSelect<false> | SponsorAdvertisersSelect<true>;
+    'sponsor-inventory': SponsorInventorySelect<false> | SponsorInventorySelect<true>;
+    'sponsor-bookings': SponsorBookingsSelect<false> | SponsorBookingsSelect<true>;
+    'representation-agreements': RepresentationAgreementsSelect<false> | RepresentationAgreementsSelect<true>;
+    'ad-placements': AdPlacementsSelect<false> | AdPlacementsSelect<true>;
+    'ad-deliveries': AdDeliveriesSelect<false> | AdDeliveriesSelect<true>;
+    'rights-records': RightsRecordsSelect<false> | RightsRecordsSelect<true>;
+    'license-offers': LicenseOffersSelect<false> | LicenseOffersSelect<true>;
+    'license-grants': LicenseGrantsSelect<false> | LicenseGrantsSelect<true>;
+    'service-slots': ServiceSlotsSelect<false> | ServiceSlotsSelect<true>;
+    'service-bookings': ServiceBookingsSelect<false> | ServiceBookingsSelect<true>;
+    'distribution-submissions': DistributionSubmissionsSelect<false> | DistributionSubmissionsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -3417,7 +3447,7 @@ export interface Product {
   summary?: string | null;
   slug: string;
   canonicalPath: string;
-  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation' | 'affiliate';
+  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation' | 'affiliate' | 'service' | 'license';
   state: 'draft' | 'review' | 'approved' | 'published' | 'archived';
   publishedAt?: string | null;
   /**
@@ -11825,6 +11855,1048 @@ export interface ManualFulfillmentPackage {
   updatedAt: string;
   createdAt: string;
 }
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "monetization-profiles".
+ */
+export interface MonetizationProfile {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  status: 'not-started' | 'in-progress' | 'active' | 'paused';
+  sellerOfRecordMode: 'self-hosted-direct' | 'managed-direct' | 'creator-invoiced' | 'agency-invoiced';
+  railsEnabled?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  preferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  categoryExclusions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  maxAdLoadPercent?: number | null;
+  networkOptIn?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxDisclosureVersion?: string | null;
+  consentVersion?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "monetization-profiles_select".
+ */
+export interface MonetizationProfilesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  status?: T;
+  sellerOfRecordMode?: T;
+  railsEnabled?: T;
+  preferences?: T;
+  categoryExclusions?: T;
+  maxAdLoadPercent?: T;
+  networkOptIn?: T;
+  taxDisclosureVersion?: T;
+  consentVersion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "provider-connections".
+ */
+export interface ProviderConnection {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  providerId: string;
+  accountRef?: string | null;
+  /**
+   * Secret-manager reference only; never store provider credentials in Payload.
+   */
+  credentialReference?: string | null;
+  status: 'not-configured' | 'awaiting-provider' | 'connected' | 'expired' | 'denied' | 'error' | 'disconnected';
+  grantedScopes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  evidenceByCapability?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastSuccessAt?: string | null;
+  expiresAt?: string | null;
+  revokedAt?: string | null;
+  authorizedPurpose?: string | null;
+  lastError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "provider-connections_select".
+ */
+export interface ProviderConnectionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  providerId?: T;
+  accountRef?: T;
+  credentialReference?: T;
+  status?: T;
+  grantedScopes?: T;
+  evidenceByCapability?: T;
+  lastSuccessAt?: T;
+  expiresAt?: T;
+  revokedAt?: T;
+  authorizedPurpose?: T;
+  lastError?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "external-revenue-evidence".
+ */
+export interface ExternalRevenueEvidence {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  providerId: string;
+  accountRef?: string | null;
+  programRef?: string | null;
+  providerEventId: string;
+  sourceHash?: string | null;
+  sourceType: 'api' | 'csv' | 'manual';
+  status:
+    | 'reported-estimated'
+    | 'reported-pending'
+    | 'approved'
+    | 'cleared'
+    | 'settled'
+    | 'payout-reported'
+    | 'payout-confirmed'
+    | 'denied'
+    | 'reversed'
+    | 'corrected'
+    | 'disputed';
+  originalStatus?: string | null;
+  currency: string;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  grossMinor?: string | null;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  commissionMinor?: string | null;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  feesMinor?: string | null;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  netMinor?: string | null;
+  isEstimated?: boolean | null;
+  reversalRef?: string | null;
+  payoutRef?: string | null;
+  mappingVersion: string;
+  sourceTimestamp?: string | null;
+  importedAt?: string | null;
+  lastConfirmedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "external-revenue-evidence_select".
+ */
+export interface ExternalRevenueEvidenceSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  providerId?: T;
+  accountRef?: T;
+  programRef?: T;
+  providerEventId?: T;
+  sourceHash?: T;
+  sourceType?: T;
+  status?: T;
+  originalStatus?: T;
+  currency?: T;
+  grossMinor?: T;
+  commissionMinor?: T;
+  feesMinor?: T;
+  netMinor?: T;
+  isEstimated?: T;
+  reversalRef?: T;
+  payoutRef?: T;
+  mappingVersion?: T;
+  sourceTimestamp?: T;
+  importedAt?: T;
+  lastConfirmedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-advertisers".
+ */
+export interface SponsorAdvertiser {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  contactName?: string | null;
+  contactEmail?: string | null;
+  website?: string | null;
+  status: 'active' | 'blocked';
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-advertisers_select".
+ */
+export interface SponsorAdvertisersSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  contactName?: T;
+  contactEmail?: T;
+  website?: T;
+  status?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-inventory".
+ */
+export interface SponsorInventory {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  surface: 'web' | 'newsletter' | 'podcast' | 'video' | 'live' | 'event' | 'bundle';
+  placementKey?: string | null;
+  unitsTotal?: number | null;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  rateMinor?: string | null;
+  currency: string;
+  pricingModel: 'flat' | 'cpm' | 'cpa' | 'hybrid';
+  availableFrom?: string | null;
+  availableTo?: string | null;
+  status: 'draft' | 'open' | 'held' | 'sold-out' | 'archived';
+  audienceSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  exclusions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-inventory_select".
+ */
+export interface SponsorInventorySelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  surface?: T;
+  placementKey?: T;
+  unitsTotal?: T;
+  rateMinor?: T;
+  currency?: T;
+  pricingModel?: T;
+  availableFrom?: T;
+  availableTo?: T;
+  status?: T;
+  audienceSnapshot?: T;
+  exclusions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-bookings".
+ */
+export interface SponsorBooking {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  inventory: string | SponsorInventory;
+  advertiser: string | SponsorAdvertiser;
+  state:
+    | 'inquiry'
+    | 'draft-proposal'
+    | 'tentative'
+    | 'approved'
+    | 'scheduled'
+    | 'delivered'
+    | 'proof-review'
+    | 'invoiced'
+    | 'collected'
+    | 'allocated'
+    | 'cancelled'
+    | 'makegood'
+    | 'disputed'
+    | 'refunded';
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  priceMinor?: string | null;
+  currency: string;
+  ioVersion?: string | null;
+  creativeVersions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  creativeStatus: 'none' | 'submitted' | 'approved' | 'rejected';
+  proof?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  invoiceState: 'none' | 'created' | 'sent' | 'paid' | 'overdue' | 'void';
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  collectedMinor?: string | null;
+  representationAgreement?: (string | null) | RepresentationAgreement;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  agencyFeeMinor?: string | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  holdExpiresAt?: string | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sponsor-bookings_select".
+ */
+export interface SponsorBookingsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  inventory?: T;
+  advertiser?: T;
+  state?: T;
+  priceMinor?: T;
+  currency?: T;
+  ioVersion?: T;
+  creativeVersions?: T;
+  creativeStatus?: T;
+  proof?: T;
+  invoiceState?: T;
+  collectedMinor?: T;
+  representationAgreement?: T;
+  agencyFeeMinor?: T;
+  startsAt?: T;
+  endsAt?: T;
+  holdExpiresAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "representation-agreements".
+ */
+export interface RepresentationAgreement {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  version: string;
+  status: 'draft' | 'offered' | 'active' | 'revoked' | 'expired';
+  commissionBasisBps?: number | null;
+  carveouts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  exclusions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  territory?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  signedAt?: string | null;
+  revokedAt?: string | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "representation-agreements_select".
+ */
+export interface RepresentationAgreementsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  version?: T;
+  status?: T;
+  commissionBasisBps?: T;
+  carveouts?: T;
+  exclusions?: T;
+  territory?: T;
+  signedAt?: T;
+  revokedAt?: T;
+  startsAt?: T;
+  endsAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-placements".
+ */
+export interface AdPlacement {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  slot: 'web-header' | 'web-in-content' | 'web-sidebar' | 'newsletter-block' | 'video-static';
+  kind: 'house' | 'direct-sold' | 'provider-tag';
+  booking?: (string | null) | SponsorBooking;
+  providerId?: string | null;
+  tagReference?: string | null;
+  content?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  frequencyCapPerDay?: number | null;
+  categoryExclusions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  excludePaidContent?: boolean | null;
+  requiresConsent?: boolean | null;
+  status: 'draft' | 'active' | 'paused' | 'ended';
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-placements_select".
+ */
+export interface AdPlacementsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  slot?: T;
+  kind?: T;
+  booking?: T;
+  providerId?: T;
+  tagReference?: T;
+  content?: T;
+  startsAt?: T;
+  endsAt?: T;
+  frequencyCapPerDay?: T;
+  categoryExclusions?: T;
+  excludePaidContent?: T;
+  requiresConsent?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-deliveries".
+ */
+export interface AdDelivery {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  placement: string | AdPlacement;
+  slot: string;
+  kind: 'house' | 'direct-sold' | 'provider-tag';
+  reason?: string | null;
+  context?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  deliveredAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ad-deliveries_select".
+ */
+export interface AdDeliveriesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  placement?: T;
+  slot?: T;
+  kind?: T;
+  reason?: T;
+  context?: T;
+  deliveredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rights-records".
+ */
+export interface RightsRecord {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  mediaAsset?: (string | null) | MediaAsset;
+  fingerprint: string;
+  basis: 'original' | 'commissioned' | 'assignment' | 'licensed-in' | 'public-domain' | 'mixed' | 'unclear';
+  holders?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  releases?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  grantable?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  restrictions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'draft' | 'ready' | 'blocked' | 'withdrawn';
+  expiresAt?: string | null;
+  aiTdmOptIn?: boolean | null;
+  aiTdmTermsVersion?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rights-records_select".
+ */
+export interface RightsRecordsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  mediaAsset?: T;
+  fingerprint?: T;
+  basis?: T;
+  holders?: T;
+  releases?: T;
+  grantable?: T;
+  restrictions?: T;
+  status?: T;
+  expiresAt?: T;
+  aiTdmOptIn?: T;
+  aiTdmTermsVersion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "license-offers".
+ */
+export interface LicenseOffer {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  rightsRecord: string | RightsRecord;
+  product?: (string | null) | Product;
+  name: string;
+  terms?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Integer minor units as a decimal string; empty means unknown, never zero.
+   */
+  priceMinor?: string | null;
+  currency: string;
+  status: 'draft' | 'active' | 'paused' | 'withdrawn';
+  agreementVersion: string;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "license-offers_select".
+ */
+export interface LicenseOffersSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  rightsRecord?: T;
+  product?: T;
+  name?: T;
+  terms?: T;
+  priceMinor?: T;
+  currency?: T;
+  status?: T;
+  agreementVersion?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "license-grants".
+ */
+export interface LicenseGrant {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  offer: string | LicenseOffer;
+  order?: (string | null) | Order;
+  buyerName?: string | null;
+  buyerEmail?: string | null;
+  agreementVersion: string;
+  fingerprint: string;
+  termsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'issued' | 'delivered' | 'expired' | 'revoked' | 'disputed';
+  issuedAt?: string | null;
+  deliveredAt?: string | null;
+  expiresAt?: string | null;
+  deliveryTokenHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "license-grants_select".
+ */
+export interface LicenseGrantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  offer?: T;
+  order?: T;
+  buyerName?: T;
+  buyerEmail?: T;
+  agreementVersion?: T;
+  fingerprint?: T;
+  termsSnapshot?: T;
+  status?: T;
+  issuedAt?: T;
+  deliveredAt?: T;
+  expiresAt?: T;
+  deliveryTokenHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-slots".
+ */
+export interface ServiceSlot {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  product: string | Product;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  timezone?: string | null;
+  capacity?: number | null;
+  bookedCount?: number | null;
+  status: 'open' | 'closed' | 'cancelled';
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-slots_select".
+ */
+export interface ServiceSlotsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  product?: T;
+  startsAt?: T;
+  endsAt?: T;
+  timezone?: T;
+  capacity?: T;
+  bookedCount?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-bookings".
+ */
+export interface ServiceBooking {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  slot: string | ServiceSlot;
+  product: string | Product;
+  order?: (string | null) | Order;
+  buyerName?: string | null;
+  buyerEmail?: string | null;
+  seats?: number | null;
+  state: 'reserved' | 'confirmed' | 'fulfilled' | 'cancelled' | 'refunded';
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-bookings_select".
+ */
+export interface ServiceBookingsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  slot?: T;
+  product?: T;
+  order?: T;
+  buyerName?: T;
+  buyerEmail?: T;
+  seats?: T;
+  state?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "distribution-submissions".
+ */
+export interface DistributionSubmission {
+  id: string;
+  site: string | Site;
+  /**
+   * The outlet this runs in. Leave empty — most posts are just the website’s own.
+   */
+  publication?: (string | null) | Publication;
+  /**
+   * A member’s own space — their page and their posts. Most posts don’t need one; a person’s own posts live in their space automatically.
+   */
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  providerId: string;
+  rightsRecord?: (string | null) | RightsRecord;
+  contentRef?: string | null;
+  exportChecksum?: string | null;
+  status: 'prepared' | 'submitted' | 'accepted' | 'denied' | 'withdrawn' | 'exclusive-conflict';
+  submittedAt?: string | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "distribution-submissions_select".
+ */
+export interface DistributionSubmissionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  providerId?: T;
+  rightsRecord?: T;
+  contentRef?: T;
+  exportChecksum?: T;
+  status?: T;
+  submittedAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
