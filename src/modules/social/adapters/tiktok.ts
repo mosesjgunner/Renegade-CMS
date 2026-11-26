@@ -37,7 +37,28 @@ export interface TikTokCreatorInfo {
   max_video_post_duration_sec: number
 }
 
+export interface TikTokPublishStatus {
+  status: 'PROCESSING_DOWNLOAD' | 'PROCESSING_UPLOAD' | 'SUCCESS' | 'FAILED'
+  /** TikTok's own failure reason when the publish task FAILED. */
+  failReason?: string
+  /**
+   * Real, publicly available post ID once TikTok has actually posted the
+   * video. TikTok's status response carries it as
+   * `publicaly_available_post_id` (the provider's own spelling).
+   */
+  postId?: string
+}
+
+export type TikTokAdapterTiming = {
+  /** Delay between publish-status polls after the upload finishes. */
+  pollIntervalMs?: number
+  /** Bounded number of publish-status polls before the outcome stays unknown. */
+  maxPolls?: number
+  sleep?: (ms: number) => Promise<void>
+}
+
 export class TikTokAdapter implements SocialProviderAdapter {
+  constructor(private readonly timing: TikTokAdapterTiming = {}) {}
   readonly id = 'adapter-tiktok'
   readonly name = 'TikTok Content Posting API v2 Adapter'
   readonly version = '2026.1.0'
@@ -253,12 +274,11 @@ export class TikTokAdapter implements SocialProviderAdapter {
   }
 
   /**
-   * Checks publication status via polling.
+   * Checks publication status via polling. Surfaces TikTok's failure
+   * reason and the real post ID alongside the status so callers never
+   * have to invent either one.
    */
-  async checkPublishStatus(
-    accessToken: string,
-    publishId: string,
-  ): Promise<{ status: 'PROCESSING_DOWNLOAD' | 'PROCESSING_UPLOAD' | 'SUCCESS' | 'FAILED' }> {
+  async checkPublishStatus(accessToken: string, publishId: string): Promise<TikTokPublishStatus> {
     const endpoint = 'https://open.tiktokapis.com/v2/post/publish/status/fetch/'
     const res = await fetch(endpoint, {
       method: 'POST',
@@ -274,10 +294,120 @@ export class TikTokAdapter implements SocialProviderAdapter {
     }
 
     const data = (await res.json()) as {
-      data?: { status: 'PROCESSING_DOWNLOAD' | 'PROCESSING_UPLOAD' | 'SUCCESS' | 'FAILED' }
+      data?: {
+        status: 'PROCESSING_DOWNLOAD' | 'PROCESSING_UPLOAD' | 'SUCCESS' | 'FAILED'
+        fail_reason?: string
+        publicaly_available_post_id?: Array<number | string>
+      }
     }
 
-    return data.data || { status: 'PROCESSING_UPLOAD' }
+    if (!data.data) return { status: 'PROCESSING_UPLOAD' }
+
+    // A post ID is only trustworthy as an exact identifier: JSON numbers
+    // past the safe-integer range have already lost precision in parsing,
+    // so only safe integers and digit strings are accepted.
+    const rawPostId = data.data.publicaly_available_post_id?.find(
+      (value) =>
+        (typeof value === 'number' && Number.isSafeInteger(value)) ||
+        (typeof value === 'string' && /^\d+$/.test(value)),
+    )
+
+    return {
+      status: data.data.status,
+      failReason:
+        typeof data.data.fail_reason === 'string' && data.data.fail_reason
+          ? data.data.fail_reason
+          : undefined,
+      postId: rawPostId !== undefined ? String(rawPostId) : undefined,
+    }
+  }
+
+  /**
+   * The receipt gate: an upload counts as published only when TikTok's
+   * publish-status endpoint confirms SUCCESS. Bounded polls; a task
+   * still processing when the bound runs out stays `unknown` — never
+   * fake-published — and a FAILED task surfaces TikTok's own reason.
+   * The remote URL is built only from the real post ID TikTok returns
+   * plus the account's real handle; without a real post ID there is no
+   * URL, never a constructed one.
+   */
+  private async confirmPublish(
+    accessToken: string,
+    publishId: string,
+    auth?: AuthContext,
+  ): Promise<AdapterResult> {
+    const maxPolls = this.timing.maxPolls ?? 5
+    const interval = this.timing.pollIntervalMs ?? 2000
+    const sleep =
+      this.timing.sleep ?? ((ms: number) => new Promise((resolve) => setTimeout(resolve, ms)))
+
+    for (let poll = 0; poll < maxPolls; poll += 1) {
+      if (poll > 0) await sleep(interval)
+      let outcome: TikTokPublishStatus
+      try {
+        outcome = await this.checkPublishStatus(accessToken, publishId)
+      } catch {
+        // A transient status-check failure does not condemn the upload —
+        // TikTok already has the bytes. Keep polling within the bound;
+        // if the bound runs out the outcome stays unknown.
+        continue
+      }
+
+      if (outcome.status === 'FAILED') {
+        return {
+          status: 'failed',
+          error: normalizeProviderError({
+            kind: 'validation',
+            providerCode: outcome.failReason,
+            message: outcome.failReason
+              ? `TikTok could not publish this video (${outcome.failReason}). It will not be posted; fix the video and create a new post instead of retrying this upload.`
+              : 'TikTok could not publish this video. It will not be posted; fix the video and create a new post instead of retrying this upload.',
+          }),
+        }
+      }
+
+      if (outcome.status === 'SUCCESS') {
+        const handle = auth?.accountHandle?.replace(/^@/, '').trim()
+        const remoteUrl =
+          outcome.postId && handle
+            ? `https://www.tiktok.com/@${handle}/video/${outcome.postId}`
+            : undefined
+        return {
+          status: 'published',
+          remoteId: outcome.postId ?? publishId,
+          ...(remoteUrl ? { remoteUrl } : {}),
+          rawResponse: {
+            publish_id: publishId,
+            ...(outcome.postId ? { post_id: outcome.postId } : {}),
+            publish_status: 'SUCCESS',
+          },
+          ...(remoteUrl && outcome.postId
+            ? {
+                receipt: {
+                  remotePostId: outcome.postId,
+                  remoteUrl,
+                  publishedAt: new Date(),
+                  rawResponse: {
+                    publish_id: publishId,
+                    post_id: outcome.postId,
+                    publish_status: 'SUCCESS',
+                  },
+                },
+              }
+            : {}),
+        }
+      }
+      // PROCESSING_DOWNLOAD / PROCESSING_UPLOAD: keep polling.
+    }
+
+    return {
+      status: 'unknown',
+      error: normalizeProviderError({
+        kind: 'remote-unknown',
+        remoteOutcome: 'unknown',
+        message: `TikTok accepted the upload (publish task ${publishId}) but has not confirmed it was posted. Check TikTok before retrying — do not upload it again blindly.`,
+      }),
+    }
   }
 
   async publish(
@@ -341,19 +471,10 @@ export class TikTokAdapter implements SocialProviderAdapter {
         await this.uploadBinaryChunk(initResult.uploadUrl, buffer)
       }
 
-      const remoteUrl = `https://www.tiktok.com/@creator/video/${initResult.publishId}`
-
-      return {
-        status: 'published',
-        remoteId: initResult.publishId,
-        remoteUrl,
-        receipt: {
-          remotePostId: initResult.publishId,
-          remoteUrl,
-          publishedAt: new Date(),
-          rawResponse: { publish_id: initResult.publishId },
-        },
-      }
+      // Step 3: Confirm publication with TikTok before claiming success.
+      // The upload finishing only means TikTok received the bytes; the
+      // publish task still has to process and post the video.
+      return await this.confirmPublish(accessToken, initResult.publishId, auth)
     } catch (e: unknown) {
       const err = e as { message?: string }
       return {

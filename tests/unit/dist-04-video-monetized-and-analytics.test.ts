@@ -88,8 +88,16 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
       expect(info.max_video_post_duration_sec).toBe(600)
     })
 
-    it('publishes video through init and binary chunk upload', async () => {
+    // RC3-TT: this test previously asserted the adapter's fabricated
+    // receipt — 'published' the moment the upload finished, with the
+    // publish *task* id stored as the post id and a URL built on the
+    // literal placeholder '@creator'. The adapter now polls TikTok's
+    // publish-status endpoint and only reports published on SUCCESS,
+    // with the real post id and URL. Updated deliberately to match;
+    // see tests/unit/social-tiktok-receipt.test.ts for the full gate.
+    it('publishes video through init, binary chunk upload, and TikTok-confirmed processing', async () => {
       const calls: string[] = []
+      let statusCalls = 0
       globalThis.fetch = vi.fn().mockImplementation(async (url: string, init?: RequestInit) => {
         calls.push(`${init?.method} ${url}`)
         if (url.includes('/video/init/')) {
@@ -107,6 +115,21 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
           expect(init?.method).toBe('PUT')
           return new Response(null, { status: 200 })
         }
+        if (url.includes('/status/fetch/')) {
+          statusCalls += 1
+          return new Response(
+            JSON.stringify({
+              data:
+                statusCalls === 1
+                  ? { status: 'PROCESSING_UPLOAD' }
+                  : {
+                      status: 'SUCCESS',
+                      publicaly_available_post_id: ['7291234567890123'],
+                    },
+            }),
+            { status: 200 },
+          )
+        }
         return new Response('Not Found', { status: 404 })
       })
 
@@ -116,13 +139,20 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
         attachments: [{ mediaAssetId: 'vid-bts', role: 'video' }],
       })
 
-      const result = await adapter.publish(variant, context, mockMediaResolver)
+      // Zero-delay polling so the confirmation polls do not wait on the
+      // production 2s interval.
+      const fastAdapter = new TikTokAdapter({ sleep: async () => {}, pollIntervalMs: 0 })
+      const result = await fastAdapter.publish(variant, context, mockMediaResolver)
       expect(result.status).toBe('published')
       if (result.status === 'published') {
-        expect(result.remoteId).toBe('v_pub_tiktok_777')
-        expect(result.remoteUrl).toContain('tiktok.com/@creator/video/v_pub_tiktok_777')
+        expect(result.remoteId).toBe('7291234567890123')
+        expect(result.remoteUrl).toBe(
+          'https://www.tiktok.com/@renegade_shorts/video/7291234567890123',
+        )
       }
-      expect(calls).toHaveLength(2)
+      expect(JSON.stringify(result)).not.toContain('@creator')
+      // init + chunk upload + two publish-status polls.
+      expect(calls).toHaveLength(4)
     })
   })
 
