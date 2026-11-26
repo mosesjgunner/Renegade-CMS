@@ -310,6 +310,19 @@ export function ExternalVideoWorkspace({
               Download video
             </a>
           )}
+          {download && (
+            <p>
+              <Link
+                href={`/admin/social?youtubeAsset=${encodeURIComponent(download)}&youtubeTitle=${encodeURIComponent(
+                  exports.find((item) => item.id === download)?.title ?? '',
+                )}`}
+              >
+                Post to YouTube
+              </Link>{' '}
+              — opens the social desk with this video pre-filled as a YouTube post draft. Nothing
+              uploads until the draft is reviewed, approved and scheduled there.
+            </p>
+          )}
         </section>
       )}
     </div>

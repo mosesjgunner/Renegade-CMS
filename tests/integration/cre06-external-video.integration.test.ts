@@ -559,6 +559,17 @@ it('dispatches an approved native video from disk and stages manual handoff when
               { id: channelId, contentDetails: { relatedPlaylists: { uploads: 'fixture' } } },
             ],
           })
+        if (url.pathname === '/youtube/v3/videos')
+          // RC3-YT: the receipt requires YouTube's processing confirmation.
+          return Response.json({
+            items: [
+              {
+                id: externalId,
+                snippet: { channelId },
+                status: { uploadStatus: 'processed', privacyStatus: 'private' },
+              },
+            ],
+          })
         if (init?.method === 'POST')
           return new Response(null, {
             headers: {
@@ -585,7 +596,7 @@ it('dispatches an approved native video from disk and stages manual handoff when
     expect(attempts.docs[0].response).toMatchObject({ remoteId: externalId })
     for (const secret of [session, token, refresh])
       expect(JSON.stringify(attempts.docs)).not.toContain(secret)
-    expect(calls).toHaveLength(4)
+    expect(calls).toHaveLength(5)
 
     vi.stubEnv('CREATOR_YOUTUBE_UPLOAD_AUTHORIZED', 'false')
     const manual = await queueVariant()
@@ -596,7 +607,7 @@ it('dispatches an approved native video from disk and stages manual handoff when
       status: 'manual-handoff',
       handoff: { network: 'youtube', attachments: [asset.id] },
     })
-    expect(calls).toHaveLength(4)
+    expect(calls).toHaveLength(5)
   } finally {
     await store.remove(file)
     await rmdir(directory)

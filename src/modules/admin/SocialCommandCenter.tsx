@@ -13,6 +13,7 @@ import {
   updateCanonicalCopy,
   type CanonicalSocialPost,
 } from '../social/models'
+import YouTubePublishPanel from './YouTubePublishPanel'
 
 interface ConnectedAccountUI {
   id: string
@@ -768,8 +769,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             }}
           >
             <strong>0 Accounts Configured.</strong> To distribute, configure accounts in{' '}
-            <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported native
-            adapter proved against a local provider harness. Live remote acceptance is unverified;
+            <code>Collections &rarr; Social Accounts</code>. Bluesky and YouTube have native
+            adapters proved against local provider harnesses. Live remote acceptance is unverified;
             other networks require separate manual handoff.
           </div>
         ) : (
@@ -855,6 +856,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         )}
       </div>
 
+      <YouTubePublishPanel />
+
       <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
         <Link href="/admin/collections/social-queue-items">Delivery queue and recovery state</Link>{' '}
         • <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> •{' '}
@@ -917,9 +920,22 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             }}
           >
             <span style={{ fontWeight: 600, color: '#475569' }}>
-              X, Threads, FB, IG, LinkedIn, YT, TikTok:
+              X, Threads, FB, IG, LinkedIn, TikTok:
             </span>{' '}
             <strong>Manual Handoff</strong> (Separate operator delivery; no native delivery claim)
+          </div>
+          <div
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
+              border: '1px solid #dcfce7',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: '#15803d' }}>YouTube:</span>{' '}
+            <strong>Native adapter</strong> (Resumable upload with processing-confirmed receipts;
+            sends only when the installation&apos;s operator authorization flags are on, otherwise
+            manual handoff; live remote acceptance unverified)
           </div>
           <div
             style={{

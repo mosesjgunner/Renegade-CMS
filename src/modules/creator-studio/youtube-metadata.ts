@@ -10,6 +10,8 @@ export class YouTubeError extends Error {
   constructor(
     readonly kind: 'revoked' | 'scope' | 'claim' | 'quota' | 'unavailable',
     readonly retryAfter?: string,
+    /** The provider's machine-readable error reason (e.g. `uploadLimitExceeded`), when one was returned. */
+    readonly reason?: string,
   ) {
     super(
       {
@@ -63,15 +65,30 @@ export function youtubeConfiguration() {
 
 export type YouTubeConfig = NonNullable<ReturnType<typeof youtubeConfiguration>>
 export type YouTubeGrant = { token: string; scopes: string[]; refreshToken?: string }
+export type YouTubeRecentUpload = {
+  id: string
+  channelId: string
+  title: string
+  description: string
+  publishedAt: string
+  uploadStatus: string
+  failureReason: string
+  rejectionReason: string
+}
 
 export const youtubeVerifier = () => randomBytes(32).toString('base64url')
-export function youtubeAuthorizationURL(config: YouTubeConfig, state: string, verifier: string) {
+export function youtubeAuthorizationURL(
+  config: YouTubeConfig,
+  state: string,
+  verifier: string,
+  scopes: readonly string[] = [youtubeReadonly],
+) {
   const url = new URL('https://accounts.google.com/o/oauth2/v2/auth')
   url.search = new URLSearchParams({
     client_id: config.clientId,
     redirect_uri: config.redirectUri,
     response_type: 'code',
-    scope: youtubeReadonly,
+    scope: scopes.join(' '),
     access_type: 'offline',
     prompt: 'consent',
     state,
@@ -85,8 +102,8 @@ export async function youtubeResponseError(response: Response, tokenEndpoint = f
   const body = await response.json().catch(() => null)
   const reason = body?.error?.errors?.[0]?.reason
   if (response.status === 401 || (tokenEndpoint && body?.error === 'invalid_grant'))
-    return new YouTubeError('revoked')
-  if (reason === 'insufficientPermissions') return new YouTubeError('scope')
+    return new YouTubeError('revoked', undefined, reason)
+  if (reason === 'insufficientPermissions') return new YouTubeError('scope', undefined, reason)
   if (
     response.status === 429 ||
     [
@@ -97,8 +114,8 @@ export async function youtubeResponseError(response: Response, tokenEndpoint = f
       'uploadLimitExceeded',
     ].includes(reason)
   )
-    return new YouTubeError('quota', response.headers.get('retry-after') ?? undefined)
-  return new YouTubeError('unavailable')
+    return new YouTubeError('quota', response.headers.get('retry-after') ?? undefined, reason)
+  return new YouTubeError('unavailable', undefined, reason)
 }
 
 export class YouTubeMetadata {
@@ -130,7 +147,7 @@ export class YouTubeMetadata {
     }
   }
 
-  exchange(code: string, verifier: string) {
+  exchange(code: string, verifier: string, required: readonly string[] = [youtubeReadonly]) {
     return this.grant(
       {
         code,
@@ -138,7 +155,7 @@ export class YouTubeMetadata {
         redirect_uri: this.config.redirectUri,
         grant_type: 'authorization_code',
       },
-      [youtubeReadonly],
+      required,
     )
   }
 
@@ -254,5 +271,105 @@ export class YouTubeMetadata {
         url: `https://www.youtube-nocookie.com/embed/${externalId}`,
       }
     })
+  }
+
+  /**
+   * Processing truth for one uploaded video, straight from `videos.list`.
+   * `processed` is the only state that confirms publication; `failed` and
+   * `rejected` carry the provider's reason; anything else means YouTube
+   * has not finished — the outcome is not yet known, never a success.
+   */
+  async videoStatus(grant: YouTubeGrant, videoId: string) {
+    if (!youtubeVideoId.test(videoId)) throw new YouTubeError('claim')
+    const data = await this.get(grant.token, 'videos', {
+      part: 'status,snippet',
+      id: videoId,
+    })
+    if (!Array.isArray(data.items)) throw new YouTubeError('unavailable')
+    const item = data.items[0]
+    if (!item) return { state: 'missing' as const }
+    const uploadStatus = item.status?.uploadStatus
+    const base = {
+      privacyStatus:
+        typeof item.status?.privacyStatus === 'string' ? item.status.privacyStatus : undefined,
+      channelId: typeof item.snippet?.channelId === 'string' ? item.snippet.channelId : undefined,
+    }
+    if (uploadStatus === 'processed') return { state: 'processed' as const, ...base }
+    if (uploadStatus === 'failed')
+      return {
+        state: 'failed' as const,
+        ...base,
+        reason:
+          typeof item.status?.failureReason === 'string' ? item.status.failureReason : 'unknown',
+      }
+    if (uploadStatus === 'rejected')
+      return {
+        state: 'rejected' as const,
+        ...base,
+        reason:
+          typeof item.status?.rejectionReason === 'string'
+            ? item.status.rejectionReason
+            : 'unknown',
+      }
+    if (uploadStatus === 'deleted') return { state: 'failed' as const, ...base, reason: 'deleted' }
+    return { state: 'processing' as const, ...base }
+  }
+
+  /**
+   * The channel's most recent uploads with their processing state, for
+   * read-only reconciliation of an upload whose response was lost. Raw
+   * provider fields only — matching policy lives with the caller.
+   */
+  async recentUploads(
+    grant: YouTubeGrant,
+    channel: { id: string; uploads: string },
+  ): Promise<YouTubeRecentUpload[]> {
+    const data = await this.get(grant.token, 'playlistItems', {
+      playlistId: channel.uploads,
+      part: 'contentDetails',
+      maxResults: '25',
+    })
+    if (!Array.isArray(data.items)) throw new YouTubeError('unavailable')
+    const ids = data.items.flatMap((entry: { contentDetails?: { videoId?: string } }) => {
+      const id = entry.contentDetails?.videoId
+      return id && youtubeVideoId.test(id) ? [id] : []
+    })
+    if (!ids.length) return []
+    const videos = await this.get(grant.token, 'videos', {
+      part: 'snippet,status',
+      id: ids.join(','),
+    })
+    if (!Array.isArray(videos.items)) throw new YouTubeError('unavailable')
+    return videos.items.flatMap(
+      (item: {
+        id?: string
+        snippet?: {
+          channelId?: string
+          title?: string
+          description?: string
+          publishedAt?: string
+        }
+        status?: { uploadStatus?: string; failureReason?: string; rejectionReason?: string }
+      }) => {
+        if (typeof item.id !== 'string' || !youtubeVideoId.test(item.id)) return []
+        return [
+          {
+            id: item.id,
+            channelId: typeof item.snippet?.channelId === 'string' ? item.snippet.channelId : '',
+            title: typeof item.snippet?.title === 'string' ? item.snippet.title : '',
+            description:
+              typeof item.snippet?.description === 'string' ? item.snippet.description : '',
+            publishedAt:
+              typeof item.snippet?.publishedAt === 'string' ? item.snippet.publishedAt : '',
+            uploadStatus:
+              typeof item.status?.uploadStatus === 'string' ? item.status.uploadStatus : '',
+            failureReason:
+              typeof item.status?.failureReason === 'string' ? item.status.failureReason : '',
+            rejectionReason:
+              typeof item.status?.rejectionReason === 'string' ? item.status.rejectionReason : '',
+          },
+        ]
+      },
+    )
   }
 }
