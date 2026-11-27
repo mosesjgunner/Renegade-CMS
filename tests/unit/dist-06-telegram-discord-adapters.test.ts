@@ -389,11 +389,16 @@ describe('DiscordAdapter', () => {
   })
 
   it('supports post editing and deletion via webhook or bot endpoints', async () => {
+    // RC3-SOC deliberate update: the edit mock now returns a realistic
+    // Discord message object (id + channel_id + guild_id), because
+    // editPost builds its receipt URL only from the message's real
+    // channel/guild IDs — the previous mock ({ id } only) matched the
+    // old fabricated '@me'/0 URL behaviour this pass removed.
     vi.mocked(global.fetch)
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => ({ id: 'msg-999' }),
+        json: async () => ({ id: 'msg-999', channel_id: 'chan-555', guild_id: 'guild-777' }),
       } as unknown as Response)
       .mockResolvedValueOnce({
         ok: true,
@@ -422,6 +427,7 @@ describe('DiscordAdapter', () => {
       auth,
     )
     expect(editReceipt.remotePostId).toBe('msg-999')
+    expect(editReceipt.remoteUrl).toBe('https://discord.com/channels/guild-777/chan-555/msg-999')
 
     await expect(adapter.deletePost('msg-999', auth)).resolves.not.toThrow()
     expect(global.fetch).toHaveBeenCalledWith(

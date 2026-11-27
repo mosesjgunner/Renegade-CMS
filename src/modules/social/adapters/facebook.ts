@@ -19,7 +19,15 @@ export interface FacebookPlatformSettings {
   linkPreviewTitle?: string
   linkPreviewDescription?: string
   linkPreviewImageUrl?: string
+  /**
+   * Refused by publish(): Renegade's queue owns scheduling (queue items
+   * wait in 'scheduled' status and are dispatched when due), so this
+   * adapter only ever publishes immediately. Setting this returns an
+   * 'unsupported' failure — an unpublished/scheduled Graph post must
+   * never be reported as published.
+   */
   scheduledPublishTime?: number // UNIX timestamp for native scheduling
+  /** Refused by publish() when false — see scheduledPublishTime. */
   published?: boolean
 }
 
@@ -173,6 +181,25 @@ export class FacebookAdapter implements SocialProviderAdapter {
       }
     }
 
+    // Scheduling is owned by the Renegade queue, not by Graph: queue
+    // items wait in 'scheduled' status until their scheduledFor time is
+    // due, and the executor only calls publish() at that moment — so
+    // this adapter's contract is "publish now". A request to create an
+    // unpublished or natively scheduled post is refused before any
+    // Graph call. Previously the scheduled path still returned
+    // status 'published' with publishedAt = now for a post Facebook
+    // had explicitly not published yet.
+    if (settings?.scheduledPublishTime || settings?.published === false) {
+      return {
+        status: 'failed',
+        error: normalizeProviderError({
+          kind: 'unsupported',
+          message:
+            'Facebook native scheduling and unpublished posts are not supported by this adapter: Renegade schedules in its own queue and dispatches when due. Remove scheduledPublishTime / published=false from the variant settings and let the queue dispatch at the scheduled time.',
+        }),
+      }
+    }
+
     try {
       // 1. Multi-photo album or single photo post
       if (variant.attachments.length > 0 && mediaResolver) {
@@ -257,14 +284,9 @@ export class FacebookAdapter implements SocialProviderAdapter {
         feedPayload.link = targetLink
       }
 
-      if (settings?.published !== undefined) {
-        feedPayload.published = settings.published
-      }
-
-      if (settings?.scheduledPublishTime) {
-        feedPayload.published = false
-        feedPayload.scheduled_publish_time = settings.scheduledPublishTime
-      }
+      // No published / scheduled_publish_time fields are ever sent:
+      // the unpublished/native-schedule request was refused above, so
+      // every post created here is published immediately by Graph.
 
       const endpoint = `https://graph.facebook.com/v20.0/${pageId}/feed`
       const ssrf = validateOutboundUrl(endpoint)

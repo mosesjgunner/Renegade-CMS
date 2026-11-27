@@ -295,19 +295,59 @@ export class InstagramAdapter implements SocialProviderAdapter {
         }
       }
 
-      const publishedData = (await pubRes.json()) as { id: string }
-      const remoteUrl = `https://www.instagram.com/p/${publishedData.id}/`
+      const publishedData = (await pubRes.json()) as { id?: string }
+
+      // media_publish confirms publication by returning the media ID.
+      // A 2xx without that ID confirms nothing — report unknown rather
+      // than a receipt that identifies no post.
+      if (!publishedData?.id) {
+        return {
+          status: 'unknown',
+          error: normalizeProviderError({
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message:
+              'Instagram accepted the publish request but its response did not include the media ID, so the post cannot be confirmed. Reconcile before retrying — do not post it again blindly.',
+          }),
+        }
+      }
+
+      // The receipt URL must be the platform permalink: media_publish
+      // returns the numeric media ID, which is NOT the /p/ shortcode —
+      // building instagram.com/p/{media ID} constructs a link Instagram
+      // never issued. Fetch the permalink the same way fetchPost()
+      // reads it back. When it cannot be obtained the post is still
+      // published (publication itself is confirmed) — with no URL
+      // rather than a constructed one.
+      let remoteUrl: string | undefined
+      try {
+        const permalinkRes = await fetch(
+          `https://graph.facebook.com/v20.0/${publishedData.id}?fields=permalink`,
+          { headers: { Authorization: `Bearer ${accessToken}` } },
+        )
+        if (permalinkRes.ok) {
+          const permalinkData = (await permalinkRes.json()) as { permalink?: string }
+          if (permalinkData.permalink) remoteUrl = permalinkData.permalink
+        }
+      } catch {
+        // Permalink read-back is best-effort; its absence never
+        // fabricates a URL and never unpublishes a confirmed post.
+      }
 
       return {
         status: 'published',
         remoteId: publishedData.id,
-        remoteUrl,
-        receipt: {
-          remotePostId: publishedData.id,
-          remoteUrl,
-          publishedAt: new Date(),
-          rawResponse: publishedData as Record<string, unknown>,
-        },
+        ...(remoteUrl
+          ? {
+              remoteUrl,
+              receipt: {
+                remotePostId: publishedData.id,
+                remoteUrl,
+                publishedAt: new Date(),
+                rawResponse: publishedData as Record<string, unknown>,
+              },
+            }
+          : {}),
       }
     } catch (err: unknown) {
       return {

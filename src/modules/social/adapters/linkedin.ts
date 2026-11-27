@@ -306,6 +306,24 @@ export class LinkedInAdapter implements SocialProviderAdapter {
 
       // Successful creation returns HTTP 201 Created with x-restli-id or x-linkedin-id header
       const postUrn = res.headers.get('x-restli-id') || res.headers.get('x-linkedin-id') || ''
+
+      // The URN in the header is the only identifier LinkedIn returns
+      // for the created post. A 201 without it confirms that something
+      // was created but not what — report unknown (the Mastodon/Bluesky
+      // guard pattern) instead of 'published' with an empty ID and a
+      // stub linkedin.com/feed/update/ URL that identifies nothing.
+      if (!postUrn) {
+        return {
+          status: 'unknown',
+          error: normalizeProviderError({
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message:
+              'LinkedIn returned HTTP 201 but no post URN in the x-restli-id header, so the created post cannot be identified. Reconcile before retrying — do not post it again blindly.',
+          }),
+        }
+      }
+
       const remoteUrl = `https://www.linkedin.com/feed/update/${encodeURIComponent(postUrn)}`
 
       return {

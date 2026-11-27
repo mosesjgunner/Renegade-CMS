@@ -305,23 +305,47 @@ export class DiscordAdapter implements SocialProviderAdapter {
         }
       }
 
-      const remotePostId = body?.id || `msg-${Date.now()}`
-      const channelId = body?.channel_id || destination.channelId || '0'
-      const guildId = body?.guild_id || '@me'
-      const remoteUrl = `https://discord.com/channels/${guildId}/${channelId}/${remotePostId}`
-
-      const receipt: DeliveryReceipt = {
-        remotePostId,
-        remoteUrl,
-        publishedAt: new Date(),
-        rawResponse: (body || {}) as Record<string, unknown>,
+      // Receipt honesty: Discord confirms creation by returning the created
+      // message object (the webhook is called with wait=true; the bot
+      // messages endpoint returns the message synchronously). Without a
+      // real message ID in that response there is no receipt to record —
+      // never invent one from the local clock, and never build a URL from
+      // fallback channel/guild segments.
+      if (!body?.id) {
+        return {
+          status: 'unknown',
+          error: normalizeProviderError({
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message:
+              'Discord accepted the request but its response did not include the created message ID, so the post cannot be confirmed. Reconcile before retrying — do not post it again blindly.',
+          }),
+        }
       }
+
+      const remotePostId = body.id
+      const channelId = body.channel_id || destination.channelId
+      // A message object without guild_id lives in a DM channel, which
+      // Discord itself addresses with the literal '@me' guild segment.
+      const guildId = body.guild_id || '@me'
+      const remoteUrl = channelId
+        ? `https://discord.com/channels/${guildId}/${channelId}/${remotePostId}`
+        : undefined
+
+      const receipt: DeliveryReceipt | undefined = remoteUrl
+        ? {
+            remotePostId,
+            remoteUrl,
+            publishedAt: new Date(),
+            rawResponse: body as Record<string, unknown>,
+          }
+        : undefined
 
       return {
         status: 'published',
         remoteId: remotePostId,
-        remoteUrl,
-        receipt,
+        ...(remoteUrl ? { remoteUrl } : {}),
+        ...(receipt ? { receipt } : {}),
       }
     } catch (err: unknown) {
       const msg = sanitizeSocialLog(err instanceof Error ? err.message : String(err))
@@ -362,16 +386,33 @@ export class DiscordAdapter implements SocialProviderAdapter {
       body: JSON.stringify({ content: variant.text }),
     })
 
-    const body = (await res.json().catch(() => ({}))) as Record<string, unknown>
+    const body = (await res.json().catch(() => ({}))) as {
+      id?: string
+      channel_id?: string
+      guild_id?: string
+    }
     if (!res.ok) {
       throw new Error(`Discord edit failed: ${res.statusText}`)
     }
 
+    // The receipt URL is built only from the edited message's real
+    // channel/guild IDs as Discord returns them (or the bot destination's
+    // configured channel) — never from placeholder '@me'/0 segments. A
+    // message object without guild_id is a DM, which Discord itself
+    // addresses with the literal '@me' guild segment.
+    const channelId = body.channel_id || destination.channelId
+    if (!channelId) {
+      throw new Error(
+        'Discord edit response did not include the message channel ID; no receipt URL can be confirmed.',
+      )
+    }
+    const guildId = body.guild_id || '@me'
+
     return {
       remotePostId,
-      remoteUrl: `https://discord.com/channels/@me/0/${remotePostId}`,
+      remoteUrl: `https://discord.com/channels/${guildId}/${channelId}/${remotePostId}`,
       publishedAt: new Date(),
-      rawResponse: body,
+      rawResponse: body as Record<string, unknown>,
     }
   }
 
@@ -402,12 +443,62 @@ export class DiscordAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchPost(remotePostId: string, _authContext: AuthContext): Promise<NormalizedRemotePost> {
+  async fetchPost(remotePostId: string, authContext: AuthContext): Promise<NormalizedRemotePost> {
+    const creds = authContext?.credentials
+    const webhookUrl = (creds?.webhookUrl as string) || (creds?.url as string)
+    const botToken =
+      (creds?.botToken as string) || (creds?.token as string) || (creds?.appPassword as string)
+    const channelId =
+      (creds?.channelId as string) ||
+      (creds?.targetChannel as string) ||
+      (authContext?.accountHandle as string)
+
+    // Read the real message back from Discord — a fabricated URL with an
+    // invented timestamp (the previous behaviour) is not a fetch.
+    let url: string
+    let headers: Record<string, string> = {}
+    if (webhookUrl) {
+      const baseWebhook = webhookUrl.split('?')[0]
+      url = `${baseWebhook}/messages/${remotePostId}`
+    } else if (botToken && channelId) {
+      url = `https://discord.com/api/v10/channels/${channelId}/messages/${remotePostId}`
+      headers = { Authorization: `Bot ${botToken}` }
+    } else {
+      throw new Error(
+        'Discord fetchPost requires either a webhookUrl or botToken with destination channelId.',
+      )
+    }
+
+    assertSocialEndpoint(url)
+    const res = await socialFetch(url, { method: 'GET', headers })
+    if (!res.ok) {
+      throw new Error(`Failed to fetch Discord message: HTTP ${res.status}`)
+    }
+
+    const data = (await res.json().catch(() => null)) as {
+      id?: string
+      channel_id?: string
+      guild_id?: string
+      content?: string
+      timestamp?: string
+    } | null
+
+    if (!data?.id || !(data.channel_id || channelId) || !data.timestamp) {
+      throw new Error(
+        'Discord fetchPost response did not include the message ID, channel ID and timestamp.',
+      )
+    }
+
+    // A message object without guild_id is a DM, which Discord itself
+    // addresses with the literal '@me' guild segment.
+    const guildId = data.guild_id || '@me'
+    const resolvedChannelId = data.channel_id || channelId
+
     return {
-      remoteId: remotePostId,
-      remoteUrl: `https://discord.com/channels/@me/0/${remotePostId}`,
-      publishedAt: new Date(),
-      text: '',
+      remoteId: data.id,
+      remoteUrl: `https://discord.com/channels/${guildId}/${resolvedChannelId}/${data.id}`,
+      text: data.content || '',
+      publishedAt: new Date(data.timestamp),
     }
   }
 
