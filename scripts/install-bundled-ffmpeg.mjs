@@ -5,7 +5,11 @@
  * The engine is a standalone static binary fetched at install time — it is
  * not linked into the application. Its version and SHA-256 are pinned in
  * scripts/ffmpeg-bundle.json: verification FAILS CLOSED on a checksum
- * mismatch (an unverified binary is never installed).
+ * mismatch (an unverified binary is never installed). A download that
+ * fails verification — or fails to arrive at all — is discarded and
+ * fetched again, up to 3 attempts total, because bytes can arrive
+ * corrupted in transit even when the pinned build is fine; installation
+ * still happens ONLY on an exact checksum match.
  *
  * Test overrides: FFMPEG_BUNDLE_URL and FFMPEG_BUNDLE_SHA256 replace the
  * pinned download URL / checksum for this run only (used by
@@ -153,33 +157,75 @@ const main = async () => {
   const tmpDir = await mkdtemp(path.join(os.tmpdir(), 'renegade-ffmpeg-bundle-'))
   try {
     const archivePath = path.join(tmpDir, 'ffmpeg-bundle.tar.xz')
-    let response
-    try {
-      response = await fetch(downloadUrl)
-    } catch (error) {
-      fail(
-        'FFMPEG_BUNDLE_DOWNLOAD_FAILED',
-        `Could not download the audio engine: ${error instanceof Error ? error.message : String(error)}`,
-      )
-    }
-    if (!response.ok) {
-      fail(
-        'FFMPEG_BUNDLE_DOWNLOAD_FAILED',
-        `Could not download the audio engine (the server answered ${response.status}).`,
-      )
-    }
-    await writeFile(archivePath, Buffer.from(await response.arrayBuffer()))
+    // Bounded re-download: an unverified download (bad bytes in transit,
+    // or a download that never arrived) is discarded and fetched again.
+    // The loop only exits with `verified` set after the archive at
+    // archivePath — freshly written by that same attempt — hashes to
+    // exactly the pinned checksum; nothing below this block ever runs on
+    // unverified bytes.
+    const MAX_DOWNLOAD_ATTEMPTS = 3
+    let verified = false
+    let lastFailure = null
+    for (let attempt = 1; attempt <= MAX_DOWNLOAD_ATTEMPTS && !verified; attempt += 1) {
+      if (attempt > 1) {
+        console.log(`Downloading again (attempt ${attempt} of ${MAX_DOWNLOAD_ATTEMPTS})…`)
+      }
+      let downloadFailure = null
+      try {
+        const response = await fetch(downloadUrl)
+        if (!response.ok) {
+          downloadFailure = {
+            detail: `the server answered ${response.status}`,
+            message: `Could not download the audio engine (the server answered ${response.status}).`,
+          }
+        } else {
+          await writeFile(archivePath, Buffer.from(await response.arrayBuffer()))
+        }
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error)
+        downloadFailure = {
+          detail,
+          message: `Could not download the audio engine: ${detail}`,
+        }
+      }
+      if (downloadFailure) {
+        lastFailure = { kind: 'download', message: downloadFailure.message }
+        if (attempt < MAX_DOWNLOAD_ATTEMPTS) {
+          console.log(
+            `Attempt ${attempt} of ${MAX_DOWNLOAD_ATTEMPTS}: the download failed (${downloadFailure.detail}); trying again…`,
+          )
+        }
+        continue
+      }
 
-    console.log('Checking the download is exactly the pinned build…')
-    const actualSha256 = await sha256OfFile(archivePath)
-    if (actualSha256.toLowerCase() !== expectedSha256) {
+      console.log('Checking the download is exactly the pinned build…')
+      const actualSha256 = (await sha256OfFile(archivePath)).toLowerCase()
+      if (actualSha256 === expectedSha256) {
+        verified = true
+        console.log('Checksum verified.')
+      } else {
+        lastFailure = { kind: 'checksum', actualSha256 }
+        if (attempt < MAX_DOWNLOAD_ATTEMPTS) {
+          console.log(
+            `Attempt ${attempt} of ${MAX_DOWNLOAD_ATTEMPTS}: the download did not match its pinned checksum ` +
+              `(expected ${expectedSha256}, got ${actualSha256}); discarding it and downloading again…`,
+          )
+        }
+      }
+    }
+    if (!verified) {
+      if (lastFailure?.kind === 'checksum') {
+        fail(
+          'FFMPEG_BUNDLE_CHECKSUM_MISMATCH',
+          'The downloaded audio engine does not match its pinned checksum, so it was NOT installed. ' +
+            `Expected ${expectedSha256}, got ${lastFailure.actualSha256}.`,
+        )
+      }
       fail(
-        'FFMPEG_BUNDLE_CHECKSUM_MISMATCH',
-        'The downloaded audio engine does not match its pinned checksum, so it was NOT installed. ' +
-          `Expected ${expectedSha256}, got ${actualSha256.toLowerCase()}.`,
+        'FFMPEG_BUNDLE_DOWNLOAD_FAILED',
+        lastFailure?.message ?? 'Could not download the audio engine.',
       )
     }
-    console.log('Checksum verified.')
 
     const extractDir = path.join(tmpDir, 'extracted')
     await mkdir(extractDir, { recursive: true })
