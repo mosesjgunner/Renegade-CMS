@@ -60,6 +60,8 @@ describe('bundled ffmpeg installer script', () => {
   let server: Server
   let bundleUrl: string
   let bundleSha256: string
+  let baseUrl: string
+  const requestCounts = new Map<string, number>()
 
   beforeAll(async () => {
     workDir = await mkdtemp(path.join(os.tmpdir(), 'ffmpeg-bundle-test-'))
@@ -78,8 +80,33 @@ describe('bundled ffmpeg installer script', () => {
     const archive = await readFile(archivePath)
     bundleSha256 = createHash('sha256').update(archive).digest('hex')
 
+    // The same archive with junk appended: valid bytes arrive, but the
+    // checksum no longer matches — a download corrupted in transit.
+    const corruptedArchive = Buffer.concat([archive, Buffer.from('corrupted-in-transit')])
     server = createServer((request, response) => {
+      const count = (requestCounts.get(request.url ?? '') ?? 0) + 1
+      requestCounts.set(request.url ?? '', count)
       if (request.url === '/fixture.tar.xz') {
+        response.writeHead(200, { 'content-type': 'application/x-xz' })
+        response.end(archive)
+        return
+      }
+      if (request.url === '/flaky-checksum.tar.xz') {
+        response.writeHead(200, { 'content-type': 'application/x-xz' })
+        response.end(count === 1 ? corruptedArchive : archive)
+        return
+      }
+      if (request.url === '/always-corrupt.tar.xz') {
+        response.writeHead(200, { 'content-type': 'application/x-xz' })
+        response.end(corruptedArchive)
+        return
+      }
+      if (request.url === '/flaky-http.tar.xz') {
+        if (count === 1) {
+          response.writeHead(500)
+          response.end()
+          return
+        }
         response.writeHead(200, { 'content-type': 'application/x-xz' })
         response.end(archive)
         return
@@ -90,7 +117,8 @@ describe('bundled ffmpeg installer script', () => {
     await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve))
     const address = server.address()
     if (!address || typeof address === 'string') throw new Error('fixture server has no port')
-    bundleUrl = `http://127.0.0.1:${address.port}/fixture.tar.xz`
+    baseUrl = `http://127.0.0.1:${address.port}`
+    bundleUrl = `${baseUrl}/fixture.tar.xz`
   })
 
   afterAll(async () => {
@@ -123,6 +151,49 @@ describe('bundled ffmpeg installer script', () => {
     })
     expect(result.code).not.toBe(0)
     expect(result.stderr).toContain('FFMPEG_BUNDLE_CHECKSUM_MISMATCH')
+    expect(existsSync(path.join(targetDir, 'ffmpeg'))).toBe(false)
+    expect(existsSync(path.join(targetDir, 'ffprobe'))).toBe(false)
+  })
+
+  it('retries a corrupted download and installs the verified build', async () => {
+    const targetDir = path.join(workDir, 'flaky-checksum')
+    const result = await runInstaller(targetDir, {
+      FFMPEG_BUNDLE_URL: `${baseUrl}/flaky-checksum.tar.xz`,
+      FFMPEG_BUNDLE_SHA256: bundleSha256,
+    })
+    expect(result.code, result.stderr).toBe(0)
+    expect(result.stdout).toContain('did not match its pinned checksum')
+    expect(result.stdout).toContain('Checksum verified.')
+    expect(result.stdout).toContain('Audio engine ready: ffmpeg 7.0.2')
+    expect(existsSync(path.join(targetDir, 'ffmpeg'))).toBe(true)
+    expect(existsSync(path.join(targetDir, 'ffprobe'))).toBe(true)
+    expect(requestCounts.get('/flaky-checksum.tar.xz')).toBe(2)
+  })
+
+  it('retries a failed download and installs the verified build', async () => {
+    const targetDir = path.join(workDir, 'flaky-http')
+    const result = await runInstaller(targetDir, {
+      FFMPEG_BUNDLE_URL: `${baseUrl}/flaky-http.tar.xz`,
+      FFMPEG_BUNDLE_SHA256: bundleSha256,
+    })
+    expect(result.code, result.stderr).toBe(0)
+    expect(result.stdout).toContain('the download failed')
+    expect(result.stdout).toContain('Checksum verified.')
+    expect(result.stdout).toContain('Audio engine ready: ffmpeg 7.0.2')
+    expect(existsSync(path.join(targetDir, 'ffmpeg'))).toBe(true)
+    expect(existsSync(path.join(targetDir, 'ffprobe'))).toBe(true)
+    expect(requestCounts.get('/flaky-http.tar.xz')).toBe(2)
+  })
+
+  it('gives up after 3 corrupted downloads, fails closed, and installs nothing', async () => {
+    const targetDir = path.join(workDir, 'always-corrupt')
+    const result = await runInstaller(targetDir, {
+      FFMPEG_BUNDLE_URL: `${baseUrl}/always-corrupt.tar.xz`,
+      FFMPEG_BUNDLE_SHA256: bundleSha256,
+    })
+    expect(result.code).not.toBe(0)
+    expect(result.stderr).toContain('FFMPEG_BUNDLE_CHECKSUM_MISMATCH')
+    expect(requestCounts.get('/always-corrupt.tar.xz')).toBe(3)
     expect(existsSync(path.join(targetDir, 'ffmpeg'))).toBe(false)
     expect(existsSync(path.join(targetDir, 'ffprobe'))).toBe(false)
   })
